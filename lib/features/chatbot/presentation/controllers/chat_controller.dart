@@ -27,7 +27,6 @@ class ChatController extends GetxController {
       try {
         await transactionController.refreshAllData(userId);
       } catch (_) {
-        // Keep the chat response even if dashboard refresh fails.
       }
 
       return reply;

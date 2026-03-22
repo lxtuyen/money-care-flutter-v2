@@ -1,5 +1,4 @@
 class AppImages{
-  // splash, onboarding, select method
   static const String logo = 'assets/images/logo.png';
   static const String welcome = 'assets/images/welcome.png';
   static const String savingRule = 'assets/images/saving_rule.png';

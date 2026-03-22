@@ -1,5 +1,7 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
 
 abstract class TransactionRepository {
   Future<TransactionByTypeEntity> findAllByFilter(
@@ -14,4 +16,5 @@ abstract class TransactionRepository {
   Future<TransactionEntity> updateTransaction(
       TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
+  Future<ScanReceiptEntity> scanReceipt(XFile image);
 }

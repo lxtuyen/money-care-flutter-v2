@@ -1,3 +1,4 @@
+import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,9 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final FilterController filterController = Get.find<FilterController>();
   final SavingFundController fundController = Get.find<SavingFundController>();
   final UserController userController = Get.find<UserController>();
-  final SavingFundController savingFundController =
-      Get.find<SavingFundController>();
   final AuthController authController = Get.find<AuthController>();
+  final StatisticsController statisticsController =
+      Get.find<StatisticsController>();
 
   @override
   void initState() {
@@ -44,23 +45,27 @@ class _HomeScreenState extends State<HomeScreen> {
     initData();
   }
 
-  /// Centralized initialization using AppController
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
 
     if (userId == null) return;
 
-    // Update saving fund if available
-    if (savingFundController.fundId.value == 0) {
-      // userId's saving fund info would need to be fetched separately
-      // This logic can be enhanced based on requirements
-    }
+    final fundId =
+        fundController.fundId.value > 0 ? fundController.fundId.value : null;
 
-    // Load all home screen data using consolidated method
-    await transactionController.loadHomeScreenData(userId, startDate, endDate);
+    await Future.wait([
+      statisticsController.loadStatisticsData(userId, startDate, endDate),
+      transactionController.filterTransactions(
+        userId,
+        TransactionFilterDto(
+          fundId: fundId,
+          startDate: startDate.toIso8601String(),
+          endDate: endDate.toIso8601String(),
+        ),
+      ),
+    ]);
   }
 
-  /// Update date range and reload data
   void _pickDateRange() async {
     final picked = await pickDateRange(context);
     if (picked.isNotEmpty) {
@@ -71,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final userId = appController.userId.value;
       if (userId != null) {
-        await transactionController.getTotalByDateEntity(
+        await statisticsController.getTotalByDateEntity(
           userId,
           TransactionTotalsDto(
             fundId:
@@ -156,8 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     final transactions =
                                         transactionController
                                             .transactionByfilter
-                                            .value!
-                                            .expenseTransactions;
+                                            .value
+                                            ?.expenseTransactions ??
+                                        [];
 
                                     if (transactionController.isLoading.value) {
                                       return const SizedBox(
@@ -185,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         CircularIcon(
                           onTap:
-                              () => Get.toNamed(RoutePath.pendingTransaction),
+                              () => Get.toNamed(RoutePath.chatbot),
                           iconPath: AppIcons.notification,
                           backgroundColor: const Color(0XFFF5FAFE),
                           height: 36,
@@ -216,9 +222,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
-              final totals = transactionController.totalByType.value;
+              final totals = statisticsController.totalByType.value;
 
-              if (transactionController.isLoading.value) {
+              if (statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -228,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (totals == null) {
                 return const SizedBox(
                   height: 120,
-                  child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                  child: Center(child: Text('Không có dữ liệu')),
                 );
               }
 
@@ -241,16 +247,16 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: AppSizes.defaultSpace),
 
             AppSectionHeading(
-              title: "Chi theo phÃ¢n loáº¡i",
+              title: "Chi theo phân loại",
               showActionButton: false,
             ),
 
             const SizedBox(height: AppSizes.defaultSpace),
 
             Obx(() {
-              final categories = transactionController.totalByCate;
+              final categories = statisticsController.totalByCate;
 
-              if (transactionController.isLoading.value) {
+              if (statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -287,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: AppSizes.defaultSpace),
                     Expanded(
                       child: Text(
-                        "Táº¡o hoáº·c lá»±a chá»n quá»¹ tiáº¿t kiá»‡m Ä‘á»ƒ chÃºng tÃ´i giÃºp báº¡n quáº£n lÃ½ tÃ i chÃ­nh hiá»‡u quáº£",
+                        "Tạo hoặc lựa chọn quỹ tiết kiệm để chúng tôi giúp bạn quản lý tài chính hiệu quả",
                         style: TextStyle(
                           color: AppColors.text4,
                           fontSize: AppSizes.fontSizeSm,
@@ -304,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Giao dá»‹ch gáº§n Ä‘Ã¢y"),
+            AppSectionHeading(title: "Giao dịch gần đây"),
             const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
               final transactions =
@@ -319,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (transactions == null) {
                 return const SizedBox(
                   height: 120,
-                  child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                  child: Center(child: Text('Không có dữ liệu')),
                 );
               }
 
@@ -331,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Tá»•ng quan", showActionButton: false),
+            AppSectionHeading(title: "Tổng quan", showActionButton: false),
             const SizedBox(height: AppSizes.spaceBtwItems),
             GestureDetector(
               onTap: _pickDateRange,
@@ -339,15 +345,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: const [
                   Icon(Icons.calendar_month_outlined, size: 18),
                   SizedBox(width: 4),
-                  Text('Chá»n khoáº£ng ngÃ y'),
+                  Text('Chọn khoảng ngày'),
                 ],
               ),
             ),
             const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
-              final totalsData = transactionController.totalByDate.value;
+              final totalsData = statisticsController.totalByDate.value;
 
-              if (transactionController.isLoading.value) {
+              if (statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -357,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (totalsData == null || totalsData.expense.isEmpty) {
                 return const SizedBox(
                   height: 120,
-                  child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                  child: Center(child: Text('Không có dữ liệu')),
                 );
               }
 
@@ -374,14 +380,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Háº¡n má»©c chi tiÃªu"),
+            AppSectionHeading(title: "Hạn mức chi tiêu"),
             const SizedBox(height: AppSizes.defaultSpace),
 
             Obx(() {
-              final categories = transactionController.totalByCate;
+              final categories = statisticsController.totalByCate;
               final monthlyIncome =
-                  userController.userProfile.value!.monthlyIncome;
-              if (transactionController.isLoading.value) {
+                  userController.userProfile.value?.monthlyIncome ?? 0;
+              if (statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -391,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (categories.isEmpty) {
                 return const SizedBox(
                   height: 120,
-                  child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                  child: Center(child: Text('Không có dữ liệu')),
                 );
               }
 
@@ -400,9 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     categories.map((category) {
                       return SpendingLimitCard(
                         title: category.categoryName,
-                        limit:
-                            ((category.percentage) * (monthlyIncome ?? 0)) /
-                            100,
+                        limit: ((category.percentage) * (monthlyIncome)) / 100,
                         spent: category.total,
                         iconPath: 'assets/icons/${category.categoryIcon}.svg',
                       );

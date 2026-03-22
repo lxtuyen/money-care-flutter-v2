@@ -33,10 +33,10 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
     ];
 
     final navItems = [
-      {'icon': 'home', 'label': 'Trang chá»§'},
+      {'icon': 'home', 'label': 'Trang chủ'},
       {'icon': 'transaction', 'label': 'Thu - chi'},
-      {'icon': 'chart', 'label': 'Thá»‘ng kÃª'},
-      {'icon': 'user', 'label': 'CÃ¡ nhÃ¢n'},
+      {'icon': 'chart', 'label': 'Thống kê'},
+      {'icon': 'user', 'label': 'Cá nhân'},
     ];
 
     return Obx(() {
@@ -151,7 +151,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                             label:
                                 _isSidebarExpanded
                                     ? const Text(
-                                      'ThÃªm giao dá»‹ch',
+                                      'Thêm giao dịch',
                                       style: TextStyle(color: Colors.white),
                                     )
                                     : const SizedBox.shrink(),
@@ -169,41 +169,10 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   ),
                 ),
 
-              // ====================== MAIN CONTENT ======================
               Expanded(
                 child: Stack(
                   children: [
                     IndexedStack(index: currentIndex, children: screens),
-
-                    // ====================== CHATBOT FLOATING ======================
-                    Positioned(
-                      right: 16,
-                      bottom: 16,
-                      child: GestureDetector(
-                        onTap: () => Get.toNamed(RoutePath.chatbot),
-                        child: Material(
-                          elevation: 10,
-                          shape: const CircleBorder(),
-                          child: ClipOval(
-                            child: Container(
-                              width: 62,
-                              height: 62,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Image.asset(
-                                'assets/images/ai.gif',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -211,7 +180,6 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
           ),
         ),
 
-        // ====================== BOTTOM NAV (MOBILE) ======================
         bottomNavigationBar:
             isWeb
                 ? null
@@ -239,27 +207,27 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoActionSheet(
-          title: const Text('Chá»n loáº¡i giao dá»‹ch'),
+          title: const Text('Chọn loại giao dịch'),
           actions: <CupertinoActionSheetAction>[
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);
                 Get.toNamed(RoutePath.income);
               },
-              child: const Text('Táº¡o thu'),
+              child: const Text('Tạo thu'),
             ),
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);
                 Get.toNamed(RoutePath.expense);
               },
-              child: const Text('Táº¡o chi'),
+              child: const Text('Tạo chi'),
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.pop(context),
-            child: const Text('Há»§y bá»'),
+            child: const Text('Hủy bỏ'),
           ),
         );
       },

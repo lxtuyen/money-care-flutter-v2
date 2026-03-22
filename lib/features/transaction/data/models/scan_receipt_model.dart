@@ -1,4 +1,4 @@
-import 'package:money_care/features/scan_receipt/domain/entities/scan_receipt_entity.dart';
+import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
 
 class ScanReceiptModel {
   final String rawText;

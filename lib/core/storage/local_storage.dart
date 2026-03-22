@@ -12,8 +12,6 @@ class LocalStorage {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  // ----------------- Basic methods -----------------
-
   Future<bool> writeString(String key, String value) async {
     return await _prefs.setString(key, value);
   }
@@ -45,8 +43,6 @@ class LocalStorage {
   Future<bool> clear() async {
     return await _prefs.clear();
   }
-
-  // ----------------- Specialized methods -----------------
 
   static const String keyAccessToken = 'access_token';
   static const String keyUserInfo = 'user_info';

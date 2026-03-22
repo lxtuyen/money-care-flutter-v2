@@ -1,5 +1,4 @@
 class AppIcons{
-  // Home
   static const String notification = "assets/icons/notification.svg";
   static const String search = "assets/icons/search.svg";
   static const String chart2 = "assets/icons/chart2.svg";
@@ -7,7 +6,6 @@ class AppIcons{
   static const String analysis = "assets/icons/analysis.svg";
 
 
-  // Budget Categories Icons
   static const String freedom = "assets/icons/freedom_icon.svg";
   static const String charity = "assets/icons/charity_icon.svg";
   static const String savings = "assets/icons/savings_icon.svg";

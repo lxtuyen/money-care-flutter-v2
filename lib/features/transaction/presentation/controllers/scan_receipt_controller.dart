@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:money_care/features/scan_receipt/domain/entities/scan_receipt_entity.dart';
-import 'package:money_care/features/scan_receipt/domain/usecases/scan_receipt_usecases.dart';
+import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
+import 'package:money_care/features/transaction/domain/usecases/scan_receipt_usecases.dart';
 
 class ScanReceiptController extends GetxController {
   final ScanReceiptUseCase scanReceiptUseCase;

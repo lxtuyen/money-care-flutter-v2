@@ -1,5 +1,7 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:money_care/features/transaction/data/datasources/transaction_remote_datasource.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
+import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/repositories/transaction_repository.dart';
 
@@ -53,5 +55,11 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<bool> deleteTransaction(int id) {
     return remoteDatasource.deleteTransaction(id);
+  }
+
+  @override
+  Future<ScanReceiptEntity> scanReceipt(XFile image) async {
+    final model = await remoteDatasource.scanReceipt(image);
+    return model.toEntity();
   }
 }

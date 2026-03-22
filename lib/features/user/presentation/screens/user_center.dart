@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/features/payment/presentation/controllers/payment_controller.dart';
-import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -23,10 +22,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   final AppController appController = Get.find<AppController>();
   final AuthController authController = Get.find<AuthController>();
   final UserController userController = Get.find<UserController>();
-  final PaymentController paymentController = Get.find<PaymentController>();
+  final StatisticsController statisticsController = Get.find<StatisticsController>();
 
-  final TransactionController transactionController =
-      Get.find<TransactionController>();
 
   @override
   void initState() {
@@ -34,16 +31,13 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     initData();
   }
 
-  /// Initialize: load data only if not already loaded
-  /// Reuses cached totalByType from other screens (e.g., Home)
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
 
     if (userId == null) return;
 
-    // Only load if data is not already available (avoid redundant API call)
-    if (transactionController.totalByType.value == null) {
-      await transactionController.getTotalByType(userId);
+    if (statisticsController.totalByType.value == null) {
+      await statisticsController.getTotalByType(userId);
     }
   }
 
@@ -83,11 +77,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Obx(() {
-                      final data = transactionController.totalByType.value;
+                      final data = statisticsController.totalByType.value;
                       final monthlyIncome =
                           userController.userProfile.value?.monthlyIncome ?? 0;
 
-                      if (transactionController.isLoading.value) {
+                      if (statisticsController.isLoading.value) {
                         return const SizedBox(
                           height: 120,
                           child: Center(child: CircularProgressIndicator()),
@@ -112,43 +106,12 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       title: AppTexts.profile,
                       onTap: () => Get.toNamed(RoutePath.profile),
                     ),
-                    Obx(() {
-                      final user = authController.user.value;
-
-                      if (user == null ||
-                          user.isVip == true ||
-                          paymentController.payment.value == true) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return BuildMenuItem(
-                        icon: Icons.insert_chart_outlined,
-                        title: 'Káº¿t ná»‘i Gmail',
-                        onTap: () async {
-                          await authController.connectGmail();
-                        },
-                      );
-                    }),
 
                     BuildMenuItem(
                       icon: Icons.category_outlined,
                       title: AppTexts.savingFunds,
                       onTap: () => Get.toNamed(RoutePath.selectSavingFund),
                     ),
-                    Obx(() {
-                      final user = authController.user.value;
-                      if (paymentController.payment.value == true &&
-                          user?.isVip == false) {
-                        return SizedBox.shrink();
-                      }
-                      return BuildMenuItem(
-                        icon: Icons.account_balance_wallet_outlined,
-                        title: 'ÄÄƒng kÃ½ VIP',
-                        onTap: () {
-                          Get.toNamed(RoutePath.payment);
-                        },
-                      );
-                    }),
 
                     BuildMenuItem(
                       icon: Icons.exit_to_app,

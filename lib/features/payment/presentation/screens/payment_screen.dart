@@ -37,7 +37,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     initData();
   }
 
-  /// Get userId from centralized AppController
   Future<void> initData() async {
     _userId = await appController.getCurrentUserId();
     if (mounted) {

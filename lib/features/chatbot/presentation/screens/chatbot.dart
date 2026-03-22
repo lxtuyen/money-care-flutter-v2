@@ -31,7 +31,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     _initSpeech();
   }
 
-  /// Get userId from centralized AppController
   Future<void> initData() async {
     userId = await appController.getCurrentUserId();
     if (mounted) {

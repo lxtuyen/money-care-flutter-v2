@@ -1,3 +1,4 @@
+import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
       Get.find<SavingFundController>();
   final FilterController filterController = Get.find<FilterController>();
   final SavingFundController fundController = Get.find<SavingFundController>();
+  final StatisticsController statisticsController =
+      Get.find<StatisticsController>();
 
   @override
   void initState() {
@@ -77,7 +80,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               ),
             ),
             child: Obx(() {
-              final data = transactionController.totalByType.value;
+              final data = statisticsController.totalByType.value;
 
               if (transactionController.isLoading.value) {
                 return const SizedBox(

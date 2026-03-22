@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/saving_fund/presentation/widgets/saving_fund_item_card.dart';
@@ -16,6 +17,7 @@ class SelectSavingFundScreen extends StatefulWidget {
 class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
   final SavingFundController controller = Get.find<SavingFundController>();
   final UserController userController = Get.find<UserController>();
+  final AppController appController = Get.find<AppController>();
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
 
     try {
       await controller.selectSavingFund(
-        controller.currentUserId.value ?? 0,
+        appController.userId.value ?? 0,
         selectedFund.id,
       );
 

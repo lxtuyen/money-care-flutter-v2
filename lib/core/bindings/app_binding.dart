@@ -13,7 +13,6 @@ import 'package:money_care/features/saving_fund/presentation/bindings/saving_fun
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/payment/presentation/bindings/payment_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
-import 'package:money_care/features/scan_receipt/presentation/bindings/scan_receipt_binding.dart';
 import 'package:money_care/features/admin/presentation/bindings/admin_binding.dart';
 
 class AppBinding extends Bindings {
@@ -30,7 +29,6 @@ class AppBinding extends Bindings {
     Get.put<ApiClient>(apiService);
     Get.put<LocalStorage>(storage);
 
-    // Centralized app controller for managing global state like userId
     Get.put<AppController>(AppController(storage: storage));
 
     SplashBinding().dependencies();
@@ -41,7 +39,6 @@ class AppBinding extends Bindings {
     UserBinding(apiClient: apiService).dependencies();
     PaymentBinding(apiClient: apiService).dependencies();
     ChatBinding(apiClient: apiService).dependencies();
-    ScanReceiptBinding(apiClient: apiService).dependencies();
     AdminBinding(apiClient: apiService).dependencies();
   }
 }

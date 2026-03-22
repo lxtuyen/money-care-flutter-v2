@@ -1,5 +1,7 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/features/transaction/data/models/scan_receipt_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 
 abstract class TransactionRemoteDatasource {
@@ -15,6 +17,7 @@ abstract class TransactionRemoteDatasource {
   Future<TransactionModel> updateTransaction(
       TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
+  Future<ScanReceiptModel> scanReceipt(XFile image);
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
@@ -101,5 +104,23 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     final res =
         await api.delete<void>('${ApiRoutes.transaction}/$id');
     return res.success;
+  }
+
+  @override
+  Future<ScanReceiptModel> scanReceipt(XFile image) async {
+    try {
+      final res = await api.postMultipart<ScanReceiptModel>(
+        ApiRoutes.scanReceipt,
+        file: image,
+        fromJsonT: (json) => ScanReceiptModel.fromJson(json),
+      );
+
+      if (!res.success || res.data == null) {
+        throw Exception(res.message);
+      }
+      return res.data!;
+    } catch (e) {
+      throw Exception('Quét hoá đơn thất bại: $e');
+    }
   }
 }

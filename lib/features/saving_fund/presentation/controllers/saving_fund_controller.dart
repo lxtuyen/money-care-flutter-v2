@@ -31,7 +31,6 @@ class SavingFundController extends GetxController {
   RxString? errorMessage = RxString('');
   var fundId = 0.obs;
 
-  Rxn<int> currentUserId = Rxn<int>();
   RxInt selectedFundIndex = 0.obs;
 
   RxList<CategoryEntity> categories = <CategoryEntity>[].obs;
@@ -135,7 +134,6 @@ class SavingFundController extends GetxController {
       UserModel user = UserModel.fromJson(userInfoJson, '');
       await loadFunds(user.id);
 
-      currentUserId.value = user.id;
       selectedFundIndex.value = savingFunds.indexWhere(
         (f) => f.id == fundId.value,
       );

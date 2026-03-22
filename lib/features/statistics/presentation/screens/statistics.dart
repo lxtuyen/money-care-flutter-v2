@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
@@ -46,6 +47,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
+  final StatisticsController statisticsController =
+      Get.find<StatisticsController>();
   final SavingFundController savingFundController =
       Get.find<SavingFundController>();
   final FilterController filterController = Get.find<FilterController>();
@@ -57,14 +60,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     initData();
   }
 
-  /// Centralized initialization using AppController
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
 
     if (userId == null) return;
 
-    // Load statistics data - last month's data
-    await transactionController.getTotalByDateEntityLstMonth(userId);
+    await statisticsController.getTotalByDateEntityLstMonth(userId);
   }
 
   @override
@@ -121,9 +122,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ),
                 ),
                 child: Obx(() {
-                  final data = transactionController.totalByType.value;
+                  final data = statisticsController.totalByType.value;
 
-                  if (transactionController.isLoading.value) {
+                  if (statisticsController.isLoading.value) {
                     return const SizedBox(
                       height: 120,
                       child: Center(child: CircularProgressIndicator()),
@@ -164,7 +165,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Obx(() {
-                  if (transactionController.isLoading.value) {
+                  if (statisticsController.isLoading.value) {
                     return const SizedBox(
                       height: 120,
                       child: Center(child: CircularProgressIndicator()),
@@ -172,9 +173,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   }
 
                   final totalsLstMonth =
-                      transactionController.totalByDateLstMonth.value;
+                      statisticsController.totalByDateLstMonth.value;
                   final totalsThisMonth =
-                      transactionController.totalByDate.value;
+                      statisticsController.totalByDate.value;
 
                   if (totalsLstMonth == null || totalsThisMonth == null) {
                     return const SizedBox(
@@ -194,7 +195,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
                   final lastMonthSpots = convertToSpots7Days(
                     lstMonthData,
-                    transactionController.lastMonthToday,
+                    statisticsController.lastMonthToday,
                   );
                   final thisMonthSpots = convertToSpots7Days(
                     thisMonthData,
@@ -220,10 +221,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ),
               const SizedBox(height: 10),
               Obx(() {
-                final data = transactionController.totalByType.value;
+                final data = statisticsController.totalByType.value;
                 final currentFund = savingFundController.currentFund.value;
 
-                if (transactionController.isLoading.value) {
+                if (statisticsController.isLoading.value) {
                   return const SizedBox(
                     height: 120,
                     child: Center(child: CircularProgressIndicator()),
@@ -259,9 +260,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 25),
               Obx(() {
-                final categories = transactionController.totalByCate;
+                final categories = statisticsController.totalByCate;
 
-                if (transactionController.isLoading.value) {
+                if (statisticsController.isLoading.value) {
                   return const SizedBox(
                     height: 120,
                     child: Center(child: CircularProgressIndicator()),
@@ -316,12 +317,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               const SizedBox(height: 25),
 
               Obx(() {
-                final lstMonth =
-                    transactionController.totalByDateLstMonth.value;
-                final thisMonth = transactionController.totalByDate.value;
-                final totalByType = transactionController.totalByType.value;
+                final lstMonth = statisticsController.totalByDateLstMonth.value;
+                final thisMonth = statisticsController.totalByDate.value;
+                final totalByType = statisticsController.totalByType.value;
 
-                if (transactionController.isLoading.value) {
+                if (statisticsController.isLoading.value) {
                   return const SizedBox(
                     height: 120,
                     child: Center(child: CircularProgressIndicator()),
@@ -338,13 +338,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 }
 
                 return DescriptionTotal(
-                  dailyAverage: transactionController.dailyAverage,
+                  dailyAverage: statisticsController.dailyAverage,
                   dailyAverageChange:
-                      transactionController.dailyAverageChange
+                      statisticsController.dailyAverageChange
                           .toInt()
                           .toString(),
                   monthlyBalanceChange:
-                      transactionController.dailyIncomeChange.toString(),
+                      statisticsController.dailyIncomeChange.toString(),
                   monthlyBalance:
                       (totalByType.incomeTotal - totalByType.expenseTotal)
                           .toDouble(),

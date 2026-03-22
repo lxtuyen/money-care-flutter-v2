@@ -1,0 +1,14 @@
+import 'package:money_care/features/chatbot/data/datasources/chat_remote_datasource.dart';
+import 'package:money_care/features/chatbot/data/models/chat_model.dart';
+import 'package:money_care/features/chatbot/domain/repositories/chat_repository.dart';
+
+class ChatRepositoryImpl implements ChatRepository {
+  final ChatRemoteDatasource remoteDatasource;
+
+  ChatRepositoryImpl({required this.remoteDatasource});
+
+  @override
+  Future<String> sendToChatbot(ChatDto dto) {
+    return remoteDatasource.sendToChatbot(dto);
+  }
+}

@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+
+class SearchAnchorCustom extends StatefulWidget {
+  const SearchAnchorCustom({super.key, required this.listData});
+
+  final List<TransactionEntity> listData;
+
+  @override
+  State<SearchAnchorCustom> createState() => _SearchAnchorCustomState();
+}
+
+class _SearchAnchorCustomState extends State<SearchAnchorCustom> {
+  final SearchController _searchController = SearchController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: SearchAnchor.bar(
+        barHintText: 'Nháº­p tÃªn giao dá»‹ch',
+        viewHintText: 'TÃ¬m kiáº¿m giao dá»‹ch',
+        searchController: _searchController,
+        suggestionsBuilder: (context, controller) {
+          final query = controller.text.toLowerCase();
+
+          final filtered = widget.listData.where((item) {
+            return query.isEmpty ||
+                (item.note?.toLowerCase().contains(query) ?? false);
+          }).toList();
+
+          if (filtered.isEmpty) {
+            return [
+              SizedBox(
+                height: 100,
+                child: Center(child: Text('KhÃ´ng tÃ¬m tháº¥y giao dá»‹ch nÃ o')),
+              ),
+            ];
+          }
+
+          final List<Widget> widgets = filtered.map((item) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: TransactionItem(
+                item: item,
+                onTap: () {},
+                color: AppHelperFunction.getRandomColor(),
+              ),
+            );
+          }).toList();
+
+          return [
+            Material(
+              color: Colors.white, 
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: widgets,
+              ),
+            ),
+          ];
+        },
+      ),
+    );
+  }
+}

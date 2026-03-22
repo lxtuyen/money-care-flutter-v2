@@ -1,0 +1,41 @@
+import 'package:money_care/features/user/data/models/user_profile_model.dart';
+import 'package:get/get.dart';
+import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
+import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
+
+class UserController extends GetxController {
+  final UpdateMyProfileUseCase updateMyProfileUseCase;
+  final AddMonthlyIncomeUseCase addMonthlyIncomeUseCase;
+
+  UserController({
+    required this.updateMyProfileUseCase,
+    required this.addMonthlyIncomeUseCase,
+  });
+
+  var userProfile = Rxn<UserProfileEntity>();
+  var isLoading = false.obs;
+
+  Future<void> updateProfile(ProfileUpdateDto dto) async {
+    try {
+      isLoading.value = true;
+      final updated = await updateMyProfileUseCase(dto);
+      userProfile.value = updated;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void currentProfile(UserProfileEntity profile) {
+    userProfile.value = profile;
+  }
+
+  Future<void> addMonthlyIncome(int monthlyIncome) async {
+    try {
+      isLoading.value = true;
+      final updated = await addMonthlyIncomeUseCase(monthlyIncome);
+      currentProfile(updated);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}

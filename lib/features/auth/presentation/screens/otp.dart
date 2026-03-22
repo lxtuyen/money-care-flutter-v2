@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -51,7 +52,7 @@ class _OtpScreenState extends State<OtpScreen> {
     Future<void> onPressed() async {
       try {
         final message = await authController.verifyOtp(otpController.text);
-        Get.offAllNamed('/reset_password');
+        Get.offAllNamed(RoutePath.resetPassword);
         AppHelperFunction.showSnackBar(message);
       } catch (e) {
         AppHelperFunction.showSnackBar(e.toString());
@@ -226,7 +227,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           recognizer:
                               TapGestureRecognizer()
                                 ..onTap = () {
-                                  Get.toNamed('/login');
+                                  Get.toNamed(RoutePath.login);
                                 },
                         ),
                       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -31,7 +32,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           final message = await authController.resetPassword(
             passwordController.text,
           );
-          Get.offAllNamed('/login');
+          Get.offAllNamed(RoutePath.login);
           AppHelperFunction.showSnackBar(message);
         } catch (e) {
           AppHelperFunction.showSnackBar(e.toString());
@@ -182,7 +183,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             recognizer:
                                 TapGestureRecognizer()
                                   ..onTap = () {
-                                    Get.toNamed('/login');
+                                    Get.toNamed(RoutePath.login);
                                   },
                           ),
                         ],

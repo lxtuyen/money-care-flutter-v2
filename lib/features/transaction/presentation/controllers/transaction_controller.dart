@@ -42,29 +42,44 @@ class TransactionController extends GetxController {
   });
 
   Future<void> createTransaction(TransactionCreateDto dto) async {
+    isLoading.value = true;
     try {
       await createTransactionUseCase(dto);
       await refreshAllData(dto.userId!);
+      errorMessage.value = null;
     } catch (e) {
+      errorMessage.value = e.toString();
       rethrow;
+    } finally {
+      isLoading.value = false;
     }
   }
 
   Future<void> updateTransaction(TransactionCreateDto dto, int id) async {
+    isLoading.value = true;
     try {
       await updateTransactionUseCase(dto, id);
       await refreshAllData(dto.userId!);
+      errorMessage.value = null;
     } catch (e) {
+      errorMessage.value = e.toString();
       rethrow;
+    } finally {
+      isLoading.value = false;
     }
   }
 
   Future<void> deleteTransaction(int id, int userId) async {
+    isLoading.value = true;
     try {
       await deleteTransactionUseCase(id);
       await refreshAllData(userId);
+      errorMessage.value = null;
     } catch (e) {
+      errorMessage.value = e.toString();
       rethrow;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -108,7 +123,10 @@ class TransactionController extends GetxController {
     }
   }
 
-  Future<void> getTotalByDateEntity(int userId, TransactionTotalsDto dto) async {
+  Future<void> getTotalByDateEntity(
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     isLoading.value = true;
     try {
       totalByDate.value = await getTotalByDateEntityUseCase(userId, dto);
@@ -124,7 +142,10 @@ class TransactionController extends GetxController {
     isLoading.value = true;
     try {
       final dto = _createTotalsDto(lastMonth7DaysStart, lastMonthToday);
-      totalByDateLstMonth.value = await getTotalByDateEntityUseCase(userId, dto);
+      totalByDateLstMonth.value = await getTotalByDateEntityUseCase(
+        userId,
+        dto,
+      );
       errorMessage.value = null;
     } catch (e) {
       errorMessage.value = e.toString();
@@ -133,28 +154,109 @@ class TransactionController extends GetxController {
     }
   }
 
+  Future<void> loadHomeScreenData(
+    int userId,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    isLoading.value = true;
+    try {
+      final totalsDto = TransactionTotalsDto(
+        fundId: _currentFundIdOrNull,
+        startDate: startDate.toIso8601String(),
+        endDate: endDate.toIso8601String(),
+      );
+
+      final filterDto = TransactionFilterDto(
+        fundId: _currentFundIdOrNull,
+        startDate: startDate.toIso8601String(),
+        endDate: endDate.toIso8601String(),
+      );
+
+      await Future.wait([
+        _loadTotalByType(userId),
+        _loadTotalByCate(userId),
+        _loadFilterTransactions(userId, filterDto),
+        _loadTotalByDate(userId, totalsDto),
+      ]);
+
+      errorMessage.value = null;
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loadTransactionScreenData(
+    int userId,
+    TransactionFilterDto filterDto,
+  ) async {
+    await filterTransactions(userId, filterDto);
+  }
+
+  Future<void> _loadTotalByType(int userId) async {
+    try {
+      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      totalByType.value = await getTotalByTypeUseCase(userId, dto);
+    } catch (e) {
+      totalByType.value = null;
+      rethrow;
+    }
+  }
+
+  Future<void> _loadTotalByCate(int userId) async {
+    try {
+      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      final list = await getTotalByCateUseCase(userId, dto);
+      totalByCate.assignAll(list);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _loadFilterTransactions(
+    int userId,
+    TransactionFilterDto dto,
+  ) async {
+    try {
+      transactionByfilter.value = await filterTransactionsUseCase(userId, dto);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _loadTotalByDate(int userId, TransactionTotalsDto dto) async {
+    try {
+      totalByDate.value = await getTotalByDateEntityUseCase(userId, dto);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> refreshAllData(int userId) async {
     final dtoWeek = _createTotalsDto(weekStartDate, weekEndDate);
     final filterDto = TransactionFilterDto(
-      fundId: fundController.currentFundId > 0
-          ? fundController.currentFundId
-          : null,
+      fundId: _currentFundIdOrNull,
       startDate: weekStartDate.toIso8601String(),
       endDate: weekEndDate.toIso8601String(),
     );
 
-    await getTotalByType(userId);
-    await getTotalByCate(userId);
-    await getTotalByDateEntity(userId, dtoWeek);
-    await getTotalByDateEntityLstMonth(userId);
-    await filterTransactions(userId, filterDto);
+    await Future.wait([
+      getTotalByType(userId),
+      getTotalByCate(userId),
+      getTotalByDateEntity(userId, dtoWeek),
+      getTotalByDateEntityLstMonth(userId),
+      filterTransactions(userId, filterDto),
+    ]);
   }
+
+  int? get _currentFundIdOrNull =>
+      fundController.currentFundId > 0 ? fundController.currentFundId : null;
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
     return TransactionTotalsDto(
-      fundId: fundController.currentFundId > 0
-          ? fundController.currentFundId
-          : null,
+      fundId: _currentFundIdOrNull,
       startDate: start.toIso8601String(),
       endDate: end.toIso8601String(),
     );
@@ -165,7 +267,8 @@ class TransactionController extends GetxController {
     int year = month == 0 ? now.year - 1 : now.year;
     month = month == 0 ? 12 : month;
     final lastDayOfPreviousMonth = DateTime(year, month + 1, 0).day;
-    final day = now.day > lastDayOfPreviousMonth ? lastDayOfPreviousMonth : now.day;
+    final day =
+        now.day > lastDayOfPreviousMonth ? lastDayOfPreviousMonth : now.day;
     return DateTime(year, month, day);
   }
 
@@ -174,7 +277,8 @@ class TransactionController extends GetxController {
 
   double calculateDailyAverage(List<TotalByDateEntity> list, DateTime endDate) {
     final Map<String, int> map = {
-      for (var d in list) "${d.date.year}-${d.date.month}-${d.date.day}": d.total,
+      for (var d in list)
+        "${d.date.year}-${d.date.month}-${d.date.day}": d.total,
     };
 
     if (list.isEmpty) return 0;
@@ -196,17 +300,13 @@ class TransactionController extends GetxController {
     return ((current - previous) / previous) * 100;
   }
 
-  double calculateMonthTotal(List<TotalByDateEntity> list) {
-    return list.fold(0, (prev, element) => prev + element.total);
-  }
-
   double get dailyAverage =>
       calculateDailyAverage(totalByDate.value?.expense ?? [], now);
 
   double get lastWeekDailyAverage => calculateDailyAverage(
-        totalByDateLstMonth.value?.expense ?? [],
-        lastMonthToday,
-      );
+    totalByDateLstMonth.value?.expense ?? [],
+    lastMonthToday,
+  );
 
   double get dailyAverageChange =>
       calculatePercentageChange(dailyAverage, lastWeekDailyAverage);
@@ -215,9 +315,9 @@ class TransactionController extends GetxController {
       calculateDailyAverage(totalByDate.value?.income ?? [], now);
 
   double get lastWeekDailyIncomeAverage => calculateDailyAverage(
-        totalByDateLstMonth.value?.income ?? [],
-        lastMonthToday,
-      );
+    totalByDateLstMonth.value?.income ?? [],
+    lastMonthToday,
+  );
 
   double get dailyIncomeChange =>
       calculatePercentageChange(dailyIncomeAverage, lastWeekDailyIncomeAverage);

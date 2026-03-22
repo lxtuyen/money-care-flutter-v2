@@ -1,6 +1,6 @@
 name: money_care
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -32,6 +32,7 @@ dependencies:
   get_storage: ^2.1.1
   shared_preferences: ^2.5.2
   flutter_custom_keyboard: ^1.1.1
+  fpdart: ^1.1.0
 
   # firebase
   firebase_core: ^4.1.1

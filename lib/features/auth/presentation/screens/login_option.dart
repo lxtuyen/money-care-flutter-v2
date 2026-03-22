@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -48,14 +49,14 @@ class LoginOptionScreen extends StatelessWidget {
                     if (user.role == 'user') {
                       Get.offAllNamed(
                         user.savingFund != null
-                            ? '/main'
-                            : '/onboarding_welcome',
+                            ? RoutePath.main
+                            : RoutePath.onboardingWelcome,
                       );
                       return;
                     }
 
                     if (user.role == 'admin') {
-                      Get.offAllNamed('/admin/home');
+                      Get.offAllNamed(RoutePath.adminHome);
                       return;
                     }
                   },
@@ -121,7 +122,7 @@ class LoginOptionScreen extends StatelessWidget {
                       style: TextStyle(fontSize: 14, color: AppColors.text1),
                     ),
                     GestureDetector(
-                      onTap: () => Get.toNamed('/login'),
+                      onTap: () => Get.toNamed(RoutePath.login),
                       child: const Text(
                         AppTexts.login,
                         style: TextStyle(

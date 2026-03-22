@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:money_care/core/bindings/app_binding.dart';
 import 'package:money_care/core/router/app_router.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'firebase_options.dart';
@@ -30,7 +31,7 @@ class MainApp extends StatelessWidget {
       title: 'Money Care',
       themeMode: ThemeMode.system,
       getPages: appPages,
-      initialRoute: '/splash',
+      initialRoute: RoutePath.splash,
       initialBinding: AppBinding(storage: storage),
     );
   }

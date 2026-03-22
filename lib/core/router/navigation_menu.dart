@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
@@ -180,7 +180,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                       right: 16,
                       bottom: 16,
                       child: GestureDetector(
-                        onTap: () => Get.toNamed('/chatbot'),
+                        onTap: () => Get.toNamed(RoutePath.chatbot),
                         child: Material(
                           elevation: 10,
                           shape: const CircleBorder(),
@@ -244,14 +244,14 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);
-                Get.toNamed('/income');
+                Get.toNamed(RoutePath.income);
               },
               child: const Text('Táº¡o thu'),
             ),
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);
-                Get.toNamed('/expense');
+                Get.toNamed(RoutePath.expense);
               },
               child: const Text('Táº¡o chi'),
             ),

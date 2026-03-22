@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -40,13 +40,15 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         if (user.role == 'user') {
           Get.offAllNamed(
-            user.savingFund != null ? '/main' : '/onboarding_welcome',
+            user.savingFund != null
+                ? RoutePath.main
+                : RoutePath.onboardingWelcome,
           );
           return;
         }
 
         if (user.role == 'admin') {
-          Get.offAllNamed('/admin/home');
+          Get.offAllNamed(RoutePath.adminHome);
           return;
         }
       }
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        Get.toNamed('/forgot_password');
+                        Get.toNamed(RoutePath.forgotPassword);
                       },
                       child: const Text(
                         AppTexts.forgotPassword,
@@ -186,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             recognizer:
                                 TapGestureRecognizer()
                                   ..onTap = () {
-                                    Get.toNamed('/register');
+                                    Get.toNamed(RoutePath.register);
                                   },
                           ),
                         ],

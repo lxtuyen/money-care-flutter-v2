@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -26,7 +27,7 @@ class _OnboardingIncomeScreenState extends State<OnboardingIncomeScreen> {
           final income = int.parse(incomeController.text.replaceAll(',', ''));
           await userController.addMonthlyIncome(income);
 
-          Get.toNamed('/main');
+          Get.toNamed(RoutePath.main);
           AppHelperFunction.showSnackBar('Thêm thành công');
         } catch (e) {
           AppHelperFunction.showSnackBar(e.toString());

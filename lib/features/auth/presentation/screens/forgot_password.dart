@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -27,7 +28,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           final message = await authController.forgotPassword(
             emailController.text,
           );
-          Get.offAllNamed('/otp');
+          Get.offAllNamed(RoutePath.otp);
           AppHelperFunction.showSnackBar(message);
         } catch (e) {
           AppHelperFunction.showSnackBar(e.toString());
@@ -130,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             recognizer:
                                 TapGestureRecognizer()
                                   ..onTap = () {
-                                    Get.toNamed('/login');
+                                    Get.toNamed(RoutePath.login);
                                   },
                           ),
                         ],

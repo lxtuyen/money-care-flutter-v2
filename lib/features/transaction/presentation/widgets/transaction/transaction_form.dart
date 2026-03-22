@@ -1,6 +1,7 @@
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -181,75 +182,92 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   Future<void> _createTransaction() async {
-  if (_formKey.currentState!.validate()) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final picked = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    if (_formKey.currentState!.validate()) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final picked = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+      );
 
-    if (picked.isAfter(today)) {
-      AppHelperFunction.showAlert('Lá»—i', 'NgÃ y vÆ°á»£t quÃ¡ giá»›i háº¡n. Vui lÃ²ng chá»n láº¡i ngÃ y há»£p lá»‡!');
-      return;
-    }
-
-    try {
-      if (userId == null) {
-        AppHelperFunction.showSnackBar('Khong the xac dinh nguoi dung hien tai');
+      if (picked.isAfter(today)) {
+        AppHelperFunction.showAlert(
+          'Lá»—i',
+          'NgÃ y vÆ°á»£t quÃ¡ giá»›i háº¡n. Vui lÃ²ng chá»n láº¡i ngÃ y há»£p lá»‡!',
+        );
         return;
       }
 
-      final dto = TransactionCreateDto(
-        amount: int.tryParse(_amountController.text) ?? 0,
-        type: widget.showCategory ? "expense" : "income",
-        note: _noteController.text.trim(),
-        categoryId: selectedCategoryId,
-        transactionDate: selectedDate,
-        userId: userId,
-      );
+      try {
+        if (userId == null) {
+          AppHelperFunction.showSnackBar(
+            'Khong the xac dinh nguoi dung hien tai',
+          );
+          return;
+        }
 
-      await transactionController.createTransaction(dto);
-      Get.back();
-      AppHelperFunction.showSnackBar('Táº¡o giao dá»‹ch thÃ nh cÃ´ng');
-    } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
+        final dto = TransactionCreateDto(
+          amount: int.tryParse(_amountController.text) ?? 0,
+          type: widget.showCategory ? "expense" : "income",
+          note: _noteController.text.trim(),
+          categoryId: selectedCategoryId,
+          transactionDate: selectedDate,
+          userId: userId,
+        );
+
+        await transactionController.createTransaction(dto);
+        Get.back();
+        AppHelperFunction.showSnackBar('Táº¡o giao dá»‹ch thÃ nh cÃ´ng');
+      } catch (e) {
+        AppHelperFunction.showSnackBar(e.toString());
+      }
     }
   }
-}
-
 
   Future<void> _updateTransaction() async {
-  if (_formKey.currentState!.validate()) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final picked = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    if (_formKey.currentState!.validate()) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final picked = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+      );
 
-    if (picked.isAfter(today)) {
-      AppHelperFunction.showAlert('Lá»—i', 'NgÃ y vÆ°á»£t quÃ¡ giá»›i háº¡n. Vui lÃ²ng chá»n láº¡i ngÃ y há»£p lá»‡!');
-      return;
-    }
-
-    try {
-      if (userId == null) {
-        AppHelperFunction.showSnackBar('Khong the xac dinh nguoi dung hien tai');
+      if (picked.isAfter(today)) {
+        AppHelperFunction.showAlert(
+          'Lá»—i',
+          'NgÃ y vÆ°á»£t quÃ¡ giá»›i háº¡n. Vui lÃ²ng chá»n láº¡i ngÃ y há»£p lá»‡!',
+        );
         return;
       }
 
-      final dto = TransactionCreateDto(
-        amount: int.tryParse(_amountController.text) ?? 0,
-        type: widget.showCategory ? "expense" : "income",
-        note: _noteController.text.trim(),
-        categoryId: selectedCategoryId,
-        transactionDate: selectedDate,
-        userId: userId,
-      );
+      try {
+        if (userId == null) {
+          AppHelperFunction.showSnackBar(
+            'Khong the xac dinh nguoi dung hien tai',
+          );
+          return;
+        }
 
-      await transactionController.updateTransaction(dto, widget.item!.id!);
-      Get.back();
-      AppHelperFunction.showSnackBar('Cáº­p nháº­t giao dá»‹ch thÃ nh cÃ´ng');
-    } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
+        final dto = TransactionCreateDto(
+          amount: int.tryParse(_amountController.text) ?? 0,
+          type: widget.showCategory ? "expense" : "income",
+          note: _noteController.text.trim(),
+          categoryId: selectedCategoryId,
+          transactionDate: selectedDate,
+          userId: userId,
+        );
+
+        await transactionController.updateTransaction(dto, widget.item!.id!);
+        Get.back();
+        AppHelperFunction.showSnackBar('Cáº­p nháº­t giao dá»‹ch thÃ nh cÃ´ng');
+      } catch (e) {
+        AppHelperFunction.showSnackBar(e.toString());
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -281,7 +299,7 @@ class _TransactionFormState extends State<TransactionForm> {
                               if (Navigator.canPop(context)) {
                                 Get.back();
                               } else {
-                                Get.toNamed('/main');
+                                Get.toNamed(RoutePath.main);
                               }
                             },
                             child: const Icon(
@@ -483,7 +501,9 @@ class _TransactionFormState extends State<TransactionForm> {
                                     color: Colors.white,
                                   )
                                   : Text(
-                                    widget.item?.id == null ? 'Táº¡o' : 'Cáº­p nháº­t',
+                                    widget.item?.id == null
+                                        ? 'Táº¡o'
+                                        : 'Cáº­p nháº­t',
                                     style: const TextStyle(
                                       fontSize: 25,
                                       color: Colors.white,
@@ -502,5 +522,3 @@ class _TransactionFormState extends State<TransactionForm> {
     );
   }
 }
-
-

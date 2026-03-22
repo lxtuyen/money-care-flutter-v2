@@ -1,6 +1,7 @@
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
@@ -10,14 +11,8 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/date_picker_util.dart';
-import 'package:money_care/core/storage/local_storage.dart';
-import 'package:money_care/features/auth/data/models/user_model.dart';
-import 'package:money_care/features/home/presentation/widgets/search_anchor.dart';
-import 'package:money_care/features/home/presentation/widgets/spending_summary/spending_limit_card.dart';
-import 'package:money_care/features/home/presentation/widgets/spending_summary/spending_overview_card.dart';
-import 'package:money_care/features/home/presentation/widgets/spending_summary/spending_summary.dart';
-import 'package:money_care/features/home/presentation/widgets/category/category_section.dart';
-import 'package:money_care/features/home/presentation/widgets/transaction/transaction_section.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/core/presentation/widgets/icon/circular_icon.dart';
 import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
 
@@ -33,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late DateTime startDate = now.subtract(const Duration(days: 6));
   late DateTime endDate = now;
 
+  final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
   final FilterController filterController = Get.find<FilterController>();
@@ -42,56 +38,29 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.find<SavingFundController>();
   final AuthController authController = Get.find<AuthController>();
 
-  late int userId;
-
   @override
   void initState() {
     super.initState();
-    initUserInfo();
+    initData();
   }
 
-  Future<void> initUserInfo() async {
-    Map<String, dynamic> userInfoJson = LocalStorage().getUserInfo()!;
-    UserModel user = UserModel.fromJson(userInfoJson, '');
-    setState(() {
-      userId = user.id;
-    });
-    loadData();
-    if (userController.userProfile.value == null) {
-      //userController.currentProlife(user.profile);
+  /// Centralized initialization using AppController
+  Future<void> initData() async {
+    final userId = await appController.getCurrentUserId();
+
+    if (userId == null) return;
+
+    // Update saving fund if available
+    if (savingFundController.fundId.value == 0) {
+      // userId's saving fund info would need to be fetched separately
+      // This logic can be enhanced based on requirements
     }
-    if (savingFundController.fundId.value == 0 && user.savingFund != null) {
-      savingFundController.updateFundId(user.savingFund!.id);
-    }
+
+    // Load all home screen data using consolidated method
+    await transactionController.loadHomeScreenData(userId, startDate, endDate);
   }
 
-  Future<void> loadData() async {
-    transactionController.getTotalByType(userId);
-    transactionController.getTotalByCate(userId);
-    transactionController.filterTransactions(
-      userId,
-      TransactionFilterDto(
-        fundId:
-            fundController.currentFundId > 0
-                ? fundController.currentFundId
-                : null,
-        startDate: filterController.startDate.toString(),
-        endDate: filterController.endDate.toString(),
-      ),
-    );
-    transactionController.getTotalByDateEntity(
-      userId,
-      TransactionTotalsDto(
-        fundId:
-            fundController.currentFundId > 0
-                ? fundController.currentFundId
-                : null,
-        startDate: startDate.toIso8601String(),
-        endDate: endDate.toIso8601String(),
-      ),
-    );
-  }
-
+  /// Update date range and reload data
   void _pickDateRange() async {
     final picked = await pickDateRange(context);
     if (picked.isNotEmpty) {
@@ -99,17 +68,21 @@ class _HomeScreenState extends State<HomeScreen> {
         startDate = picked.first!;
         endDate = (picked.length > 1 ? picked.last : picked.first)!;
       });
-      transactionController.getTotalByDateEntity(
-        userId,
-        TransactionTotalsDto(
-          fundId:
-              fundController.fundId.value > 0
-                  ? fundController.fundId.value
-                  : null,
-          startDate: startDate.toIso8601String(),
-          endDate: endDate.toIso8601String(),
-        ),
-      );
+
+      final userId = appController.userId.value;
+      if (userId != null) {
+        await transactionController.getTotalByDateEntity(
+          userId,
+          TransactionTotalsDto(
+            fundId:
+                fundController.fundId.value > 0
+                    ? fundController.fundId.value
+                    : null,
+            startDate: startDate.toIso8601String(),
+            endDate: endDate.toIso8601String(),
+          ),
+        );
+      }
     }
   }
 
@@ -136,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (profile == null) {
                     return const Text(
-                      "ChÃ o Má»«ng!",
+                      "Chào mừng",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -148,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   final fullName = profile.fullName;
 
                   return Text(
-                    "ChÃ o Má»«ng, $fullName",
+                    "Chào mừng, $fullName",
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
@@ -211,7 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       clipBehavior: Clip.none,
                       children: [
                         CircularIcon(
-                          onTap: () => Get.toNamed('/pending_transaction'),
+                          onTap:
+                              () => Get.toNamed(RoutePath.pendingTransaction),
                           iconPath: AppIcons.notification,
                           backgroundColor: const Color(0XFFF5FAFE),
                           height: 36,
@@ -289,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Get.toNamed('/expense');
+                        Get.toNamed(RoutePath.expense);
                       },
                       child: Container(
                         width: 50,

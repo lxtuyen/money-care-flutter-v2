@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/presentation/widgets/image/rounded_image.dart';
@@ -97,7 +98,7 @@ class SidebarMenu extends StatelessWidget {
                   title: const Text('Đăng Xuất'),
                   onTap: () {
                     authController.logout();
-                    Get.offAllNamed('/select_method_login');
+                    Get.offAllNamed(RoutePath.loginOption);
                   },
                 ),
               ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/storage/local_storage.dart';
-import 'package:money_care/features/auth/data/models/user_model.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/bubble.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/welcome_option.dart';
@@ -17,6 +16,7 @@ class ChatbotScreen extends StatefulWidget {
 class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scroll = ScrollController();
+  final AppController appController = Get.find<AppController>();
   final ChatController chatController = Get.find<ChatController>();
 
   final stt.SpeechToText _speech = stt.SpeechToText();
@@ -27,18 +27,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    initUserInfo();
+    initData();
     _initSpeech();
   }
 
-  Future<void> initUserInfo() async {
-    final userInfoJson = LocalStorage().getUserInfo();
-    if (userInfoJson == null || !mounted) return;
-
-    final user = UserModel.fromJson(userInfoJson, '');
-    setState(() {
-      userId = user.id;
-    });
+  /// Get userId from centralized AppController
+  Future<void> initData() async {
+    userId = await appController.getCurrentUserId();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   final List<Map<String, dynamic>> _options = const [];
@@ -166,21 +164,22 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               final listMessages = chatController.messages;
 
               return Expanded(
-                child: listMessages.isEmpty
-                    ? WelcomeOptions(
-                        options: _options,
-                        onTapFill: _fillTemplate,
-                        onTapSend: _sendTemplate,
-                      )
-                    : ListView.builder(
-                        controller: _scroll,
-                        padding: const EdgeInsets.all(12),
-                        itemCount: listMessages.length,
-                        itemBuilder: (context, i) {
-                          final m = listMessages[i];
-                          return Bubble(isUser: m.isUser, text: m.text);
-                        },
-                      ),
+                child:
+                    listMessages.isEmpty
+                        ? WelcomeOptions(
+                          options: _options,
+                          onTapFill: _fillTemplate,
+                          onTapSend: _sendTemplate,
+                        )
+                        : ListView.builder(
+                          controller: _scroll,
+                          padding: const EdgeInsets.all(12),
+                          itemCount: listMessages.length,
+                          itemBuilder: (context, i) {
+                            final m = listMessages[i];
+                            return Bubble(isUser: m.isUser, text: m.text);
+                          },
+                        ),
               );
             }),
             const Divider(height: 1),
@@ -200,7 +199,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                         decoration: InputDecoration(
                           hintText: 'Nhap tin nhan...',
                           border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.blueAccent),
+                            borderSide: const BorderSide(
+                              color: Colors.blueAccent,
+                            ),
                             borderRadius: BorderRadius.circular(14),
                           ),
                           isDense: true,
@@ -212,9 +213,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       onPressed: _toggleListen,
                       icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
                       color: _speechReady ? Colors.blueAccent : Colors.grey,
-                      tooltip: _speechReady
-                          ? (_isListening ? 'Dung' : 'Noi de nhap')
-                          : 'Chua san sang',
+                      tooltip:
+                          _speechReady
+                              ? (_isListening ? 'Dung' : 'Noi de nhap')
+                              : 'Chua san sang',
                     ),
                     IconButton(
                       onPressed: _send,

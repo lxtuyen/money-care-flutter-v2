@@ -9,9 +9,8 @@ import 'package:money_care/features/transaction/presentation/controllers/transac
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
-import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/statistics/presentation/widgets/chart/chart_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/description/description_total.dart';
 import 'package:money_care/features/statistics/presentation/widgets/chart/savings_line_chart.dart';
@@ -44,8 +43,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   final now = DateTime.now();
   late DateTime monthStartDate = DateTime(now.year, now.month, 1);
 
-  late int userId;
-
+  final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
   final SavingFundController savingFundController =
@@ -56,34 +54,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    initUserInfo();
+    initData();
   }
 
-  Future<void> initUserInfo() async {
-    Map<String, dynamic> userInfoJson = LocalStorage().getUserInfo()!;
-    UserModel user = UserModel.fromJson(userInfoJson, '');
-    setState(() {
-      userId = user.id;
-    });
-    loadData();
-  }
+  /// Centralized initialization using AppController
+  Future<void> initData() async {
+    final userId = await appController.getCurrentUserId();
 
-  Future<void> loadData() async {
-    transactionController.getTotalByDateEntityLstMonth(userId);
+    if (userId == null) return;
+
+    // Load statistics data - last month's data
+    await transactionController.getTotalByDateEntityLstMonth(userId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Color> fixedColors = [
-      Colors.blue,
-      Colors.red,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.brown,
-    ];
-    List<FlSpot> convertToSpots7Days(List<TotalByDateEntity> data, DateTime endDate) {
+    List<FlSpot> convertToSpots7Days(
+      List<TotalByDateEntity> data,
+      DateTime endDate,
+    ) {
       final Map<String, int> map = {
         for (var d in data)
           "${d.date.year}-${d.date.month}-${d.date.day}": d.total,
@@ -95,14 +84,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       for (int i = 0; i < 7; i++) {
         final d = start.add(Duration(days: i));
         final key = "${d.year}-${d.month}-${d.day}";
-        final total = map[key] ?? 0.0;
-        //spots.add(FlSpot(i.toDouble(), total));
+        final total = (map[key] ?? 0).toDouble();
+        spots.add(FlSpot(i.toDouble(), total));
       }
 
       return spots;
     }
 
-    List<TotalByDateEntity> getDataBySelected(TotalsByDateEntity totals, String selected) {
+    List<TotalByDateEntity> getDataBySelected(
+      TotalsByDateEntity totals,
+      String selected,
+    ) {
       if (selected == 'chi') {
         return totals.expense;
       } else if (selected == 'thu') {
@@ -142,7 +134,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     return StatisticsHeader(
                       selected: selected,
                       onSelected: (value) => setState(() => selected = value),
-                      title: "Thá»‘ng kÃª",
+                      title: "Thống kê",
                       spendText: 0,
                       incomeText: 0,
                     );
@@ -151,7 +143,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   return StatisticsHeader(
                     selected: selected,
                     onSelected: (value) => setState(() => selected = value),
-                    title: "Thá»‘ng kÃª",
+                    title: "Thống kê",
                     spendText: data.expenseTotal,
                     incomeText: data.incomeTotal,
                   );
@@ -163,7 +155,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: AppSectionHeading(
-                  title: "Tá»•ng chi tiÃªu theo thÃ¡ng",
+                  title: "Tổng chi tiêu theo tháng",
                   showActionButton: false,
                 ),
               ),
@@ -187,7 +179,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   if (totalsLstMonth == null || totalsThisMonth == null) {
                     return const SizedBox(
                       height: 120,
-                      child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                      child: Center(child: Text('Không có dữ liệu')),
                     );
                   }
 
@@ -279,7 +271,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 if (categories.isEmpty) {
                   return const SizedBox(
                     height: 120,
-                    child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                    child: Center(child: Text('Không có dữ liệu')),
                   );
                 }
 
@@ -341,7 +333,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     totalByType == null) {
                   return const SizedBox(
                     height: 120,
-                    child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                    child: Center(child: Text('Không có dữ liệu')),
                   );
                 }
 

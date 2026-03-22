@@ -9,10 +9,9 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
-import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_header.dart';
 import 'package:money_care/features/transaction/presentation/widgets/filter_dialog.dart';
@@ -30,8 +29,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
   String selected = 'chi';
   TextEditingController searchController = TextEditingController();
   String searchKeyword = '';
-  late int userId;
 
+  final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
   final SavingFundController savingFundController =
@@ -42,23 +41,20 @@ class _TransactionScreenState extends State<TransactionScreen> {
   @override
   void initState() {
     super.initState();
-    initUserInfo();
+    initData();
   }
 
-  Future<void> initUserInfo() async {
-    Map<String, dynamic> userInfoJson = LocalStorage().getUserInfo()!;
-    UserModel user = UserModel.fromJson(userInfoJson, '');
-    setState(() {
-      userId = user.id;
-    });
-    loadData();
-  }
+  Future<void> initData() async {
+    final userId = await appController.getCurrentUserId();
+    if (userId == null) return;
 
-  Future<void> loadData() async {
-    transactionController.filterTransactions(
+    await transactionController.loadTransactionScreenData(
       userId,
       TransactionFilterDto(
-        fundId: fundController.fundId.value > 0 ? fundController.fundId.value : null,
+        fundId:
+            fundController.fundId.value > 0
+                ? fundController.fundId.value
+                : null,
         startDate: filterController.startDate.toString(),
         endDate: filterController.endDate.toString(),
       ),
@@ -74,7 +70,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
           Container(
             height: 195,
             decoration: const BoxDecoration(
-                  color: kIsWeb ? Colors.white : Color(0xFF0B84FF),
+              color: kIsWeb ? Colors.white : Color(0xFF0B84FF),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(40),
                 bottomRight: Radius.circular(40),
@@ -225,7 +221,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
           SvgPicture.asset(AppIcons.emptyFolder, width: 150, height: 150),
           const SizedBox(height: AppSizes.spaceBtwItems),
           const Text(
-            'KhÃ´ng cÃ³ giao dá»‹ch nÃ o gáº§n Ä‘Ã¢y',
+            'Không có giao dịch nào gần đây',
             style: TextStyle(fontSize: 16, color: AppColors.text5),
           ),
         ],
@@ -237,7 +233,11 @@ class _TransactionScreenState extends State<TransactionScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return TransactionDetail(item: item, isExpense: selected == 'chi', userId: userId);
+        return TransactionDetail(
+          item: item,
+          isExpense: selected == 'chi',
+          userId: appController.userId.value ?? 0,
+        );
       },
     );
   }
@@ -260,7 +260,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
 
             if (data != null) {
               return FilterDialog(
-                title: "Lá»c theo phÃ¢n loáº¡i",
+                title: "Lọc theo phân loại",
                 categories: data.categories,
                 onApply: (result) {
                   _applyFilter();
@@ -278,8 +278,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
       context: context,
       builder:
           (_) => FilterDialog(
-            title: 'Lá»c theo thá»i gian',
-            items: const ['HÃ´m nay', 'Tuáº§n nÃ y', 'ThÃ¡ng nÃ y'],
+            title: 'Lọc theo thời gian',
+            items: const ['Hôm nay', 'Tuần này', 'Tháng này'],
             onApply: (result) {
               _applyFilter();
             },
@@ -288,6 +288,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
   }
 
   void _applyFilter() {
+    final userId = appController.userId.value;
+    if (userId == null) return;
+
     transactionController.filterTransactions(
       userId,
       TransactionFilterDto(
@@ -311,7 +314,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
-                'Bá»™ lá»c giao dá»‹ch',
+                'Bộ lọc giao dịch',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -321,7 +324,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             const Divider(height: AppSizes.dividerHeight),
             ListTile(
               leading: const Icon(Icons.category_outlined),
-              title: const Text('Lá»c theo phÃ¢n loáº¡i'),
+              title: const Text('Lọc theo phân loại'),
               onTap: () {
                 Get.back();
                 _showCategoryFilterDialog(context);
@@ -329,7 +332,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.access_time_outlined),
-              title: const Text('Lá»c theo thá»i gian'),
+              title: const Text('Lọc theo thời gian'),
               onTap: () {
                 Get.back();
                 _showTimeFilterDialog(context);

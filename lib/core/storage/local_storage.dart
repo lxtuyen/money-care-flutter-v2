@@ -50,6 +50,7 @@ class LocalStorage {
 
   static const String keyAccessToken = 'access_token';
   static const String keyUserInfo = 'user_info';
+  static const String keyHasSeenOnboarding = 'hasSeenOnboarding';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -75,5 +76,13 @@ class LocalStorage {
   Future<void> logout() async {
     await remove(keyAccessToken);
     await remove(keyUserInfo);
+  }
+
+  Future<void> saveOnboardingSeen() async {
+    await writeBool(keyHasSeenOnboarding, true);
+  }
+
+  bool hasSeenOnboarding() {
+    return readBool(keyHasSeenOnboarding) ?? false;
   }
 }

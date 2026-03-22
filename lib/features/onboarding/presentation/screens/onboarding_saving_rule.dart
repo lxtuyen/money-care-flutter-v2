@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money_care/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class OnboardingSavingRuleScreen extends StatelessWidget {
   const OnboardingSavingRuleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final OnboardingController controller = Get.find<OnboardingController>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -22,14 +24,14 @@ class OnboardingSavingRuleScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 40),
-            
+
                 Expanded(
                   flex: 6,
                   child: Image.asset(AppImages.savingRule, fit: BoxFit.contain),
                 ),
-            
+
                 const SizedBox(height: 32),
-            
+
                 Text(
                   AppTexts.savingRuleDescription1,
                   textAlign: TextAlign.center,
@@ -50,14 +52,14 @@ class OnboardingSavingRuleScreen extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-            
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('hasSeenOnboarding', true);
-                      Get.toNamed('/select_saving_fund');
+                    onPressed: () {
+                      controller.completeOnboarding(
+                        nextRoute: RoutePath.selectSavingFund,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -76,7 +78,7 @@ class OnboardingSavingRuleScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-            
+
                 const SizedBox(height: 20),
               ],
             ),

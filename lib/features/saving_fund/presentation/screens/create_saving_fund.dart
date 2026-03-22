@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/presentation/widgets/appbar/appbar.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/core/utils/validatiors/validation.dart';
-import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
-import 'package:money_care/features/transaction/data/models/transaction_model.dart';
+import 'package:money_care/features/saving_fund/presentation/widgets/category_percentage_card.dart';
+import 'package:money_care/core/presentation/widgets/text_field/date_picker_field.dart';
+import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 
 class CreateSavingFund extends StatefulWidget {
   const CreateSavingFund({super.key});
@@ -22,178 +22,220 @@ class _CreateSavingFundState extends State<CreateSavingFund> {
   final TextEditingController _nameController = TextEditingController();
   final SavingFundController _controller = Get.find<SavingFundController>();
 
-  int? userId;
-
-  final List<CategoryModel> _categories = [
-    CategoryModel(icon: 'charity_icon', name: 'An uong'),
-    CategoryModel(icon: 'pleasure_icon', name: 'Mua sam'),
-    CategoryModel(icon: 'savings_icon', name: 'Di chuyen'),
-    CategoryModel(icon: 'essential_icon', name: 'Hoa don'),
-    CategoryModel(icon: 'education_icon', name: 'Giao duc'),
-    CategoryModel(icon: 'freedom_icon', name: 'Khac'),
-  ];
-
   @override
   void initState() {
     super.initState();
-    initUserInfo();
+    _initializeScreen();
   }
 
-  Future<void> initUserInfo() async {
-    final userInfoJson = LocalStorage().getUserInfo();
-    if (userInfoJson == null || !mounted) return;
-
-    final user = UserModel.fromJson(userInfoJson, '');
-    setState(() {
-      userId = user.id;
-    });
+  Future<void> _initializeScreen() async {
+    await _controller.initializeUserInfo();
+    _controller.initializeCategoryDefaults();
+    _controller.startDate.value = DateTime.now();
   }
 
   Future<void> _createSavingFund() async {
     if (!_formKey.currentState!.validate()) return;
-    if (userId == null) {
-      AppHelperFunction.showSnackBar('Khong the xac dinh nguoi dung hien tai');
+    if (_controller.userId.value == null) {
+      AppHelperFunction.showSnackBar('Không thể xác định người dùng hiện tại');
       return;
     }
 
-    final totalPercentage = _categories.fold<int>(
-      0,
-      (sum, cat) => sum + cat.percentage,
-    );
+    if (_controller.startDate.value == null) {
+      AppHelperFunction.showSnackBar('Vui long chon ngay bat dau');
+      return;
+    }
 
-    if (totalPercentage != 100) {
+    if (_controller.endDate.value == null) {
+      AppHelperFunction.showSnackBar('Vui long chon ngay ket thuc');
+      return;
+    }
+
+    if (_controller.endDate.value!.isBefore(_controller.startDate.value!)) {
+      AppHelperFunction.showSnackBar('Ngay ket thuc phai sau ngay bat dau');
+      return;
+    }
+
+    if (!_controller.validatePercentages()) {
       AppHelperFunction.showSnackBar(
-        'Tong phan tram phai bang 100%. Hien tai la $totalPercentage%',
+        'Tổng phần trăm phải là 100%. Hiện tại là ${_controller.totalPercentage.value}%',
       );
       return;
     }
 
     try {
       final dto = SavingFundDto(
-        categories: _categories,
+        categories: _controller.categories.toList(),
         name: _nameController.text.trim(),
-        id: userId,
+        id: _controller.userId.value,
+        targetAmount: _controller.targetAmount.value,
+        startDate: _controller.startDate.value,
+        endDate: _controller.endDate.value,
       );
       await _controller.createFund(dto);
 
       if (!mounted) return;
       Get.back();
-      AppHelperFunction.showSnackBar('Tao quy thanh cong');
+      AppHelperFunction.showSnackBar('Tạo quỹ thành công');
     } catch (e) {
       AppHelperFunction.showSnackBar(e.toString());
     }
   }
 
-  void _updateCategoryPercentage(int index, String value) {
-    final category = _categories[index];
-    final percentage = int.tryParse(value) ?? 0;
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
-    setState(() {
-      _categories[index] = CategoryModel(
-        id: category.id,
-        name: category.name,
-        percentage: percentage,
-        icon: category.icon,
-        color: category.color,
-      );
-    });
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _controller.startDate.value ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      _controller.startDate.value = picked;
+    }
+  }
+
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate:
+          _controller.endDate.value ??
+          (_controller.startDate.value?.add(const Duration(days: 30)) ??
+              DateTime.now().add(const Duration(days: 30))),
+      firstDate: _controller.startDate.value ?? DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      _controller.endDate.value = picked;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tao quy tiet kiem'),
-        leading: IconButton(
-          onPressed: Get.back,
-          icon: const Icon(Icons.arrow_back),
-        ),
+      appBar: AppbarCustom(
+        title: const Text('Tạo quỹ tiết kiệm'),
+        showBackArrow: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Ten quy',
-                  border: OutlineInputBorder(),
-                ),
-                validator: AppValidator.validateName,
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _categories.length,
-                  itemBuilder: (context, index) {
-                    final cat = _categories[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/${cat.icon}.svg',
-                              width: 32,
-                              height: 32,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                cat.name,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: TextFormField(
-                                key: ValueKey('${cat.name}-${cat.percentage}'),
-                                initialValue: cat.percentage.toString(),
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  suffixText: '%',
-                                  border: OutlineInputBorder(),
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                ),
-                                onChanged: (value) =>
-                                    _updateCategoryPercentage(index, value),
-                                validator: AppValidator.validatePercentage,
-                              ),
-                            ),
-                          ],
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Tên quỹ',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-              Obx(() {
-                return ElevatedButton(
-                  onPressed: _controller.isLoadingFunds.value
-                      ? null
-                      : _createSavingFund,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      prefixIcon: const Icon(Icons.savings),
                     ),
+                    validator: AppValidator.validateName,
                   ),
-                  child: _controller.isLoadingFunds.value
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Tao quy',
-                          style: TextStyle(fontSize: 25, color: Colors.white),
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Mục tiêu',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
                         ),
-                );
-              }),
-            ],
+                      ),
+                      prefixIcon: const Icon(Icons.attach_money),
+                      hintText: 'VD: 5.000.000',
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      final amount = double.tryParse(value);
+                      _controller.targetAmount.value = amount;
+                    },
+                    validator: (value) => AppValidator.validateAmount(value),
+                  ),
+                  const SizedBox(height: 16),
+
+                  DatePickerField(
+                    selectedDate: _controller.startDate,
+                    label: 'Bắt đầu',
+                    placeholder: 'Chọn ngày bắt đầu',
+                    onTap: () => _selectStartDate(context),
+                  ),
+                  const SizedBox(height: 16),
+
+                  DatePickerField(
+                    selectedDate: _controller.endDate,
+                    label: 'Kết thúc',
+                    placeholder: 'Chọn ngày kết thúc',
+                    onTap: () => _selectEndDate(context),
+                  ),
+                  const SizedBox(height: 18),
+
+                  Expanded(
+                    child: Obx(() {
+                      return ListView.builder(
+                        itemCount: _controller.categories.length,
+                        itemBuilder: (context, index) {
+                          final cat = _controller.categories[index];
+                          return CategoryPercentageCard(
+                            category: cat,
+                            index: index,
+                            onPercentageChanged: (percentage) {
+                              _controller.updateCategoryPercentage(
+                                index,
+                                percentage,
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 20),
+
+                  Obx(() {
+                    final isLoading = _controller.isLoadingFunds.value;
+                    final isValid = _controller.totalPercentage.value == 100;
+                    final totalPercentage = _controller.totalPercentage.value;
+
+                    return Column(
+                      children: [
+                        PrimaryButton(
+                          label:
+                              isValid
+                                  ? 'Tạo quỹ'
+                                  : 'Tổng phần trăm: $totalPercentage',
+                          onPressed: _createSavingFund,
+                          isLoading: isLoading,
+                          isEnabled: isValid,
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+            ),
           ),
         ),
       ),

@@ -33,7 +33,7 @@ class TransactionDetail extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              isExpense ? "Chi tiáº¿t tiá»n chi" : "Chi tiáº¿t tiá»n thu",
+              isExpense ? "Chi tiết tiền chi" : "Chi tiết tiền thu",
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
 
@@ -62,7 +62,7 @@ class TransactionDetail extends StatelessWidget {
                         builder:
                             (context) => TransactionForm(
                               title:
-                                  isExpense ? "Chá»‰nh sá»­a chi" : "Chá»‰nh sá»­a thu",
+                                  isExpense ? "Chỉnh sửa chi" : "Chỉnh sửa thu",
                               item: item,
                               showCategory: isExpense ? true : false,
                             ),
@@ -70,7 +70,7 @@ class TransactionDetail extends StatelessWidget {
                     );
 
                     if (result != null) {
-                      print("Cáº­p nháº­t xong: $result");
+                      print("Cập nhật xong: $result");
                     }
                   },
 
@@ -80,7 +80,7 @@ class TransactionDetail extends StatelessWidget {
                     size: 22,
                   ),
                   label: const Text(
-                    "Chá»‰nh sá»­a",
+                    "Chỉnh sửa",
                     style: TextStyle(
                       color: AppColors.text3,
                       fontSize: 16,
@@ -105,7 +105,7 @@ class TransactionDetail extends StatelessWidget {
                       context: context,
                       builder:
                           (context) => WarningDialog(
-                            message: "Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a giao dá»‹ch nÃ y?",
+                            message: "Bạn có chắc chắn muốn xóa giao dịch này?",
                             onCancel: () => Get.back(),
                             onConfirm: () {
                               Get.back();
@@ -115,7 +115,7 @@ class TransactionDetail extends StatelessWidget {
                                 context: context,
                                 builder:
                                     (context) => SuccessDialog(
-                                      message: "XÃ³a giao dá»‹ch thÃ nh cÃ´ng!",
+                                      message: "Xóa giao dịch thành công!",
                                       onBack: () => Get.back(),
                                       onCreateNew: () {},
                                       isShowButton: false,
@@ -131,7 +131,7 @@ class TransactionDetail extends StatelessWidget {
                     size: 22,
                   ),
                   label: const Text(
-                    "XÃ³a",
+                    "Xóa",
                     style: TextStyle(
                       color: AppColors.text3,
                       fontSize: 16,

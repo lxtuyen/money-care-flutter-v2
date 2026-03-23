@@ -14,6 +14,7 @@ import 'package:money_care/features/user/presentation/bindings/user_binding.dart
 import 'package:money_care/features/payment/presentation/bindings/payment_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/admin/presentation/bindings/admin_binding.dart';
+import 'package:money_care/features/statistics/presentation/bindings/statistics_binding.dart';
 
 class AppBinding extends Bindings {
   final LocalStorage storage;
@@ -40,5 +41,6 @@ class AppBinding extends Bindings {
     PaymentBinding(apiClient: apiService).dependencies();
     ChatBinding(apiClient: apiService).dependencies();
     AdminBinding(apiClient: apiService).dependencies();
+    StatisticsBinding(apiClient: apiService).dependencies();
   }
 }

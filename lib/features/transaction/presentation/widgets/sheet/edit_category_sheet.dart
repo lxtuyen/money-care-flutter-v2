@@ -31,7 +31,7 @@ class EditCategorySheet extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Chá»‰nh sá»­a phÃ¢n loáº¡i',
+                    'Chỉnh sửa phân loại',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(

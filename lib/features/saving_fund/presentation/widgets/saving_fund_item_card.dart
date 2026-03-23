@@ -41,15 +41,27 @@ class SavingFundItemCard extends StatelessWidget {
 
             _InfoRow(
               label: 'Mục tiêu:',
-              value: AppHelperFunction.formatAmount(fund.targetAmount!, 'VND'),
+              value:
+                  fund.targetAmount != null
+                      ? AppHelperFunction.formatAmount(
+                        fund.targetAmount!,
+                        'VND',
+                      )
+                      : 'Chưa xác định',
             ),
             _InfoRow(
               label: 'Bắt đầu:',
-              value: AppHelperFunction.formatDayMonth(fund.startDate!),
+              value:
+                  fund.startDate != null
+                      ? AppHelperFunction.formatDayMonth(fund.startDate!)
+                      : 'Chưa xác định',
             ),
             _InfoRow(
               label: 'Kết thúc:',
-              value: AppHelperFunction.formatDayMonth(fund.endDate!),
+              value:
+                  fund.endDate != null
+                      ? AppHelperFunction.formatDayMonth(fund.endDate!)
+                      : 'Chưa xác định',
             ),
 
             if (fund.categories.isNotEmpty) ...[

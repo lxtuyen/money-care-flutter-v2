@@ -64,22 +64,6 @@ class _EditCategoryState extends State<EditCategory> {
                 ),
                 const SizedBox(height: 8),
                 const Divider(height: 1, thickness: 1, color: Colors.grey),
-                const SizedBox(height: 15),
-
-                /*NoteInput(
-                  controller: namecategorycontroller,
-                  label: 'Tên loại chi tiết',
-                  hintText: '',
-                  maxLines: 1,
-                ),*/
-                const SizedBox(height: 15),
-
-                /*NoteInput(
-                  controller: percentcontroller,
-                  label: 'Phần trăm',
-                  hintText: '',
-                  maxLines: 1,
-                ),*/
                 const SizedBox(height: 24),
 
                 Row(

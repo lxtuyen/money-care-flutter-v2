@@ -1,11 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
 
 class SpendingOverviewCard extends StatelessWidget {
   final DateTime? startDate;
@@ -73,8 +71,10 @@ class SpendingOverviewCard extends StatelessWidget {
           return value < 0 ? 0.0 : value;
         }).toList();
 
-    final double maxValue = 0;
-        //spendingData.isEmpty ? 0 : spendingData.reduce((a, b) => a > b ? a : b);
+    final double maxValue =
+        spendingData.isEmpty
+            ? 0.0
+            : spendingData.reduce((a, b) => a > b ? a : b).toDouble();
 
     final double niceMaxY = getNiceMaxY(maxValue);
 
@@ -87,32 +87,17 @@ class SpendingOverviewCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppHelperFunction.formatAmount(amountSpent.toDouble(), 'VND'),
-                  style: const TextStyle(
-                    fontSize: AppSizes.lg,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.text1,
-                  ),
-                ),
-                RoundedIcon(
-                  borderRadius: AppSizes.sm,
-                  applyIconRadius: true,
-                  padding: const EdgeInsets.all(8),
-                  width: 36,
-                  height: 36,
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
-                  iconPath: AppIcons.analysis,
-                  size: 20,
-                ),
-              ],
+            Text(
+              AppHelperFunction.formatAmount(amountSpent.toDouble(), 'VND'),
+              style: const TextStyle(
+                fontSize: AppSizes.lg,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text1,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Sá»‘ tiá»n Ä‘Ã£ chi tiÃªu trong khoáº£ng thá»i gian Ä‘Ã£ chá»n',
+              'Số tiền đã chi tiêu trong 7 ngày gần đây',
               style: TextStyle(color: AppColors.text4),
             ),
             const SizedBox(height: AppSizes.spaceBtwItems),
@@ -175,7 +160,7 @@ class SpendingOverviewCard extends StatelessWidget {
                     LineChartBarData(
                       spots: List.generate(
                         spendingData.length,
-                        (i) => FlSpot(i.toDouble(), 8 /*spendingData[i]*/),
+                        (i) => FlSpot(i.toDouble(), spendingData[i].toDouble()),
                       ),
                       isCurved: true,
                       color: AppColors.primary,

@@ -51,7 +51,7 @@ class TransactionItem extends StatelessWidget {
                     ),
 
                     Text(
-                      item.category?.name ?? 'KhÃ´ng cÃ³ danh má»¥c',
+                      item.category?.name ?? 'Không có danh mục',
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.text4,

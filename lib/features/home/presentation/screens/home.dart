@@ -11,7 +11,6 @@ import 'package:money_care/features/user/presentation/controllers/user_controlle
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/utils/date_picker_util.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/core/presentation/widgets/icon/circular_icon.dart';
@@ -48,13 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
 
-    if (userId == null) return;
-
     final fundId =
         fundController.fundId.value > 0 ? fundController.fundId.value : null;
 
     await Future.wait([
-      statisticsController.loadStatisticsData(userId, startDate, endDate),
+      statisticsController.loadStatisticsData(userId!, startDate, endDate),
       transactionController.filterTransactions(
         userId,
         TransactionFilterDto(
@@ -64,31 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ]);
-  }
-
-  void _pickDateRange() async {
-    final picked = await pickDateRange(context);
-    if (picked.isNotEmpty) {
-      setState(() {
-        startDate = picked.first!;
-        endDate = (picked.length > 1 ? picked.last : picked.first)!;
-      });
-
-      final userId = appController.userId.value;
-      if (userId != null) {
-        await statisticsController.getTotalByDateEntity(
-          userId,
-          TransactionTotalsDto(
-            fundId:
-                fundController.fundId.value > 0
-                    ? fundController.fundId.value
-                    : null,
-            startDate: startDate.toIso8601String(),
-            endDate: endDate.toIso8601String(),
-          ),
-        );
-      }
-    }
   }
 
   @override
@@ -122,11 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
-
-                  final fullName = profile.fullName;
-
                   return Text(
-                    "Chào mừng, $fullName",
+                    "Chào mừng, ${profile.fullName}",
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
@@ -190,8 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       clipBehavior: Clip.none,
                       children: [
                         CircularIcon(
-                          onTap:
-                              () => Get.toNamed(RoutePath.chatbot),
+                          onTap: () => Get.toNamed(RoutePath.chatbot),
                           iconPath: AppIcons.notification,
                           backgroundColor: const Color(0XFFF5FAFE),
                           height: 36,
@@ -339,17 +307,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             AppSectionHeading(title: "Tổng quan", showActionButton: false),
             const SizedBox(height: AppSizes.spaceBtwItems),
-            GestureDetector(
-              onTap: _pickDateRange,
-              child: Row(
-                children: const [
-                  Icon(Icons.calendar_month_outlined, size: 18),
-                  SizedBox(width: 4),
-                  Text('Chọn khoảng ngày'),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
               final totalsData = statisticsController.totalByDate.value;
 
@@ -361,9 +318,11 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               if (totalsData == null || totalsData.expense.isEmpty) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: Text('Không có dữ liệu')),
+                return SpendingOverviewCard(
+                  startDate: startDate,
+                  endDate: endDate,
+                  totals: [],
+                  amountSpent: 0,
                 );
               }
 

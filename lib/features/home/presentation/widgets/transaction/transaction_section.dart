@@ -60,7 +60,7 @@ class _TransactionSectionState extends State<TransactionSection> {
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
                   const Text(
-                    'KhÃ´ng cÃ³ giao dá»‹ch nÃ o gáº§n Ä‘Ã¢y',
+                    'Không có giao dịch nào gần đây.',
                     style: TextStyle(fontSize: 16, color: AppColors.text5),
                   ),
                 ],

@@ -22,14 +22,14 @@ class DescriptionTotal extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DescriptionItem(
-            title: 'Trung bÃ¬nh chi theo ngÃ y',
+            title: 'Trung bình chi theo ngày',
             value: AppHelperFunction.formatAmount(dailyAverage, 'VND'),
             percent: dailyAverageChange,
           ),
           const SizedBox(height: 8),
 
           DescriptionItem(
-            title: 'Sá»‘ dÆ° thÃ¡ng nÃ y',
+            title: 'Số dư tháng này',
             value: AppHelperFunction.formatAmount(monthlyBalance, 'VND'),
             percent: monthlyBalanceChange,
           ),

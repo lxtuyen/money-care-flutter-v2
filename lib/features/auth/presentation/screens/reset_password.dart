@@ -72,8 +72,7 @@ class ResetPasswordScreen extends GetView<ResetPasswordController> {
                       validator: controller.validateConfirmPassword,
                     );
                   }),
-                  const SizedBox(height: 10),
-                  const Spacer(),
+                  const SizedBox(height: 20),
                   Obx(() {
                     return PrimaryButton(
                       label: AppTexts.confirmButton,
@@ -81,16 +80,16 @@ class ResetPasswordScreen extends GetView<ResetPasswordController> {
                       isLoading: controller.isLoading.value,
                     );
                   }),
-                  const SizedBox(height: 20),
+                  const Spacer(),
                   AuthRedirectText(
                     leadingText: AppTexts.rememberPassword,
                     actionText: AppTexts.login,
-                    fontSize: 18,
                     leadingColor: AppColors.text4,
                     onTap: () {
                       Get.toNamed(RoutePath.login);
                     },
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

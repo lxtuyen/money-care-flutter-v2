@@ -40,7 +40,7 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
                     textInputAction: TextInputAction.done,
                     validator: controller.validateEmail,
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 20),
                   Obx(() {
                     return PrimaryButton(
                       label: AppTexts.getOtp,
@@ -48,15 +48,15 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
                       isLoading: controller.isLoading.value,
                     );
                   }),
-                  const SizedBox(height: 20),
+                  const Spacer(),
                   AuthRedirectText(
                     leadingText: AppTexts.rememberPassword,
                     actionText: AppTexts.login,
-                    fontSize: 18,
                     onTap: () {
                       Get.toNamed(RoutePath.login);
                     },
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

@@ -24,15 +24,14 @@ class RegisterScreen extends GetView<RegisterController> {
             child: Form(
               key: controller.registerFormKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const AuthHeader(
                     title: AppTexts.signup,
                     subtitle: AppTexts.registerSubtitle,
-                    topSpacing: 60,
+                    topSpacing: 35,
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 15),
 
                   Row(
                     children: [
@@ -61,7 +60,7 @@ class RegisterScreen extends GetView<RegisterController> {
                     ],
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
 
                   AppTextFormField(
                     controller: controller.registerEmailController,
@@ -72,7 +71,7 @@ class RegisterScreen extends GetView<RegisterController> {
                     validator: controller.validateRegisterEmail,
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
 
                   Obx(() {
                     return AppTextFormField(
@@ -95,7 +94,7 @@ class RegisterScreen extends GetView<RegisterController> {
                     );
                   }),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
 
                   Obx(() {
                     return AppTextFormField(
@@ -117,8 +116,7 @@ class RegisterScreen extends GetView<RegisterController> {
                       validator: controller.validateRegisterConfirmPassword,
                     );
                   }),
-
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 10),
 
                   Obx(() {
                     return PrimaryButton(
@@ -127,9 +125,7 @@ class RegisterScreen extends GetView<RegisterController> {
                       isLoading: controller.isLoading.value,
                     );
                   }),
-
                   const Spacer(),
-
                   AuthRedirectText(
                     leadingText: AppTexts.alreadyHaveAccount,
                     actionText: AppTexts.login,
@@ -137,7 +133,7 @@ class RegisterScreen extends GetView<RegisterController> {
                       Get.toNamed(RoutePath.login);
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
             ),

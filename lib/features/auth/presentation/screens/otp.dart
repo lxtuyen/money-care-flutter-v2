@@ -69,7 +69,6 @@ class OtpScreen extends GetView<OtpController> {
                 AuthRedirectText(
                   leadingText: AppTexts.rememberPassword,
                   actionText: AppTexts.login,
-                  fontSize: 16,
                   onTap: () {
                     Get.toNamed(RoutePath.login);
                   },

@@ -17,37 +17,13 @@ abstract class AuthRemoteDatasource {
   Future<String> forgotPassword(String email);
   Future<String> verifyOtp(String email, String otp);
   Future<String> resetPassword(String email, String newPassword);
-  Future<void> connectGmail();
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   final ApiClient api;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  late final GoogleSignIn _gmailSignIn;
 
-  AuthRemoteDatasourceImpl({required this.api}) {
-    if (kIsWeb) {
-      _gmailSignIn = GoogleSignIn(
-        clientId:
-            '41444230356-hppgcd9tefg26ejc5hiintor35ifs6vr.apps.googleusercontent.com',
-        scopes: [
-          'email',
-          'profile',
-          'https://www.googleapis.com/auth/gmail.readonly',
-        ],
-      );
-    } else {
-      _gmailSignIn = GoogleSignIn(
-        serverClientId:
-            '41444230356-hppgcd9tefg26ejc5hiintor35ifs6vr.apps.googleusercontent.com',
-        scopes: [
-          'email',
-          'profile',
-          'https://www.googleapis.com/auth/gmail.readonly',
-        ],
-      );
-    }
-  }
+  AuthRemoteDatasourceImpl({required this.api}) {}
 
   @override
   Future<UserModel> loginWithGoogle() async {
@@ -58,7 +34,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       final cred = await FirebaseAuth.instance.signInWithPopup(provider);
       firebaseUser = cred.user;
     } else {
-      final googleUser = await _gmailSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         throw Exception('Google sign in cancelled');
       }
@@ -144,18 +120,5 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       body: {'email': email, 'newPassword': newPassword},
     );
     return res.message;
-  }
-
-  @override
-  Future<void> connectGmail() async {
-    await _gmailSignIn.signOut();
-    final account = await _gmailSignIn.signIn();
-    if (account == null) throw Exception('User cancelled Gmail connect');
-    final serverAuthCode = account.serverAuthCode;
-    if (serverAuthCode == null) throw Exception('Missing server auth code');
-    await api.post<void>(
-      ApiRoutes.googleLogin2,
-      body: {'code': serverAuthCode},
-    );
   }
 }

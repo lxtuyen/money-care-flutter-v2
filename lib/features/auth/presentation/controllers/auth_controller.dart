@@ -1,51 +1,32 @@
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
-import 'package:money_care/features/auth/domain/usecases/connect_gmail_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.dart';
-import 'package:money_care/features/auth/domain/usecases/login_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:money_care/features/auth/domain/usecases/register_usecase.dart';
 
 class AuthController extends GetxController {
-  final LoginUseCase loginUseCase;
   final GoogleSignInUseCase googleSignInUseCase;
-  final RegisterUseCase registerUseCase;
   final LogoutUseCase logoutUseCase;
-  final ConnectGmailUseCase connectGmailUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final VerifyOtpUseCase verifyOtpUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
   final LocalStorage storage;
 
   AuthController({
-    required this.loginUseCase,
     required this.googleSignInUseCase,
-    required this.registerUseCase,
     required this.logoutUseCase,
-    required this.connectGmailUseCase,
     required this.forgotPasswordUseCase,
     required this.verifyOtpUseCase,
     required this.resetPasswordUseCase,
     required this.storage,
   });
 
-  var user = Rxn<UserEntity>();
-  var isLoading = false.obs;
-  var isGoogleLogin = false.obs;
-
-  Future<void> login(String email, String password) async {
-    try {
-      isLoading.value = true;
-      final entity = await loginUseCase(email, password);
-      isGoogleLogin.value = false;
-      user.value = entity;
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  final user = Rxn<UserEntity>();
+  final isLoading = false.obs;
+  final isGoogleLogin = false.obs;
 
   Future<UserEntity> loginWithGoogle() async {
     try {
@@ -54,25 +35,6 @@ class AuthController extends GetxController {
       isGoogleLogin.value = true;
       user.value = entity;
       return entity;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<String> register(
-    String email,
-    String password,
-    String firstName,
-    String lastName,
-  ) async {
-    try {
-      isLoading.value = true;
-      return await registerUseCase(
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
-      );
     } finally {
       isLoading.value = false;
     }
@@ -111,15 +73,6 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> connectGmail() async {
-    try {
-      isLoading.value = true;
-      await connectGmailUseCase();
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   Future<void> logout() async {
     if (isGoogleLogin.value) {
       await GoogleSignIn().signOut();
@@ -127,6 +80,21 @@ class AuthController extends GetxController {
     isGoogleLogin.value = false;
     user.value = null;
     await logoutUseCase();
+  }
+
+  Future<void> loginWithGoogleAndNavigate() async {
+    final currentUser = await loginWithGoogle();
+    if (currentUser.role == 'user') {
+      Get.offAllNamed(
+        currentUser.savingFund != null
+            ? RoutePath.main
+            : RoutePath.onboardingWelcome,
+      );
+      return;
+    }
+    if (currentUser.role == 'admin') {
+      Get.offAllNamed(RoutePath.adminHome);
+    }
   }
 
   UserEntity? getUserInfo() => user.value;

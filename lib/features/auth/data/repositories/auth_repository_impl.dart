@@ -57,11 +57,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> connectGmail() {
-    return remoteDatasource.connectGmail();
-  }
-
-  @override
   Future<void> logout() async {
     await localDatasource.clearCache();
   }

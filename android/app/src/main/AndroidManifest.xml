@@ -3,7 +3,7 @@
 <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="doan_cn"
+        android:label="Money Care"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/core/utils/validatiors/validation.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
@@ -31,13 +33,18 @@ class LoginController extends GetxController {
     isLoginPasswordObscure.toggle();
   }
 
-  Future<UserEntity> login(String email, String password) async {
+  Future<Either<Failure, UserEntity>> login(
+    String email,
+    String password,
+  ) async {
     try {
       isLoading.value = true;
-      final entity = await loginUseCase(email, password);
-      authController.isGoogleLogin.value = false;
-      authController.user.value = entity;
-      return entity;
+      final result = await loginUseCase(email, password);
+      result.match((_) => authController.isGoogleLogin.value = false, (entity) {
+        authController.isGoogleLogin.value = false;
+        authController.user.value = entity;
+      });
+      return result;
     } finally {
       isLoading.value = false;
     }
@@ -49,26 +56,30 @@ class LoginController extends GetxController {
       return;
     }
 
-    final currentUser = await login(
+    final result = await login(
       loginEmailController.text.trim(),
       loginPasswordController.text.trim(),
     );
 
-    if (currentUser.role == 'user') {
-      Get.offAllNamed(
-        currentUser.savingFund != null
-            ? RoutePath.main
-            : RoutePath.onboardingWelcome,
-      );
-      return;
-    }
+    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
+      currentUser,
+    ) {
+      if (currentUser.role == 'user') {
+        Get.offAllNamed(
+          currentUser.savingFund != null
+              ? RoutePath.main
+              : RoutePath.onboardingWelcome,
+        );
+        return;
+      }
 
-    if (currentUser.role == 'admin') {
-      Get.offAllNamed(RoutePath.adminHome);
-      return;
-    }
+      if (currentUser.role == 'admin') {
+        Get.offAllNamed(RoutePath.adminHome);
+        return;
+      }
 
-    AppHelperFunction.showSnackBar('Đăng nhập thất bại');
+      AppHelperFunction.showSnackBar('Đăng nhập thất bại');
+    });
   }
 
   @override

@@ -22,15 +22,13 @@ class ForgotPasswordController extends GetxController {
       return;
     }
 
-    try {
-      final message = await authController.forgotPassword(
-        emailController.text.trim(),
-      );
+    final result = await authController.forgotPassword(emailController.text.trim());
+    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
+      message,
+    ) {
       Get.offAllNamed(RoutePath.otp);
       AppHelperFunction.showSnackBar(message);
-    } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
-    }
+    });
   }
 
   @override

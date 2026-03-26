@@ -1,6 +1,8 @@
+import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
@@ -28,46 +30,60 @@ class AuthController extends GetxController {
   final isLoading = false.obs;
   final isGoogleLogin = false.obs;
 
-  Future<UserEntity> loginWithGoogle() async {
+  Future<Either<Failure, UserEntity>> loginWithGoogle() async {
     try {
       isLoading.value = true;
-      final entity = await googleSignInUseCase();
-      isGoogleLogin.value = true;
-      user.value = entity;
-      return entity;
+      final result = await googleSignInUseCase();
+      result.match((_) => isGoogleLogin.value = false, (entity) {
+        isGoogleLogin.value = true;
+        user.value = entity;
+      });
+      return result;
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<String> forgotPassword(String email) async {
+  Future<Either<Failure, String>> forgotPassword(String email) async {
     try {
       isLoading.value = true;
-      final res = await forgotPasswordUseCase(email);
-      await storage.writeString('user_email', email);
-      return res;
+      final result = await forgotPasswordUseCase(email);
+      if (result.isRight()) {
+        await storage.writeString('user_email', email);
+      }
+      return result;
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<String> verifyOtp(String otp) async {
+  Future<Either<Failure, String>> verifyOtp(String otp) async {
     try {
       isLoading.value = true;
       final email = storage.readString('user_email');
-      return await verifyOtpUseCase(email!, otp);
+      if (email == null || email.isEmpty) {
+        return const Left(ServerFailure('Không tìm thấy email để xác thực OTP'));
+      }
+      return await verifyOtpUseCase(email, otp);
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<String> resetPassword(String newPassword) async {
+  Future<Either<Failure, String>> resetPassword(String newPassword) async {
     try {
       isLoading.value = true;
       final email = storage.readString('user_email');
-      final res = await resetPasswordUseCase(email!, newPassword);
-      await storage.remove('user_email');
-      return res;
+      if (email == null || email.isEmpty) {
+        return const Left(
+          ServerFailure('Không tìm thấy email để đặt lại mật khẩu'),
+        );
+      }
+      final result = await resetPasswordUseCase(email, newPassword);
+      if (result.isRight()) {
+        await storage.remove('user_email');
+      }
+      return result;
     } finally {
       isLoading.value = false;
     }
@@ -83,18 +99,20 @@ class AuthController extends GetxController {
   }
 
   Future<void> loginWithGoogleAndNavigate() async {
-    final currentUser = await loginWithGoogle();
-    if (currentUser.role == 'user') {
-      Get.offAllNamed(
-        currentUser.savingFund != null
-            ? RoutePath.main
-            : RoutePath.onboardingWelcome,
-      );
-      return;
-    }
-    if (currentUser.role == 'admin') {
-      Get.offAllNamed(RoutePath.adminHome);
-    }
+    final result = await loginWithGoogle();
+    result.match((_) {}, (currentUser) {
+      if (currentUser.role == 'user') {
+        Get.offAllNamed(
+          currentUser.savingFund != null
+              ? RoutePath.main
+              : RoutePath.onboardingWelcome,
+        );
+        return;
+      }
+      if (currentUser.role == 'admin') {
+        Get.offAllNamed(RoutePath.adminHome);
+      }
+    });
   }
 
   UserEntity? getUserInfo() => user.value;

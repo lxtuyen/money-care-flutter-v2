@@ -47,13 +47,13 @@ class OtpController extends GetxController {
   }
 
   Future<void> submitOtp() async {
-    try {
-      final message = await authController.verifyOtp(otpController.text.trim());
+    final result = await authController.verifyOtp(otpController.text.trim());
+    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
+      message,
+    ) {
       Get.offAllNamed(RoutePath.resetPassword);
       AppHelperFunction.showSnackBar(message);
-    } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
-    }
+    });
   }
 
   @override

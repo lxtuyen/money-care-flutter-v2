@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:money_care/core/constants/api_routes.dart';
+import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
 
@@ -23,7 +24,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   final ApiClient api;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  AuthRemoteDatasourceImpl({required this.api}) {}
+  AuthRemoteDatasourceImpl({required this.api});
 
   @override
   Future<UserModel> loginWithGoogle() async {
@@ -36,7 +37,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     } else {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
-        throw Exception('Google sign in cancelled');
+        throw const ServerException('Đăng nhập Google đã bị hủy');
       }
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
@@ -48,7 +49,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     }
 
     if (firebaseUser == null || firebaseUser.email == null) {
-      throw Exception('Google login failed');
+      throw const ServerException('Đăng nhập Google thất bại');
     }
 
     final res = await api.post<UserModel>(
@@ -59,6 +60,12 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       },
       fromJsonT: (json) => UserModel.fromJson(json['user'], json['accessToken']),
     );
+
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Đăng nhập Google thất bại',
+      );
+    }
 
     return res.data!;
   }
@@ -71,7 +78,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       fromJsonT: (json) => UserModel.fromJson(json['user'], json['accessToken']),
     );
     if (!res.success || res.data == null) {
-      throw Exception(res.message);
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Đăng nhập thất bại',
+      );
     }
     return res.data!;
   }
@@ -92,6 +101,11 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         'lastName': lastName,
       },
     );
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Đăng ký thất bại',
+      );
+    }
     return res.message;
   }
 
@@ -101,6 +115,11 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       ApiRoutes.forgotPassword,
       body: {'email': email},
     );
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể gửi mã OTP',
+      );
+    }
     return res.message;
   }
 
@@ -110,6 +129,11 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       ApiRoutes.verifyOtp,
       body: {'email': email, 'otp': otp},
     );
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Xác nhận OTP thất bại',
+      );
+    }
     return res.message;
   }
 
@@ -119,6 +143,11 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       ApiRoutes.resetPassword,
       body: {'email': email, 'newPassword': newPassword},
     );
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Đổi mật khẩu thất bại',
+      );
+    }
     return res.message;
   }
 }

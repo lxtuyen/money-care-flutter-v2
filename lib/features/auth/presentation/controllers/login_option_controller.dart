@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 
 class LoginOptionController extends GetxController {
@@ -9,6 +11,21 @@ class LoginOptionController extends GetxController {
   RxBool get isLoading => authController.isLoading;
 
   Future<void> loginWithGoogleAndNavigate() async {
-    await authController.loginWithGoogleAndNavigate();
+    final result = await authController.loginWithGoogle();
+    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
+      currentUser,
+    ) {
+      if (currentUser.role == 'user') {
+        Get.offAllNamed(
+          currentUser.savingFund != null
+              ? RoutePath.main
+              : RoutePath.onboardingWelcome,
+        );
+        return;
+      }
+      if (currentUser.role == 'admin') {
+        Get.offAllNamed(RoutePath.adminHome);
+      }
+    });
   }
 }

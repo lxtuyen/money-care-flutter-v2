@@ -31,15 +31,13 @@ class ResetPasswordController extends GetxController {
       return;
     }
 
-    try {
-      final message = await authController.resetPassword(
-        passwordController.text,
-      );
+    final result = await authController.resetPassword(passwordController.text);
+    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
+      message,
+    ) {
       Get.offAllNamed(RoutePath.login);
       AppHelperFunction.showSnackBar(message);
-    } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
-    }
+    });
   }
 
   @override

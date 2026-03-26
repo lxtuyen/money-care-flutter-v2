@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/core/utils/validatiors/validation.dart';
 import 'package:money_care/features/auth/domain/usecases/register_usecase.dart';
@@ -41,7 +43,7 @@ class RegisterController extends GetxController {
     isRegisterPasswordObscure.toggle();
   }
 
-  Future<String> register(
+  Future<Either<Failure, String>> register(
     String email,
     String password,
     String firstName,
@@ -66,19 +68,19 @@ class RegisterController extends GetxController {
       return;
     }
 
-    try {
-      final message = await register(
-        registerEmailController.text.trim(),
-        registerPasswordController.text,
-        registerFirstNameController.text.trim(),
-        registerLastNameController.text.trim(),
-      );
+    final result = await register(
+      registerEmailController.text.trim(),
+      registerPasswordController.text,
+      registerFirstNameController.text.trim(),
+      registerLastNameController.text.trim(),
+    );
 
+    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
+      message,
+    ) {
       Get.offAllNamed(RoutePath.login);
       AppHelperFunction.showSnackBar(message);
-    } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
-    }
+    });
   }
 
   @override

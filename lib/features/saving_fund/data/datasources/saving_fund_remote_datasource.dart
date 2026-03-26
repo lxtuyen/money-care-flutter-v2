@@ -1,4 +1,5 @@
 import 'package:money_care/core/constants/api_routes.dart';
+import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
 
@@ -23,7 +24,11 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
       body: dto.toJsonCreate(),
       fromJsonT: (json) => SavingFundModel.fromMap(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể tạo quỹ tiết kiệm',
+      );
+    }
     return res.data!;
   }
 
@@ -36,8 +41,14 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
         return list.map((e) => SavingFundModel.fromMap(e)).toList();
       },
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data ?? [];
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể tải danh sách quỹ tiết kiệm',
+      );
+    }
+    return res.data!;
   }
 
   @override
@@ -46,7 +57,11 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
       '${ApiRoutes.savingFund}/$id',
       fromJsonT: (json) => SavingFundModel.fromMap(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể tải quỹ tiết kiệm',
+      );
+    }
     return res.data!;
   }
 
@@ -57,13 +72,24 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
       body: dto.toJsonUpdate(),
       fromJsonT: (json) => SavingFundModel.fromMap(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể cập nhật quỹ tiết kiệm',
+      );
+    }
     return res.data!;
   }
 
   @override
   Future<bool> deleteSavingFund(int id) async {
     final res = await api.delete<void>('${ApiRoutes.savingFund}/$id');
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể xóa quỹ tiết kiệm',
+      );
+    }
     return res.success;
   }
 
@@ -74,7 +100,11 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
       body: {'userId': userId},
       fromJsonT: (json) => SavingFundModel.fromMap(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể chọn quỹ tiết kiệm',
+      );
+    }
     return res.data!;
   }
 }

@@ -7,12 +7,16 @@ class SavingFundItemCard extends StatelessWidget {
   final SavingFundEntity fund;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback? onUpdate;
+  final VoidCallback? onDelete;
 
   const SavingFundItemCard({
     super.key,
     required this.fund,
     required this.isSelected,
     required this.onTap,
+    this.onUpdate,
+    this.onDelete,
   });
 
   @override
@@ -33,18 +37,44 @@ class SavingFundItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              fund.name,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    fund.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (onUpdate != null)
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
+                    onPressed: onUpdate,
+                    constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                  ),
+                if (onUpdate != null && onDelete != null)
+                  const SizedBox(width: 8),
+                if (onDelete != null)
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+                    onPressed: onDelete,
+                    constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
 
             _InfoRow(
               label: 'Mục tiêu:',
               value:
-                  fund.targetAmount != null
+                  fund.amount != null
                       ? AppHelperFunction.formatAmount(
-                        fund.targetAmount!,
+                        fund.amount!,
                         'VND',
                       )
                       : 'Chưa xác định',
@@ -52,15 +82,15 @@ class SavingFundItemCard extends StatelessWidget {
             _InfoRow(
               label: 'Bắt đầu:',
               value:
-                  fund.startDate != null
-                      ? AppHelperFunction.formatDayMonth(fund.startDate!)
+                  fund.start_date != null
+                      ? AppHelperFunction.formatDayMonth(fund.start_date!)
                       : 'Chưa xác định',
             ),
             _InfoRow(
               label: 'Kết thúc:',
               value:
-                  fund.endDate != null
-                      ? AppHelperFunction.formatDayMonth(fund.endDate!)
+                  fund.end_date != null
+                      ? AppHelperFunction.formatDayMonth(fund.end_date!)
                       : 'Chưa xác định',
             ),
 

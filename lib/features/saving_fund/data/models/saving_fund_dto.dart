@@ -4,17 +4,17 @@ class SavingFundDto {
   final String? name;
   final List<CategoryEntity>? categories;
   final int? id;
-  final double? targetAmount;
-  final DateTime? startDate;
-  final DateTime? endDate;
+  final double? amount;
+  final DateTime? start_date;
+  final DateTime? end_date;
 
   SavingFundDto({
     this.name,
     this.categories,
     this.id,
-    this.targetAmount,
-    this.startDate,
-    this.endDate,
+    this.amount,
+    this.start_date,
+    this.end_date,
   });
 
   Map<String, dynamic> toJsonCreate() {
@@ -23,19 +23,17 @@ class SavingFundDto {
       'categories':
           categories
               ?.map(
-                (e) => {
-                  'id': e.id,
+                (e) => <String, dynamic>{
                   'name': e.name,
                   'percentage': e.percentage,
                   'icon': e.icon,
-                  'color': e.color,
                 },
               )
               .toList(),
       'userId': id,
-      'targetAmount': targetAmount,
-      'startDate': startDate?.toIso8601String(),
-      'endDate': endDate?.toIso8601String(),
+      'amount': amount,
+      'start_date': start_date?.toIso8601String(),
+      'end_date': end_date?.toIso8601String(),
     };
   }
 
@@ -45,7 +43,7 @@ class SavingFundDto {
       'categories':
           categories
               ?.map(
-                (e) => {
+                (e) => <String, dynamic>{
                   'id': e.id,
                   'name': e.name,
                   'percentage': e.percentage,
@@ -54,9 +52,9 @@ class SavingFundDto {
                 },
               )
               .toList(),
-      'targetAmount': targetAmount,
-      'startDate': startDate?.toIso8601String(),
-      'endDate': endDate?.toIso8601String(),
+      'amount': amount,
+      'start_date': start_date?.toIso8601String(),
+      'end_date': end_date?.toIso8601String(),
     };
   }
 }

@@ -5,17 +5,17 @@ class SavingFundEntity {
   final String name;
   final bool? isSelected;
   final List<CategoryEntity> categories;
-  final double? targetAmount;
-  final DateTime? startDate;
-  final DateTime? endDate;
+  final double? amount;
+  final DateTime? start_date;
+  final DateTime? end_date;
 
   const SavingFundEntity({
     required this.id,
     required this.name,
     this.isSelected,
     required this.categories,
-    this.targetAmount,
-    this.startDate,
-    this.endDate,
+    this.amount,
+    this.start_date,
+    this.end_date,
   });
 }

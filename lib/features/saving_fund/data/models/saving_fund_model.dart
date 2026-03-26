@@ -6,18 +6,18 @@ class SavingFundModel {
   final String name;
   bool? isSelected;
   final List<CategoryModel> categories;
-  final double? targetAmount;
-  final DateTime? startDate;
-  final DateTime? endDate;
+  final double? amount;
+  final DateTime? start_date;
+  final DateTime? end_date;
 
   SavingFundModel({
     required this.id,
     required this.name,
     this.isSelected,
     required this.categories,
-    this.targetAmount,
-    this.startDate,
-    this.endDate,
+    this.amount,
+    this.start_date,
+    this.end_date,
   });
 
   factory SavingFundModel.fromMap(Map<String, dynamic> json) {
@@ -31,11 +31,11 @@ class SavingFundModel {
                 json['categories'].map((x) => CategoryModel.fromJson(x)),
               )
               : [],
-      targetAmount:
-          json['targetAmount']?.toDouble(),
-      startDate:
-          json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
-      endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
+      amount:
+          json['amount'] != null ? double.tryParse(json['amount'].toString()) : null,
+      start_date:
+          json['start_date'] != null ? DateTime.parse(json['start_date']) : null,
+      end_date: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
     );
   }
 
@@ -45,9 +45,9 @@ class SavingFundModel {
       'name': name,
       'is_selected': isSelected,
       'categories': categories.map((e) => e.toJson()).toList(),
-      'targetAmount': targetAmount,
-      'startDate': startDate?.toIso8601String(),
-      'endDate': endDate?.toIso8601String(),
+      'amount': amount,
+      'start_date': start_date?.toIso8601String(),
+      'end_date': end_date?.toIso8601String(),
     };
   }
 
@@ -56,8 +56,8 @@ class SavingFundModel {
     name: name,
     isSelected: isSelected,
     categories: categories.map((e) => e.toEntity()).toList(),
-    targetAmount: targetAmount,
-    startDate: startDate,
-    endDate: endDate,
+    amount: amount,
+    start_date: start_date,
+    end_date: end_date,
   );
 }

@@ -56,7 +56,7 @@ class TransactionDetail extends StatelessWidget {
                   onPressed: () async {
                     Get.back();
 
-                    final result = await Navigator.push(
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder:
@@ -68,10 +68,6 @@ class TransactionDetail extends StatelessWidget {
                             ),
                       ),
                     );
-
-                    if (result != null) {
-                      print("Cập nhật xong: $result");
-                    }
                   },
 
                   icon: const Icon(

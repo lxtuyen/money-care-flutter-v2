@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/saving_fund/presentation/widgets/saving_fund_item_card.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
 
 class SelectSavingFundScreen extends StatefulWidget {
   const SelectSavingFundScreen({super.key});
@@ -16,35 +15,13 @@ class SelectSavingFundScreen extends StatefulWidget {
 
 class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
   final SavingFundController controller = Get.find<SavingFundController>();
-  final UserController userController = Get.find<UserController>();
-  final AppController appController = Get.find<AppController>();
 
   @override
   void initState() {
     super.initState();
-    controller.loadUserAndFunds();
-  }
-
-  Future<void> _handleConfirm() async {
-    if (controller.savingFunds.isEmpty) return;
-
-    final selectedFund =
-        controller.savingFunds[controller.selectedFundIndex.value];
-
-    try {
-      await controller.selectSavingFund(
-        appController.userId.value ?? 0,
-        selectedFund.id,
-      );
-
-      if (userController.userProfile.value?.monthlyIncome == null) {
-        Get.toNamed(RoutePath.onboardingIncome);
-      } else {
-        Get.toNamed(RoutePath.main);
-      }
-    } catch (e) {
-      Get.snackbar('Lỗi', 'Không thể lưu quỹ tiết kiệm');
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.initializeSelectSavingFund();
+    });
   }
 
   @override
@@ -60,11 +37,10 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
               children: [
                 const SizedBox(height: 20),
                 const Text(
-                  'Lựa chọn quỹ tiết kiệm?',
+                  'Lựa chọn quỹ tiết kiệm',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoadingFunds.value) {
@@ -73,7 +49,7 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
 
                     if (controller.savingFunds.isEmpty) {
                       return const Center(
-                        child: Text("Chưa có quỹ tiết kiệm nào"),
+                        child: Text('Chưa có quỹ tiết kiệm nào'),
                       );
                     }
 
@@ -91,8 +67,9 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
                               isSelected:
                                   controller.selectedFundIndex.value == index,
                               onTap:
-                                  () =>
-                                      controller.updateSelectedFundIndex(index),
+                                  () => controller.updateSelectedFundIndex(index),
+                              onDelete: () => _confirmDelete(context, fund),
+                              onUpdate: () => _handleUpdate(fund),
                             ),
                           );
                         });
@@ -100,11 +77,8 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
                     );
                   }),
                 ),
-
                 ElevatedButton.icon(
-                  onPressed: () {
-                    Get.toNamed(RoutePath.createSavingFund);
-                  },
+                  onPressed: controller.goToCreateSavingFund,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEEF0F5),
                     foregroundColor: Colors.black,
@@ -121,11 +95,10 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
                   final isLoading = controller.isLoadingCurrent.value;
                   return PrimaryButton(
                     label: 'Xác nhận',
-                    onPressed: _handleConfirm,
+                    onPressed: controller.confirmSelectedFund,
                     isLoading: isLoading,
                   );
                 }),
-
                 const SizedBox(height: 12),
               ],
             ),
@@ -133,5 +106,28 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
         ),
       ),
     );
+  }
+
+  void _confirmDelete(BuildContext context, SavingFundEntity fund) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Xác nhận xóa'),
+        content: Text('Bạn có chắc chắn muốn xóa quỹ "${fund.name}"?'),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () {
+              controller.deleteFund(fund.id);
+              Get.back();
+            },
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleUpdate(SavingFundEntity fund) {
+    Get.toNamed(RoutePath.createSavingFund, arguments: fund);
   }
 }

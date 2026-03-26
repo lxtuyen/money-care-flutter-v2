@@ -9,10 +9,18 @@ class CategoryWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: categories.map((cat) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        final cat = categories[index];
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -28,6 +36,8 @@ class CategoryWrap extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               cat.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
@@ -42,7 +52,7 @@ class CategoryWrap extends StatelessWidget {
             ),
           ],
         );
-      }).toList(),
+      },
     );
   }
 }

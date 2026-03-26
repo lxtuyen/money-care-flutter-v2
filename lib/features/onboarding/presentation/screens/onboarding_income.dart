@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -75,31 +76,13 @@ class _OnboardingIncomeScreenState extends State<OnboardingIncomeScreen> {
                         (value) => AppValidator.validateMonthlyIncome(value),
                   ),
 
-                  const Spacer(),
+                  const SizedBox(height: 20),
 
                   Obx(() {
-                    return ElevatedButton(
-                      onPressed:
-                          userController.isLoading.value ? null : onPressed,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      child:
-                          userController.isLoading.value
-                              ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                              : const Text(
-                                AppTexts.done,
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                ),
-                              ),
+                    return PrimaryButton(
+                      label: AppTexts.done,
+                      onPressed: onPressed,
+                      isLoading: userController.isLoading.value,
                     );
                   }),
                 ],

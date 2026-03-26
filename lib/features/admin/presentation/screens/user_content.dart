@@ -4,7 +4,7 @@ import 'package:money_care/features/admin/presentation/controllers/admin_control
 import 'package:money_care/features/admin/presentation/screens/widgets/edit_user_dialog.dart';
 
 class UsersContent extends StatefulWidget {
-  const UsersContent({Key? key}) : super(key: key);
+  const UsersContent({super.key});
 
   @override
   State<UsersContent> createState() => _UsersContentState();

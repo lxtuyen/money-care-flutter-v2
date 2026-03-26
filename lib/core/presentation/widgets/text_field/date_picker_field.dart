@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/colors.dart';
 
 class DatePickerField extends StatelessWidget {
   final Rxn<DateTime> selectedDate;
@@ -31,12 +32,13 @@ class DatePickerField extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[400]!),
+            border: Border.all(color: AppColors.borderSecondary),
             borderRadius: BorderRadius.circular(12),
+            color: AppColors.backgroundSecondary,
           ),
           child: Row(
             children: [
-              const Icon(Icons.date_range),
+              const Icon(Icons.date_range, color: AppColors.secondaryNavyBlue,),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(

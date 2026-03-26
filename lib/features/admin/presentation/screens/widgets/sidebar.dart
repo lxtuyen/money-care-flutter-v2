@@ -6,7 +6,7 @@ import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/presentation/widgets/image/rounded_image.dart';
 
 class SidebarMenu extends StatelessWidget {
-  const SidebarMenu({Key? key}) : super(key: key);
+  const SidebarMenu({super.key});
 
   @override
   Widget build(BuildContext context) {

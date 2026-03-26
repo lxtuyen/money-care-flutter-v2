@@ -4,7 +4,7 @@ import 'package:money_care/features/admin/presentation/screens/widgets/sidebar.d
 class AdminDashboard extends StatelessWidget {
   final Widget child;
 
-  const AdminDashboard({Key? key, required this.child}) : super(key: key);
+  const AdminDashboard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

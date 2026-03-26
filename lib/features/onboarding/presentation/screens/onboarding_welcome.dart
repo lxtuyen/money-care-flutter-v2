@@ -4,6 +4,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/constants/text_string.dart';
+import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 
 class OnboardingWelcomeScreen extends StatelessWidget {
   const OnboardingWelcomeScreen({super.key});
@@ -37,7 +38,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
                           text: TextSpan(
                             style: const TextStyle(
-                              fontSize: 22,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppColors.text1,
                             ),
@@ -57,7 +58,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
                           AppTexts.welcomeDescription,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             color: AppColors.text1,
                             height: 1.4,
                           ),
@@ -67,25 +68,11 @@ class OnboardingWelcomeScreen extends StatelessWidget {
 
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
+                          child: PrimaryButton(
+                            label: AppTexts.buttonText,
                             onPressed:
                                 () =>
                                     Get.toNamed(RoutePath.onboardingSavingRule),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              backgroundColor: AppColors.primary,
-                            ),
-                            child: Text(
-                              AppTexts.buttonText,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
                           ),
                         ),
                       ],

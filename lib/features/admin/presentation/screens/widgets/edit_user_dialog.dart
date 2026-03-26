@@ -7,7 +7,7 @@ import 'package:money_care/features/user/data/models/user_profile_model.dart';
 class EditUserDialog extends StatefulWidget {
   final UserResponseEntity user;
 
-  const EditUserDialog({Key? key, required this.user}) : super(key: key);
+  const EditUserDialog({super.key, required this.user});
 
   @override
   State<EditUserDialog> createState() => _EditUserDialogState();

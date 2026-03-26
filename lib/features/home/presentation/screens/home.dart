@@ -200,10 +200,10 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               if (totals == null) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: Text('Không có dữ liệu')),
-                );
+                return const SpendingSummary(
+                incomeTotal: 0,
+                expenseTotal: 0,
+              );
               }
 
               return SpendingSummary(
@@ -279,7 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: AppSizes.defaultSpace),
 
             AppSectionHeading(title: "Giao dịch gần đây"),
-            const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
               final transactions =
                   transactionController.transactionByfilter.value;
@@ -291,10 +290,10 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               if (transactions == null) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: Text('Không có dữ liệu')),
-                );
+                return const TransactionSection(
+                incomeTransactions: [],
+                expenseTransactions: [],
+              );
               }
 
               return TransactionSection(

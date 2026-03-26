@@ -6,7 +6,7 @@ import 'package:money_care/features/payment/presentation/controllers/payment_con
 import 'package:money_care/features/admin/presentation/screens/widgets/stat_card.dart';
 
 class DashboardContent extends StatefulWidget {
-  const DashboardContent({Key? key}) : super(key: key);
+  const DashboardContent({super.key});
 
   @override
   State<DashboardContent> createState() => _DashboardContentState();

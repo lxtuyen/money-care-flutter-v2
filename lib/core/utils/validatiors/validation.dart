@@ -121,7 +121,9 @@ class AppValidator {
       return 'Vui lòng nhập thu nhập hàng tháng';
     }
 
-    final numVal = double.tryParse(value.replaceAll(',', ''));
+      final numVal = double.tryParse(
+        value.replaceAll(',', '').replaceAll('.', ''),
+      );
 
     if (numVal == null) return 'Thu nhập phải là số hợp lệ';
     if (numVal <= 0) return 'Thu nhập phải lớn hơn 0';

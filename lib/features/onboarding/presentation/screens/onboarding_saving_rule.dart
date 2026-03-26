@@ -4,6 +4,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/constants/text_string.dart';
+import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 import 'package:money_care/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class OnboardingSavingRuleScreen extends StatelessWidget {
@@ -55,27 +56,12 @@ class OnboardingSavingRuleScreen extends StatelessWidget {
 
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      controller.completeOnboarding(
-                        nextRoute: RoutePath.selectSavingFund,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      backgroundColor: AppColors.primary,
-                    ),
-                    child: Text(
-                      AppTexts.continueButton,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                  child: PrimaryButton(
+                    label: AppTexts.continueButton,
+                    onPressed:
+                        () => controller.completeOnboarding(
+                          nextRoute: RoutePath.selectSavingFund,
+                        ),
                   ),
                 ),
 

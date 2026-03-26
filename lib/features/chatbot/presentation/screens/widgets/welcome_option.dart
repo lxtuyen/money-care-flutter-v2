@@ -5,7 +5,7 @@ class WelcomeOptions extends StatelessWidget {
   final void Function(String template) onTapFill;
   final Future<void> Function(String template) onTapSend;
 
-  const WelcomeOptions({
+  const WelcomeOptions({super.key, 
     required this.options,
     required this.onTapFill,
     required this.onTapSend,

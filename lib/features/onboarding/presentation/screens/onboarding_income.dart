@@ -7,6 +7,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/core/utils/validatiors/validation.dart';
+import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
 
 class OnboardingIncomeScreen extends StatefulWidget {
   const OnboardingIncomeScreen({super.key});
@@ -25,7 +26,8 @@ class _OnboardingIncomeScreenState extends State<OnboardingIncomeScreen> {
     Future<void> onPressed() async {
       if (_formKey.currentState!.validate()) {
         try {
-          final income = int.parse(incomeController.text.replaceAll(',', ''));
+          final rawValue = AppCurrencyFormField.unformat(incomeController.text);
+          final income = int.parse(rawValue);
           await userController.addMonthlyIncome(income);
 
           Get.toNamed(RoutePath.main);
@@ -62,18 +64,12 @@ class _OnboardingIncomeScreenState extends State<OnboardingIncomeScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  TextFormField(
+                  AppCurrencyFormField(
                     controller: incomeController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator:
-                        (value) => AppValidator.validateMonthlyIncome(value),
+                    label: 'Thu nhập hàng tháng',
+                    icon: Icons.attach_money,
+                    hintText: 'VD: 5.000.000',
+                    validator: (v) => AppValidator.validateMonthlyIncome(v),
                   ),
 
                   const SizedBox(height: 20),

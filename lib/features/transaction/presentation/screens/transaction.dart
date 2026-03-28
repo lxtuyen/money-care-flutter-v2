@@ -1,4 +1,5 @@
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -70,15 +71,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Container(
-            height: 195,
-            decoration: const BoxDecoration(
-              color: kIsWeb ? Colors.white : Color(0xFF0B84FF),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(40),
-                bottomRight: Radius.circular(40),
-              ),
-            ),
+          AppHeader(
+            title: "Thu - Chi",
             child: Obx(() {
               final data = statisticsController.totalByType.value;
 

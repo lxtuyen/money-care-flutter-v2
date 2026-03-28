@@ -5,7 +5,7 @@ import 'package:money_care/core/constants/colors.dart';
 class AppTextFormField extends StatelessWidget {
   final TextEditingController? controller;
   final String label;
-  final IconData icon;
+  final IconData? icon;
   final String? hintText;
   final Widget? suffixIcon;
   final TextInputType? keyboardType;
@@ -27,7 +27,7 @@ class AppTextFormField extends StatelessWidget {
     super.key,
     this.controller,
     required this.label,
-    required this.icon,
+    this.icon,
     this.hintText,
     this.suffixIcon,
     this.keyboardType,
@@ -71,7 +71,7 @@ class AppTextFormField extends StatelessWidget {
         fontSize: 15,
         fontWeight: FontWeight.w500,
       ),
-      prefixIcon: Icon(icon, color: AppColors.secondaryNavyBlue, size: 22),
+      prefixIcon: icon != null ? Icon(icon, color: AppColors.secondaryNavyBlue, size: 22) : null,
       suffixIcon: suffixIcon,
       isDense: true,
       filled: true,

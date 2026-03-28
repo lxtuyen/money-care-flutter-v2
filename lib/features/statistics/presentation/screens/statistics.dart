@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -112,15 +113,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 195,
-                decoration: const BoxDecoration(
-                  color: kIsWeb ? Colors.white : Color(0xFF0B84FF),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
-                ),
+              AppHeader(
+                title: selected == 'chi' ? "Thống kê chi" : "Thống kê thu",
                 child: Obx(() {
                   final data = statisticsController.totalByType.value;
 

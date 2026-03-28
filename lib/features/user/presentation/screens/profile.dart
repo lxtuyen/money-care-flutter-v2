@@ -6,6 +6,9 @@ import 'package:money_care/core/utils/validatiors/validation.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/core/presentation/widgets/appbar/appbar.dart';
+import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
+import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
+import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -45,12 +48,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> onUpdateProfile() async {
     if (_formKey.currentState!.validate()) {
       try {
+        final rawValue = AppCurrencyFormField.unformat(monthlyIncomeController.text);
         final dto = ProfileUpdateDto(
           firstName: firstNameController.text,
           lastName: lastNameController.text,
-          monthlyIncome: int.parse(
-            monthlyIncomeController.text.replaceAll(',', ''),
-          ),
+          monthlyIncome: int.parse(rawValue),
         );
         await userController.updateProfile(dto);
         AppHelperFunction.showSnackBar('Cập nhật thành công');
@@ -87,65 +89,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  TextFormField(
+                  AppTextFormField(
                     controller: firstNameController,
-                    decoration: const InputDecoration(
-                      labelText: "Tên",
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'Tên',
+                    icon: Icons.person,
+                    hintText: 'VD: Văn A',
                     validator: (v) => AppValidator.validateFirstName(v),
                   ),
                   const SizedBox(height: 16),
 
-                  TextFormField(
+                  AppTextFormField(
                     controller: lastNameController,
-                    decoration: const InputDecoration(
-                      labelText: "Họ",
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'Họ',
+                    icon: Icons.person,
+                    hintText: 'VD: Nguyễn',
                     validator: (v) => AppValidator.validateLastName(v),
                   ),
                   const SizedBox(height: 16),
 
-                  TextFormField(
+                  AppCurrencyFormField(
                     controller: monthlyIncomeController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: "Thu nhập hàng tháng",
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'Thu nhập hàng tháng',
+                    icon: Icons.attach_money,
+                    hintText: 'VD: 5.000.000',
                     validator: (v) => AppValidator.validateMonthlyIncome(v),
                   ),
                   const SizedBox(height: 24),
 
                   Obx(() {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed:
-                            userController.isLoading.value
-                                ? null
-                                : onUpdateProfile,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child:
-                            userController.isLoading.value
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                                : const Text(
-                                  "Cập nhật",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                      ),
+                    return PrimaryButton(
+                      label: 'Cập nhật',
+                      onPressed: onUpdateProfile,
+                      isLoading: userController.isLoading.value,
+                      isEnabled: !userController.isLoading.value,
                     );
                   }),
                 ],

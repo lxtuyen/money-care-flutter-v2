@@ -1,7 +1,7 @@
 class TotalByCategoryEntity {
   final String categoryName;
   final int total;
-  final int percentage;
+  final double percentage;
   final String categoryIcon;
   final String? color;
 

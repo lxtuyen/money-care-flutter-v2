@@ -28,7 +28,6 @@ class StatisticsScreen extends StatefulWidget {
 }
 
 class _StatisticsScreenState extends State<StatisticsScreen> {
-  String selected = 'chi';
 
   List<String> generateLast7DaysLabels() {
     final List<String> labels = [];
@@ -63,49 +62,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
-
     if (userId == null) return;
-
-    await statisticsController.getTotalByDateEntityLstMonth(userId);
+    await statisticsController.refreshStatisticsData(userId);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<FlSpot> convertToSpots7Days(
-      List<TotalByDateEntity> data,
-      DateTime endDate,
-    ) {
-      final Map<String, int> map = {
-        for (var d in data)
-          "${d.date.year}-${d.date.month}-${d.date.day}": d.total,
-      };
-
-      final List<FlSpot> spots = [];
-      final start = endDate.subtract(const Duration(days: 6));
-
-      for (int i = 0; i < 7; i++) {
-        final d = start.add(Duration(days: i));
-        final key = "${d.year}-${d.month}-${d.day}";
-        final total = (map[key] ?? 0).toDouble();
-        spots.add(FlSpot(i.toDouble(), total));
-      }
-
-      return spots;
-    }
-
-    List<TotalByDateEntity> getDataBySelected(
-      TotalsByDateEntity totals,
-      String selected,
-    ) {
-      if (selected == 'chi') {
-        return totals.expense;
-      } else if (selected == 'thu') {
-        return totals.income;
-      } else {
-        return [];
-      }
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -113,35 +75,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppHeader(
-                title: selected == 'chi' ? "Thống kê chi" : "Thống kê thu",
-                child: Obx(() {
-                  final data = statisticsController.totalByType.value;
+              Obx(() => AppHeader(
+                    title: statisticsController.selectedType.value == 'chi'
+                        ? "Thống kê chi"
+                        : "Thống kê thu",
+                    child: Builder(builder: (context) {
+                      final data = statisticsController.totalByType.value;
 
-                  if (statisticsController.isLoading.value) {
-                    return const SizedBox(
-                      height: 120,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
+                      if (statisticsController.isLoading.value) {
+                        return const SizedBox(
+                          height: 120,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
 
-                  if (data == null) {
-                    return StatisticsHeader(
-                      selected: selected,
-                      onSelected: (value) => setState(() => selected = value),
-                      spendText: 0,
-                      incomeText: 0,
-                    );
-                  }
-
-                  return StatisticsHeader(
-                    selected: selected,
-                    onSelected: (value) => setState(() => selected = value),
-                    spendText: data.expenseTotal,
-                    incomeText: data.incomeTotal,
-                  );
-                }),
-              ),
+                      return StatisticsHeader(
+                        selected: statisticsController.selectedType.value,
+                        onSelected: (value) =>
+                            statisticsController.changeType(value),
+                        spendText: data?.expenseTotal ?? 0,
+                        incomeText: data?.incomeTotal ?? 0,
+                      );
+                    }),
+                  )),
 
               const SizedBox(height: 25),
 
@@ -172,24 +128,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   if (totalsLstMonth == null || totalsThisMonth == null) {
                     return const SizedBox(
                       height: 120,
-                      child: Center(child: Text('Không có dữ liệu')),
+                      child: Center(
+                        child: Text(
+                          'Không có dữ liệu thống kê',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
                     );
                   }
 
-                  final lstMonthData = getDataBySelected(
-                    totalsLstMonth,
-                    selected,
-                  );
-                  final thisMonthData = getDataBySelected(
-                    totalsThisMonth,
-                    selected,
-                  );
+                  final lstMonthData =
+                      statisticsController.getDataBySelected(totalsLstMonth);
+                  final thisMonthData =
+                      statisticsController.getDataBySelected(totalsThisMonth);
 
-                  final lastMonthSpots = convertToSpots7Days(
+                  final lastMonthSpots = statisticsController.convertToSpots7Days(
                     lstMonthData,
                     statisticsController.lastMonthToday,
                   );
-                  final thisMonthSpots = convertToSpots7Days(
+                  final thisMonthSpots = statisticsController.convertToSpots7Days(
                     thisMonthData,
                     now,
                   );
@@ -230,14 +187,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                     endDate: AppHelperFunction.getFormattedDate(now),
                     totalAmount: "0",
-                    categories: [],
+                    categories: const [],
                   );
                 }
 
-                for (int i = 0; i < currentFund.categories.length; i++) {
-                  /*currentFund.categories[i].color =
-                      fixedColors[i % fixedColors.length];*/
-                }
+                final List<CategoryEntity> updatedCategories = currentFund.categories.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final category = entry.value;
+                  return CategoryEntity(
+                    id: category.id,
+                    name: category.name,
+                    percentage: category.percentage,
+                    icon: category.icon,
+                    color: AppHelperFunction.getRandomColor(),
+                  );
+                }).toList();
 
                 return StatisticalWidgets(
                   startDate: AppHelperFunction.getFormattedDate(monthStartDate),
@@ -246,7 +210,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     data.expenseTotal.toDouble(),
                     'VND',
                   ),
-                  categories: currentFund.categories,
+                  categories: updatedCategories,
                 );
               }),
 
@@ -264,7 +228,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 if (categories.isEmpty) {
                   return const SizedBox(
                     height: 120,
-                    child: Center(child: Text('Không có dữ liệu')),
+                    child: Center(
+                      child: Text(
+                        'Chưa có dữ liệu danh mục',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
                   );
                 }
 
@@ -276,31 +245,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 12),
-                          ...categories.map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(right: 12),
-                              child: ChartCard(
-                                title: item.categoryName,
-                                amount: item.total,
-                                limit:
-                                    ((item.percentage) *
-                                        (userController
-                                                .userProfile
-                                                .value
-                                                ?.monthlyIncome ??
-                                            0)) /
-                                    100,
-                                percent: item.percentage.toStringAsFixed(1),
-                              ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 12),
+                        ...categories.map(
+                          (item) => Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: ChartCard(
+                              title: item.categoryName,
+                              amount: item.total,
+                              limit: ((item.percentage) *
+                                      (userController
+                                              .userProfile.value?.monthlyIncome ??
+                                          0)) /
+                                  100,
+                              percent: item.percentage.toStringAsFixed(1),
                             ),
                           ),
-                        ],
-                      ),
+                        ).toList(),
+                      ],
                     ),
                   ),
                 );

@@ -1,3 +1,4 @@
+import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
@@ -99,6 +100,12 @@ class TransactionController extends GetxController {
     );
 
     await filterTransactions(userId, filterDto);
+
+    if (Get.isRegistered<StatisticsController>()) {
+      await Get.find<StatisticsController>().refreshStatisticsData(userId);
+    }
+    if (Get.isRegistered<SavingFundController>()) {
+    }
   }
 
   int? get _currentFundIdOrNull =>

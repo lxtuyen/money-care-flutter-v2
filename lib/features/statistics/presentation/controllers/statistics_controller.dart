@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
@@ -16,6 +17,8 @@ class StatisticsController extends GetxController {
 
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
+
+  final RxString selectedType = 'chi'.obs;
 
   var isLoading = false.obs;
   var errorMessage = RxnString();
@@ -147,14 +150,28 @@ class StatisticsController extends GetxController {
   }
 
   Future<void> refreshStatisticsData(int userId) async {
-    final dtoWeek = _createTotalsDto(weekStartDate, weekEndDate);
+    isLoading.value = true;
+    try {
+      final dtoWeek = _createTotalsDto(weekStartDate, weekEndDate);
+      final dtoMonth = _createTotalsDto(monthStartDate, monthEndDate);
+      final dtoLastMonth = _createTotalsDto(lastMonth7DaysStart, lastMonthToday);
 
-    await Future.wait([
-      getTotalByType(userId),
-      getTotalByCate(userId),
-      getTotalByDateEntity(userId, dtoWeek),
-      getTotalByDateEntityLstMonth(userId),
-    ]);
+      await Future.wait([
+        _loadTotalByType(userId),
+        _loadTotalByCate(userId),
+        _loadTotalByDate(userId, dtoWeek),
+        getTotalByDateEntityLstMonth(userId),
+      ]);
+      errorMessage.value = null;
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void changeType(String type) {
+    selectedType.value = type;
   }
 
   int? get _currentFundIdOrNull =>
@@ -227,4 +244,33 @@ class StatisticsController extends GetxController {
 
   double get dailyIncomeChange =>
       calculatePercentageChange(dailyIncomeAverage, lastWeekDailyIncomeAverage);
+
+  List<TotalByDateEntity> getDataBySelected(TotalsByDateEntity totals) {
+    if (selectedType.value == 'chi') {
+      return totals.expense;
+    } else if (selectedType.value == 'thu') {
+      return totals.income;
+    } else {
+      return [];
+    }
+  }
+
+  List<FlSpot> convertToSpots7Days(List<TotalByDateEntity> data, DateTime endDate) {
+    final Map<String, double> map = {
+      for (var d in data)
+        "${d.date.year}-${d.date.month}-${d.date.day}": d.total.toDouble(),
+    };
+
+    final List<FlSpot> spots = [];
+    final start = endDate.subtract(const Duration(days: 6));
+
+    for (int i = 0; i < 7; i++) {
+      final date = start.add(Duration(days: i));
+      final key = "${date.year}-${date.month}-${date.day}";
+      final val = map[key] ?? 0.0;
+      spots.add(FlSpot(i.toDouble(), val));
+    }
+    return spots;
+  }
+
 }

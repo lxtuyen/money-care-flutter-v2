@@ -76,7 +76,6 @@ class AppHelperFunction {
     'DeepPurple',
     'LightBlue',
     'LightGreen',
-    'Yellow',
     'BlueGrey',
     'Black',
     'Custom1',

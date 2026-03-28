@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/features/transaction/presentation/widgets/transaction/transaction_form.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -9,11 +9,6 @@ class ExpenseScreen extends StatefulWidget {
 }
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return TransactionForm(

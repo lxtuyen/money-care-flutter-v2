@@ -8,8 +8,8 @@ class TotalByTypeModel {
 
   factory TotalByTypeModel.fromJson(Map<String, dynamic> json) {
     return TotalByTypeModel(
-      income: (json['income'] ?? 0).toInt(),
-      expense: (json['expense'] ?? 0).toInt(),
+      income: (json['income_total'] ?? 0).toInt(),
+      expense: (json['expense_total'] ?? 0).toInt(),
     );
   }
 

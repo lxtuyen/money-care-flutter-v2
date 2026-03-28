@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/features/transaction/presentation/widgets/transaction/transaction_form.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
 
 class IncomeScreen extends StatefulWidget {
   const IncomeScreen({super.key});

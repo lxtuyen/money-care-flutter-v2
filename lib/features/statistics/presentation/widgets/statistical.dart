@@ -54,7 +54,7 @@ class StatisticalWidgets extends StatelessWidget {
                           categories
                               .map(
                                 (e) => PieChartSectionData(
-                                  //color: e.color,
+                                  color: e.color,
                                   value: e.percentage.toDouble(),
                                   title: '',
                                 ),
@@ -70,10 +70,20 @@ class StatisticalWidgets extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 10),
 
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: categories.map((e) => TagItem(category: e)).toList(),
+            GridView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                mainAxisExtent: 38,
+              ),
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                return TagItem(category: categories[index]);
+              },
             ),
           ],
         ),

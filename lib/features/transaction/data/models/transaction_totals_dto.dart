@@ -6,6 +6,10 @@ class TransactionTotalsDto {
   TransactionTotalsDto({this.fundId, this.startDate, this.endDate});
 
   Map<String, dynamic> toJson() {
-    return {'startDate': startDate, 'endDate': endDate, 'fundId': fundId};
+    final map = <String, dynamic>{};
+    if (startDate != null) map['start_date'] = startDate;
+    if (endDate != null) map['end_date'] = endDate;
+    if (fundId != null) map['fundId'] = fundId;
+    return map;
   }
 }

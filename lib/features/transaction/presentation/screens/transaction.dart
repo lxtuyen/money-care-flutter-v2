@@ -18,7 +18,7 @@ import 'package:money_care/features/home/presentation/widgets/transaction/transa
 import 'package:money_care/features/statistics/presentation/widgets/statistics_header.dart';
 import 'package:money_care/features/transaction/presentation/widgets/filter_dialog.dart';
 import 'package:money_care/features/transaction/presentation/widgets/search_filter.dart';
-import 'package:money_care/features/transaction/presentation/widgets/transaction/transaction_detail.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 
 class TransactionScreen extends StatefulWidget {
   const TransactionScreen({super.key});
@@ -59,8 +59,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
             fundController.fundId.value > 0
                 ? fundController.fundId.value
                 : null,
-        startDate: filterController.startDate.toString(),
-        endDate: filterController.endDate.toString(),
+        startDate: filterController.startDate.value?.toIso8601String(),
+        endDate: filterController.endDate.value?.toIso8601String(),
       ),
     );
   }
@@ -290,8 +290,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
       userId,
       TransactionFilterDto(
         categoryId: filterController.categoryId.toInt(),
-        startDate: filterController.startDate.toString(),
-        endDate: filterController.endDate.toString(),
+        startDate: filterController.startDate.value?.toIso8601String(),
+        endDate: filterController.endDate.value?.toIso8601String(),
       ),
     );
   }

@@ -47,7 +47,6 @@ class SavingFundController extends GetxController {
       }
     });
 
-    // Initial sync
     if (authController.user.value?.savingFund != null) {
       currentFund.value = authController.user.value!.savingFund;
       fundId.value = authController.user.value!.savingFund!.id;

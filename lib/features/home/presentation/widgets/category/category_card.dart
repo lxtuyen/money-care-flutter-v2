@@ -22,7 +22,7 @@ class CategoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Container(
-        width: 120,
+        constraints: const BoxConstraints(minWidth: 120),
         height: 100,
         decoration: BoxDecoration(
           color: color,
@@ -35,6 +35,8 @@ class CategoryCard extends StatelessWidget {
           children: [
             Text(
               title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: AppSizes.fontSizeSm,
@@ -46,6 +48,8 @@ class CategoryCard extends StatelessWidget {
               children: [
                 Text(
                   AppHelperFunction.formatAmount(amount.toDouble(), 'VND'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -60,6 +64,8 @@ class CategoryCard extends StatelessWidget {
                   backgroundColor: Colors.white.withOpacity(0.15),
                   child: Text(
                     '$percent%',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: AppSizes.fontSizeSm,

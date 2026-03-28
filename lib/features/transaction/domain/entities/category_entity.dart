@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+
 class CategoryEntity {
   final int? id;
   final String name;
   final int percentage;
   final String icon;
-  final String? color;
+  final Color? color;
 
   const CategoryEntity({
     this.id,

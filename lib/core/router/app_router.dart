@@ -4,7 +4,6 @@ import 'package:money_care/features/admin/presentation/screens/admin_dashboard.d
 import 'package:money_care/features/admin/presentation/screens/dashboard_content.dart';
 import 'package:money_care/features/admin/presentation/screens/user_content.dart';
 import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
-import 'package:money_care/features/payment/presentation/screens/payment_screen.dart';
 import 'package:money_care/features/auth/presentation/screens/otp.dart';
 import 'package:money_care/features/auth/presentation/screens/reset_password.dart';
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_expense_management.dart';
@@ -72,7 +71,6 @@ final List<GetPage> appPages = [
     name: '/admin/users',
     page: () => const AdminDashboard(child: UsersContent()),
   ),
-  GetPage(name: '/payment', page: () => const PaymentScreen()),
 
   GetPage(name: '/main', page: () => const ScaffoldWithNavBar()),
 ];

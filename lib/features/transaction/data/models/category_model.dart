@@ -1,11 +1,12 @@
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:flutter/material.dart';
 
 class CategoryModel {
   final int? id;
   final String name;
   final int percentage;
   final String icon;
-  final String? color;
+  final Color? color;
 
   CategoryModel({
     this.id,

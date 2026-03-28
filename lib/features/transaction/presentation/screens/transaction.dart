@@ -87,7 +87,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 return StatisticsHeader(
                   selected: selected,
                   onSelected: (value) => setState(() => selected = value),
-                  title: "Thu - Chi",
                   spendText: 0,
                   incomeText: 0,
                 );
@@ -96,7 +95,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
               return StatisticsHeader(
                 selected: selected,
                 onSelected: (value) => setState(() => selected = value),
-                title: "Thu - Chi",
                 spendText: data.expenseTotal,
                 incomeText: data.incomeTotal,
               );

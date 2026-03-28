@@ -4,11 +4,14 @@ import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:money_care/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:money_care/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:money_care/features/auth/domain/repositories/auth_repository.dart';
 import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
+import 'package:money_care/features/auth/domain/usecases/get_cached_user_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/login_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/register_usecase.dart';
+import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/auth/presentation/controllers/forgot_password_controller.dart';
 import 'package:money_care/features/auth/presentation/controllers/login_controller.dart';
@@ -33,16 +36,26 @@ class AuthBinding extends Bindings {
       localDatasource: localDatasource,
     );
 
-    Get.lazyPut<AuthController>(
-      () => AuthController(
-        googleSignInUseCase: GoogleSignInUseCase(repository),
-        logoutUseCase: LogoutUseCase(repository),
-        forgotPasswordUseCase: ForgotPasswordUseCase(repository),
-        verifyOtpUseCase: VerifyOtpUseCase(repository),
-        resetPasswordUseCase: ResetPasswordUseCase(repository),
+    Get.lazyPut<AuthRepository>(() => repository);
+
+    Get.lazyPut(() => GetCachedUserUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => GoogleSignInUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => LogoutUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => ForgotPasswordUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => VerifyOtpUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => ResetPasswordUseCase(Get.find<AuthRepository>()));
+
+    Get.put<AuthController>(
+      AuthController(
+        googleSignInUseCase: Get.find<GoogleSignInUseCase>(),
+        logoutUseCase: Get.find<LogoutUseCase>(),
+        forgotPasswordUseCase: Get.find<ForgotPasswordUseCase>(),
+        verifyOtpUseCase: Get.find<VerifyOtpUseCase>(),
+        resetPasswordUseCase: Get.find<ResetPasswordUseCase>(),
+        getCachedUserUseCase: Get.find<GetCachedUserUseCase>(),
         storage: localStorage,
       ),
-      fenix: true,
+      permanent: true,
     );
 
     Get.lazyPut<LoginController>(

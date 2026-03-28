@@ -7,6 +7,7 @@ import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.dart';
+import 'package:money_care/features/auth/domain/usecases/get_cached_user_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
 
 class AuthController extends GetxController {
@@ -15,6 +16,7 @@ class AuthController extends GetxController {
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final VerifyOtpUseCase verifyOtpUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
+  final GetCachedUserUseCase getCachedUserUseCase;
   final LocalStorage storage;
 
   AuthController({
@@ -23,12 +25,26 @@ class AuthController extends GetxController {
     required this.forgotPasswordUseCase,
     required this.verifyOtpUseCase,
     required this.resetPasswordUseCase,
+    required this.getCachedUserUseCase,
     required this.storage,
   });
 
   final user = Rxn<UserEntity>();
   final isLoading = false.obs;
   final isGoogleLogin = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    initialize();
+  }
+
+  void initialize() {
+    final cachedUser = getCachedUserUseCase();
+    if (cachedUser != null) {
+      user.value = cachedUser;
+    }
+  }
 
   Future<Either<Failure, UserEntity>> loginWithGoogle() async {
     try {

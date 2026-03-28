@@ -117,7 +117,13 @@ void initState() {
 
                                             final categories = controller.savingFundController.currentFund.value!.categories;
 
-                                            return CategorySheet(categories: categories);
+                                            return CategorySheet(
+                                              categories: categories,
+                                              selectedCategoryInit: controller.selectedCategoryId.value != null
+                                                  ? categories.firstWhereOrNull(
+                                                      (c) => c.id == controller.selectedCategoryId.value)
+                                                  : null,
+                                            );
                                           });
                                         },
                                       );

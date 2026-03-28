@@ -33,7 +33,8 @@ class _CategorySheetState extends State<CategorySheet> {
       minChildSize: 0.3,
       maxChildSize: 0.9,
       builder: (context, scrollController) {
-        return Padding(
+        return Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,32 +46,41 @@ class _CategorySheetState extends State<CategorySheet> {
               const SizedBox(height: 20),
 
               Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children:
-                        widget.categories.map((item) {
-                          final isSelected = selectedCategory == item;
+                child: widget.categories.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'Không có phân loại nào.\nVui lòng kiểm tra lại thiết lập quỹ.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                    : SingleChildScrollView(
+  controller: scrollController,
+  child: Align(
+    alignment: Alignment.center,
+    child: Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      alignment: WrapAlignment.center,
+      children: widget.categories.map((item) {
+        final isSelected = selectedCategory == item;
 
-                          return GestureDetector(
-                            onTap: () {
-                              if (item.percentage == 0) return;
-                              setState(() => selectedCategory = item);
-                              Navigator.pop(context, item);
-                            },
-
-                            child: CategoryItem(
-                              title: item.name,
-                              percentage: item.percentage,
-                              icon: item.icon,
-                              isSelected: isSelected,
-                            ),
-                          );
-                        }).toList(),
-                  ),
-                ),
+        return GestureDetector(
+          onTap: () {
+            setState(() => selectedCategory = item);
+            Navigator.pop(context, item);
+          },
+          child: CategoryItem(
+            title: item.name,
+            percentage: item.percentage,
+            icon: item.icon,
+            isSelected: isSelected,
+          ),
+        );
+      }).toList(),
+    ),
+  ),
+)
               ),
             ],
           ),

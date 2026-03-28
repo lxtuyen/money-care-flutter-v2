@@ -6,7 +6,6 @@ import 'package:money_care/core/utils/Helper/helper_functions.dart';
 class StatisticsHeader extends StatelessWidget {
   final String selected;
   final Function(String) onSelected;
-  final String title;
   final int spendText;
   final int incomeText;
 
@@ -14,7 +13,6 @@ class StatisticsHeader extends StatelessWidget {
     super.key,
     required this.selected,
     required this.onSelected,
-    this.title = "Thống kê",
     this.spendText = 0,
     this.incomeText = 0,
   });
@@ -27,20 +25,6 @@ class StatisticsHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: kIsWeb ? AppColors.text2 : Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
           Column(
             children: [
               Row(

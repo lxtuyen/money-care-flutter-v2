@@ -95,6 +95,12 @@ class AuthRepositoryImpl implements AuthRepository {
     await localDatasource.clearCache();
   }
 
+  @override
+  UserEntity? getCachedUser() {
+    final model = localDatasource.getCachedUser();
+    return model?.toEntity();
+  }
+
   Failure _mapExceptionToFailure(Object error) {
     if (error is UnauthorizedException) {
       return UnauthorizedFailure(error.message);

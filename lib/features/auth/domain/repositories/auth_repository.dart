@@ -18,4 +18,5 @@ abstract class AuthRepository {
     String newPassword,
   );
   Future<void> logout();
+  UserEntity? getCachedUser();
 }

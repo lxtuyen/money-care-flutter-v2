@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:money_care/core/constants/colors.dart';
 
 class CategoryItem extends StatelessWidget {
   final String title;
@@ -26,8 +27,8 @@ class CategoryItem extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isSelected ? Colors.blue : Colors.grey.shade300,
-          width: isSelected ? 2 : 1,
+          color: isSelected ? AppColors.primary : Colors.grey.shade300,
+          width: isSelected ? 3 : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -42,7 +43,7 @@ class CategoryItem extends StatelessWidget {
         children: [
           SvgPicture.asset(
             'assets/icons/$icon.svg',
-            color: isSelected ? Colors.blue : Colors.grey,
+            color: isSelected ? AppColors.primary : Colors.grey,
             width: 28,
             height: 28,
           ),

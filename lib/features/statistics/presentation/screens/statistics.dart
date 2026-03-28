@@ -129,7 +129,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     return StatisticsHeader(
                       selected: selected,
                       onSelected: (value) => setState(() => selected = value),
-                      title: "Thống kê",
                       spendText: 0,
                       incomeText: 0,
                     );
@@ -138,7 +137,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   return StatisticsHeader(
                     selected: selected,
                     onSelected: (value) => setState(() => selected = value),
-                    title: "Thống kê",
                     spendText: data.expenseTotal,
                     incomeText: data.incomeTotal,
                   );

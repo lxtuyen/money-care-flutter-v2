@@ -1,16 +1,18 @@
-import 'package:money_care/features/auth/domain/entities/user_profile_entity.dart';
+import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 
 class UserProfileModel {
   final int? id;
   final String firstName;
   final String lastName;
   final int? monthlyIncome;
+  final String? avatar;
 
   UserProfileModel({
     this.id,
     required this.firstName,
     required this.lastName,
     this.monthlyIncome,
+    this.avatar,
   });
 
   String get fullName => '$firstName $lastName';
@@ -23,6 +25,7 @@ class UserProfileModel {
         monthlyIncome: json['monthly_income'] != null
             ? double.tryParse(json['monthly_income'].toString())?.toInt()
             : null,
+        avatar: json['avatar'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +33,7 @@ class UserProfileModel {
     'first_name': firstName,
     'last_name': lastName,
     'monthly_income': monthlyIncome,
+    'avatar': avatar,
   };
 
   UserProfileModel copyWith({
@@ -37,12 +41,14 @@ class UserProfileModel {
     String? firstName,
     String? lastName,
     int? monthlyIncome,
+    String? avatar,
   }) {
     return UserProfileModel(
       id: id ?? this.id,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       monthlyIncome: monthlyIncome ?? this.monthlyIncome,
+      avatar: avatar ?? this.avatar,
     );
   }
 
@@ -50,5 +56,7 @@ class UserProfileModel {
     id: id ?? 0,
     firstName: firstName,
     lastName: lastName,
+    monthlyIncome: monthlyIncome,
+    avatar: avatar,
   );
 }

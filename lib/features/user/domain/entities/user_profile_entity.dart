@@ -1,15 +1,18 @@
 class UserProfileEntity {
   final int? id;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
+  final String? avatar;
   final int? monthlyIncome;
 
   const UserProfileEntity({
     this.id,
-    required this.firstName,
-    required this.lastName,
+    this.firstName,
+    this.lastName,
+    this.avatar,
     this.monthlyIncome,
   });
 
-  String get fullName => '$firstName $lastName';
+  String get fullName =>
+      '${firstName ?? ''} ${lastName ?? ''}'.trim();
 }

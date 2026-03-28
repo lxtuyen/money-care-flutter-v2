@@ -8,6 +8,7 @@ import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
 import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
 import 'package:money_care/features/saving_fund/domain/usecases/usecases.dart';
+import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 
 class SavingFundController extends GetxController {
@@ -38,6 +39,21 @@ class SavingFundController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final authController = Get.find<AuthController>();
+    ever(authController.user, (user) {
+      if (user != null && user.savingFund != null) {
+        currentFund.value = user.savingFund;
+        fundId.value = user.savingFund!.id;
+      }
+    });
+
+    // Initial sync
+    if (authController.user.value?.savingFund != null) {
+      currentFund.value = authController.user.value!.savingFund;
+      fundId.value = authController.user.value!.savingFund!.id;
+      loadFundById();
+    }
+
     ever(fundId, (_) {
       if (fundId.value > 0) {
         loadFundById();

@@ -1,5 +1,5 @@
-import 'package:money_care/features/auth/domain/entities/saving_fund_entity.dart';
-import 'package:money_care/features/auth/domain/entities/user_profile_entity.dart';
+import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
+import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 
 class UserEntity {
   final int id;

@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/core/services/notification_service.dart';
 
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
@@ -14,6 +15,7 @@ import 'package:money_care/features/user/presentation/bindings/user_binding.dart
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/admin/presentation/bindings/admin_binding.dart';
 import 'package:money_care/features/statistics/presentation/bindings/statistics_binding.dart';
+import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
 
 class AppBinding extends Bindings {
   final LocalStorage storage;
@@ -29,6 +31,8 @@ class AppBinding extends Bindings {
     Get.put<ApiClient>(apiService);
     Get.put<LocalStorage>(storage);
 
+    Get.putAsync(() => NotificationService().init());
+
     Get.put<AppController>(AppController(storage: storage));
 
     SplashBinding().dependencies();
@@ -40,5 +44,6 @@ class AppBinding extends Bindings {
     ChatBinding(apiClient: apiService).dependencies();
     AdminBinding(apiClient: apiService).dependencies();
     StatisticsBinding(apiClient: apiService).dependencies();
+    NotificationBinding(apiClient: apiService).dependencies();
   }
 }

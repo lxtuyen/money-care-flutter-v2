@@ -21,6 +21,7 @@ import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/Income.dart';
 import 'package:money_care/features/transaction/presentation/screens/expense.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
+import 'package:money_care/features/notification/presentation/screens/notification_screen.dart';
 
 final List<GetPage> appPages = [
   GetPage(name: '/splash', page: () => const SplashScreen()),
@@ -73,4 +74,9 @@ final List<GetPage> appPages = [
   ),
 
   GetPage(name: '/main', page: () => const ScaffoldWithNavBar()),
+
+  GetPage(
+    name: '/notification',
+    page: () => const NotificationScreen(),
+  ),
 ];

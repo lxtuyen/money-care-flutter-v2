@@ -29,17 +29,21 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   @override
   Future<UserModel> loginWithGoogle() async {
     User? firebaseUser;
+    String? idToken;
 
     if (kIsWeb) {
       final provider = GoogleAuthProvider();
       final cred = await FirebaseAuth.instance.signInWithPopup(provider);
       firebaseUser = cred.user;
+      final oauthCred = cred.credential as OAuthCredential?;
+      idToken = oauthCred?.idToken ?? await firebaseUser?.getIdToken();
     } else {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         throw const ServerException('Đăng nhập Google đã bị hủy');
       }
       final googleAuth = await googleUser.authentication;
+      idToken = googleAuth.idToken;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -48,15 +52,14 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       firebaseUser = cred.user;
     }
 
-    if (firebaseUser == null || firebaseUser.email == null) {
-      throw const ServerException('Đăng nhập Google thất bại');
+    if (firebaseUser == null || idToken == null) {
+      throw const ServerException('Đăng xuất hoặc không lấy được Token do lỗi cấu hình');
     }
 
     final res = await api.post<UserModel>(
       ApiRoutes.googleLogin,
       body: {
-        'email': firebaseUser.email,
-        'firstName': firebaseUser.displayName,
+        'idToken': idToken,
       },
       fromJsonT: (json) => UserModel.fromJson(json['user'], json['accessToken']),
     );

@@ -94,11 +94,13 @@ class ApiClient {
 
   Future<ApiResponse<T>> delete<T>(
     String path, {
+    Map<String, dynamic>? body,
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/$path'),
       headers: _headers(),
+      body: body != null ? jsonEncode(body) : null,
     );
     return _handleResponse(response, fromJsonT);
   }

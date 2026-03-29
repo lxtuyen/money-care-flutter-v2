@@ -9,6 +9,7 @@ import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase
 import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/get_cached_user_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:money_care/core/services/notification_service.dart';
 
 class AuthController extends GetxController {
   final GoogleSignInUseCase googleSignInUseCase;
@@ -44,6 +45,16 @@ class AuthController extends GetxController {
     if (cachedUser != null) {
       user.value = cachedUser;
     }
+
+    ever(user, (UserEntity? currentUser) {
+      if (currentUser != null) {
+        try {
+          Get.find<NotificationService>().syncToken();
+        } catch (e) {
+          print('NotificationService error: $e');
+        }
+      }
+    });
   }
 
   Future<Either<Failure, UserEntity>> loginWithGoogle() async {
@@ -106,6 +117,12 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
+    try {
+      await Get.find<NotificationService>().removeTokenFromServer();
+    } catch (e) {
+      print('NotificationService error: $e');
+    }
+
     if (isGoogleLogin.value) {
       await GoogleSignIn().signOut();
     }

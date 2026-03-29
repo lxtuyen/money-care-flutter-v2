@@ -1,9 +1,15 @@
-class AppImages{
-  static const String logo = 'assets/images/logo.png';
-  static const String welcome = 'assets/images/welcome.png';
-  static const String savingRule = 'assets/images/saving_rule.png';
-  static const String google = 'assets/images/google.png';
-  static const String expenseManagement = 'assets/images/expense_management.png';
-  static const String financialFreedom = 'assets/images/financial_freedom.png';
-  static const String splash = 'assets/images/splash.png';
+import 'package:money_care/core/constants/app_assets.dart';
+
+class AppImages {
+  AppImages._();
+
+  static final String logo = AppAssets.imagePngPath('logo');
+  static final String welcome = AppAssets.imagePngPath('welcome');
+  static final String savingRule = AppAssets.imagePngPath('saving_rule');
+  static final String google = AppAssets.imagePngPath('google');
+  static final String expenseManagement =
+      AppAssets.imagePngPath('expense_management');
+  static final String financialFreedom =
+      AppAssets.imagePngPath('financial_freedom');
+  static final String splash = AppAssets.imagePngPath('splash');
 }

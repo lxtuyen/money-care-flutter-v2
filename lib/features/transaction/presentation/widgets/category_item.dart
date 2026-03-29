@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 
 class CategoryItem extends StatelessWidget {
   final String title;
@@ -19,46 +19,81 @@ class CategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 145,
-      height: 105,
-      padding: const EdgeInsets.all(10),
+      duration: const Duration(milliseconds: 180),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isSelected ? AppColors.primary : Colors.grey.shade300,
-          width: isSelected ? 3 : 1,
+          color:
+              isSelected
+                  ? AppColors.primary.withOpacity(0.42)
+                  : AppColors.borderSecondary,
+          width: isSelected ? 1.6 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 3,
-            offset: const Offset(0, 2),
+            color: AppColors.text1.withOpacity(0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SvgPicture.asset(
-            'assets/icons/$icon.svg',
-            color: isSelected ? AppColors.primary : Colors.grey,
-            width: 28,
-            height: 28,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? AppColors.primary.withOpacity(0.16)
+                          : AppColors.backgroundPrimary,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(
+                  child: AppSvgIcon(
+                    iconName: icon,
+                    color: isSelected ? AppColors.primary : AppColors.text4,
+                    size: 22,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? Colors.white.withOpacity(0.86)
+                          : AppColors.backgroundPrimary,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '$percentage%',
+                  style: TextStyle(
+                    color: isSelected ? AppColors.primary : AppColors.text3,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 10),
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 3),
-          Text(
-            percentage.toString(),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: isSelected ? Colors.blue : Colors.grey,
-              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: isSelected ? AppColors.primary : AppColors.text2,
+              height: 1.2,
             ),
           ),
         ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/presentation/widgets/text_field/percentage_input_field.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
@@ -35,10 +35,9 @@ class CategoryPercentageCard extends StatelessWidget {
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: SvgPicture.asset(
-                    'assets/icons/${category.icon}.svg',
-                    width: 28,
-                    height: 28,
+                  child: AppSvgIcon(
+                    iconName: category.icon,
+                    size: 28,
                   ),
                 ),
                 const SizedBox(width: 16),

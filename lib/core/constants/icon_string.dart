@@ -1,18 +1,20 @@
-class AppIcons{
-  static const String notification = "assets/icons/notification.svg";
-  static const String search = "assets/icons/search.svg";
-  static const String chart2 = "assets/icons/chart2.svg";
-  static const String emptyFolder = "assets/icons/empty-folder.svg";
-  static const String analysis = "assets/icons/analysis.svg";
+import 'package:money_care/core/constants/app_assets.dart';
 
+class AppIcons {
+  AppIcons._();
 
-  static const String freedom = "assets/icons/freedom_icon.svg";
-  static const String charity = "assets/icons/charity_icon.svg";
-  static const String savings = "assets/icons/savings_icon.svg";
-  static const String pleasure = "assets/icons/pleasure_icon.svg";
-  static const String education = "assets/icons/education_icon.svg";
-  static const String essential = "assets/icons/essential_icon.svg";
+  static final String notification = AppAssets.iconSvgPath('notification');
+  static final String search = AppAssets.iconSvgPath('search');
+  static final String chart2 = AppAssets.iconSvgPath('chart2');
+  static final String emptyFolder = AppAssets.iconSvgPath('empty-folder');
+  static final String analysis = AppAssets.iconSvgPath('analysis');
 
-  static const String filter = "assets/icons/filter.svg";
+  static final String freedom = AppAssets.iconSvgPath('freedom_icon');
+  static final String charity = AppAssets.iconSvgPath('charity_icon');
+  static final String savings = AppAssets.iconSvgPath('savings_icon');
+  static final String pleasure = AppAssets.iconSvgPath('pleasure_icon');
+  static final String education = AppAssets.iconSvgPath('education_icon');
+  static final String essential = AppAssets.iconSvgPath('essential_icon');
 
+  static final String filter = AppAssets.iconSvgPath('filter');
 }

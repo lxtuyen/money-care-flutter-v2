@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/presentation/widgets/dialog/success_dialog.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class EditCategory extends StatefulWidget {
   final String namecategory;
@@ -101,20 +101,8 @@ class _EditCategoryState extends State<EditCategory> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder:
-                                  (context) => SuccessDialog(
-                                    message: 'Chỉnh sửa thành công!!',
-                                    onBack: () {
-                                      Get.back();
-                                    },
-                                    onCreateNew: () {
-                                      Get.back();
-                                    },
-                                    isShowButton: true,
-                                  ),
+                            AppHelperFunction.showSuccessSnackBar(
+                              'Chỉnh sửa thành công',
                             );
                           },
                           style: ElevatedButton.styleFrom(

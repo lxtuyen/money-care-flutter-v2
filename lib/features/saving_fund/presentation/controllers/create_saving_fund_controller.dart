@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
+import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
 import 'package:money_care/features/saving_fund/domain/usecases/usecases.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
-import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
 
 class CreateSavingFundController extends GetxController {
   final CreateSavingFundUseCase createSavingFundUseCase;
@@ -74,7 +73,11 @@ class CreateSavingFundController extends GetxController {
       CategoryEntity(icon: 'pleasure_icon', name: 'Mua sắm', percentage: 0),
       CategoryEntity(icon: 'savings_icon', name: 'Di chuyển', percentage: 0),
       CategoryEntity(icon: 'essential_icon', name: 'Hóa đơn', percentage: 0),
-      CategoryEntity(icon: 'education_icon', name: 'Giáo dục', percentage: 0),
+      CategoryEntity(
+        icon: 'education_icon',
+        name: 'Giáo dục',
+        percentage: 0,
+      ),
       CategoryEntity(icon: 'freedom_icon', name: 'Khác', percentage: 0),
     ]);
     categories.refresh();
@@ -83,7 +86,9 @@ class CreateSavingFundController extends GetxController {
   Future<void> initializeUserInfo() async {
     final userInfoJson = LocalStorage().getUserInfo();
     if (userInfoJson == null) {
-      AppHelperFunction.showSnackBar('Không thể xác định người dùng hiện tại');
+      AppHelperFunction.showErrorSnackBar(
+        'Không thể xác định người dùng hiện tại',
+      );
       return;
     }
 
@@ -91,7 +96,9 @@ class CreateSavingFundController extends GetxController {
       final user = UserModel.fromJson(userInfoJson, '');
       userId.value = user.id;
     } catch (_) {
-      AppHelperFunction.showSnackBar('Không thể đọc thông tin người dùng hiện tại');
+      AppHelperFunction.showErrorSnackBar(
+        'Không thể đọc thông tin người dùng hiện tại',
+      );
     }
   }
 
@@ -128,27 +135,33 @@ class CreateSavingFundController extends GetxController {
 
   Future<bool> submitCreateFund() async {
     if (userId.value == null) {
-      AppHelperFunction.showSnackBar('Không thể xác định người dùng hiện tại');
+      AppHelperFunction.showErrorSnackBar(
+        'Không thể xác định người dùng hiện tại',
+      );
       return false;
     }
 
     if (startDate.value == null) {
-      AppHelperFunction.showSnackBar('Vui lòng chọn ngày bắt đầu');
+      AppHelperFunction.showErrorSnackBar(
+        'Vui lòng chọn ngày bắt đầu',
+      );
       return false;
     }
 
     if (endDate.value == null) {
-      AppHelperFunction.showSnackBar('Vui lòng chọn ngày kết thúc');
+      AppHelperFunction.showErrorSnackBar('Vui lòng chọn ngày kết thúc');
       return false;
     }
 
     if (endDate.value!.isBefore(startDate.value!)) {
-      AppHelperFunction.showSnackBar('Ngày kết thúc phải sau ngày bắt đầu');
+      AppHelperFunction.showErrorSnackBar(
+        'Ngày kết thúc phải sau ngày bắt đầu',
+      );
       return false;
     }
 
     if (!validatePercentages()) {
-      AppHelperFunction.showSnackBar(
+      AppHelperFunction.showErrorSnackBar(
         'Tổng phần trăm phải là 100%. Hiện tại là: ${totalPercentage.value}%',
       );
       return false;
@@ -199,7 +212,6 @@ class CreateSavingFundController extends GetxController {
     return totalPercentage.value == 100;
   }
 
-  // cần sửa sau
   void _updateTotalPercentage() {
     final sum = categories.fold<int>(0, (sum, cat) => sum + cat.percentage);
     totalPercentage.value = sum;
@@ -210,14 +222,16 @@ class CreateSavingFundController extends GetxController {
     final result = await createSavingFundUseCase(dto);
     final isSuccess = result.fold(
       (failure) {
-        AppHelperFunction.showSnackBar(failure.message);
+        AppHelperFunction.showErrorSnackBar(failure.message);
         return false;
       },
       (fund) {
         savingFundController.savingFunds.add(fund);
         savingFundController.savingFunds.refresh();
         _resetForm();
-        AppHelperFunction.showSnackBar('Tạo quỹ tiết kiệm thành công');
+        AppHelperFunction.showSuccessSnackBar(
+          'Tạo quỹ tiết kiệm thành công',
+        );
         return true;
       },
     );

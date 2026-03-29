@@ -82,8 +82,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     child: Builder(builder: (context) {
                       final data = statisticsController.totalByType.value;
 
-                      if (statisticsController.isLoading.value &&
-                          data == null) {
+                      if (statisticsController.isLoading.value) {
                         return const SizedBox(
                           height: 120,
                           child: Center(child: CircularProgressIndicator()),

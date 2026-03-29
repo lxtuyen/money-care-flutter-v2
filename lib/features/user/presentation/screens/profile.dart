@@ -7,7 +7,6 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/presentation/widgets/appbar/appbar.dart';
 import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
-import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -48,9 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           lastName: lastNameController.text,
         );
         await userController.updateProfile(dto);
-        AppHelperFunction.showSnackBar('Cáº­p nháº­t thÃ nh cÃ´ng');
+        AppHelperFunction.showSuccessSnackBar('Cập nhật thành công');
       } catch (e) {
-        AppHelperFunction.showSnackBar(e.toString());
+        AppHelperFunction.showErrorSnackBar(e.toString());
       }
     }
   }
@@ -58,9 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarCustom(
-        showBackArrow: true,
-      ),
+      appBar: AppbarCustom(showBackArrow: true),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -73,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   const SizedBox(height: 40),
                   const Text(
-                    "Há»“ sÆ¡ cá»§a báº¡n",
+                    "Hồ sơ của bạn",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -84,25 +81,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   AppTextFormField(
                     controller: firstNameController,
-                    label: 'TÃªn',
+                    label: 'Tên',
                     icon: Icons.person,
-                    hintText: 'VD: VÄƒn A',
+                    hintText: 'VD: Văn A',
                     validator: (v) => AppValidator.validateFirstName(v),
                   ),
                   const SizedBox(height: 16),
 
                   AppTextFormField(
                     controller: lastNameController,
-                    label: 'Há»',
+                    label: 'Họ',
                     icon: Icons.person,
-                    hintText: 'VD: Nguyá»…n',
+                    hintText: 'VD: Nguyễn',
                     validator: (v) => AppValidator.validateLastName(v),
                   ),
                   const SizedBox(height: 24),
 
                   Obx(() {
                     return PrimaryButton(
-                      label: 'Cáº­p nháº­t',
+                      label: 'Cập nhật',
                       onPressed: onUpdateProfile,
                       isLoading: userController.isLoading.value,
                       isEnabled: !userController.isLoading.value,

@@ -1,4 +1,6 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:get/get.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/auth/data/datasources/auth_local_datasource.dart';
@@ -20,6 +22,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final model = await remoteDatasource.login(email, password);
       await localDatasource.cacheUser(model);
+      _syncUserId(model.id);
       return Right(model.toEntity());
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
@@ -31,10 +34,17 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final model = await remoteDatasource.loginWithGoogle();
       await localDatasource.cacheUser(model);
+      _syncUserId(model.id);
       return Right(model.toEntity());
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
+  }
+
+  void _syncUserId(int id) {
+    try {
+      Get.find<AppController>().userId.value = id;
+    } catch (_) {}
   }
 
   @override

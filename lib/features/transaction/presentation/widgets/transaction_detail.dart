@@ -5,7 +5,6 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/core/presentation/widgets/dialog/success_dialog.dart';
 import 'package:money_care/core/presentation/widgets/dialog/warm_dialog.dart';
 import 'package:get/get.dart';
 
@@ -17,13 +16,14 @@ class TransactionDetail extends StatelessWidget {
   const TransactionDetail({
     super.key,
     required this.item,
-    required this.isExpense, required this.userId,
+    required this.isExpense,
+    required this.userId,
   });
 
   @override
   Widget build(BuildContext context) {
-      final TransactionController transactionController =
-      Get.find<TransactionController>();
+    final TransactionController transactionController =
+        Get.find<TransactionController>();
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -62,7 +62,9 @@ class TransactionDetail extends StatelessWidget {
                         builder:
                             (context) => TransactionForm(
                               title:
-                                  isExpense ? "Chỉnh sửa chi" : "Chỉnh sửa thu",
+                                  isExpense
+                                      ? "Chỉnh sửa chi"
+                                      : "Chỉnh sửa thu",
                               item: item,
                               showCategory: isExpense ? true : false,
                             ),
@@ -106,16 +108,12 @@ class TransactionDetail extends StatelessWidget {
                             onConfirm: () {
                               Get.back();
                               Get.back();
-                              transactionController.deleteTransaction(item.id!, userId);
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (context) => SuccessDialog(
-                                      message: "Xóa giao dịch thành công!",
-                                      onBack: () => Get.back(),
-                                      onCreateNew: () {},
-                                      isShowButton: false,
-                                    ),
+                              transactionController.deleteTransaction(
+                                item.id!,
+                                userId,
+                              );
+                              AppHelperFunction.showSuccessSnackBar(
+                                'Xóa giao dịch thành công',
                               );
                             },
                           ),

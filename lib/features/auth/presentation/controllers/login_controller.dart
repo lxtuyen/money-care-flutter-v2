@@ -13,10 +13,7 @@ class LoginController extends GetxController {
   final LoginUseCase loginUseCase;
   final AuthController authController;
 
-  LoginController({
-    required this.loginUseCase,
-    required this.authController,
-  });
+  LoginController({required this.loginUseCase, required this.authController});
 
   final isLoading = false.obs;
   final loginFormKey = GlobalKey<FormState>();
@@ -24,7 +21,8 @@ class LoginController extends GetxController {
   final loginPasswordController = TextEditingController();
   final isLoginPasswordObscure = true.obs;
 
-  String? validateLoginEmail(String? value) => AppValidator.validateEmail(value);
+  String? validateLoginEmail(String? value) =>
+      AppValidator.validateEmail(value);
 
   String? validateLoginPassword(String? value) =>
       AppValidator.validatePassword(value);
@@ -61,25 +59,26 @@ class LoginController extends GetxController {
       loginPasswordController.text.trim(),
     );
 
-    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
-      currentUser,
-    ) {
-      if (currentUser.role == 'user') {
-        Get.offAllNamed(
-          currentUser.savingFund != null
-              ? RoutePath.main
-              : RoutePath.onboardingWelcome,
-        );
-        return;
-      }
+    result.match(
+      (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
+      (currentUser) {
+        if (currentUser.role == 'user') {
+          Get.offAllNamed(
+            currentUser.savingFund != null
+                ? RoutePath.main
+                : RoutePath.onboardingWelcome,
+          );
+          return;
+        }
 
-      if (currentUser.role == 'admin') {
-        Get.offAllNamed(RoutePath.adminHome);
-        return;
-      }
+        if (currentUser.role == 'admin') {
+          Get.offAllNamed(RoutePath.adminHome);
+          return;
+        }
 
-      AppHelperFunction.showSnackBar('ÄÄƒng nháº­p tháº¥t báº¡i');
-    });
+        AppHelperFunction.showErrorSnackBar('Đăng nhập thất bại');
+      },
+    );
   }
 
   @override

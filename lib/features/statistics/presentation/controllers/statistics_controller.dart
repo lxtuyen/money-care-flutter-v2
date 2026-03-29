@@ -85,7 +85,6 @@ class StatisticsController extends GetxController {
   }
 
   Future<void> getTotalByDateEntityLstMonth(int userId) async {
-    isLoading.value = true;
     try {
       final dto = _createTotalsDto(lastMonth7DaysStart, lastMonthToday);
       totalByDateLstMonth.value = await getTotalByDateEntityUseCase(
@@ -95,8 +94,6 @@ class StatisticsController extends GetxController {
       errorMessage.value = null;
     } catch (e) {
       errorMessage.value = e.toString();
-    } finally {
-      isLoading.value = false;
     }
   }
 

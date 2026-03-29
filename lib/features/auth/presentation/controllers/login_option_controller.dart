@@ -12,20 +12,21 @@ class LoginOptionController extends GetxController {
 
   Future<void> loginWithGoogleAndNavigate() async {
     final result = await authController.loginWithGoogle();
-    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
-      currentUser,
-    ) {
-      if (currentUser.role == 'user') {
-        Get.offAllNamed(
-          currentUser.savingFund != null
-              ? RoutePath.main
-              : RoutePath.onboardingWelcome,
-        );
-        return;
-      }
-      if (currentUser.role == 'admin') {
-        Get.offAllNamed(RoutePath.adminHome);
-      }
-    });
+    result.match(
+      (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
+      (currentUser) {
+        if (currentUser.role == 'user') {
+          Get.offAllNamed(
+            currentUser.savingFund != null
+                ? RoutePath.main
+                : RoutePath.onboardingWelcome,
+          );
+          return;
+        }
+        if (currentUser.role == 'admin') {
+          Get.offAllNamed(RoutePath.adminHome);
+        }
+      },
+    );
   }
 }

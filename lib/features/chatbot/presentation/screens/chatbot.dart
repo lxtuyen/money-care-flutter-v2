@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/bubble.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/welcome_option.dart';
@@ -79,7 +80,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
     await _speech.listen(
       localeId: 'vi_VN',
-      listenMode: stt.ListenMode.dictation,
+      listenOptions: stt.SpeechListenOptions(
+        listenMode: stt.ListenMode.dictation,
+      ),
       onResult: (result) {
         _controller.text = result.recognizedWords;
         _controller.selection = TextSelection.fromPosition(
@@ -105,7 +108,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty || chatController.isLoading.value) return;
     if (userId == null) {
-      Get.snackbar('Loi', 'Khong the xac dinh nguoi dung hien tai');
+      AppHelperFunction.showErrorSnackBar(
+        'Không thể xác định người dùng hiện tại',
+      );
       return;
     }
 

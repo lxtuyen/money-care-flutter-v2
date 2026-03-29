@@ -11,9 +11,12 @@ import 'package:money_care/features/transaction/presentation/controllers/transac
 import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
 
 class TransactionFormController extends GetxController {
-  final TransactionController transactionController = Get.find<TransactionController>();
-  final SavingFundController savingFundController = Get.find<SavingFundController>();
-  final ScanReceiptController scanReceiptController = Get.find<ScanReceiptController>();
+  final TransactionController transactionController =
+      Get.find<TransactionController>();
+  final SavingFundController savingFundController =
+      Get.find<SavingFundController>();
+  final ScanReceiptController scanReceiptController =
+      Get.find<ScanReceiptController>();
   final AppController appController = Get.find<AppController>();
 
   final formKey = GlobalKey<FormState>();
@@ -23,13 +26,13 @@ class TransactionFormController extends GetxController {
 
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final RxnInt selectedCategoryId = RxnInt();
-  
+
   bool showCategory = true;
   TransactionEntity? initialItem;
 
-  void init(bool showCategory, TransactionEntity? item) {
-    this.showCategory = showCategory;
-    this.initialItem = item;
+  void init(bool isCategoryVisible, TransactionEntity? item) {
+    showCategory = isCategoryVisible;
+    initialItem = item;
 
     if (item != null) {
       selectedDate.value = item.transactionDate ?? DateTime.now();
@@ -69,12 +72,16 @@ class TransactionFormController extends GetxController {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_camera_outlined),
-                title: const Text('Chụp hoá đơn'),
+                title: const Text(
+                  'Chụp hoá đơn',
+                ),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Chọn từ thư viện'),
+                title: const Text(
+                  'Chọn từ thư viện',
+                ),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
             ],
@@ -93,10 +100,13 @@ class TransactionFormController extends GetxController {
       amountController.text = data.totalAmount.toString();
       selectedDate.value = DateTime.parse(data.date);
       if (showCategory) {
-        final categories = savingFundController.currentFund.value?.categories ?? [];
+        final categories =
+            savingFundController.currentFund.value?.categories ?? [];
 
         final matched = categories.firstWhere(
-          (c) => c.name.toLowerCase().trim() == data.categoryName.toLowerCase().trim(),
+          (c) =>
+              c.name.toLowerCase().trim() ==
+              data.categoryName.toLowerCase().trim(),
           orElse: () => CategoryEntity(id: -1, name: "", icon: "default.png"),
         );
 
@@ -140,9 +150,11 @@ class TransactionFormController extends GetxController {
       final dto = buildTransactionDto();
       await transactionController.createTransaction(dto);
       Get.back();
-      AppHelperFunction.showSnackBar('Tạo giao dịch thành công');
+      AppHelperFunction.showSuccessSnackBar(
+        'Tạo giao dịch thành công',
+      );
     } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
+      AppHelperFunction.showErrorSnackBar(e.toString());
     }
   }
 
@@ -151,9 +163,11 @@ class TransactionFormController extends GetxController {
       final dto = buildTransactionDto();
       await transactionController.updateTransaction(dto, initialItem!.id!);
       Get.back();
-      AppHelperFunction.showSnackBar('Cập nhật giao dịch thành công');
+      AppHelperFunction.showSuccessSnackBar(
+        'Cập nhật giao dịch thành công',
+      );
     } catch (e) {
-      AppHelperFunction.showSnackBar(e.toString());
+      AppHelperFunction.showErrorSnackBar(e.toString());
     }
   }
 

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
 import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
@@ -96,7 +96,7 @@ class SavingFundController extends GetxController {
         }
       });
     } catch (_) {
-      _showError('Không thể đọc thông tin người dùng hiện tại');
+      _showError('Không thể xác định người dùng hiện tại');
     } finally {
       isLoadingFunds.value = false;
     }
@@ -174,12 +174,8 @@ class SavingFundController extends GetxController {
         if (currentFund.value?.id == dto.id) {
           currentFund.value = updated;
         }
-
-        Get.snackbar(
-          'Thành công',
+        AppHelperFunction.showSuccessSnackBar(
           'Cập nhật quỹ tiết kiệm thành công',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
         );
         return true;
       },
@@ -204,12 +200,8 @@ class SavingFundController extends GetxController {
           currentFund.value = null;
           fundId.value = 0;
         }
-
-        Get.snackbar(
-          'Thành công',
+        AppHelperFunction.showSuccessSnackBar(
           'Xóa quỹ tiết kiệm thành công',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
         );
         return true;
       },
@@ -224,17 +216,7 @@ class SavingFundController extends GetxController {
 
   void _showError(String message) {
     errorMessage?.value = message;
-    Get.snackbar(
-      'Lỗi',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 3),
-      backgroundColor: Colors.red.withOpacity(0.8),
-      colorText: Colors.white,
-      icon: const Icon(Icons.error, color: Colors.white),
-      margin: const EdgeInsets.all(10),
-      borderRadius: 8,
-    );
+    AppHelperFunction.showErrorSnackBar(message);
   }
 
   int get currentFundId => fundId.value;

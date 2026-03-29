@@ -75,12 +75,13 @@ class RegisterController extends GetxController {
       registerLastNameController.text.trim(),
     );
 
-    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
-      message,
-    ) {
-      Get.offAllNamed(RoutePath.login);
-      AppHelperFunction.showSnackBar(message);
-    });
+    result.match(
+      (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
+      (message) {
+        Get.offAllNamed(RoutePath.login);
+        AppHelperFunction.showSuccessSnackBar(message);
+      },
+    );
   }
 
   @override

@@ -16,7 +16,8 @@ class ResetPasswordController extends GetxController {
   final isPasswordObscure = true.obs;
   RxBool get isLoading => authController.isLoading;
 
-  String? validatePassword(String? value) => AppValidator.validatePassword(value);
+  String? validatePassword(String? value) =>
+      AppValidator.validatePassword(value);
 
   String? validateConfirmPassword(String? value) =>
       AppValidator.validateConfirmPassword(passwordController.text, value);
@@ -32,12 +33,13 @@ class ResetPasswordController extends GetxController {
     }
 
     final result = await authController.resetPassword(passwordController.text);
-    result.match((failure) => AppHelperFunction.showSnackBar(failure.message), (
-      message,
-    ) {
-      Get.offAllNamed(RoutePath.login);
-      AppHelperFunction.showSnackBar(message);
-    });
+    result.match(
+      (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
+      (message) {
+        Get.offAllNamed(RoutePath.login);
+        AppHelperFunction.showSuccessSnackBar(message);
+      },
+    );
   }
 
   @override

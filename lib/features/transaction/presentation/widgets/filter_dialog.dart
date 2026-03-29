@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/core/presentation/widgets/choice_chip/choice_chips.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/presentation/widgets/choice_chip/choice_chips.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({
@@ -17,7 +17,6 @@ class FilterDialog extends StatefulWidget {
   final String title;
   final List<String>? items;
   final List<CategoryEntity>? categories;
-
   final ValueChanged<FilterResult> onApply;
 
   @override
@@ -30,141 +29,320 @@ class _FilterDialogState extends State<FilterDialog> {
   String? selectedId;
   DateTime? startDate;
   DateTime? endDate;
+  String? selectedDateLabel;
+
+  bool get isDateDialog => widget.items != null;
 
   @override
   void initState() {
     super.initState();
 
-    selectedId = filterController.categoryId.value?.toString();
+    if (isDateDialog) {
+      selectedId = filterController.dateLabel.value;
+      selectedDateLabel = filterController.dateLabel.value;
+    } else {
+      selectedId = filterController.categoryId.value?.toString();
+    }
+
     startDate = filterController.startDate.value;
     endDate = filterController.endDate.value;
   }
 
   @override
   Widget build(BuildContext context) {
-    final widgets =
-        widget.items != null
-            ? widget.items!.map((item) {
-              final bool isCustom = item.toLowerCase().contains('tùy chỉnh');
-              final bool isSelected = selectedId == item;
+    final theme = Theme.of(context);
 
-              return CustomChoiceChip(
-                text: item,
-                isSelected: isSelected,
-                onSelected: (selected) async {
-                  if (isCustom) {
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime.now().subtract(
-                        const Duration(days: 365),
-                      ),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                      initialDateRange:
-                          startDate != null && endDate != null
-                              ? DateTimeRange(start: startDate!, end: endDate!)
-                              : null,
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        startDate = picked.start;
-                        endDate = picked.end;
-                        selectedId = item;
-                      });
-                    }
-                  } else {
-                    final now = DateTime.now();
-                    if (item == 'Hôm nay') {
-                      startDate = DateTime(now.year, now.month, now.day);
-                      endDate = startDate!
-                          .add(const Duration(days: 1))
-                          .subtract(const Duration(seconds: 1));
-                    } else if (item == 'Tuần này') {
-                      final weekday = now.weekday;
-                      startDate = DateTime(
-                        now.year,
-                        now.month,
-                        now.day,
-                      ).subtract(Duration(days: weekday - 1));
-                      endDate = startDate!
-                          .add(const Duration(days: 7))
-                          .subtract(const Duration(seconds: 1));
-                    } else if (item == 'Tháng này') {
-                      startDate = DateTime(now.year, now.month, 1);
-                      endDate = DateTime(
-                        now.year,
-                        now.month + 1,
-                        1,
-                      ).subtract(const Duration(seconds: 1));
-                    }
-                    setState(() => selectedId = item);
-                  }
-                },
-              );
-            }).toList()
-            : widget.categories!.map((cat) {
-              final bool isSelected = selectedId == cat.id.toString();
-              return CustomChoiceChip(
-                text: cat.name,
-                isSelected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    selectedId = cat.id.toString();
-                  });
-                },
-              );
-            }).toList();
-
-    return AlertDialog(
-      title: Text(widget.title),
-      content: Wrap(spacing: 8, runSpacing: 8, children: widgets),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              selectedId = null;
-              startDate = null;
-              endDate = null;
-            });
-
-            filterController.clearAll();
-
-            widget.onApply(
-              FilterResult(selectedId: '', startDate: null, endDate: null),
-            );
-
-            Get.back();
-          },
-          child: const Text("Xóa lọc", style: TextStyle(color: Colors.red)),
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      backgroundColor: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 30,
+              offset: const Offset(0, 16),
+            ),
+          ],
         ),
-        TextButton(
-          onPressed: () => Get.back(),
-          child: const Text("Hủy", style: TextStyle(color: AppColors.text3)),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (selectedId != null) {
-              if (widget.categories != null) {
-                filterController.updateCategory(int.parse(selectedId!));
-              } else {
-                filterController.updateDateRange(startDate, endDate);
-              }
-
-              Get.back();
-              widget.onApply(
-                FilterResult(
-                  selectedId: selectedId!,
-                  startDate: startDate,
-                  endDate: endDate,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+              decoration: const BoxDecoration(
+                gradient: AppColors.linearGradient,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
                 ),
-              );
-            }
-          },
-          child: const Text(
-            "Áp dụng",
-            style: TextStyle(color: AppColors.text3),
-          ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          isDateDialog
+                              ? Icons.calendar_month_rounded
+                              : Icons.category_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () => Get.back(),
+                        icon: const Icon(Icons.close_rounded, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    isDateDialog
+                        ? 'Chọn mốc thời gian phù hợp để xem giao dịch chính xác hơn.'
+                        : 'Thu hẹp danh sách giao dịch theo phân loại bạn muốn xem.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: AppColors.backgroundPrimary,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        _buildSummaryText(),
+                        style: const TextStyle(
+                          color: AppColors.text3,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: _buildChoiceWidgets(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _clearFilter,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(color: AppColors.borderSecondary),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text('Xóa lọc'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _applySelection,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Áp dụng',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  List<Widget> _buildChoiceWidgets() {
+    if (isDateDialog) {
+      return widget.items!.map((item) {
+        final isCustom = item.toLowerCase().contains('tùy chỉnh');
+        final isSelected = selectedId == item;
+
+        return CustomChoiceChip(
+          text: item,
+          isSelected: isSelected,
+          onSelected: (selected) async {
+            if (!selected) {
+              setState(() => selectedId = null);
+              return;
+            }
+
+            if (isCustom) {
+              final picked = await showDateRangePicker(
+                context: context,
+                firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+                initialDateRange:
+                    startDate != null && endDate != null
+                        ? DateTimeRange(start: startDate!, end: endDate!)
+                        : null,
+              );
+
+              if (picked == null) return;
+
+              setState(() {
+                startDate = picked.start;
+                endDate = picked.end;
+                selectedId = item;
+                selectedDateLabel = item;
+              });
+              return;
+            }
+
+            final now = DateTime.now();
+            if (item == 'Hôm nay') {
+              startDate = DateTime(now.year, now.month, now.day);
+              endDate = startDate!
+                  .add(const Duration(days: 1))
+                  .subtract(const Duration(seconds: 1));
+            } else if (item == 'Tuần này') {
+              final weekday = now.weekday;
+              startDate = DateTime(
+                now.year,
+                now.month,
+                now.day,
+              ).subtract(Duration(days: weekday - 1));
+              endDate = startDate!
+                  .add(const Duration(days: 7))
+                  .subtract(const Duration(seconds: 1));
+            } else if (item == 'Tháng này') {
+              startDate = DateTime(now.year, now.month, 1);
+              endDate = DateTime(
+                now.year,
+                now.month + 1,
+                1,
+              ).subtract(const Duration(seconds: 1));
+            }
+
+            setState(() {
+              selectedId = item;
+              selectedDateLabel = item;
+            });
+          },
+        );
+      }).toList();
+    }
+
+    return widget.categories!.map((cat) {
+      final isSelected = selectedId == cat.id.toString();
+      return CustomChoiceChip(
+        text: cat.name,
+        isSelected: isSelected,
+        onSelected: (selected) {
+          setState(() {
+            selectedId = selected ? cat.id.toString() : null;
+          });
+        },
+      );
+    }).toList();
+  }
+
+  String _buildSummaryText() {
+    if (isDateDialog) {
+      return selectedDateLabel != null
+          ? 'Đang chọn: $selectedDateLabel'
+          : 'Chưa chọn khoảng thời gian';
+    }
+
+    return selectedId != null
+        ? 'Đã chọn 1 phân loại giao dịch'
+        : 'Chưa chọn phân loại nào';
+  }
+
+  void _clearFilter() {
+    setState(() {
+      selectedId = null;
+      startDate = null;
+      endDate = null;
+      selectedDateLabel = null;
+    });
+
+    filterController.clearAll();
+    widget.onApply(
+      FilterResult(selectedId: '', startDate: null, endDate: null),
+    );
+    Get.back();
+  }
+
+  void _applySelection() {
+    if (widget.categories != null) {
+      filterController.updateCategory(
+        selectedId != null ? int.parse(selectedId!) : null,
+      );
+    } else {
+      if (selectedId == null || startDate == null || endDate == null) {
+        return;
+      }
+
+      filterController.updateDateRange(
+        startDate,
+        endDate,
+        label: selectedDateLabel ?? selectedId,
+      );
+    }
+
+    Get.back();
+    widget.onApply(
+      FilterResult(
+        selectedId: selectedId ?? '',
+        startDate: startDate,
+        endDate: endDate,
+      ),
     );
   }
 }

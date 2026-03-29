@@ -6,15 +6,21 @@ import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
 class SearchWithFilter extends StatelessWidget {
   final String hintText;
   final VoidCallback onFilterTap;
+  final VoidCallback? onClearSearch;
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
+  final bool hasActiveFilters;
+  final int activeFilterCount;
 
   const SearchWithFilter({
     super.key,
     required this.onFilterTap,
     this.hintText = 'Tìm giao dịch',
+    this.onClearSearch,
     this.onChanged,
     this.controller,
+    this.hasActiveFilters = false,
+    this.activeFilterCount = 0,
   });
 
   @override
@@ -24,44 +30,112 @@ class SearchWithFilter extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                hintText: hintText,
-                hintStyle: const TextStyle(color: AppColors.text4),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color:
+                      hasActiveFilters
+                          ? AppColors.primary.withOpacity(0.35)
+                          : AppColors.borderSecondary,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.borderSecondary,
-                    width: 1,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.text1.withOpacity(0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.borderPrimary,
-                    width: 1.5,
+                ],
+              ),
+              child: TextField(
+                controller: controller,
+                onChanged: onChanged,
+                decoration: InputDecoration(
+                  prefixIcon: Container(
+                    margin: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundPrimary,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.text3,
+                      size: 18,
+                    ),
+                  ),
+                  suffixIcon:
+                      controller != null && controller!.text.isNotEmpty
+                          ? IconButton(
+                            onPressed: onClearSearch,
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: AppColors.text4,
+                            ),
+                          )
+                          : null,
+                  hintText: hintText,
+                  hintStyle: const TextStyle(
+                    color: AppColors.text4,
+                    fontSize: 14,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
                   ),
                 ),
               ),
             ),
           ),
           const SizedBox(width: 10),
-          RoundedIcon(
-            applyIconRadius: true,
-            iconPath: AppIcons.filter,
-            height: 24,
-            width: 24,
-            color: AppColors.text2,
-            onPressed: onFilterTap,
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              RoundedIcon(
+                applyIconRadius: true,
+                iconPath: AppIcons.filter,
+                height: 44,
+                width: 44,
+                padding: const EdgeInsets.all(8),
+                backgroundColor:
+                    hasActiveFilters
+                        ? AppColors.primary
+                        : AppColors.backgroundPrimary,
+                border: Border.all(
+                  color:
+                      hasActiveFilters
+                          ? AppColors.primary
+                          : AppColors.borderSecondary,
+                ),
+                borderRadius: 14,
+                color: hasActiveFilters ? Colors.white : AppColors.text2,
+                onPressed: onFilterTap,
+              ),
+              if (hasActiveFilters)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryOrange,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$activeFilterCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
+import 'package:money_care/core/presentation/widgets/states/transaction_empty_state.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -41,31 +40,14 @@ class _TransactionSectionState extends State<TransactionSection> {
             ),
             child: Row(
               children: [
-                _buildTab("Chi", isExpense),
-                _buildTab("Thu", !isExpense),
+                _buildTab('Chi', isExpense),
+                _buildTab('Thu', !isExpense),
               ],
             ),
           ),
-
           const SizedBox(height: AppSizes.defaultSpace),
-
           if (currentList.isEmpty)
-            Center(
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    AppIcons.emptyFolder,
-                    width: 150,
-                    height: 150,
-                  ),
-                  const SizedBox(height: AppSizes.spaceBtwItems),
-                  const Text(
-                    'Không có giao dịch nào gần đây.',
-                    style: TextStyle(fontSize: 16, color: AppColors.text5),
-                  ),
-                ],
-              ),
-            )
+            const TransactionEmptyState()
           else
             ...currentList.take(5).map(
               (item) => Padding(
@@ -85,7 +67,7 @@ class _TransactionSectionState extends State<TransactionSection> {
   Expanded _buildTab(String label, bool isActive) {
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => isExpense = (label == "Chi")),
+        onTap: () => setState(() => isExpense = (label == 'Chi')),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(

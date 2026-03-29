@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
 import 'package:money_care/core/presentation/widgets/container/circular_container.dart';
+import 'package:money_care/core/utils/Helper/helper_functions.dart';
 
 class CustomChoiceChip extends StatelessWidget {
   const CustomChoiceChip({
@@ -26,35 +26,56 @@ class CustomChoiceChip extends StatelessWidget {
         label: Text(
           text,
           style: TextStyle(
-            color: isSelected
-                ? Colors.white
-                : (isColor ? AppColors.text1 : null),
-            fontWeight: FontWeight.w500,
+            color: isSelected ? AppColors.primary : AppColors.text2,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
         selected: isSelected,
         onSelected: onSelected,
-        avatar: isColor
-            ? AppCircularContainer(
-                height: 20,
-                width: 20,
-                backgroundColor: color,
-              )
-            : null,
-        backgroundColor: isSelected
-            ? AppColors.buttonPrimary
-            : AppColors.backgroundPrimary,
-        selectedColor: AppColors.buttonPrimary,
-        labelPadding: const EdgeInsets.symmetric(horizontal: 12),
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: isSelected
-                ? AppColors.buttonPrimary
-                : AppColors.borderPrimary,
-          ),
+        avatar:
+            isColor
+                ? Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          isSelected
+                              ? AppColors.primary.withOpacity(0.22)
+                              : AppColors.borderSecondary,
+                    ),
+                  ),
+                  child: Center(
+                    child: AppCircularContainer(
+                      height: 12,
+                      width: 12,
+                      backgroundColor: color,
+                    ),
+                  ),
+                )
+                : null,
+        backgroundColor: Colors.white,
+        selectedColor: AppColors.primary.withOpacity(0.12),
+        surfaceTintColor: Colors.transparent,
+        side: BorderSide(
+          color:
+              isSelected
+                  ? AppColors.primary.withOpacity(0.35)
+                  : AppColors.borderSecondary,
+          width: isSelected ? 1.4 : 1,
         ),
+        labelPadding: EdgeInsets.only(
+          left: isColor ? 6 : 2,
+          right: 10,
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        showCheckmark: false,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
     );
   }

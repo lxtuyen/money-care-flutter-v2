@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 
@@ -22,57 +21,133 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isWeb = kIsWeb;
-    final Color actualBackgroundColor = backgroundColor ?? (isWeb ? Colors.white : AppColors.primary);
+    final hasCustomBackground = backgroundColor != null;
+    final iconAndTextColor =
+        hasCustomBackground ? _foregroundColorFor(backgroundColor!) : Colors.white;
 
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: actualBackgroundColor,
+        color: hasCustomBackground ? backgroundColor : null,
+        gradient: hasCustomBackground
+            ? null
+            : const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF79CBFF),
+                AppColors.primary,
+                AppColors.secondaryNavyBlue,
+              ],
+              stops: [0.0, 0.52, 1.0],
+            ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(40),
           bottomRight: Radius.circular(40),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.18),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(40),
+          bottomRight: Radius.circular(40),
+        ),
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
-              child: Row(
+            if (!hasCustomBackground) ...[
+              Positioned(
+                top: -42,
+                right: -28,
+                child: Container(
+                  width: 132,
+                  height: 132,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: -36,
+                bottom: -54,
+                child: Container(
+                  width: 144,
+                  height: 144,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.08),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
+            SafeArea(
+              bottom: false,
+              child: Column(
                 children: [
-                  if (showBackButton)
-                    GestureDetector(
-                      onTap: onBackTap ?? () => Navigator.of(context).pop(),
-                      child: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: isWeb ? AppColors.text2 : Colors.white,
-                        size: 22,
-                      ),
-                    )
-                  else
-                    const SizedBox(width: 22),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          color: isWeb ? AppColors.text1 : Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    child: Row(
+                      children: [
+                        if (showBackButton)
+                          GestureDetector(
+                            onTap: onBackTap ?? () => Navigator.of(context).pop(),
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(
+                                  hasCustomBackground ? 0.12 : 0.16,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.14),
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.arrow_back_ios_new,
+                                color: iconAndTextColor,
+                                size: 18,
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 36),
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                color: iconAndTextColor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 36),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 22),
+                  if (child != null) Expanded(child: child!),
                 ],
               ),
             ),
-            if (child != null) Expanded(child: child!),
           ],
         ),
       ),
     );
+  }
+
+  Color _foregroundColorFor(Color color) {
+    return ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+        ? Colors.white
+        : AppColors.text1;
   }
 }

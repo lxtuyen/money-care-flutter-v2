@@ -48,11 +48,11 @@ class AppHelperFunction {
       case 'Black':
         return Colors.black;
       case 'Custom1':
-        return const Color(0xFFB39DDB);
+        return const Color(0xFF6D5BD0);
       case 'Custom2':
-        return const Color(0xFFFFCC80);
+        return const Color(0xFFC96B2C);
       case 'Custom3':
-        return const Color(0xFF80CBC4);
+        return const Color(0xFF2E8B7F);
       default:
         return Colors.grey;
     }
@@ -62,20 +62,13 @@ class AppHelperFunction {
     'Green',
     'Red',
     'Blue',
-    'Pink',
     'Grey',
     'Purple',
-    'Orange',
     'Brown',
     'Teal',
     'Indigo',
-    'Cyan',
-    'Lime',
-    'Amber',
     'DeepOrange',
     'DeepPurple',
-    'LightBlue',
-    'LightGreen',
     'BlueGrey',
     'Black',
     'Custom1',

@@ -1,1 +1,1 @@
-export 'update_proflie_usecases.dart';
+export 'update_profile_usecases.dart';

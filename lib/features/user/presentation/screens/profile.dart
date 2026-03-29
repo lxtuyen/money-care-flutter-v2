@@ -2,9 +2,9 @@ import 'package:money_care/features/user/data/models/user_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
-import 'package:money_care/core/utils/validatiors/validation.dart';
+import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/presentation/widgets/appbar/appbar.dart';
 import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           lastName: lastNameController.text,
         );
         await userController.updateProfile(dto);
-        AppHelperFunction.showSnackBar('Cập nhật thành công');
+        AppHelperFunction.showSnackBar('Cáº­p nháº­t thÃ nh cÃ´ng');
       } catch (e) {
         AppHelperFunction.showSnackBar(e.toString());
       }
@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   const SizedBox(height: 40),
                   const Text(
-                    "Hồ sơ của bạn",
+                    "Há»“ sÆ¡ cá»§a báº¡n",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -84,25 +84,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   AppTextFormField(
                     controller: firstNameController,
-                    label: 'Tên',
+                    label: 'TÃªn',
                     icon: Icons.person,
-                    hintText: 'VD: Văn A',
+                    hintText: 'VD: VÄƒn A',
                     validator: (v) => AppValidator.validateFirstName(v),
                   ),
                   const SizedBox(height: 16),
 
                   AppTextFormField(
                     controller: lastNameController,
-                    label: 'Họ',
+                    label: 'Há»',
                     icon: Icons.person,
-                    hintText: 'VD: Nguyễn',
+                    hintText: 'VD: Nguyá»…n',
                     validator: (v) => AppValidator.validateLastName(v),
                   ),
                   const SizedBox(height: 24),
 
                   Obx(() {
                     return PrimaryButton(
-                      label: 'Cập nhật',
+                      label: 'Cáº­p nháº­t',
                       onPressed: onUpdateProfile,
                       isLoading: userController.isLoading.value,
                       isEnabled: !userController.isLoading.value,

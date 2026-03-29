@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
-class StatisticsHeader extends StatelessWidget {
+class TransactionTypeSummaryToggle extends StatelessWidget {
   final String selected;
   final Function(String) onSelected;
   final int spendText;
   final int incomeText;
 
-  const StatisticsHeader({
+  const TransactionTypeSummaryToggle({
     super.key,
     required this.selected,
     required this.onSelected,

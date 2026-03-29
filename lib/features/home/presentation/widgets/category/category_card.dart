@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/presentation/widgets/container/rounded_container.dart';
 
 class CategoryCard extends StatelessWidget {

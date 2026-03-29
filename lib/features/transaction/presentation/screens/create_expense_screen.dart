@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
 
-class ExpenseScreen extends StatefulWidget {
-  const ExpenseScreen({super.key});
+class CreateExpenseScreen extends StatefulWidget {
+  const CreateExpenseScreen({super.key});
 
   @override
-  State<ExpenseScreen> createState() => _ExpenseScreenState();
+  State<CreateExpenseScreen> createState() => _CreateExpenseScreenState();
 }
 
-class _ExpenseScreenState extends State<ExpenseScreen> {
+class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return TransactionForm(

@@ -9,7 +9,7 @@ import 'package:money_care/features/user/presentation/controllers/user_controlle
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/features/user/presentation/widgets/menu_item.dart';
+import 'package:money_care/features/user/presentation/widgets/user_menu_item.dart';
 import 'package:money_care/features/user/presentation/widgets/savings_goals.dart';
 
 class UserCenterScreen extends StatefulWidget {
@@ -86,19 +86,19 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
                     const SizedBox(height: 20),
 
-                    BuildMenuItem(
+                    UserMenuItem(
                       icon: Icons.person_outline,
                       title: AppTexts.profile,
                       onTap: () => Get.toNamed(RoutePath.profile),
                     ),
 
-                    BuildMenuItem(
+                    UserMenuItem(
                       icon: Icons.category_outlined,
                       title: AppTexts.savingFunds,
                       onTap: () => Get.toNamed(RoutePath.selectSavingFund),
                     ),
 
-                    BuildMenuItem(
+                    UserMenuItem(
                       icon: Icons.exit_to_app,
                       title: AppTexts.logout,
                       onTap: () {

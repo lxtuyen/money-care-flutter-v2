@@ -3,7 +3,7 @@ import 'package:money_care/features/home/presentation/widgets/budget_detail_dial
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class SpendingLimitCard extends StatelessWidget {
   final String title;

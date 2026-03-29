@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class SavingsGoals extends StatelessWidget {

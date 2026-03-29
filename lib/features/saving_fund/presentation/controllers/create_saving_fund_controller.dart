@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
 import 'package:money_care/features/saving_fund/domain/usecases/usecases.dart';

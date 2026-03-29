@@ -1,5 +1,5 @@
 export 'budget_detail_dialog.dart';
-export 'search_anchor.dart';
+export 'transaction_search_anchor.dart';
 export 'transaction/transaction_item.dart';
 export 'transaction/transaction_section.dart';
 export 'spending_summary/spending_limit_card.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 
-class BuildMenuItem extends StatelessWidget {
-  const BuildMenuItem({
+class UserMenuItem extends StatelessWidget {
+  const UserMenuItem({
     super.key,
     required this.title,
     required this.icon,

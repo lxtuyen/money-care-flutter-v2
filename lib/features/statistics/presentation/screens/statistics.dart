@@ -10,14 +10,14 @@ import 'package:money_care/features/transaction/presentation/controllers/transac
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/statistics/presentation/widgets/chart/chart_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/description/description_total.dart';
-import 'package:money_care/features/statistics/presentation/widgets/chart/savings_line_chart.dart';
-import 'package:money_care/features/statistics/presentation/widgets/statistical.dart';
-import 'package:money_care/features/statistics/presentation/widgets/statistics_header.dart';
+import 'package:money_care/features/statistics/presentation/widgets/description/statistics_highlights.dart';
+import 'package:money_care/features/statistics/presentation/widgets/chart/savings_bar_chart.dart';
+import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -90,7 +90,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         );
                       }
 
-                      return StatisticsHeader(
+                      return TransactionTypeSummaryToggle(
                         selected: statisticsController.selectedType.value,
                         onSelected: (value) =>
                             statisticsController.changeType(value),
@@ -182,7 +182,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 }
 
                 if (data == null || currentFund == null) {
-                  return StatisticalWidgets(
+                  return StatisticsOverviewCard(
                     startDate: AppHelperFunction.getFormattedDate(
                       monthStartDate,
                     ),
@@ -200,11 +200,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     name: category.name,
                     percentage: category.percentage,
                     icon: category.icon,
-                    color: AppHelperFunction.getRandomColor(),
+                    color: AppHelperFunction.getChartColorByIndex(index),
                   );
                 }).toList();
 
-                return StatisticalWidgets(
+                return StatisticsOverviewCard(
                   startDate: AppHelperFunction.getFormattedDate(monthStartDate),
                   endDate: AppHelperFunction.getFormattedDate(now),
                   totalAmount: AppHelperFunction.formatAmount(
@@ -298,13 +298,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   );
                 }
 
-                return DescriptionTotal(
+                return StatisticsHighlights(
                   dailyAverage: summary.dailyAverage,
                   dailyAverageChange: summary.dailyAverageChange.toInt().toString(),
                   monthlyBalanceChange: summary.dailyIncomeChange.toInt().toString(),
                   monthlyBalance: summary.monthlyBalance,
                 );
-
               }),
             ],
           ),

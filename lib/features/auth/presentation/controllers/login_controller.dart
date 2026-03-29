@@ -3,8 +3,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/errors/failure.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
-import 'package:money_care/core/utils/validatiors/validation.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 import 'package:money_care/features/auth/domain/usecases/login_usecase.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
@@ -78,7 +78,7 @@ class LoginController extends GetxController {
         return;
       }
 
-      AppHelperFunction.showSnackBar('Đăng nhập thất bại');
+      AppHelperFunction.showSnackBar('ÄÄƒng nháº­p tháº¥t báº¡i');
     });
   }
 

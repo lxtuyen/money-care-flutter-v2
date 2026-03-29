@@ -1,53 +1,50 @@
-import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class Unit {
-  final int value;
-  final String symbol;
+class ChartHelper {
+  double calculateInterval(double maxY) {
+    if (maxY <= 0) return 1000;
 
-  Unit(this.value, this.symbol);
-}
+    if (maxY <= 10000) return 2000;
+    if (maxY <= 50000) return 10000;
+    if (maxY <= 100000) return 20000;
+    if (maxY <= 500000) return 100000;
+    if (maxY <= 1000000) return 200000;
 
-class chartHelper {
-static String formatCurrencyShort(int value) {
-  if (value < 1000) return value.toString();
+    return _roundToNiceNumber(maxY / 5);
+  }
 
-  final units = [
-    Unit(1000000, 'M'),
-    Unit(1000, 'K'),
-  ];
+  String formatCurrencyShort(int value) {
+    final absValue = value.abs();
 
-  for (var unit in units) {
-    if (value >= unit.value) {
-      double val = value / unit.value;
-
-      return val == val.roundToDouble()
-          ? '${val.toInt()}${unit.symbol}'
-          : '${val.toStringAsFixed(1)}${unit.symbol}';
+    if (absValue >= 1000000000) {
+      return '${(value / 1000000000).toStringAsFixed(1)}B';
     }
+    if (absValue >= 1000000) {
+      return '${(value / 1000000).toStringAsFixed(1)}M';
+    }
+    if (absValue >= 1000) {
+      return '${(value / 1000).toStringAsFixed(0)}K';
+    }
+
+    return NumberFormat('#,###', 'vi_VN').format(value);
   }
 
-  return value.toString();
-}
+  double _roundToNiceNumber(double value) {
+    final magnitude = _pow10(value);
+    final normalized = value / magnitude;
 
-  static double calculateInterval(double maxValue) {
-  if (maxValue <= 0) return 1;
-
-  const targetDivisions = 5;
-  final rawInterval = maxValue / targetDivisions;
-
-  final magnitude = math.pow(10, (math.log(rawInterval) / math.ln10).floor());
-  final normalized = rawInterval / magnitude;
-
-  double niceNormalized;
-  if (normalized >= 5) {
-    niceNormalized = 5;
-  } else if (normalized >= 2) {
-    niceNormalized = 2;
-  } else {
-    niceNormalized = 1;
+    if (normalized <= 1) return 1 * magnitude;
+    if (normalized <= 2) return 2 * magnitude;
+    if (normalized <= 5) return 5 * magnitude;
+    return 10 * magnitude;
   }
 
-  final interval = niceNormalized * magnitude;
-  return interval;
+  double _pow10(double value) {
+    if (value <= 0) return 1;
+    final digits = value.toInt().toString().length - 1;
+    return digits <= 0 ? 1 : List.filled(digits, 10).fold(1, (a, b) => a * b).toDouble();
+  }
 }
-}
+
+final chartHelper = ChartHelper();

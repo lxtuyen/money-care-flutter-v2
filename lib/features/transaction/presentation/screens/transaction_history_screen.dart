@@ -5,11 +5,11 @@ import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/core/presentation/widgets/states/transaction_empty_state.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
-import 'package:money_care/features/statistics/presentation/widgets/statistics_header.dart';
+import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
@@ -18,14 +18,15 @@ import 'package:money_care/features/transaction/presentation/widgets/filter_dial
 import 'package:money_care/features/transaction/presentation/widgets/search_filter.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 
-class TransactionScreen extends StatefulWidget {
-  const TransactionScreen({super.key});
+class TransactionHistoryScreen extends StatefulWidget {
+  const TransactionHistoryScreen({super.key});
 
   @override
-  State<TransactionScreen> createState() => _TransactionScreenState();
+  State<TransactionHistoryScreen> createState() =>
+      _TransactionHistoryScreenState();
 }
 
-class _TransactionScreenState extends State<TransactionScreen> {
+class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   String selected = 'chi';
   final TextEditingController searchController = TextEditingController();
 
@@ -88,7 +89,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               }
 
               if (data == null) {
-                return StatisticsHeader(
+                return TransactionTypeSummaryToggle(
                   selected: selected,
                   onSelected: (value) => setState(() => selected = value),
                   spendText: 0,
@@ -96,7 +97,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 );
               }
 
-              return StatisticsHeader(
+              return TransactionTypeSummaryToggle(
                 selected: selected,
                 onSelected: (value) => setState(() => selected = value),
                 spendText: data.expenseTotal,

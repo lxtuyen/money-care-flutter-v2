@@ -6,7 +6,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
-import 'package:money_care/features/transaction/presentation/screens/transaction.dart';
+import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/user_center.dart';
 
 class ScaffoldWithNavBar extends StatefulWidget {
@@ -21,7 +21,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
 
   static const _screens = [
     HomeScreen(),
-    TransactionScreen(),
+    TransactionHistoryScreen(),
     StatisticsScreen(),
     UserCenterScreen(),
   ];

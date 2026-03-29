@@ -3,8 +3,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/errors/failure.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
-import 'package:money_care/core/utils/validatiors/validation.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/auth/domain/usecases/register_usecase.dart';
 
 class RegisterController extends GetxController {

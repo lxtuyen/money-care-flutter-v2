@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     }
 
-                                    return SearchAnchorCustom(
+                                    return TransactionSearchAnchor(
                                       listData: transactions,
                                     );
                                   }),

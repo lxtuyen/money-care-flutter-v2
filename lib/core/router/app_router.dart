@@ -17,10 +17,10 @@ import 'package:money_care/features/auth/presentation/screens/register.dart';
 import 'package:money_care/features/saving_fund/presentation/screens/create_saving_fund.dart';
 import 'package:money_care/features/saving_fund/presentation/screens/select_saving_fund.dart';
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
-import 'package:money_care/features/transaction/presentation/screens/Income.dart';
-import 'package:money_care/features/transaction/presentation/screens/expense.dart';
+import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
+import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
-import 'package:money_care/features/notification/presentation/screens/notification_screen.dart';
+import 'package:money_care/features/notification/presentation/screens/notification.dart';
 
 final List<GetPage> appPages = [
   GetPage(name: '/splash', page: () => const SplashScreen()),
@@ -53,8 +53,8 @@ final List<GetPage> appPages = [
     page: () => const SelectSavingFundScreen(),
   ),
   GetPage(name: '/create_saving_fund', page: () => const CreateSavingFund()),
-  GetPage(name: '/expense', page: () => const ExpenseScreen()),
-  GetPage(name: '/income', page: () => const IncomeScreen()),
+  GetPage(name: '/expense', page: () => const CreateExpenseScreen()),
+  GetPage(name: '/income', page: () => const CreateIncomeScreen()),
   GetPage(name: '/profile', page: () => const ProfileScreen()),
   GetPage(name: '/chatbot', page: () => const ChatbotScreen()),
 

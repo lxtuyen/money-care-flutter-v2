@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/utils/validatiors/validation.dart';
+import 'package:money_care/core/utils/validators/validation.dart';
 
 class PercentageInputField extends StatelessWidget {
   final int value;

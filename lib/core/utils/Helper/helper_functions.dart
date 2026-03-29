@@ -76,10 +76,30 @@ class AppHelperFunction {
     'Custom3',
   ];
 
+  static final List<Color> _chartColors = [
+    const Color(0xFF2D9CDB),
+    const Color(0xFF27AE60),
+    const Color(0xFFF2994A),
+    const Color(0xFFEB5757),
+    const Color(0xFF9B51E0),
+    const Color(0xFF2DCEB3),
+    const Color(0xFF3D5AFE),
+    const Color(0xFF8D6E63),
+    const Color(0xFF00897B),
+    const Color(0xFF5C6BC0),
+  ];
+
   static Color getRandomColor() {
     final random = Random();
     final colorName = _colorNames[random.nextInt(_colorNames.length)];
     return getColor(colorName)!;
+  }
+
+  static Color getChartColorByIndex(int index) {
+    if (_chartColors.isEmpty) {
+      return AppHelperFunction.getRandomColor();
+    }
+    return _chartColors[index % _chartColors.length];
   }
 
   static void showSnackBar(String message) {
@@ -98,7 +118,7 @@ class AppHelperFunction {
           title: Text(title),
           content: Text(message),
           actions: [
-            TextButton(onPressed: () => Get.back(), child: const Text("OK")),
+            TextButton(onPressed: () => Get.back(), child: const Text('OK')),
           ],
         );
       },
@@ -140,7 +160,7 @@ class AppHelperFunction {
     return DateFormat(format).format(date);
   }
 
-  static  String formatDateTime(DateTime dateTime) {
+  static String formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);
 

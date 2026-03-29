@@ -7,7 +7,7 @@ import 'package:money_care/core/presentation/widgets/button/primary_button.dart'
 import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/core/presentation/widgets/text_field/date_picker_field.dart';
-import 'package:money_care/core/utils/validatiors/validation.dart';
+import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
@@ -73,25 +73,25 @@ void initState() {
                               children: [
                                 DatePickerField(
                                   selectedDate: controller.selectedDate,
-                                  label: 'Ngày giao dịch',
-                                  placeholder: 'Chọn ngày',
+                                  label: 'NgÃ y giao dá»‹ch',
+                                  placeholder: 'Chá»n ngÃ y',
                                   onTap: () => controller.selectDate(context),
                                 ),
                                 const SizedBox(height: 20),
                                 AppCurrencyFormField(
                                   controller: controller.amountController,
-                                  label: 'Số tiền',
+                                  label: 'Sá»‘ tiá»n',
                                   icon: Icons.attach_money,
-                                  hintText: 'Nhập số tiền',
+                                  hintText: 'Nháº­p sá»‘ tiá»n',
                                   validator: (v) => AppValidator.validateAmount(v),
                                 ),
                                 if (widget.showCategory) ...[
                                   const SizedBox(height: 20),
                                   AppTextFormField(
                                     controller: controller.categoryController,
-                                    label: 'Phân loại',
+                                    label: 'PhÃ¢n loáº¡i',
                                     icon: Icons.category,
-                                    hintText: 'Chọn phân loại',
+                                    hintText: 'Chá»n phÃ¢n loáº¡i',
                                     validator: (v) => AppValidator.validateCategory(v),
                                     onTap: () async {
                                       final selected = await showModalBottomSheet<CategoryEntity>(
@@ -111,7 +111,7 @@ void initState() {
                                             } else if (controller.savingFundController.currentFund.value == null) {
                                               return const SizedBox(
                                                 height: 200,
-                                                child: Center(child: Text('Không có dữ liệu')),
+                                                child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
                                               );
                                             }
 
@@ -138,8 +138,8 @@ void initState() {
                                 const SizedBox(height: 20),
                                 AppTextFormField(
                                   controller: controller.noteController,
-                                  label: 'Ghi chú',
-                                  hintText: 'Nhập ghi chú',
+                                  label: 'Ghi chÃº',
+                                  hintText: 'Nháº­p ghi chÃº',
                                   validator: (v) => AppValidator.validateNote(v),
                                   minLines: 3,
                                   maxLines: 3,
@@ -192,7 +192,7 @@ void initState() {
                     Expanded(
                       child: Obx(() {
                         return PrimaryButton(
-                          label: widget.item?.id == null ? 'Tạo' : 'Cập nhật',
+                          label: widget.item?.id == null ? 'Táº¡o' : 'Cáº­p nháº­t',
                           onPressed: controller.submit,
                           isLoading: controller.transactionController.isLoading.value,
                           isEnabled: !controller.transactionController.isLoading.value,

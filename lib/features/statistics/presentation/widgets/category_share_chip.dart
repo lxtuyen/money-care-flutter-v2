@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TagItem extends StatelessWidget {
+class CategoryShareChip extends StatelessWidget {
   final CategoryEntity category;
-  const TagItem({required this.category, super.key});
+  const CategoryShareChip({required this.category, super.key});
 
   @override
   Widget build(BuildContext context) {

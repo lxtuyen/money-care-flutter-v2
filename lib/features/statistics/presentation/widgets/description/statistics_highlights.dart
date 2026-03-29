@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/core/utils/Helper/helper_functions.dart';
-import 'package:money_care/features/statistics/presentation/widgets/description/description_item.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/statistics/presentation/widgets/description/statistics_metric_row.dart';
 
-class DescriptionTotal extends StatelessWidget {
-  const DescriptionTotal({
+class StatisticsHighlights extends StatelessWidget {
+  const StatisticsHighlights({
     super.key,
     required this.dailyAverage,
     required this.dailyAverageChange,
@@ -21,14 +21,14 @@ class DescriptionTotal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DescriptionItem(
+          StatisticsMetricRow(
             title: 'Trung bình chi theo ngày',
             value: AppHelperFunction.formatAmount(dailyAverage, 'VND'),
             percent: dailyAverageChange,
           ),
           const SizedBox(height: 8),
 
-          DescriptionItem(
+          StatisticsMetricRow(
             title: 'Số dư tháng này',
             value: AppHelperFunction.formatAmount(monthlyBalance, 'VND'),
             percent: monthlyBalanceChange,

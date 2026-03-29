@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/statistics/presentation/widgets/tag_item.dart';
+import 'package:money_care/features/statistics/presentation/widgets/category_share_chip.dart';
 
-class StatisticalWidgets extends StatelessWidget {
+class StatisticsOverviewCard extends StatelessWidget {
   final String startDate;
   final String endDate;
   final String totalAmount;
   final List<CategoryEntity> categories;
 
-  const StatisticalWidgets({
+  const StatisticsOverviewCard({
     super.key,
     required this.startDate,
     required this.endDate,
@@ -82,7 +82,7 @@ class StatisticalWidgets extends StatelessWidget {
               ),
               itemCount: categories.length,
               itemBuilder: (context, index) {
-                return TagItem(category: categories[index]);
+                return CategoryShareChip(category: categories[index]);
               },
             ),
           ],

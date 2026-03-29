@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 
-class DescriptionItem extends StatelessWidget {
-  const DescriptionItem({
+class StatisticsMetricRow extends StatelessWidget {
+  const StatisticsMetricRow({
     super.key,
     required this.title,
     required this.value,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/utils/divice/divice_utils.dart';
+import 'package:money_care/core/utils/device/device_utils.dart';
 
 class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
   const AppbarCustom(

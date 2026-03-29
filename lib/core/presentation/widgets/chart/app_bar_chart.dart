@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/utils/Helper/chart_helper.dart';
+import 'package:money_care/core/utils/helper/chart_helper.dart';
 
 class AppBarChart extends StatelessWidget {
   final List<BarChartGroupData> barGroups;

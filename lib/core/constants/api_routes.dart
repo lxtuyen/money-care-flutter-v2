@@ -12,7 +12,6 @@ class ApiRoutes {
   static const selectSavingFund = 'saving-fund/select';
 
   static const userProfile = 'user-profile/me';
-  static const monthlyIncome = 'user-profile/monthly-income';
   static const users = 'users';
   static const stats = 'users/admin/stats';
 

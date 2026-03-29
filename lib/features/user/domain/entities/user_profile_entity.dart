@@ -3,14 +3,12 @@ class UserProfileEntity {
   final String? firstName;
   final String? lastName;
   final String? avatar;
-  final int? monthlyIncome;
 
   const UserProfileEntity({
     this.id,
     this.firstName,
     this.lastName,
     this.avatar,
-    this.monthlyIncome,
   });
 
   String get fullName =>

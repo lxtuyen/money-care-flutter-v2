@@ -39,7 +39,7 @@ class AppHeader extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
               child: Row(
                 children: [
                   if (showBackButton)

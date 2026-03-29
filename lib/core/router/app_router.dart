@@ -11,7 +11,6 @@ import 'package:money_care/features/onboarding/presentation/screens/onboarding_f
 import 'package:money_care/features/auth/presentation/screens/forgot_password.dart';
 import 'package:money_care/features/auth/presentation/screens/login.dart';
 import 'package:money_care/features/auth/presentation/screens/login_option.dart';
-import 'package:money_care/features/onboarding/presentation/screens/onboarding_income.dart';
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_welcome.dart';
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_saving_rule.dart';
 import 'package:money_care/features/auth/presentation/screens/register.dart';
@@ -48,10 +47,6 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/onboarding_saving_rule',
     page: () => const OnboardingSavingRuleScreen(),
-  ),
-  GetPage(
-    name: '/onboarding_income',
-    page: () => const OnboardingIncomeScreen(),
   ),
   GetPage(
     name: '/select_saving_fund',

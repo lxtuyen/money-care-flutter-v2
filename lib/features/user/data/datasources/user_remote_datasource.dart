@@ -4,7 +4,6 @@ import 'package:money_care/features/user/data/models/user_profile_model.dart';
 
 abstract class UserRemoteDatasource {
   Future<UserProfileModel> updateMyProfile(ProfileUpdateDto dto);
-  Future<UserProfileModel> addMonthlyIncome(int monthlyIncome);
 }
 
 class UserRemoteDatasourceImpl implements UserRemoteDatasource {
@@ -17,17 +16,6 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
     final res = await api.patch<UserProfileModel>(
       ApiRoutes.userProfile,
       body: dto.toJson(),
-      fromJsonT: (json) => UserProfileModel.fromJson(json),
-    );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
-  }
-
-  @override
-  Future<UserProfileModel> addMonthlyIncome(int monthlyIncome) async {
-    final res = await api.patch<UserProfileModel>(
-      ApiRoutes.monthlyIncome,
-      body: {'monthly_income': monthlyIncome},
       fromJsonT: (json) => UserProfileModel.fromJson(json),
     );
     if (!res.success || res.data == null) throw Exception(res.message);

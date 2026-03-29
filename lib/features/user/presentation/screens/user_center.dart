@@ -1,9 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -23,6 +24,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   final AuthController authController = Get.find<AuthController>();
   final UserController userController = Get.find<UserController>();
   final StatisticsController statisticsController = Get.find<StatisticsController>();
+  final SavingFundController fundController = Get.find<SavingFundController>();
 
 
   @override
@@ -36,9 +38,12 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
     if (userId == null) return;
 
-    if (statisticsController.totalByType.value == null) {
-      await statisticsController.getTotalByType(userId);
-    }
+    final currentFund = fundController.currentFund.value;
+    await statisticsController.getTotalByType(
+      userId,
+      startDate: currentFund?.start_date,
+      endDate: currentFund?.end_date,
+    );
   }
 
   @override
@@ -49,27 +54,10 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              if (!kIsWeb)
-                Container(
-                  height: 140,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(40),
-                      bottomRight: Radius.circular(40),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      AppTexts.profileTitle,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
+              const AppHeader(
+                title: AppTexts.profileTitle,
+                height: 140,
+              ),
 
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -78,8 +66,6 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                   children: [
                     Obx(() {
                       final data = statisticsController.totalByType.value;
-                      final monthlyIncome =
-                          userController.userProfile.value?.monthlyIncome ?? 0;
 
                       if (statisticsController.isLoading.value) {
                         return const SizedBox(
@@ -93,9 +79,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       }
 
                       return SavingsGoals(
-                        currentSaving:
-                            (data.incomeTotal - data.expenseTotal).toDouble(),
-                        targetSaving: monthlyIncome.toDouble(),
+                        currentSaving: data.currentSaving.toDouble(),
+                        targetSaving: data.targetSaving.toDouble(),
                       );
                     }),
 

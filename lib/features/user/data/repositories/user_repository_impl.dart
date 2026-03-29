@@ -13,10 +13,4 @@ class UserRepositoryImpl implements UserRepository {
     final model = await remoteDatasource.updateMyProfile(dto);
     return model.toEntity();
   }
-
-  @override
-  Future<UserProfileEntity> addMonthlyIncome(int monthlyIncome) async {
-    final model = await remoteDatasource.addMonthlyIncome(monthlyIncome);
-    return model.toEntity();
-  }
 }

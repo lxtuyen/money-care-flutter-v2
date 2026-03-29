@@ -23,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
-  late TextEditingController monthlyIncomeController;
 
   @override
   void initState() {
@@ -32,27 +31,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     firstNameController = TextEditingController(text: user?.firstName ?? '');
     lastNameController = TextEditingController(text: user?.lastName ?? '');
-    monthlyIncomeController = TextEditingController(
-      text: user?.monthlyIncome?.toString() ?? '',
-    );
   }
 
   @override
   void dispose() {
     firstNameController.dispose();
     lastNameController.dispose();
-    monthlyIncomeController.dispose();
     super.dispose();
   }
 
   Future<void> onUpdateProfile() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final rawValue = AppCurrencyFormField.unformat(monthlyIncomeController.text);
         final dto = ProfileUpdateDto(
           firstName: firstNameController.text,
           lastName: lastNameController.text,
-          monthlyIncome: int.parse(rawValue),
         );
         await userController.updateProfile(dto);
         AppHelperFunction.showSnackBar('Cập nhật thành công');
@@ -104,15 +97,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.person,
                     hintText: 'VD: Nguyễn',
                     validator: (v) => AppValidator.validateLastName(v),
-                  ),
-                  const SizedBox(height: 16),
-
-                  AppCurrencyFormField(
-                    controller: monthlyIncomeController,
-                    label: 'Thu nhập hàng tháng',
-                    icon: Icons.attach_money,
-                    hintText: 'VD: 5.000.000',
-                    validator: (v) => AppValidator.validateMonthlyIncome(v),
                   ),
                   const SizedBox(height: 24),
 

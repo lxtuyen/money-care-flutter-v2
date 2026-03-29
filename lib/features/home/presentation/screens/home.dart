@@ -278,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Giao dịch gần đây"),
+            AppSectionHeading(title: "Giao dịch gần đây", showActionButton: false),
             Obx(() {
               final transactions =
                   transactionController.transactionByfilter.value;
@@ -338,13 +338,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Hạn mức chi tiêu"),
+            AppSectionHeading(title: "Hạn mức chi tiêu", showActionButton: false),
             const SizedBox(height: AppSizes.defaultSpace),
 
             Obx(() {
               final categories = statisticsController.totalByCate;
-              final monthlyIncome =
-                  userController.userProfile.value?.monthlyIncome ?? 0;
               if (statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
@@ -364,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     categories.map((category) {
                       return SpendingLimitCard(
                         title: category.categoryName,
-                        limit: ((category.percentage) * (monthlyIncome)) / 100,
+                        limit: category.limit,
                         spent: category.total,
                         iconPath: 'assets/icons/${category.categoryIcon}.svg',
                       );

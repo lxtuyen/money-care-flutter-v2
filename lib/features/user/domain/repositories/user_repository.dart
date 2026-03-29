@@ -3,5 +3,4 @@ import 'package:money_care/features/user/domain/entities/user_profile_entity.dar
 
 abstract class UserRepository {
   Future<UserProfileEntity> updateMyProfile(ProfileUpdateDto dto);
-  Future<UserProfileEntity> addMonthlyIncome(int monthlyIncome);
 }

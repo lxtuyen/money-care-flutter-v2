@@ -6,11 +6,9 @@ import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 
 class UserController extends GetxController {
   final UpdateMyProfileUseCase updateMyProfileUseCase;
-  final AddMonthlyIncomeUseCase addMonthlyIncomeUseCase;
 
   UserController({
     required this.updateMyProfileUseCase,
-    required this.addMonthlyIncomeUseCase,
   });
 
   @override
@@ -45,15 +43,5 @@ class UserController extends GetxController {
 
   void currentProfile(UserProfileEntity profile) {
     userProfile.value = profile;
-  }
-
-  Future<void> addMonthlyIncome(int monthlyIncome) async {
-    try {
-      isLoading.value = true;
-      final updated = await addMonthlyIncomeUseCase(monthlyIncome);
-      currentProfile(updated);
-    } finally {
-      isLoading.value = false;
-    }
   }
 }

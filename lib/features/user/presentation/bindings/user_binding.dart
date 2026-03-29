@@ -19,7 +19,6 @@ class UserBinding extends Bindings {
     Get.lazyPut(
       () => UserController(
         updateMyProfileUseCase: UpdateMyProfileUseCase(repository),
-        addMonthlyIncomeUseCase: AddMonthlyIncomeUseCase(repository),
       ),
       fenix: true,
     );

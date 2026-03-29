@@ -98,7 +98,8 @@ class AppValidator {
       return 'Vui lòng nhập số tiền';
     }
 
-    final numVal = double.tryParse(value.replaceAll(',', '').replaceAll('.', ''));
+    final numVal =
+        double.tryParse(value.replaceAll(',', '').replaceAll('.', ''));
 
     if (numVal == null) return 'Số tiền không hợp lệ';
     if (numVal <= 0) return 'Số tiền phải lớn hơn 0';
@@ -113,24 +114,6 @@ class AppValidator {
     if (numVal == null || numVal < 0 || numVal > 100) {
       return 'Phải từ 0–100';
     }
-    return null;
-  }
-
-  static String? validateMonthlyIncome(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Vui lòng nhập thu nhập hàng tháng';
-    }
-
-      final numVal = double.tryParse(
-        value.replaceAll(',', '').replaceAll('.', ''),
-      );
-
-    if (numVal == null) return 'Thu nhập phải là số hợp lệ';
-    if (numVal <= 0) return 'Thu nhập phải lớn hơn 0';
-    if (numVal > 1000000000) {
-      return 'Thu nhập quá lớn (giới hạn 1,000,000,000)';
-    }
-
     return null;
   }
 

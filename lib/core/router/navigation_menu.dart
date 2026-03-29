@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
@@ -145,8 +145,8 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                     ),
                     tileColor:
                         isActive ? AppColors.primary.withOpacity(0.08) : null,
-                    leading: SvgPicture.asset(
-                      'assets/icons/${isActive ? item.activeIcon : item.icon}.svg',
+                    leading: AppSvgIcon(
+                      iconName: isActive ? item.activeIcon : item.icon,
                       width: 24,
                     ),
                     title:
@@ -279,8 +279,8 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                         : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: SvgPicture.asset(
-                'assets/icons/${isActive ? item.activeIcon : item.icon}.svg',
+              child: AppSvgIcon(
+                iconName: isActive ? item.activeIcon : item.icon,
                 width: 24,
               ),
             ),

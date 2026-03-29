@@ -73,25 +73,25 @@ void initState() {
                               children: [
                                 DatePickerField(
                                   selectedDate: controller.selectedDate,
-                                  label: 'NgÃ y giao dá»‹ch',
-                                  placeholder: 'Chá»n ngÃ y',
+                                  label: 'Ngày giao dịch',
+                                  placeholder: 'Chọn ngày',
                                   onTap: () => controller.selectDate(context),
                                 ),
                                 const SizedBox(height: 20),
                                 AppCurrencyFormField(
                                   controller: controller.amountController,
-                                  label: 'Sá»‘ tiá»n',
+                                  label: 'Số tiền',
                                   icon: Icons.attach_money,
-                                  hintText: 'Nháº­p sá»‘ tiá»n',
+                                  hintText: 'Nhập số tiền',
                                   validator: (v) => AppValidator.validateAmount(v),
                                 ),
                                 if (widget.showCategory) ...[
                                   const SizedBox(height: 20),
                                   AppTextFormField(
                                     controller: controller.categoryController,
-                                    label: 'PhÃ¢n loáº¡i',
+                                    label: 'Phân loại',
                                     icon: Icons.category,
-                                    hintText: 'Chá»n phÃ¢n loáº¡i',
+                                    hintText: 'Chọn phân loại',
                                     validator: (v) => AppValidator.validateCategory(v),
                                     onTap: () async {
                                       final selected = await showModalBottomSheet<CategoryEntity>(
@@ -111,7 +111,7 @@ void initState() {
                                             } else if (controller.savingFundController.currentFund.value == null) {
                                               return const SizedBox(
                                                 height: 200,
-                                                child: Center(child: Text('KhÃ´ng cÃ³ dá»¯ liá»‡u')),
+                                                child: Center(child: Text('Không có dữ liệu')),
                                               );
                                             }
 
@@ -138,8 +138,8 @@ void initState() {
                                 const SizedBox(height: 20),
                                 AppTextFormField(
                                   controller: controller.noteController,
-                                  label: 'Ghi chÃº',
-                                  hintText: 'Nháº­p ghi chÃº',
+                                  label: 'Ghi chú',
+                                  hintText: 'Nhập ghi chú',
                                   validator: (v) => AppValidator.validateNote(v),
                                   minLines: 3,
                                   maxLines: 3,
@@ -192,7 +192,7 @@ void initState() {
                     Expanded(
                       child: Obx(() {
                         return PrimaryButton(
-                          label: widget.item?.id == null ? 'Táº¡o' : 'Cáº­p nháº­t',
+                          label: widget.item?.id == null ? 'Tạo' : 'Cập nhật',
                           onPressed: controller.submit,
                           isLoading: controller.transactionController.isLoading.value,
                           isEnabled: !controller.transactionController.isLoading.value,

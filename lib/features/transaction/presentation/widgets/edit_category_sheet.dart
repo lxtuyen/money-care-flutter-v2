@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/widgets/sheet/edit_category.dart';
 
@@ -64,8 +64,8 @@ class EditCategorySheet extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          SvgPicture.asset(
-                            'assets/icons/${item.icon}.svg',
+                          AppSvgIcon(
+                            iconName: item.icon,
                             width: 26,
                             height: 26,
                           ),

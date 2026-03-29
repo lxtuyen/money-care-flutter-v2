@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
+import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 
 class TransactionEmptyState extends StatelessWidget {
   const TransactionEmptyState({
@@ -20,7 +20,7 @@ class TransactionEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(AppIcons.emptyFolder, width: 150, height: 150),
+          AppSvgIcon(assetPath: AppIcons.emptyFolder, width: 150, height: 150),
           const SizedBox(height: AppSizes.spaceBtwItems),
           Text(
             message,

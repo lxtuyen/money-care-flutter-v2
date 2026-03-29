@@ -18,7 +18,7 @@ class SplashController extends GetxController {
     final hasLoggedIn = storage.readBool('hasLoggedIn') ?? false;
     final hasSeenWelcome = storage.readBool('hasSeenWelcome') ?? false;
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
 
     if (!hasSeenOnboarding) {
       Get.offAllNamed(RoutePath.onboardingExpenseManagement);

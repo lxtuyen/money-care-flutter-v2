@@ -153,11 +153,6 @@ class SavingFundController extends GetxController {
       return;
     }
 
-    if (userController.userProfile.value?.monthlyIncome == null) {
-      Get.toNamed(RoutePath.onboardingIncome);
-      return;
-    }
-
     Get.toNamed(RoutePath.main);
   }
 

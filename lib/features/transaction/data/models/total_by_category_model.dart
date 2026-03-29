@@ -4,12 +4,14 @@ class TotalByCategoryEntityModel {
   final String categoryName;
   final String categoryIcon;
   final double percentage;
+  final double limit;
   final int total;
 
   TotalByCategoryEntityModel({
     required this.categoryName,
     required this.categoryIcon,
     required this.percentage,
+    required this.limit,
     required this.total,
   });
 
@@ -18,6 +20,7 @@ class TotalByCategoryEntityModel {
       categoryName: json['categoryName'] ?? '',
       categoryIcon: json['categoryIcon'] ?? '',
       percentage: (json['percentage'] ?? 0).toDouble(),
+      limit: (json['limit'] ?? 0).toDouble(),
       total: (json['total'] ?? 0).toInt(),
     );
   }
@@ -27,6 +30,7 @@ class TotalByCategoryEntityModel {
     total: total,
     categoryIcon: categoryIcon,
     percentage: percentage,
+    limit: limit,
     color: null,
   );
 }

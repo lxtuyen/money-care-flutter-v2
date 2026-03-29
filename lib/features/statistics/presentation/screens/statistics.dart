@@ -82,7 +82,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     child: Builder(builder: (context) {
                       final data = statisticsController.totalByType.value;
 
-                      if (statisticsController.isLoading.value) {
+                      if (statisticsController.isLoading.value &&
+                          data == null) {
                         return const SizedBox(
                           height: 120,
                           child: Center(child: CircularProgressIndicator()),
@@ -254,11 +255,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             child: ChartCard(
                               title: item.categoryName,
                               amount: item.total,
-                              limit: ((item.percentage) *
-                                      (userController
-                                              .userProfile.value?.monthlyIncome ??
-                                          0)) /
-                                  100,
+                              limit: item.limit,
                               percent: item.percentage.toStringAsFixed(1),
                             ),
                           ),
@@ -292,18 +289,22 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   );
                 }
 
+                final summary = statisticsController.statisticsSummary.value;
+
+                if (summary == null) {
+                   return const SizedBox(
+                    height: 120,
+                    child: Center(child: Text('Đang tải dữ liệu...')),
+                  );
+                }
+
                 return DescriptionTotal(
-                  dailyAverage: statisticsController.dailyAverage,
-                  dailyAverageChange:
-                      statisticsController.dailyAverageChange
-                          .toInt()
-                          .toString(),
-                  monthlyBalanceChange:
-                      statisticsController.dailyIncomeChange.toString(),
-                  monthlyBalance:
-                      (totalByType.incomeTotal - totalByType.expenseTotal)
-                          .toDouble(),
+                  dailyAverage: summary.dailyAverage,
+                  dailyAverageChange: summary.dailyAverageChange.toInt().toString(),
+                  monthlyBalanceChange: summary.dailyIncomeChange.toInt().toString(),
+                  monthlyBalance: summary.monthlyBalance,
                 );
+
               }),
             ],
           ),

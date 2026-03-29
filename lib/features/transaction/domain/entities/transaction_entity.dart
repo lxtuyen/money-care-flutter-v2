@@ -6,6 +6,7 @@ export 'total_by_date_entity.dart';
 export 'total_by_type_entity.dart';
 export 'totals_by_date_entity.dart';
 export 'transaction_by_type_entity.dart';
+export 'statistics_summary_entity.dart';
 
 class TransactionEntity {
   final int? id;

@@ -17,4 +17,6 @@ abstract class TransactionRepository {
       TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
   Future<ScanReceiptEntity> scanReceipt(XFile image);
+  Future<StatisticsSummaryEntity> getStatisticsSummary(
+      int userId, TransactionTotalsDto dto);
 }

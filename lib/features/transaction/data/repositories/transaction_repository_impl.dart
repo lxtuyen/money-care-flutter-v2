@@ -62,4 +62,10 @@ class TransactionRepositoryImpl implements TransactionRepository {
     final model = await remoteDatasource.scanReceipt(image);
     return model.toEntity();
   }
+
+  @override
+  Future<StatisticsSummaryEntity> getStatisticsSummary(
+      int userId, TransactionTotalsDto dto) async {
+    return await remoteDatasource.getStatisticsSummary(userId, dto);
+  }
 }

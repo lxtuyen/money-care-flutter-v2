@@ -2,6 +2,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/transaction/data/models/scan_receipt_model.dart';
+import 'package:money_care/features/transaction/data/models/statistics_summary_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 
 abstract class TransactionRemoteDatasource {
@@ -18,6 +19,8 @@ abstract class TransactionRemoteDatasource {
       TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
   Future<ScanReceiptModel> scanReceipt(XFile image);
+  Future<StatisticsSummaryModel> getStatisticsSummary(
+      int userId, TransactionTotalsDto dto);
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
@@ -122,5 +125,17 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     } catch (e) {
       throw Exception('Quét hoá đơn thất bại: $e');
     }
+  }
+
+  @override
+  Future<StatisticsSummaryModel> getStatisticsSummary(
+      int userId, TransactionTotalsDto dto) async {
+    final res = await api.get<StatisticsSummaryModel>(
+      '${ApiRoutes.transaction}/$userId/statistics-summary',
+      queryParameters: dto.toJson(),
+      fromJsonT: (json) => StatisticsSummaryModel.fromJson(json),
+    );
+    if (!res.success || res.data == null) throw Exception(res.message);
+    return res.data!;
   }
 }

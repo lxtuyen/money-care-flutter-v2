@@ -3,12 +3,14 @@ import 'package:get/get.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/transaction/domain/entities/statistics_summary_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 
 class StatisticsController extends GetxController {
   final GetTotalByTypeUseCase getTotalByTypeUseCase;
   final GetTotalByCateUseCase getTotalByCateUseCase;
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
+  final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
 
   final SavingFundController fundController = Get.find<SavingFundController>();
 
@@ -17,6 +19,7 @@ class StatisticsController extends GetxController {
 
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
+  var statisticsSummary = Rxn<StatisticsSummaryEntity>();
 
   final RxString selectedType = 'chi'.obs;
 
@@ -33,12 +36,15 @@ class StatisticsController extends GetxController {
     required this.getTotalByTypeUseCase,
     required this.getTotalByCateUseCase,
     required this.getTotalByDateEntityUseCase,
+    required this.getStatisticsSummaryUseCase,
   });
 
-  Future<void> getTotalByType(int userId) async {
+  Future<void> getTotalByType(int userId,
+      {DateTime? startDate, DateTime? endDate}) async {
     isLoading.value = true;
     try {
-      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      final dto =
+          _createTotalsDto(startDate ?? monthStartDate, endDate ?? monthEndDate);
       totalByType.value = await getTotalByTypeUseCase(userId, dto);
       errorMessage.value = null;
     } catch (e) {
@@ -121,9 +127,11 @@ class StatisticsController extends GetxController {
     }
   }
 
-  Future<void> _loadTotalByType(int userId) async {
+  Future<void> _loadTotalByType(int userId,
+      {DateTime? startDate, DateTime? endDate}) async {
     try {
-      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      final dto = _createTotalsDto(
+          startDate ?? monthStartDate, endDate ?? monthEndDate);
       totalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
       totalByType.value = null;
@@ -161,12 +169,22 @@ class StatisticsController extends GetxController {
         _loadTotalByCate(userId),
         _loadTotalByDate(userId, dtoWeek),
         getTotalByDateEntityLstMonth(userId),
+        _loadStatisticsSummary(userId),
       ]);
       errorMessage.value = null;
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> _loadStatisticsSummary(int userId) async {
+    try {
+      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      statisticsSummary.value = await getStatisticsSummaryUseCase(userId, dto);
+    } catch (e) {
+      statisticsSummary.value = null;
     }
   }
 
@@ -222,28 +240,6 @@ class StatisticsController extends GetxController {
     if (previous == 0) return 0;
     return ((current - previous) / previous) * 100;
   }
-
-  double get dailyAverage =>
-      calculateDailyAverage(totalByDate.value?.expense ?? [], now);
-
-  double get lastWeekDailyAverage => calculateDailyAverage(
-    totalByDateLstMonth.value?.expense ?? [],
-    lastMonthToday,
-  );
-
-  double get dailyAverageChange =>
-      calculatePercentageChange(dailyAverage, lastWeekDailyAverage);
-
-  double get dailyIncomeAverage =>
-      calculateDailyAverage(totalByDate.value?.income ?? [], now);
-
-  double get lastWeekDailyIncomeAverage => calculateDailyAverage(
-    totalByDateLstMonth.value?.income ?? [],
-    lastMonthToday,
-  );
-
-  double get dailyIncomeChange =>
-      calculatePercentageChange(dailyIncomeAverage, lastWeekDailyIncomeAverage);
 
   List<TotalByDateEntity> getDataBySelected(TotalsByDateEntity totals) {
     if (selectedType.value == 'chi') {

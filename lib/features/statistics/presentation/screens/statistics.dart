@@ -151,7 +151,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     now,
                   );
 
-                  return SavingsLineChart(
+                  return SavingsBarChart(
                     xLabels: generateLast7DaysLabels(),
                     thisMonthSpots: thisMonthSpots,
                     lastMonthSpots: lastMonthSpots,

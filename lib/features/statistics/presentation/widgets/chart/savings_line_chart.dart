@@ -2,13 +2,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/Helper/helper_functions.dart';
+import 'package:money_care/core/presentation/widgets/chart/app_bar_chart.dart';
 
-class SavingsLineChart extends StatelessWidget {
+class SavingsBarChart extends StatelessWidget {
   final List<FlSpot> thisMonthSpots;
   final List<FlSpot> lastMonthSpots;
   final List<String> xLabels;
 
-  const SavingsLineChart({
+  const SavingsBarChart({
     super.key,
     required this.thisMonthSpots,
     required this.lastMonthSpots,
@@ -17,21 +18,35 @@ class SavingsLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formatCurrencyShort(int value) {
-      if (value >= 1000000) {
-        double val = value / 1000000;
-        if (val == val.roundToDouble()) {
-          return '${val.toInt()}M';
-        }
-        return '${val.toStringAsFixed(1)}M';
-      } else if (value >= 1000) {
-        double val = value / 1000;
-        if (val == val.roundToDouble()) {
-          return '${val.toInt()}K';
-        }
-        return '${val.toStringAsFixed(1)}K';
-      }
-      return value.toString();
+    List<BarChartGroupData> barGroups = [];
+    int maxLength = thisMonthSpots.length > lastMonthSpots.length
+        ? thisMonthSpots.length
+        : lastMonthSpots.length;
+
+    for (int i = 0; i < maxLength; i++) {
+      double thisVal = i < thisMonthSpots.length ? thisMonthSpots[i].y : 0;
+      double lastVal = i < lastMonthSpots.length ? lastMonthSpots[i].y : 0;
+
+      barGroups.add(
+        BarChartGroupData(
+          x: i,
+          barsSpace: 4,
+          barRods: [
+            BarChartRodData(
+              toY: thisVal,
+              color: AppColors.secondaryOrange,
+              width: 8,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            BarChartRodData(
+              toY: lastVal,
+              color: AppColors.secondaryNavyBlue,
+              width: 8,
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ],
+        ),
+      );
     }
 
     return Column(
@@ -61,99 +76,40 @@ class SavingsLineChart extends StatelessWidget {
             ],
           ),
 
-          child: LineChart(
-            LineChartData(
-              minY: 0,
-              gridData: const FlGridData(show: false),
-              borderData: FlBorderData(show: false),
-
-              titlesData: FlTitlesData(
-                show: true,
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 35,
-                    getTitlesWidget:
-                        (value, meta) => Text(
-                          formatCurrencyShort(value.toInt()),
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppColors.text1,
-                          ),
-                        ),
+          child: AppBarChart(
+            minY: 0,
+            getBottomTitles: (value, meta) {
+              int index = value.round();
+              if (index < 0 || index >= xLabels.length) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  xLabels[index],
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: AppColors.text1,
                   ),
                 ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    interval: 1,
-                    reservedSize: 24,
-                    getTitlesWidget: (value, meta) {
-                      int index = value.round();
-                      if (index < 0 || index >= xLabels.length) {
-                        return const SizedBox.shrink();
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          xLabels[index],
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppColors.text1,
-                          ),
-                        ),
-                      );
-                    },
+              );
+            },
+            tooltipData: BarTouchTooltipData(
+              getTooltipColor: (group) => AppColors.primary.withOpacity(0.8),
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                return BarTooltipItem(
+                  AppHelperFunction.formatAmount(rod.toY, 'VND'),
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                topTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                rightTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-              ),
-
-              lineTouchData: LineTouchData(
-                enabled: true,
-                touchTooltipData: LineTouchTooltipData(
-                  getTooltipColor:
-                      (value) => AppColors.primary.withOpacity(0.8),
-                  getTooltipItems: (items) {
-                    return items.map((item) {
-                      return LineTooltipItem(
-                        AppHelperFunction.formatAmount(
-                          item.y,'VND'
-                        ),
-                        const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    }).toList();
-                  },
-                ),
-              ),
-
-              lineBarsData: [
-                _buildLine(AppColors.secondaryOrange, thisMonthSpots),
-                _buildLine(AppColors.secondaryNavyBlue, lastMonthSpots),
-              ],
+                );
+              },
             ),
+            barGroups: barGroups,
           ),
         ),
       ],
-    );
-  }
-
-  LineChartBarData _buildLine(Color color, List<FlSpot> spots) {
-    return LineChartBarData(
-      spots: spots,
-      isCurved: true,
-      color: color,
-      barWidth: 3,
-      dotData: const FlDotData(show: true),
-      belowBarData: BarAreaData(show: true, color: color.withOpacity(0.15)),
     );
   }
 

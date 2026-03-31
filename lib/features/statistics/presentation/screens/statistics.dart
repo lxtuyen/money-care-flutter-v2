@@ -253,7 +253,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               title: item.categoryName,
                               amount: item.total,
                               limit: item.limit,
-                              percent: item.percentage.toStringAsFixed(1),
                             ),
                           ),
                         ),

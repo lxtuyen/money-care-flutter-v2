@@ -80,6 +80,54 @@ class SavingFundRepositoryImpl implements SavingFundRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, ExpiredFundCheckModel>> checkExpiredFund(int userId) async {
+    try {
+      final model = await remoteDatasource.checkExpiredFund(userId);
+      return Right(model);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> markAsNotified(int fundId) async {
+    try {
+      await remoteDatasource.markAsNotified(fundId);
+      return const Right(true);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SavingFundEntity>> extendFund(
+    int fundId,
+    DateTime newEndDate, {
+    DateTime? newStartDate,
+  }) async {
+    try {
+      final model = await remoteDatasource.extendFund(
+        fundId,
+        newEndDate,
+        newStartDate: newStartDate,
+      );
+      return Right(model.toEntity());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SavingFundReportModel>> getFundReport(int fundId) async {
+    try {
+      final model = await remoteDatasource.getFundReport(fundId);
+      return Right(model);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
   Failure _mapExceptionToFailure(Object error) {
     if (error is UnauthorizedException) {
       return UnauthorizedFailure(error.message);

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/notification/domain/entities/notification_entity.dart';
 
@@ -20,7 +21,7 @@ class NotificationController extends GetxController {
     try {
       isLoading.value = true;
       final response = await apiClient.get(
-        '/notifications',
+        '/${ApiRoutes.notification}',
         fromJsonT: (data) => (data as List)
             .map((item) => NotificationEntity.fromJson(item))
             .toList(),
@@ -37,7 +38,7 @@ class NotificationController extends GetxController {
 
   Future<void> markAsRead(int id) async {
     try {
-      await apiClient.patch('/notifications/$id/read');
+      await apiClient.patch('/${ApiRoutes.notification}/$id/read');
       final index = notifications.indexWhere((n) => n.id == id);
       if (index != -1) {
         final item = notifications[index];

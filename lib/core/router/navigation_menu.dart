@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
+import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/saving_fund/presentation/widgets/expired_fund_popup.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
 import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/user_center.dart';
@@ -18,6 +21,30 @@ class ScaffoldWithNavBar extends StatefulWidget {
 
 class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
   bool _isSidebarExpanded = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkExpiredFund());
+  }
+
+  Future<void> _checkExpiredFund() async {
+    try {
+      final savingFundController = Get.find<SavingFundController>();
+      final appController = Get.find<AppController>();
+      final userId = appController.userId.value;
+      if (userId == null) return;
+
+      await savingFundController.checkExpiredFund(userId);
+
+      if (savingFundController.hasExpiredFund.value &&
+          savingFundController.expiredFund.value != null) {
+        ExpiredFundPopup.show(savingFundController.expiredFund.value!);
+      }
+    } catch (_) {
+      // Silently fail - không interrupt UX
+    }
+  }
 
   static const _screens = [
     HomeScreen(),

@@ -16,6 +16,7 @@ import 'package:money_care/features/onboarding/presentation/screens/onboarding_s
 import 'package:money_care/features/auth/presentation/screens/register.dart';
 import 'package:money_care/features/saving_fund/presentation/screens/create_saving_fund.dart';
 import 'package:money_care/features/saving_fund/presentation/screens/select_saving_fund.dart';
+import 'package:money_care/features/saving_fund/presentation/screens/saving_fund_report_screen.dart';
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
@@ -73,5 +74,9 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/notification',
     page: () => const NotificationScreen(),
+  ),
+  GetPage(
+    name: '/saving_fund_report',
+    page: () => const SavingFundReportScreen(),
   ),
 ];

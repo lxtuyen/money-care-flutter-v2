@@ -10,6 +10,10 @@ abstract class SavingFundRemoteDatasource {
   Future<SavingFundModel> updateSavingFund(SavingFundDto dto);
   Future<bool> deleteSavingFund(int id);
   Future<SavingFundModel> selectSavingFund(int userId, int fundId);
+  Future<ExpiredFundCheckModel> checkExpiredFund(int userId);
+  Future<bool> markAsNotified(int fundId);
+  Future<SavingFundModel> extendFund(int fundId, DateTime newEndDate, {DateTime? newStartDate});
+  Future<SavingFundReportModel> getFundReport(int fundId);
 }
 
 class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
@@ -103,6 +107,70 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
     if (!res.success || res.data == null) {
       throw ServerException(
         res.message.isNotEmpty ? res.message : 'Không thể chọn quỹ tiết kiệm',
+      );
+    }
+    return res.data!;
+  }
+
+  @override
+  Future<ExpiredFundCheckModel> checkExpiredFund(int userId) async {
+    final res = await api.get<ExpiredFundCheckModel>(
+      '${ApiRoutes.checkExpiredFund}/$userId',
+      fromJsonT: (json) => ExpiredFundCheckModel.fromMap(json),
+    );
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể kiểm tra quỹ hết hạn',
+      );
+    }
+    return res.data!;
+  }
+
+  @override
+  Future<bool> markAsNotified(int fundId) async {
+    final res = await api.patch<void>(
+      '${ApiRoutes.savingFund}/$fundId/mark-notified',
+    );
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể cập nhật trạng thái',
+      );
+    }
+    return true;
+  }
+
+  @override
+  Future<SavingFundModel> extendFund(
+    int fundId,
+    DateTime newEndDate, {
+    DateTime? newStartDate,
+  }) async {
+    final body = <String, dynamic>{
+      'new_end_date': newEndDate.toIso8601String(),
+      if (newStartDate != null) 'new_start_date': newStartDate.toIso8601String(),
+    };
+    final res = await api.patch<SavingFundModel>(
+      '${ApiRoutes.savingFund}/$fundId/extend',
+      body: body,
+      fromJsonT: (json) => SavingFundModel.fromMap(json),
+    );
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể gia hạn quỹ',
+      );
+    }
+    return res.data!;
+  }
+
+  @override
+  Future<SavingFundReportModel> getFundReport(int fundId) async {
+    final res = await api.get<SavingFundReportModel>(
+      '${ApiRoutes.savingFund}/$fundId/report',
+      fromJsonT: (json) => SavingFundReportModel.fromMap(json),
+    );
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty ? res.message : 'Không thể tải báo cáo',
       );
     }
     return res.data!;

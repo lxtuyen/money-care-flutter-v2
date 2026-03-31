@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/core/storage/local_storage.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -27,7 +28,11 @@ class NotificationService extends GetxService {
 
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       fcmToken = newToken;
-      _sendTokenToServer(newToken);
+      if (LocalStorage().getToken() != null) {
+        _sendTokenToServer(newToken);
+      }
+      // Nếu chưa có JWT, chỉ lưu token local.
+      // syncToken() sẽ được gọi sau khi đăng nhập thành công.
     });
 
     return this;

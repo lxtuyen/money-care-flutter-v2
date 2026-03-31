@@ -44,6 +44,13 @@ class AuthController extends GetxController {
     final cachedUser = getCachedUserUseCase();
     if (cachedUser != null) {
       user.value = cachedUser;
+      // ever() không fire cho giá trị đã set trước khi đăng ký listener,
+      // nên phải gọi syncToken() trực tiếp sau app restart.
+      try {
+        Get.find<NotificationService>().syncToken();
+      } catch (e) {
+        print('NotificationService syncToken on restart error: $e');
+      }
     }
 
     ever(user, (UserEntity? currentUser) {

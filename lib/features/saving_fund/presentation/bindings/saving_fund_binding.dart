@@ -25,6 +25,10 @@ class SavingFundBinding extends Bindings {
         updateSavingFundUseCase: UpdateSavingFundUseCase(repository),
         deleteSavingFundUseCase: DeleteSavingFundUseCase(repository),
         selectSavingFundUseCase: SelectSavingFundUseCase(repository),
+        checkExpiredFundUseCase: CheckExpiredFundUseCase(repository),
+        markAsNotifiedUseCase: MarkAsNotifiedUseCase(repository),
+        extendFundUseCase: ExtendFundUseCase(repository),
+        getFundReportUseCase: GetFundReportUseCase(repository),
       ),
       fenix: true,
     );

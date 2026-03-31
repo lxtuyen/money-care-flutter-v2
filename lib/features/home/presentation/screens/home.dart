@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       clipBehavior: Clip.none,
                       children: [
                         CircularIcon(
-                          onTap: () => Get.toNamed(RoutePath.chatbot),
+                          onTap: () => Get.toNamed(RoutePath.notification),
                           iconPath: AppIcons.notification,
                           backgroundColor: const Color(0XFFF5FAFE),
                           height: 36,

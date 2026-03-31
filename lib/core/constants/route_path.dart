@@ -21,4 +21,5 @@ class RoutePath {
   static const adminUsers = '/admin/users';
   static const payment = '/payment';
   static const notification = '/notification';
+  static const savingFundReport = '/saving_fund_report';
 }

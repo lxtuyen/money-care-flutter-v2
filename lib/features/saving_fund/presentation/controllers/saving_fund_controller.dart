@@ -17,6 +17,10 @@ class SavingFundController extends GetxController {
   final UpdateSavingFundUseCase updateSavingFundUseCase;
   final DeleteSavingFundUseCase deleteSavingFundUseCase;
   final SelectSavingFundUseCase selectSavingFundUseCase;
+  final CheckExpiredFundUseCase checkExpiredFundUseCase;
+  final MarkAsNotifiedUseCase markAsNotifiedUseCase;
+  final ExtendFundUseCase extendFundUseCase;
+  final GetFundReportUseCase getFundReportUseCase;
   final AppController appController = Get.find<AppController>();
   final UserController userController = Get.find<UserController>();
 
@@ -26,6 +30,10 @@ class SavingFundController extends GetxController {
     required this.updateSavingFundUseCase,
     required this.deleteSavingFundUseCase,
     required this.selectSavingFundUseCase,
+    required this.checkExpiredFundUseCase,
+    required this.markAsNotifiedUseCase,
+    required this.extendFundUseCase,
+    required this.getFundReportUseCase,
   });
 
   RxList<SavingFundEntity> savingFunds = <SavingFundEntity>[].obs;
@@ -35,6 +43,12 @@ class SavingFundController extends GetxController {
   RxString? errorMessage = RxString('');
   var fundId = 0.obs;
   RxInt selectedFundIndex = 0.obs;
+
+  // Expired fund state
+  Rxn<ExpiredFundInfoModel> expiredFund = Rxn<ExpiredFundInfoModel>();
+  RxBool hasExpiredFund = false.obs;
+  Rxn<SavingFundReportModel> fundReport = Rxn<SavingFundReportModel>();
+  RxBool isLoadingReport = false.obs;
 
   @override
   void onInit() {
@@ -222,4 +236,50 @@ class SavingFundController extends GetxController {
   int get currentFundId => fundId.value;
 
   SavingFundEntity? get selectedFund => currentFund.value;
+
+  // ============ EXPIRED FUND METHODS ============
+
+  Future<void> checkExpiredFund(int userId) async {
+    final result = await checkExpiredFundUseCase(userId);
+    result.fold(
+      (_) {}, // Silently fail - không interrupt UX
+      (data) {
+        hasExpiredFund.value = data.hasExpiredFund;
+        expiredFund.value = data.expiredFund;
+      },
+    );
+  }
+
+  Future<void> markAsNotified(int fundId) async {
+    await markAsNotifiedUseCase(fundId);
+    hasExpiredFund.value = false;
+    expiredFund.value = null;
+  }
+
+  Future<bool> extendFund(int fundId, DateTime newEndDate, {DateTime? newStartDate}) async {
+    final result = await extendFundUseCase(fundId, newEndDate, newStartDate: newStartDate);
+    return result.fold(
+      (failure) {
+        _handleFailure(failure);
+        return false;
+      },
+      (updated) {
+        hasExpiredFund.value = false;
+        expiredFund.value = null;
+        currentFund.value = updated as SavingFundEntity?;
+        AppHelperFunction.showSuccessSnackBar('Gia hạn quỹ thành công');
+        return true;
+      },
+    );
+  }
+
+  Future<void> loadFundReport(int fundId) async {
+    isLoadingReport.value = true;
+    final result = await getFundReportUseCase(fundId);
+    result.fold(
+      _handleFailure,
+      (report) => fundReport.value = report,
+    );
+    isLoadingReport.value = false;
+  }
 }

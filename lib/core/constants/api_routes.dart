@@ -10,6 +10,7 @@ class ApiRoutes {
   static const savingFund = 'saving-fund';
   static const getSavingFunds = 'saving-fund/user';
   static const selectSavingFund = 'saving-fund/select';
+  static const checkExpiredFund = 'saving-fund/check-expired';
 
   static const userProfile = 'user-profile/me';
   static const users = 'users';
@@ -18,7 +19,6 @@ class ApiRoutes {
   static const transaction = 'transactions';
   static const getTransactionsFilter = 'transactions/filter';
 
-  static const getNotificationsByUser = 'notifications/me';
   static const notification = 'notifications';
 
   static const scanReceipt = 'receipt/scan';

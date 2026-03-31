@@ -11,7 +11,6 @@ import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.d
 import 'package:money_care/features/auth/domain/usecases/login_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/register_usecase.dart';
-import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/auth/presentation/controllers/forgot_password_controller.dart';
 import 'package:money_care/features/auth/presentation/controllers/login_controller.dart';

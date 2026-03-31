@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/core/presentation/widgets/states/transaction_empty_state.dart';

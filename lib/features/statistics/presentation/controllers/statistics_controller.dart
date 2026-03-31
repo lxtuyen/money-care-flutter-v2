@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/transaction/domain/entities/statistics_summary_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 
 class StatisticsController extends GetxController {
@@ -158,8 +157,8 @@ class StatisticsController extends GetxController {
     isLoading.value = true;
     try {
       final dtoWeek = _createTotalsDto(weekStartDate, weekEndDate);
-      final dtoMonth = _createTotalsDto(monthStartDate, monthEndDate);
-      final dtoLastMonth = _createTotalsDto(lastMonth7DaysStart, lastMonthToday);
+      _createTotalsDto(monthStartDate, monthEndDate);
+      _createTotalsDto(lastMonth7DaysStart, lastMonthToday);
 
       await Future.wait([
         _loadTotalByType(userId),

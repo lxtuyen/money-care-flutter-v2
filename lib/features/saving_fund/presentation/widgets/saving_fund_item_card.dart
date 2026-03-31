@@ -72,9 +72,9 @@ class SavingFundItemCard extends StatelessWidget {
             _InfoRow(
               label: 'Mục tiêu:',
               value:
-                  fund.amount != null
+                  fund.target != null
                       ? AppHelperFunction.formatAmount(
-                        fund.amount!,
+                        fund.target!,
                         'VND',
                       )
                       : 'Chưa xác định',

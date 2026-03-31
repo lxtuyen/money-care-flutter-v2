@@ -1,6 +1,4 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -258,7 +256,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               percent: item.percentage.toStringAsFixed(1),
                             ),
                           ),
-                        ).toList(),
+                        ),
                       ],
                     ),
                   ),

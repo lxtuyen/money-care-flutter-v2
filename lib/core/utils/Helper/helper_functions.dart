@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:money_care/core/constants/colors.dart';
 
 enum AppSnackBarType { success, error, warning, info }
 

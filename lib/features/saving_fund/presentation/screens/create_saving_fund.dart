@@ -36,8 +36,8 @@ class _CreateSavingFundState extends State<CreateSavingFund> {
         title: Obx(
           () => Text(
             _controller.isEditMode.value
-                ? 'Cáº­p nháº­t quá»¹ tiáº¿t kiá»‡m'
-                : 'Táº¡o quá»¹ tiáº¿t kiá»‡m',
+                ? 'Cập nhật quỹ tiết kiệm'
+                : 'Tạo quỹ tiết kiệm',
           ),
         ),
         showBackArrow: true,
@@ -45,62 +45,72 @@ class _CreateSavingFundState extends State<CreateSavingFund> {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
                   AppTextFormField(
                     controller: _controller.fundNameController,
-                    label: 'TÃªn quá»¹',
+                    label: 'Tên quỹ',
                     icon: Icons.savings,
                     validator: AppValidator.validateName,
                   ),
                   const SizedBox(height: 16),
                   AppCurrencyFormField(
-                    controller: _controller.targetAmountController,
-                    label: 'Má»¥c tiÃªu',
+                    controller: _controller.targetController,
+                    label: 'Mục tiêu tiết kiệm',
+                    icon: Icons.flag,
+                    hintText: 'VD: 10.000.000',
+                    onRawChanged: _controller.updateTargetAmount,
+                    validator: (value) => AppValidator.validateAmount(value),
+                  ),
+                  const SizedBox(height: 16),
+                  AppCurrencyFormField(
+                    controller: _controller.budgetController,
+                    label: 'Ngân sách chi tiêu',
                     icon: Icons.attach_money,
                     hintText: 'VD: 5.000.000',
-                    onRawChanged: _controller.updateTargetAmount,
+                    onRawChanged: _controller.updateBudget,
                     validator: (value) => AppValidator.validateAmount(value),
                   ),
                   const SizedBox(height: 16),
                   DatePickerField(
                     selectedDate: _controller.startDate,
-                    label: 'Báº¯t Ä‘áº§u',
-                    placeholder: 'Chá»n ngÃ y báº¯t Ä‘áº§u',
+                    label: 'Bắt đầu',
+                    placeholder: 'Chọn ngày bắt đầu',
                     onTap: () => _controller.selectStartDate(context),
                   ),
                   const SizedBox(height: 16),
                   DatePickerField(
                     selectedDate: _controller.endDate,
-                    label: 'Káº¿t thÃºc',
-                    placeholder: 'Chá»n ngÃ y káº¿t thÃºc',
+                    label: 'Kết thúc',
+                    placeholder: 'Chọn ngày kết thúc',
                     onTap: () => _controller.selectEndDate(context),
                   ),
                   const SizedBox(height: 16),
-                  Expanded(
-                    child: Obx(() {
-                      return ListView.builder(
-                        itemCount: _controller.categories.length,
-                        itemBuilder: (context, index) {
-                          final cat = _controller.categories[index];
-                          return CategoryPercentageCard(
-                            category: cat,
-                            index: index,
-                            onPercentageChanged: (percentage) {
-                              _controller.updateCategoryPercentage(
-                                index,
-                                percentage,
-                              );
-                            },
-                          );
-                        },
-                      );
-                    }),
-                  ),
+                  Obx(() {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _controller.categories.length,
+                      itemBuilder: (context, index) {
+                        final cat = _controller.categories[index];
+                        return CategoryPercentageCard(
+                          category: cat,
+                          index: index,
+                          onPercentageChanged: (percentage) {
+                            _controller.updateCategoryPercentage(
+                              index,
+                              percentage,
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }),
                   const SizedBox(height: 20),
                   Obx(() {
                     final isLoading = _controller.isLoading.value;
@@ -111,9 +121,9 @@ class _CreateSavingFundState extends State<CreateSavingFund> {
                       label:
                           isValid
                               ? (_controller.isEditMode.value
-                                  ? 'Cáº­p nháº­t'
-                                  : 'Táº¡o quá»¹')
-                              : 'Tá»•ng pháº§n trÄƒm: $totalPercentage',
+                                  ? 'Cập nhật­t'
+                                  : 'Tạo')
+                              : 'Tổng phần trăm: $totalPercentage',
                       onPressed: _controller.submitCreateFund,
                       isLoading: isLoading,
                       isEnabled: isValid,

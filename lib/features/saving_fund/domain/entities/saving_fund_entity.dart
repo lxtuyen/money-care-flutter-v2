@@ -5,7 +5,8 @@ class SavingFundEntity {
   final String name;
   final bool? isSelected;
   final List<CategoryEntity> categories;
-  final double? amount;
+  final double? budget;
+  final double? target;
   final DateTime? start_date;
   final DateTime? end_date;
 
@@ -14,7 +15,8 @@ class SavingFundEntity {
     required this.name,
     this.isSelected,
     required this.categories,
-    this.amount,
+    this.budget,
+    this.target,
     this.start_date,
     this.end_date,
   });

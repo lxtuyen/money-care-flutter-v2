@@ -6,7 +6,8 @@ class SavingFundModel {
   final String name;
   bool? isSelected;
   final List<CategoryModel> categories;
-  final double? amount;
+  final double? budget;
+  final double? target;
   final DateTime? start_date;
   final DateTime? end_date;
 
@@ -15,7 +16,8 @@ class SavingFundModel {
     required this.name,
     this.isSelected,
     required this.categories,
-    this.amount,
+    this.budget,
+    this.target,
     this.start_date,
     this.end_date,
   });
@@ -31,8 +33,10 @@ class SavingFundModel {
                 json['categories'].map((x) => CategoryModel.fromJson(x)),
               )
               : [],
-      amount:
-          json['amount'] != null ? double.tryParse(json['amount'].toString()) : null,
+      budget:
+          json['budget'] != null ? double.tryParse(json['budget'].toString()) : null,
+      target:
+          json['target'] != null ? double.tryParse(json['target'].toString()) : null,
       start_date:
           json['start_date'] != null ? DateTime.parse(json['start_date']) : null,
       end_date: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
@@ -45,7 +49,8 @@ class SavingFundModel {
       'name': name,
       'is_selected': isSelected,
       'categories': categories.map((e) => e.toJson()).toList(),
-      'amount': amount,
+      'budget': budget,
+      'target': target,
       'start_date': start_date?.toIso8601String(),
       'end_date': end_date?.toIso8601String(),
     };
@@ -56,7 +61,8 @@ class SavingFundModel {
     name: name,
     isSelected: isSelected,
     categories: categories.map((e) => e.toEntity()).toList(),
-    amount: amount,
+    budget: budget,
+    target: target,
     start_date: start_date,
     end_date: end_date,
   );

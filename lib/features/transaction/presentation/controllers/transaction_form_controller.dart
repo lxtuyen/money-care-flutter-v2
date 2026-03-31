@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
@@ -46,9 +47,9 @@ class TransactionFormController extends GetxController {
   }
 
   Future<void> selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showStyledDatePicker(
       context: context,
-      initialDate: selectedDate.value,
+      initialDate: selectedDate.value ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2050),
     );
@@ -126,7 +127,7 @@ class TransactionFormController extends GetxController {
       note: noteController.text.trim(),
       categoryId: selectedCategoryId.value,
       transactionDate: selectedDate.value,
-      userId: appController.userId.value ?? 0,
+      userId: appController.userId.value,
     );
   }
 
@@ -146,6 +147,11 @@ class TransactionFormController extends GetxController {
   }
 
   Future<void> createTransaction() async {
+    final userId = await appController.getCurrentUserId();
+    if (userId == null) {
+      AppHelperFunction.showErrorSnackBar('Không thể xác định người dùng. Vui lòng đăng nhập lại.');
+      return;
+    }
     try {
       final dto = buildTransactionDto();
       await transactionController.createTransaction(dto);
@@ -159,6 +165,11 @@ class TransactionFormController extends GetxController {
   }
 
   Future<void> updateTransaction() async {
+    final userId = await appController.getCurrentUserId();
+    if (userId == null) {
+      AppHelperFunction.showErrorSnackBar('Không thể xác định người dùng. Vui lòng đăng nhập lại.');
+      return;
+    }
     try {
       final dto = buildTransactionDto();
       await transactionController.updateTransaction(dto, initialItem!.id!);

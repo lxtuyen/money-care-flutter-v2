@@ -4,7 +4,8 @@ class SavingFundDto {
   final String? name;
   final List<CategoryEntity>? categories;
   final int? id;
-  final double? amount;
+  final double? budget;
+  final double? target;
   final DateTime? start_date;
   final DateTime? end_date;
 
@@ -12,7 +13,8 @@ class SavingFundDto {
     this.name,
     this.categories,
     this.id,
-    this.amount,
+    this.budget,
+    this.target,
     this.start_date,
     this.end_date,
   });
@@ -31,7 +33,8 @@ class SavingFundDto {
               )
               .toList(),
       'userId': id,
-      'amount': amount,
+      'budget': budget,
+      'target': target,
       'start_date': start_date?.toIso8601String(),
       'end_date': end_date?.toIso8601String(),
     };
@@ -48,11 +51,11 @@ class SavingFundDto {
                   'name': e.name,
                   'percentage': e.percentage,
                   'icon': e.icon,
-                  'color': e.color,
                 },
               )
               .toList(),
-      'amount': amount,
+      'budget': budget,
+      'target': target,
       'start_date': start_date?.toIso8601String(),
       'end_date': end_date?.toIso8601String(),
     };

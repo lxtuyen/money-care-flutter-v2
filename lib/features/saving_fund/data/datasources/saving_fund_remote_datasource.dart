@@ -67,7 +67,7 @@ class SavingFundRemoteDatasourceImpl implements SavingFundRemoteDatasource {
 
   @override
   Future<SavingFundModel> updateSavingFund(SavingFundDto dto) async {
-    final res = await api.put<SavingFundModel>(
+    final res = await api.patch<SavingFundModel>(
       '${ApiRoutes.savingFund}/${dto.id}',
       body: dto.toJsonUpdate(),
       fromJsonT: (json) => SavingFundModel.fromMap(json),

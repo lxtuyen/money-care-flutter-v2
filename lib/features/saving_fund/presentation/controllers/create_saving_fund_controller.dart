@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/features/saving_fund/data/models/models.dart';
 import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
 import 'package:money_care/features/saving_fund/domain/usecases/usecases.dart';
@@ -13,6 +14,7 @@ class CreateSavingFundController extends GetxController {
   final CreateSavingFundUseCase createSavingFundUseCase;
   final SavingFundController savingFundController =
       Get.find<SavingFundController>();
+  final AppController appController = Get.find<AppController>();
 
   CreateSavingFundController({required this.createSavingFundUseCase});
 
@@ -24,8 +26,10 @@ class CreateSavingFundController extends GetxController {
   Rxn<int> editingFundId = Rxn<int>();
 
   final fundNameController = TextEditingController();
-  final targetAmountController = TextEditingController();
-  Rxn<double> targetAmount = Rxn<double>();
+  final budgetController = TextEditingController();
+  final targetController = TextEditingController();
+  Rxn<double> budget = Rxn<double>();
+  Rxn<double> target = Rxn<double>();
   Rxn<DateTime> startDate = Rxn<DateTime>();
   Rxn<DateTime> endDate = Rxn<DateTime>();
 
@@ -40,7 +44,8 @@ class CreateSavingFundController extends GetxController {
   @override
   void onClose() {
     fundNameController.dispose();
-    targetAmountController.dispose();
+    budgetController.dispose();
+    targetController.dispose();
     super.onClose();
   }
 
@@ -52,8 +57,10 @@ class CreateSavingFundController extends GetxController {
       isEditMode.value = true;
       editingFundId.value = arg.id;
       fundNameController.text = arg.name;
-      targetAmount.value = arg.amount;
-      targetAmountController.text = arg.amount?.toInt().toString() ?? '';
+      budget.value = arg.budget;
+      budgetController.text = arg.budget?.toInt().toString() ?? '';
+      target.value = arg.target;
+      targetController.text = arg.target?.toInt().toString() ?? '';
       startDate.value = arg.start_date;
       endDate.value = arg.end_date;
       categories.assignAll(arg.categories);
@@ -84,30 +91,33 @@ class CreateSavingFundController extends GetxController {
   }
 
   Future<void> initializeUserInfo() async {
-    final userInfoJson = LocalStorage().getUserInfo();
-    if (userInfoJson == null) {
+    final id = await appController.getCurrentUserId();
+    if (id == null) {
       AppHelperFunction.showErrorSnackBar(
         'Không thể xác định người dùng hiện tại',
       );
       return;
     }
+    userId.value = id;
+  }
 
-    try {
-      final user = UserModel.fromJson(userInfoJson, '');
-      userId.value = user.id;
-    } catch (_) {
-      AppHelperFunction.showErrorSnackBar(
-        'Không thể đọc thông tin người dùng hiện tại',
-      );
-    }
+  Future<DateTime?> _showStyledDatePicker({
+    required BuildContext context,
+    required DateTime initialDate,
+    required DateTime firstDate,
+  }) {
+    return showStyledDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+    );
   }
 
   Future<void> selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await _showStyledDatePicker(
       context: context,
       initialDate: startDate.value ?? DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
     );
     if (picked != null) {
       startDate.value = picked;
@@ -115,14 +125,13 @@ class CreateSavingFundController extends GetxController {
   }
 
   Future<void> selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await _showStyledDatePicker(
       context: context,
       initialDate:
           endDate.value ??
           (startDate.value?.add(const Duration(days: 30)) ??
               DateTime.now().add(const Duration(days: 30))),
       firstDate: startDate.value ?? DateTime.now(),
-      lastDate: DateTime(2100),
     );
     if (picked != null) {
       endDate.value = picked;
@@ -130,7 +139,11 @@ class CreateSavingFundController extends GetxController {
   }
 
   void updateTargetAmount(String value) {
-    targetAmount.value = double.tryParse(value);
+    target.value = double.tryParse(value);
+  }
+
+  void updateBudget(String value) {
+    budget.value = double.tryParse(value);
   }
 
   Future<bool> submitCreateFund() async {
@@ -171,7 +184,8 @@ class CreateSavingFundController extends GetxController {
       categories: categories.toList(),
       name: fundNameController.text.trim(),
       id: isEditMode.value ? editingFundId.value : userId.value,
-      amount: targetAmount.value,
+      budget: budget.value,
+      target: target.value,
       start_date: startDate.value,
       end_date: endDate.value,
     );
@@ -232,6 +246,7 @@ class CreateSavingFundController extends GetxController {
         AppHelperFunction.showSuccessSnackBar(
           'Tạo quỹ tiết kiệm thành công',
         );
+        Get.offNamed(RoutePath.selectSavingFund);
         return true;
       },
     );
@@ -241,12 +256,17 @@ class CreateSavingFundController extends GetxController {
 
   void _resetForm() {
     fundNameController.clear();
-    targetAmountController.clear();
+    budgetController.clear();
+    targetController.clear();
     categories.clear();
-    userId.value = null;
     totalPercentage.value = 0;
-    targetAmount.value = null;
+    budget.value = null;
+    target.value = null;
     startDate.value = null;
     endDate.value = null;
   }
 }
+
+
+
+

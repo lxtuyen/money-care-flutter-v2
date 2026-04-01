@@ -89,6 +89,6 @@ class AppTexts {
   static const String totalMonth = 'Tổng chi tiêu theo tháng';
   static const String dailyAverage = 'Trung bình chi tiêu theo ngày';
   static const String monthlyAverage = 'Trung bình chi tiêu theo tháng';
-  static const String limitOverview = 'Tổng quan hạn mức';
+  static const String limitOverview = 'Tổng quan chi tiêu';
   static const String balance = 'Số dư';
 }

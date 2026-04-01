@@ -60,7 +60,11 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
       activeIcon: 'transaction-active',
       label: 'Thu - chi',
     ),
-    _NavItem(icon: 'chart', activeIcon: 'chart-active', label: 'Thống kê'),
+    _NavItem(
+      icon: 'chart',
+      activeIcon: 'chart-active',
+      label: 'Thống kê',
+    ),
     _NavItem(icon: 'user', activeIcon: 'user-active', label: 'Cá nhân'),
   ];
 
@@ -83,7 +87,8 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   child: AnimatedSlide(
                     duration: const Duration(milliseconds: 120),
                     curve: Curves.easeOut,
-                    offset: isKeyboardVisible ? const Offset(0, 1.2) : Offset.zero,
+                    offset:
+                        isKeyboardVisible ? const Offset(0, 1.2) : Offset.zero,
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 90),
                       opacity: isKeyboardVisible ? 0 : 1,
@@ -106,12 +111,16 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
           child: Row(
             children: [
               if (isWeb) _buildSidebar(controller, currentIndex, context),
-              Expanded(child: IndexedStack(index: currentIndex, children: _screens)),
+              Expanded(
+                child: IndexedStack(index: currentIndex, children: _screens),
+              ),
             ],
           ),
         ),
         bottomNavigationBar:
-            isWeb ? null : _buildMobileBottomBar(controller, currentIndex, context),
+            isWeb
+                ? null
+                : _buildMobileBottomBar(controller, currentIndex, context),
       );
     });
   }
@@ -165,7 +174,10 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 final isActive = currentIndex == index;
                 final item = _navItems[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
                   child: ListTile(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -372,10 +384,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 const SizedBox(height: 6),
                 const Text(
                   'Chọn loại giao dịch bạn muốn tạo mới.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.text4,
-                  ),
+                  style: TextStyle(fontSize: 13, color: AppColors.text4),
                 ),
                 const SizedBox(height: 18),
                 _buildTransactionOptionTile(
@@ -399,6 +408,18 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   onTap: () {
                     Navigator.pop(context);
                     Get.toNamed(RoutePath.expense);
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildTransactionOptionTile(
+                  icon: Icons.add_a_photo_outlined,
+                  iconColor: AppColors.secondaryNavyBlue,
+                  iconBackground: AppColors.primary.withOpacity(0.12),
+                  title: 'Bản ghi kèm ảnh',
+                  subtitle: 'Chụp ảnh, nhập số tiền và lưu giao dịch nhanh',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.toNamed(RoutePath.transactionWithImage);
                   },
                 ),
                 const SizedBox(height: 16),

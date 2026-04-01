@@ -15,6 +15,7 @@ class RoutePath {
   static const createSavingFund = '/create_saving_fund';
   static const expense = '/expense';
   static const income = '/income';
+  static const transactionWithImage = '/transaction_with_image';
   static const profile = '/profile';
   static const chatbot = '/chatbot';
   static const adminHome = '/admin/home';
@@ -22,4 +23,5 @@ class RoutePath {
   static const payment = '/payment';
   static const notification = '/notification';
   static const savingFundReport = '/saving_fund_report';
+  static const photoTransactionHistory = '/photo_transaction_history';
 }

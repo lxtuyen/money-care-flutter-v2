@@ -20,6 +20,8 @@ import 'package:money_care/features/saving_fund/presentation/screens/saving_fund
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
+import 'package:money_care/features/transaction/presentation/screens/create_photo_transaction_screen.dart';
+import 'package:money_care/features/transaction/presentation/screens/photo_transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 
@@ -56,6 +58,10 @@ final List<GetPage> appPages = [
   GetPage(name: '/create_saving_fund', page: () => const CreateSavingFund()),
   GetPage(name: '/expense', page: () => const CreateExpenseScreen()),
   GetPage(name: '/income', page: () => const CreateIncomeScreen()),
+  GetPage(
+    name: '/transaction_with_image',
+    page: () => const CreatePhotoTransactionScreen(),
+  ),
   GetPage(name: '/profile', page: () => const ProfileScreen()),
   GetPage(name: '/chatbot', page: () => const ChatbotScreen()),
 
@@ -71,12 +77,13 @@ final List<GetPage> appPages = [
 
   GetPage(name: '/main', page: () => const ScaffoldWithNavBar()),
 
-  GetPage(
-    name: '/notification',
-    page: () => const NotificationScreen(),
-  ),
+  GetPage(name: '/notification', page: () => const NotificationScreen()),
   GetPage(
     name: '/saving_fund_report',
     page: () => const SavingFundReportScreen(),
+  ),
+  GetPage(
+    name: '/photo_transaction_history',
+    page: () => const PhotoTransactionHistoryScreen(),
   ),
 ];

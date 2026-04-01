@@ -11,6 +11,7 @@ import 'package:money_care/features/transaction/presentation/controllers/filter_
 import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 
+import 'package:money_care/features/transaction/presentation/controllers/photo_transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 
 class TransactionBinding extends Bindings {
@@ -27,6 +28,7 @@ class TransactionBinding extends Bindings {
 
     Get.lazyPut(() => FilterController(), fenix: true);
     Get.lazyPut(() => TransactionFormController(), fenix: true);
+    Get.lazyPut(() => PhotoTransactionController(), fenix: true);
 
     Get.lazyPut(
       () => ScanReceiptController(

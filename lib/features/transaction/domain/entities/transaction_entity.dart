@@ -12,6 +12,7 @@ class TransactionEntity {
   final int? id;
   final int amount;
   final String type;
+  final String? pictureUrl;
   final DateTime? transactionDate;
   final String? note;
   final DateTime? createdAt;
@@ -22,6 +23,7 @@ class TransactionEntity {
     this.id,
     required this.amount,
     required this.type,
+    this.pictureUrl,
     this.transactionDate,
     this.note,
     this.createdAt,

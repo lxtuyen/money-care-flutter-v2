@@ -5,6 +5,7 @@ class TransactionModel {
   final int? id;
   final int amount;
   final String type;
+  final String? pictureUrl;
   final DateTime? transactionDate;
   final String? note;
   final DateTime? createdAt;
@@ -15,6 +16,7 @@ class TransactionModel {
     this.id,
     required this.amount,
     required this.type,
+    this.pictureUrl,
     this.transactionDate,
     this.note,
     this.createdAt,
@@ -27,15 +29,24 @@ class TransactionModel {
       id: json['id'],
       amount: (json['amount'] ?? 0),
       type: json['type'] ?? '',
-      transactionDate: json['transaction_date'] != null
-          ? DateTime.parse(json['transaction_date'])
-          : null,
+      pictureUrl: json['pictureURL'] ?? json['pictuteURL'],
+      transactionDate:
+          json['transaction_date'] != null
+              ? DateTime.parse(json['transaction_date'])
+              : null,
       note: json['note'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      category: json['category'] != null
-          ? CategoryModel.fromJson(json['category'])
-          : null,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : null,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
+      category:
+          json['category'] != null
+              ? CategoryModel.fromJson(json['category'])
+              : null,
     );
   }
 
@@ -43,6 +54,7 @@ class TransactionModel {
     id: id,
     amount: amount,
     type: type,
+    pictureUrl: pictureUrl,
     transactionDate: transactionDate,
     note: note,
     createdAt: createdAt,

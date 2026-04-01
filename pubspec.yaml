@@ -15,6 +15,7 @@ dependencies:
   carousel_slider: ^5.0.0
   google_sign_in: ^6.3.0
   image_picker: ^1.1.2
+  camera: ^0.11.1
   fl_chart: ^1.1.1
   flutter_svg: ^2.2.1
   dotted_border: ^2.0.0

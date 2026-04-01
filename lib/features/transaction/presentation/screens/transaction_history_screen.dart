@@ -56,17 +56,24 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
-    await transactionController.loadTransactionScreenData(
-      userId,
-      TransactionFilterDto(
-        fundId:
-            fundController.fundId.value > 0
-                ? fundController.fundId.value
-                : null,
-        startDate: filterController.startDate.value?.toIso8601String(),
-        endDate: filterController.endDate.value?.toIso8601String(),
+    await Future.wait([
+      transactionController.loadTransactionScreenData(
+        userId,
+        TransactionFilterDto(
+          fundId:
+              fundController.fundId.value > 0
+                  ? fundController.fundId.value
+                  : null,
+          startDate: filterController.startDate.value?.toIso8601String(),
+          endDate: filterController.endDate.value?.toIso8601String(),
+        ),
       ),
-    );
+      statisticsController.getTotalByType(
+        userId,
+        startDate: filterController.startDate.value,
+        endDate: filterController.endDate.value,
+      ),
+    ]);
   }
 
   @override
@@ -80,7 +87,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             child: Obx(() {
               final data = statisticsController.totalByType.value;
 
-              if (transactionController.isLoading.value) {
+              if (transactionController.isLoading.value || 
+                  statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -160,12 +168,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         key: const ValueKey('chi'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children:
-            filtered.map((item) {
+            filtered.asMap().entries.map((entry) {
               return TransactionItem(
-                color: AppHelperFunction.getRandomColor(),
-                item: item,
+                color: AppHelperFunction.getChartColorByIndex(entry.key),
+                item: entry.value,
                 isShowDate: true,
-                onTap: () => _showTransactionDetail(context, item),
+                onTap: () => _showTransactionDetail(context, entry.value),
               );
             }).toList(),
       );
@@ -203,12 +211,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         key: const ValueKey('thu'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children:
-            filtered.map((item) {
+            filtered.asMap().entries.map((entry) {
               return TransactionItem(
-                color: AppHelperFunction.getRandomColor(),
-                item: item,
+                color: AppHelperFunction.getChartColorByIndex(entry.key),
+                item: entry.value,
                 isShowDate: true,
-                onTap: () => _showTransactionDetail(context, item),
+                onTap: () => _showTransactionDetail(context, entry.value),
               );
             }).toList(),
       );
@@ -282,20 +290,27 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     );
   }
 
-  void _applyFilter() {
+  Future<void> _applyFilter() async {
     final userId = appController.userId.value;
     if (userId == null) return;
 
-    transactionController.filterTransactions(
-      userId,
-      TransactionFilterDto(
-        categoryId: filterController.categoryId.value,
-        fundId:
-            fundController.fundId.value > 0 ? fundController.fundId.value : null,
-        startDate: filterController.startDate.value?.toIso8601String(),
-        endDate: filterController.endDate.value?.toIso8601String(),
+    await Future.wait([
+      transactionController.filterTransactions(
+        userId,
+        TransactionFilterDto(
+          categoryId: filterController.categoryId.value,
+          fundId:
+              fundController.fundId.value > 0 ? fundController.fundId.value : null,
+          startDate: filterController.startDate.value?.toIso8601String(),
+          endDate: filterController.endDate.value?.toIso8601String(),
+        ),
       ),
-    );
+      statisticsController.getTotalByType(
+        userId,
+        startDate: filterController.startDate.value,
+        endDate: filterController.endDate.value,
+      ),
+    ]);
   }
 
   void _clearFilters() {

@@ -75,7 +75,6 @@ class SavingsBarChart extends StatelessWidget {
               ),
             ],
           ),
-
           child: AppBarChart(
             minY: 0,
             getBottomTitles: (value, meta) {

@@ -49,13 +49,13 @@ class _TransactionSectionState extends State<TransactionSection> {
           if (currentList.isEmpty)
             const TransactionEmptyState()
           else
-            ...currentList.take(5).map(
-              (item) => Padding(
+            ...currentList.take(5).toList().asMap().entries.map(
+              (entry) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: TransactionItem(
-                  item: item,
+                  item: entry.value,
                   onTap: () {},
-                  color: AppHelperFunction.getRandomColor(),
+                  color: AppHelperFunction.getChartColorByIndex(entry.key),
                 ),
               ),
             ),

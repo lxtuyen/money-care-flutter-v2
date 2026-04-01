@@ -22,12 +22,12 @@ class CategorySection extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            ...categories.map((item) {
+            ...categories.asMap().entries.map((entry) {
               return CategoryCard(
-                title: item.categoryName,
-                amount: item.total,
-                percent: item.percentage.toString(),
-                color: AppHelperFunction.getRandomColor(),
+                title: entry.value.categoryName,
+                amount: entry.value.total,
+                percent: entry.value.percentage.toString(),
+                color: AppHelperFunction.getChartColorByIndex(entry.key),
               );
             }),
           ],

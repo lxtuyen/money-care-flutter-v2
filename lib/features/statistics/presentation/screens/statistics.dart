@@ -208,6 +208,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     data.expenseTotal.toDouble(),
                     'VND',
                   ),
+                  incomeAmount: AppHelperFunction.formatAmount(
+                    data.incomeTotal.toDouble(),
+                    'VND',
+                  ),
                   categories: updatedCategories,
                 );
               }),

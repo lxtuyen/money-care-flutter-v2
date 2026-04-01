@@ -2,7 +2,7 @@ class TransactionCreateDto {
   final int? amount;
   final String? type;
   final String? note;
-  final String? pictuteURL;
+  final String? pictureUrl;
   final DateTime? transactionDate;
   final int? categoryId;
   final int? userId;
@@ -11,7 +11,7 @@ class TransactionCreateDto {
     this.amount,
     this.type,
     this.note,
-    this.pictuteURL,
+    this.pictureUrl,
     this.categoryId,
     this.transactionDate,
     this.userId,
@@ -22,7 +22,7 @@ class TransactionCreateDto {
       'amount': amount,
       'type': type,
       'note': note,
-      'pictuteURL': pictuteURL,
+      'pictuteURL': pictureUrl,
       'categoryId': categoryId,
       'transactionDate': transactionDate?.toIso8601String(),
       'userId': userId,

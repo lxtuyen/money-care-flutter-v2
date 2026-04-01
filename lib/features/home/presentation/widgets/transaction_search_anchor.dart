@@ -41,13 +41,13 @@ class _TransactionSearchAnchorState extends State<TransactionSearchAnchor> {
             ];
           }
 
-          final List<Widget> widgets = filtered.map((item) {
+          final List<Widget> widgets = filtered.asMap().entries.map((entry) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: TransactionItem(
-                item: item,
+                item: entry.value,
                 onTap: () {},
-                color: AppHelperFunction.getRandomColor(),
+                color: AppHelperFunction.getChartColorByIndex(entry.key),
               ),
             );
           }).toList();

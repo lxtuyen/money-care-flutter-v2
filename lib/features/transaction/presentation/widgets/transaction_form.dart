@@ -29,14 +29,14 @@ class TransactionForm extends StatefulWidget {
 }
 
 class _TransactionFormState extends State<TransactionForm> {
-late final TransactionFormController controller;
+  late final TransactionFormController controller;
 
-@override
-void initState() {
-  super.initState();
-  controller = Get.find<TransactionFormController>();
-  controller.init(widget.showCategory, widget.item);
-}
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<TransactionFormController>();
+    controller.init(widget.showCategory, widget.item);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,8 @@ void initState() {
                                   label: 'Số tiền',
                                   icon: Icons.attach_money,
                                   hintText: 'Nhập số tiền',
-                                  validator: (v) => AppValidator.validateAmount(v),
+                                  validator:
+                                      (v) => AppValidator.validateAmount(v),
                                 ),
                                 if (widget.showCategory) ...[
                                   const SizedBox(height: 20),
@@ -92,37 +93,70 @@ void initState() {
                                     label: 'Phân loại',
                                     icon: Icons.category,
                                     hintText: 'Chọn phân loại',
-                                    validator: (v) => AppValidator.validateCategory(v),
+                                    validator:
+                                        (v) => AppValidator.validateCategory(v),
                                     onTap: () async {
-                                      final selected = await showModalBottomSheet<CategoryEntity>(
+                                      final selected = await showModalBottomSheet<
+                                        CategoryEntity
+                                      >(
                                         context: context,
                                         isScrollControlled: true,
                                         backgroundColor: Colors.white,
                                         shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          ),
                                         ),
                                         builder: (context) {
                                           return Obx(() {
-                                            if (controller.savingFundController.isLoadingCurrent.value) {
+                                            if (controller
+                                                .savingFundController
+                                                .isLoadingCurrent
+                                                .value) {
                                               return const SizedBox(
                                                 height: 200,
-                                                child: Center(child: CircularProgressIndicator()),
+                                                child: Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
                                               );
-                                            } else if (controller.savingFundController.currentFund.value == null) {
+                                            } else if (controller
+                                                    .savingFundController
+                                                    .currentFund
+                                                    .value ==
+                                                null) {
                                               return const SizedBox(
                                                 height: 200,
-                                                child: Center(child: Text('Không có dữ liệu')),
+                                                child: Center(
+                                                  child: Text(
+                                                    'Không có dữ liệu',
+                                                  ),
+                                                ),
                                               );
                                             }
 
-                                            final categories = controller.savingFundController.currentFund.value!.categories;
+                                            final categories =
+                                                controller
+                                                    .savingFundController
+                                                    .currentFund
+                                                    .value!
+                                                    .categories;
 
                                             return CategorySheet(
                                               categories: categories,
-                                              selectedCategoryInit: controller.selectedCategoryId.value != null
-                                                  ? categories.firstWhereOrNull(
-                                                      (c) => c.id == controller.selectedCategoryId.value)
-                                                  : null,
+                                              selectedCategoryInit:
+                                                  controller
+                                                              .selectedCategoryId
+                                                              .value !=
+                                                          null
+                                                      ? categories.firstWhereOrNull(
+                                                        (c) =>
+                                                            c.id ==
+                                                            controller
+                                                                .selectedCategoryId
+                                                                .value,
+                                                      )
+                                                      : null,
                                             );
                                           });
                                         },
@@ -140,7 +174,8 @@ void initState() {
                                   controller: controller.noteController,
                                   label: 'Ghi chú',
                                   hintText: 'Nhập ghi chú',
-                                  validator: (v) => AppValidator.validateNote(v),
+                                  validator:
+                                      (v) => AppValidator.validateNote(v),
                                   minLines: 3,
                                   maxLines: 3,
                                   keyboardType: TextInputType.multiline,
@@ -162,40 +197,49 @@ void initState() {
                 child: Row(
                   children: [
                     if (widget.showCategory)
-                      Obx(() => GestureDetector(
-                            onTap: controller.scanReceiptController.isScanning.value
-                                ? null
-                                : () => controller.openScanOptions(context),
-                            child: Container(
-                              height: 55,
-                              width: 55,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.borderPrimary,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
+                      Obx(
+                        () => GestureDetector(
+                          onTap:
+                              controller.scanReceiptController.isScanning.value
+                                  ? null
+                                  : () => controller.openScanOptions(context),
+                          child: Container(
+                            height: 55,
+                            width: 55,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppColors.borderPrimary,
                               ),
-                              child: controller.scanReceiptController.isScanning.value
-                                  ? const Padding(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child:
+                                controller
+                                        .scanReceiptController
+                                        .isScanning
+                                        .value
+                                    ? const Padding(
                                       padding: EdgeInsets.all(12),
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Icon(
+                                    : const Icon(
                                       Icons.document_scanner_outlined,
                                       color: Colors.grey,
                                     ),
-                            ),
-                          )),
+                          ),
+                        ),
+                      ),
                     if (widget.showCategory) const SizedBox(width: 12),
                     Expanded(
                       child: Obx(() {
                         return PrimaryButton(
                           label: widget.item?.id == null ? 'Tạo' : 'Cập nhật',
                           onPressed: controller.submit,
-                          isLoading: controller.transactionController.isLoading.value,
-                          isEnabled: !controller.transactionController.isLoading.value,
+                          isLoading:
+                              controller.transactionController.isLoading.value,
+                          isEnabled:
+                              !controller.transactionController.isLoading.value,
                         );
                       }),
                     ),
@@ -206,8 +250,6 @@ void initState() {
           ],
         ),
       ),
-
-
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
+import 'package:money_care/core/constants/app_assets.dart';
 
 class CategoryWrap extends StatelessWidget {
   final List<CategoryEntity> categories;
@@ -30,7 +31,7 @@ class CategoryWrap extends StatelessWidget {
               width: 40,
               height: 40,
               backgroundColor: Colors.grey.shade200,
-              iconPath: 'assets/icons/${cat.icon}.svg',
+              iconPath: AppAssets.iconSvgPath(cat.icon),
               size: 24,
             ),
             const SizedBox(height: 8),

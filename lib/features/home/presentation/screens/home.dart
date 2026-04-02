@@ -15,6 +15,7 @@ import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/core/presentation/widgets/icon/circular_icon.dart';
 import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
+import 'package:money_care/core/constants/app_assets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -364,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: category.categoryName,
                         limit: category.limit,
                         spent: category.total,
-                        iconPath: 'assets/icons/${category.categoryIcon}.svg',
+                        iconPath: AppAssets.iconSvgPath(category.categoryIcon),
                       );
                     }).toList(),
               );

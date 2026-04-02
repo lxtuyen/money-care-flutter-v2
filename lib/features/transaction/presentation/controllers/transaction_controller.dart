@@ -24,6 +24,9 @@ class TransactionController extends GetxController {
   DateTime get weekStartDate => now.subtract(const Duration(days: 6));
   DateTime get weekEndDate => now;
 
+  // Lưu lại filter hiện tại để dùng khi refresh
+  TransactionFilterDto? _lastFilter;
+
   TransactionController({
     required this.filterTransactionsUseCase,
     required this.createTransactionUseCase,
@@ -75,6 +78,7 @@ class TransactionController extends GetxController {
 
   Future<void> filterTransactions(int userId, TransactionFilterDto dto) async {
     isLoading.value = true;
+    _lastFilter = dto;
     try {
       transactionByfilter.value = await filterTransactionsUseCase(userId, dto);
       errorMessage.value = null;
@@ -93,7 +97,7 @@ class TransactionController extends GetxController {
   }
 
   Future<void> refreshAllData(int userId) async {
-    final filterDto = TransactionFilterDto(
+    final filterDto = _lastFilter ?? TransactionFilterDto(
       fundId: _currentFundIdOrNull,
       startDate: weekStartDate.toIso8601String(),
       endDate: weekEndDate.toIso8601String(),

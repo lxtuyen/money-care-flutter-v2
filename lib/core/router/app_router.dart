@@ -22,6 +22,7 @@ import 'package:money_care/features/transaction/presentation/screens/create_inco
 import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_photo_transaction_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/photo_transaction_history_screen.dart';
+import 'package:money_care/features/saving_fund/presentation/screens/expired_funds_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 
@@ -85,5 +86,9 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/photo_transaction_history',
     page: () => const PhotoTransactionHistoryScreen(),
+  ),
+  GetPage(
+    name: '/expired_funds',
+    page: () => const ExpiredFundsScreen(),
   ),
 ];

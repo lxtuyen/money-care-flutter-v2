@@ -24,4 +24,5 @@ class RoutePath {
   static const notification = '/notification';
   static const savingFundReport = '/saving_fund_report';
   static const photoTransactionHistory = '/photo_transaction_history';
+  static const expiredFunds = '/expired_funds';
 }

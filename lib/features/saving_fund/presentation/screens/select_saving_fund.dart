@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
 import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/saving_fund/presentation/screens/expired_funds_screen.dart';
 import 'package:money_care/features/saving_fund/presentation/widgets/saving_fund_item_card.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
 
 class SelectSavingFundScreen extends StatefulWidget {
@@ -90,6 +92,32 @@ class _SelectSavingFundScreenState extends State<SelectSavingFundScreen> {
                   icon: const Icon(Icons.add),
                   label: const Text('Tự tạo quỹ tiết kiệm'),
                 ),
+                const SizedBox(height: 8),
+                Obx(() {
+                  final expiredCount = controller.savingFunds
+                      .where((f) =>
+                          f.end_date != null &&
+                          f.end_date!.isBefore(DateTime.now()))
+                      .length;
+                  if (expiredCount == 0) return const SizedBox.shrink();
+                  return ElevatedButton.icon(
+                    onPressed: () => Get.to(() => const ExpiredFundsScreen()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryOrange.withOpacity(0.1),
+                      foregroundColor: AppColors.secondaryOrange,
+                      minimumSize: const Size(double.infinity, 50),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: AppColors.secondaryOrange.withOpacity(0.4),
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(Icons.timer_off_rounded),
+                    label: Text('Quỹ hết hạn ($expiredCount)'),
+                  );
+                }),
                 const SizedBox(height: 12),
                 Obx(() {
                   final isLoading = controller.isLoadingCurrent.value;

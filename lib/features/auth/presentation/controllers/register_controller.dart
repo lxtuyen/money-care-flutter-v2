@@ -78,19 +78,22 @@ class RegisterController extends GetxController {
     result.match(
       (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
       (message) {
+        final successMessage = message;
         Get.offAllNamed(RoutePath.login);
-        AppHelperFunction.showSuccessSnackBar(message);
+        Future.microtask(
+          () => AppHelperFunction.showSuccessSnackBar(successMessage),
+        );
       },
     );
   }
 
   @override
   void onClose() {
-    registerFirstNameController.dispose();
-    registerLastNameController.dispose();
-    registerEmailController.dispose();
-    registerPasswordController.dispose();
-    registerConfirmPasswordController.dispose();
+    registerFirstNameController.clear();
+    registerLastNameController.clear();
+    registerEmailController.clear();
+    registerPasswordController.clear();
+    registerConfirmPasswordController.clear();
     super.onClose();
   }
 }

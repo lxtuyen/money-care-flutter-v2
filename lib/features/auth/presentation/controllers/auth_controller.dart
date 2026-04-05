@@ -142,11 +142,10 @@ class AuthController extends GetxController {
     final result = await loginWithGoogle();
     result.match((_) {}, (currentUser) {
       if (currentUser.role == 'user') {
-        Get.offAllNamed(
-          currentUser.savingFund != null
-              ? RoutePath.main
-              : RoutePath.onboardingWelcome,
-        );
+        final destination = LocalStorage().isOnboardingDone(currentUser.id)
+            ? RoutePath.main
+            : RoutePath.onboardingWelcome;
+        Get.offAllNamed(destination);
         return;
       }
       if (currentUser.role == 'admin') {

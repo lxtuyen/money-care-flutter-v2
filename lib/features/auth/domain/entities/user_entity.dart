@@ -1,4 +1,4 @@
-import 'package:money_care/features/saving_fund/domain/entities/saving_fund_entity.dart';
+import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 
 class UserEntity {
@@ -8,7 +8,7 @@ class UserEntity {
   final bool? isVip;
   final String? accessToken;
   final UserProfileEntity profile;
-  final SavingFundEntity? savingFund;
+  final FundEntity? fund;
 
   const UserEntity({
     required this.id,
@@ -17,7 +17,7 @@ class UserEntity {
     this.isVip,
     this.accessToken,
     required this.profile,
-    this.savingFund,
+    this.fund,
   });
 
   UserEntity copyWith({String? accessToken}) {
@@ -28,7 +28,7 @@ class UserEntity {
       isVip: isVip,
       accessToken: accessToken ?? this.accessToken,
       profile: profile,
-      savingFund: savingFund,
+      fund: fund,
     );
   }
 }

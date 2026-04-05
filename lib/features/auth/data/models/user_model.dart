@@ -1,8 +1,8 @@
-import 'package:money_care/features/auth/data/models/saving_fund_model.dart';
+import 'package:money_care/features/auth/data/models/fund_model.dart';
 import 'package:money_care/features/auth/data/models/user_profile_model.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 
-export 'saving_fund_model.dart';
+export 'fund_model.dart';
 export 'user_profile_model.dart';
 
 class UserModel {
@@ -12,7 +12,7 @@ class UserModel {
   final bool? isVip;
   final String? accessToken;
   final UserProfileModel profile;
-  final SavingFundModel? savingFund;
+  final FundModel? fund;
 
   UserModel({
     required this.id,
@@ -21,7 +21,7 @@ class UserModel {
     this.isVip,
     required this.profile,
     this.accessToken,
-    this.savingFund,
+    this.fund,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json, String? token) =>
@@ -32,8 +32,8 @@ class UserModel {
         isVip: json['isVip'],
         accessToken: token,
         profile: UserProfileModel.fromJson(json['profile']),
-        savingFund: json['savingFund'] != null
-            ? SavingFundModel.fromMap(json['savingFund'])
+        fund: json['fund'] != null
+            ? FundModel.fromMap(json['fund'])
             : null,
       );
 
@@ -43,8 +43,8 @@ class UserModel {
     role: json['role'],
     isVip: json['isVip'],
     profile: UserProfileModel.fromJson(json['profile']),
-    savingFund: json['savingFund'] != null
-        ? SavingFundModel.fromMap(json['savingFund'])
+    fund: json['fund'] != null
+        ? FundModel.fromMap(json['fund'])
         : null,
   );
 
@@ -55,7 +55,7 @@ class UserModel {
     'isVip': isVip,
     'accessToken': accessToken,
     'profile': profile.toJson(),
-    'savingFund': savingFund?.toMap(),
+    'fund': fund?.toMap(),
   };
 
   UserEntity toEntity() => UserEntity(
@@ -65,6 +65,6 @@ class UserModel {
     isVip: isVip,
     accessToken: accessToken,
     profile: profile.toEntity(),
-    savingFund: savingFund?.toEntity(),
+    fund: fund?.toEntity(),
   );
 }

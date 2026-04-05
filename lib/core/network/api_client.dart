@@ -22,12 +22,13 @@ class ApiClient {
   Future<ApiResponse<T>> post<T>(
     String path, {
     Map<String, dynamic>? body,
+    List<dynamic>? bodyList,
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/$path'),
       headers: _headers(),
-      body: jsonEncode(body ?? {}),
+      body: jsonEncode(bodyList ?? body ?? {}),
     );
     return _handleResponse(response, fromJsonT);
   }

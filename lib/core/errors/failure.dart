@@ -18,3 +18,7 @@ class UnauthorizedFailure extends Failure {
 class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'An unknown error occurred']);
 }
+
+class ValidationFailure extends Failure {
+  const ValidationFailure(super.message);
+}

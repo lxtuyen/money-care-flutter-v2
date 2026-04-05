@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/constants/sizes.dart';
 
 class RoundedIcon extends StatelessWidget {
@@ -15,6 +16,7 @@ class RoundedIcon extends StatelessWidget {
     this.borderRadius = AppSizes.md,
     this.icon,
     this.iconPath,
+    this.iconName,
     required this.applyIconRadius,
     this.size,
     this.color,
@@ -23,6 +25,7 @@ class RoundedIcon extends StatelessWidget {
   final double? width, height, size;
   final IconData? icon;
   final String? iconPath;
+  final String? iconName;
   final bool applyIconRadius;
   final BoxBorder? border;
   final Color? backgroundColor;
@@ -46,11 +49,13 @@ class RoundedIcon extends StatelessWidget {
           color: backgroundColor,
         ),
         child:
-            iconPath != null
-                ? SvgPicture.asset(
-                  iconPath!,
+            (iconPath != null || iconName != null)
+                ? AppSvgIcon(
+                  assetPath: iconPath,
+                  iconName: iconName,
                   width: width,
                   height: height,
+                  size: size,
                   color: color,
                 )
                 : Icon(icon, color: color, size: size),

@@ -118,6 +118,26 @@ class NotificationService extends GetxService {
      }
   }
 
+  /// Hiển thị thông báo local ngay lập tức (dùng cho balance threshold, badge, v.v.)
+  Future<void> showLocalNotification({
+    required String title,
+    required String body,
+    int id = 0,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'money_care_channel',
+      'Money Care Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+    const NotificationDetails details =
+        NotificationDetails(android: androidDetails);
+
+    await _localNotificationsPlugin.show(id: id, title: title, body: body, notificationDetails: details);
+  }
+
   Future<void> removeTokenFromServer() async {
     fcmToken ??= await _firebaseMessaging.getToken();
     if (fcmToken != null) {

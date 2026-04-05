@@ -6,8 +6,8 @@ import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
-import 'package:money_care/features/saving_fund/presentation/widgets/expired_fund_popup.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/features/fund/presentation/widgets/expired_fund_popup.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
 import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/user_center.dart';
@@ -30,16 +30,16 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
 
   Future<void> _checkExpiredFund() async {
     try {
-      final savingFundController = Get.find<SavingFundController>();
+      final fundController = Get.find<FundController>();
       final appController = Get.find<AppController>();
       final userId = appController.userId.value;
       if (userId == null) return;
 
-      await savingFundController.checkExpiredFund(userId);
+      await fundController.checkExpiredFund(userId);
 
-      if (savingFundController.hasExpiredFund.value &&
-          savingFundController.expiredFund.value != null) {
-        ExpiredFundPopup.show(savingFundController.expiredFund.value!);
+      if (fundController.hasExpiredFund.value &&
+          fundController.expiredFund.value != null) {
+        ExpiredFundPopup.show(fundController.expiredFund.value!);
       }
     } catch (_) {
       // Silently fail - không interrupt UX

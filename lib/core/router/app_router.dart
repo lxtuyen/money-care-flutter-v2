@@ -12,19 +12,23 @@ import 'package:money_care/features/auth/presentation/screens/forgot_password.da
 import 'package:money_care/features/auth/presentation/screens/login.dart';
 import 'package:money_care/features/auth/presentation/screens/login_option.dart';
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_welcome.dart';
-import 'package:money_care/features/onboarding/presentation/screens/onboarding_saving_rule.dart';
+import 'package:money_care/features/onboarding/presentation/screens/onboarding_category_select_screen.dart';
+
 import 'package:money_care/features/auth/presentation/screens/register.dart';
-import 'package:money_care/features/saving_fund/presentation/screens/create_saving_fund.dart';
-import 'package:money_care/features/saving_fund/presentation/screens/select_saving_fund.dart';
-import 'package:money_care/features/saving_fund/presentation/screens/saving_fund_report_screen.dart';
+import 'package:money_care/features/fund/presentation/screens/create_fund.dart';
+import 'package:money_care/features/fund/presentation/screens/select_fund.dart';
+import 'package:money_care/features/fund/presentation/screens/fund_report_screen.dart';
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_photo_transaction_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/photo_transaction_history_screen.dart';
-import 'package:money_care/features/saving_fund/presentation/screens/expired_funds_screen.dart';
+import 'package:money_care/features/fund/presentation/screens/expired_funds_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
+import 'package:money_care/features/student_profile/presentation/screens/student_profile_screen.dart';
+import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
+import 'package:money_care/features/gamification/presentation/screens/streak_calendar_screen.dart';
 
 final List<GetPage> appPages = [
   GetPage(name: '/splash', page: () => const SplashScreen()),
@@ -49,14 +53,15 @@ final List<GetPage> appPages = [
     page: () => const OnboardingWelcomeScreen(),
   ),
   GetPage(
-    name: '/onboarding_saving_rule',
-    page: () => const OnboardingSavingRuleScreen(),
+    name: '/select_fund',
+    page: () => const SelectFundScreen(),
   ),
+  GetPage(name: '/create_fund', page: () => const CreateFund()),
   GetPage(
-    name: '/select_saving_fund',
-    page: () => const SelectSavingFundScreen(),
+    name: '/onboarding_balance_setup',
+    page: () => const CreateFund(),
+    transition: Transition.rightToLeft,
   ),
-  GetPage(name: '/create_saving_fund', page: () => const CreateSavingFund()),
   GetPage(name: '/expense', page: () => const CreateExpenseScreen()),
   GetPage(name: '/income', page: () => const CreateIncomeScreen()),
   GetPage(
@@ -80,8 +85,8 @@ final List<GetPage> appPages = [
 
   GetPage(name: '/notification', page: () => const NotificationScreen()),
   GetPage(
-    name: '/saving_fund_report',
-    page: () => const SavingFundReportScreen(),
+    name: '/fund_report',
+    page: () => const FundReportScreen(),
   ),
   GetPage(
     name: '/photo_transaction_history',
@@ -90,5 +95,25 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/expired_funds',
     page: () => const ExpiredFundsScreen(),
+  ),
+  GetPage(
+    name: '/onboarding_category_select',
+    page: () => const OnboardingCategorySelectScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/student_profile',
+    page: () => const StudentProfileScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/category_management',
+    page: () => const UserCategoryManagementScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/streak_calendar',
+    page: () => const StreakCalendarScreen(),
+    transition: Transition.rightToLeft,
   ),
 ];

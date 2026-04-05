@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -16,6 +16,13 @@ import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/core/presentation/widgets/icon/circular_icon.dart';
 import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/app_assets.dart';
+import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
+import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
+import 'package:money_care/features/finance_mode/presentation/widgets/finance_mode_banner.dart';
+import 'package:money_care/features/finance_mode/presentation/widgets/days_until_income_widget.dart';
+import 'package:money_care/features/fund/presentation/widgets/fund_progress_bar.dart';
+import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
+import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,8 +31,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final now = DateTime.now();
+class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
   late DateTime startDate = now.subtract(const Duration(days: 6));
   late DateTime endDate = now;
 
@@ -33,11 +39,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final TransactionController transactionController =
       Get.find<TransactionController>();
   final FilterController filterController = Get.find<FilterController>();
-  final SavingFundController fundController = Get.find<SavingFundController>();
+  final FundController fundController = Get.find<FundController>();
   final UserController userController = Get.find<UserController>();
   final AuthController authController = Get.find<AuthController>();
   final StatisticsController statisticsController =
       Get.find<StatisticsController>();
+  final FinanceModeController financeModeController =
+      Get.find<FinanceModeController>();
 
   @override
   void initState() {
@@ -62,6 +70,89 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ]);
+    
+    // Automatically check for mode suggestions after data loads
+    _checkModeSuggestion();
+  }
+
+  void _checkModeSuggestion() async {
+    final utilization = statisticsController.utilizationPercentage;
+    if (utilization >= 0.8) {
+      final suggestedMode = await financeModeController.checkAndSuggestMode(utilization);
+      if (suggestedMode != null && mounted) {
+        _showSuggestionDialog(suggestedMode);
+      }
+    }
+  }
+
+  void _showSuggestionDialog(FinanceMode suggestedMode) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSizes.md),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 42, height: 5,
+              decoration: BoxDecoration(
+                color: AppColors.borderPrimary,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Gợi ý chế độ tài chính',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+             Text(
+              'Bạn đã tiêu quá ${ (statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, color: AppColors.text4),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      financeModeController.declineSuggestion();
+                      Navigator.pop(context);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: const Text('Bỏ qua'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      financeModeController.switchMode(suggestedMode);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: const Text('Bật Sinh tồn', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -80,33 +171,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (userController.isLoading.value) {
                     return const SizedBox(
-                      height: 120,
+                      height: 40,
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
 
-                  if (profile == null) {
-                    return const Text(
-                      "Chào mừng",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: AppColors.text4,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        profile == null ? "Chào mừng" : "Chào mừng, ${profile.fullName}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          color: AppColors.text1,
+                        ),
                       ),
-                    );
-                  }
-                  return Text(
-                    "Chào mừng, ${profile.fullName}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: AppColors.text4,
-                    ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          const FinanceModeBanner(),
+                          const SizedBox(width: 8),
+                          const DaysUntilIncomeWidget(),
+                        ],
+                      ),
+                    ],
                   );
                 }),
 
                 Row(
                   children: [
+                    const StreakBadgeWidget(),
+                    const SizedBox(width: 12),
                     CircularIcon(
                       iconPath: AppIcons.search,
                       backgroundColor: const Color(0XFFF5FAFE),
@@ -125,11 +221,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.transparent,
                                 child: Container(
                                   margin: const EdgeInsets.only(top: 80),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.9,
+                                  width: MediaQuery.of(context).size.width * 0.9,
                                   child: Obx(() {
-                                    final transactions =
-                                        transactionController
+                                    final transactions = transactionController
                                             .transactionByfilter
                                             .value
                                             ?.expenseTransactions ??
@@ -201,80 +295,16 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               if (totals == null) {
-                return const SpendingSummary(
-                incomeTotal: 0,
-                expenseTotal: 0,
-              );
+                return SpendingSummary(
+                  incomeTotal: 0,
+                  expenseTotal: 0,
+                );
               }
 
               return SpendingSummary(
                 incomeTotal: totals.incomeTotal,
                 expenseTotal: totals.expenseTotal,
               );
-            }),
-
-            const SizedBox(height: AppSizes.defaultSpace),
-
-            AppSectionHeading(
-              title: "Chi theo phân loại",
-              showActionButton: false,
-            ),
-
-            const SizedBox(height: AppSizes.defaultSpace),
-
-            Obx(() {
-              final categories = statisticsController.totalByCate;
-
-              if (statisticsController.isLoading.value) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              if (categories.isEmpty) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Get.toNamed(RoutePath.expense);
-                      },
-                      child: Container(
-                        width: 50,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: AppColors.backgroundPrimary,
-                          borderRadius: BorderRadius.circular(
-                            AppSizes.cardRadiusLg,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.add,
-                            color: AppColors.text5,
-                            size: 28,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: AppSizes.defaultSpace),
-                    Expanded(
-                      child: Text(
-                        "Tạo hoặc lựa chọn quỹ tiết kiệm để chúng tôi giúp bạn quản lý tài chính hiệu quả",
-                        style: TextStyle(
-                          color: AppColors.text4,
-                          fontSize: AppSizes.fontSizeSm,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return CategorySection(categories: categories);
             }),
 
             const SizedBox(height: AppSizes.defaultSpace),
@@ -339,37 +369,216 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Hạn mức chi tiêu", showActionButton: false),
-            const SizedBox(height: AppSizes.defaultSpace),
-
             Obx(() {
               final categories = statisticsController.totalByCate;
+              final mode = financeModeController.currentMode.value;
+
+              // Lọc: Có hạn mức > 0 HOẶC (Chế độ sinh tồn & là khoản không thiết yếu & đã tiêu > 0)
+              final filtered = categories.where((cat) {
+                if (cat.limit > 0) return true;
+                if (mode == FinanceMode.survival && !cat.isEssential && cat.total > 0) {
+                  return true;
+                }
+                return false;
+              }).toList();
+
+              // Sắp xếp theo tỷ lệ đã tiêu giảm dần
+              filtered.sort((a, b) {
+                double percentA = a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
+                double percentB = b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
+                return percentB.compareTo(percentA);
+              });
+
+              if (filtered.isEmpty) return const SizedBox.shrink();
+
+              return Column(
+                children: [
+                   AppSectionHeading(
+                    title: "Hạn mức chi tiêu", 
+                    showActionButton: filtered.length > 3,
+                    buttonTitle: "Tất cả",
+                    onPressed: () {
+                      // Hiện tại có thể mở rộng danh sách hoặc chuyển trang
+                    },
+                  ),
+                  const SizedBox(height: AppSizes.spaceBtwItems),
+                  ...filtered.take(3).map((category) {
+                    return CategoryOverviewCard(
+                      title: category.categoryName,
+                      limit: category.limit,
+                      spent: category.total,
+                      iconPath: category.categoryIcon,
+                    );
+                  }).toList(),
+                ],
+              );
+            }),
+                        const SizedBox(height: AppSizes.defaultSpace),
+
+            Obx(() {
               if (statisticsController.isLoading.value) {
                 return const SizedBox(
-                  height: 120,
+                  height: 124,
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
+              
+              final mode = financeModeController.currentMode.value;
+              final categories = statisticsController.expenseCategories;
+              
+              // Filter logic
+              List<TotalByCategoryEntity> filteredCategories;
+              if (mode == FinanceMode.survival) {
+                filteredCategories = categories.where((c) => c.isEssential).toList();
+              } else {
+                filteredCategories = categories.toList();
+              }
 
-              if (categories.isEmpty) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: Text('Không có dữ liệu')),
-                );
+              // Sorting logic for Saving Mode: prioritize categories with highest balance usage
+              if (mode == FinanceMode.saving) {
+                filteredCategories.sort((a, b) {
+                  if (a.limit <= 0 && b.limit <= 0) return 0;
+                  if (a.limit <= 0) return 1;
+                  if (b.limit <= 0) return -1;
+                  final aPercent = a.total / a.limit;
+                  final bPercent = b.total / b.limit;
+                  return bPercent.compareTo(aPercent);
+                });
+              }
+
+              if (filteredCategories.isEmpty) {
+                return mode == FinanceMode.survival 
+                  ? AppSectionHeading(
+                      title: "Chi tiêu tháng này (Cắt giảm tối đa!)", 
+                      showActionButton: false,
+                    )
+                  : const SizedBox.shrink();
+              }
+
+              String sectionTitle = "Chi tiêu tháng này";
+              String? sectionSubtitle;
+              
+              if (mode == FinanceMode.survival) {
+                sectionTitle = "Chi tiêu thiết yếu (Sinh tồn)";
+              } else if (mode == FinanceMode.saving) {
+                sectionTitle = "Kế hoạch tiết kiệm";
+                sectionSubtitle = "Duy trì chi tiêu dưới 80% hạn mức";
               }
 
               return Column(
-                children:
-                    categories.map((category) {
-                      return SpendingLimitCard(
-                        title: category.categoryName,
-                        limit: category.limit,
-                        spent: category.total,
-                        iconPath: AppAssets.iconSvgPath(category.categoryIcon),
-                      );
-                    }).toList(),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   AppSectionHeading(
+                    title: sectionTitle,
+                    showActionButton: false,
+                  ),
+                  if (sectionSubtitle != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, bottom: 12),
+                      child: Text(
+                        sectionSubtitle,
+                        style: const TextStyle(fontSize: 12, color: AppColors.text4, fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  SizedBox(height: sectionSubtitle != null ? 0 : AppSizes.spaceBtwItems),
+                  ...filteredCategories.map((category) {
+                    return CategoryOverviewCard(
+                      title: category.categoryName,
+                      limit: category.limit,
+                      spent: category.total,
+                      iconPath: category.categoryIcon,
+                      isIncome: false,
+                    );
+                  }).toList(),
+                  if (mode == FinanceMode.survival && categories.any((c) => !c.isEssential && c.total > 0))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        "Đã ẩn ${categories.where((c) => !c.isEssential).length} mục không thiết yếu",
+                        style: const TextStyle(fontSize: 11, color: AppColors.error, fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                ],
               );
             }),
+
+            const SizedBox(height: AppSizes.md),
+
+            Obx(() {
+              if (statisticsController.isLoading.value) {
+                return const SizedBox(
+                  height: 124,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (statisticsController.incomeCategories.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Column(
+                children: [
+                  AppSectionHeading(
+                    title: "Thu nhập tháng này", 
+                    showActionButton: false,
+                  ),
+                  const SizedBox(height: AppSizes.spaceBtwItems),
+                  ...statisticsController.incomeCategories.map((category) {
+                    return CategoryOverviewCard(
+                      title: category.categoryName,
+                      limit: category.limit,
+                      spent: category.total,
+                      iconPath: category.categoryIcon,
+                      isIncome: true,
+                    );
+                  }).toList(),
+                ],
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                  fontSize: AppSizes.fontSizeSm,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: color, size: 14),
           ],
         ),
       ),

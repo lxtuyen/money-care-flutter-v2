@@ -29,7 +29,26 @@ class AppSvgIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconWidth = width ?? size;
     final iconHeight = height ?? size;
-    final resolvedPath = assetPath ?? AppAssets.iconSvgPath(iconName!);
+
+    if (iconName != null && _isEmoji(iconName!)) {
+      return SizedBox(
+        width: iconWidth,
+        height: iconHeight,
+        child: Center(
+          child: Text(
+            iconName!,
+            style: TextStyle(
+              fontSize: (size ?? width ?? 20) * 0.9,
+              fontFamily: 'Apple Color Emoji',
+            ),
+          ),
+        ),
+      );
+    }
+
+    final resolvedPath = assetPath ?? (iconName != null ? AppAssets.iconSvgPath(iconName!) : null);
+
+    if (resolvedPath == null) return const SizedBox.shrink();
 
     return SvgPicture.asset(
       resolvedPath,
@@ -37,6 +56,30 @@ class AppSvgIcon extends StatelessWidget {
       height: iconHeight,
       color: color,
       fit: fit,
+      placeholderBuilder: (context) => Icon(
+        Icons.category_outlined,
+        size: size ?? width ?? 20,
+        color: color ?? Colors.grey,
+      ),
     );
+  }
+
+  bool _isEmoji(String text) {
+    if (text.isEmpty) return false;
+    
+    // If it contains dots or slashes, it's definitely a path, not a raw emoji
+    if (text.contains('.') || text.contains('/')) return false;
+
+    // Check if the string contains any non-ASCII characters (most emojis)
+    for (var rune in text.runes) {
+      if (rune > 128) return true;
+    }
+
+    // If it's very short and not alphanumeric, it might be a special character/emoji
+    // but names like 'home', 'user' are alphanumeric and should stay as SVG paths.
+    final alphanumeric = RegExp(r'^[a-zA-Z0-9_\-]+$');
+    if (alphanumeric.hasMatch(text)) return false;
+
+    return true; 
   }
 }

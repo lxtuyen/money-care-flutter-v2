@@ -41,20 +41,13 @@ class AppTexts {
   static const String onboardingExpenseTitle = 'Quản lý';
   static const String onboardingExpenseHighlight = 'thu chi';
   static const String onboardingExpenseDescription =
-      'Quản lý thu chi chặt chẽ - tiết kiệm thời gian.';
+      'Ghi chép chi tiêu nhanh chóng, phân loại rõ ràng và xem báo cáo trực quan để đưa ra quyết định tài chính tốt hơn mỗi ngày.';
 
   // --- Onboarding Financial Freedom ---
   static const String onboardingFinancialTitle = 'Làm chủ';
   static const String onboardingFinancialHighlight = 'tài chính';
   static const String onboardingFinancialDescription =
-      'Làm chủ tài chính - Làm chủ cuộc sống.';
-
-  // --- Onboarding Saving Rule ---
-  static const String savingRuleDescription1 =
-      'Chúng tôi đưa ra một vài quỹ tiết kiệm được các chuyên gia tư vấn. Quy tắc 6 chiếc lọ là một phương pháp quản lý chi tiêu được sử dụng phổ biến trên thế giới.';
-  static const String savingRuleDescription2 =
-      'Và bạn hoàn toàn có thể tự tạo quỹ tiết kiệm riêng theo nhu cầu của bản thân!';
-  static const String continueButton = 'Tiếp tục';
+      'Quản lý tiền bạc thông minh để bạn luôn kiểm soát được thu nhập, chi tiêu và tiết kiệm. Bắt đầu hành trình làm chủ tài chính – làm chủ cuộc sống của chính mình.';
 
   // --- Onboarding Income ---
   static const String done = 'Hoàn tất';
@@ -80,7 +73,7 @@ class AppTexts {
   static const String profile = 'Thông tin cá nhân';
   static const String reportOfTheYear = 'Báo cáo trong năm';
   static const String annualPortfolioReport = 'Báo cáo danh mục trong năm';
-  static const String savingFunds = 'Quỹ tiết kiệm';
+  static const String funds = 'Quỹ tiết kiệm';
   static const String fixedCosts = 'Chi phí cố định';
   static const String logout = 'Đăng xuất';
 

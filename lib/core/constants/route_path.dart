@@ -9,10 +9,11 @@ class RoutePath {
   static const onboardingExpenseManagement = '/onboarding_expense_management';
   static const onboardingFinancialFreedom = '/onboarding_financial_freedom';
   static const onboardingWelcome = '/onboarding_welcome';
-  static const onboardingSavingRule = '/onboarding_saving_rule';
+  static const onboardingBudgetSetup = '/onboarding_balance_setup';
+  static const onboardingCategorySelect = '/onboarding_category_select';
   static const main = '/main';
-  static const selectSavingFund = '/select_saving_fund';
-  static const createSavingFund = '/create_saving_fund';
+  static const selectFund = '/select_fund';
+  static const createFund = '/create_fund';
   static const expense = '/expense';
   static const income = '/income';
   static const transactionWithImage = '/transaction_with_image';
@@ -22,7 +23,10 @@ class RoutePath {
   static const adminUsers = '/admin/users';
   static const payment = '/payment';
   static const notification = '/notification';
-  static const savingFundReport = '/saving_fund_report';
+  static const fundReport = '/fund_report';
   static const photoTransactionHistory = '/photo_transaction_history';
   static const expiredFunds = '/expired_funds';
+  static const studentProfile = '/student_profile';
+  static const categoryManagement = '/category_management';
+  static const streakCalendar = '/streak_calendar';
 }

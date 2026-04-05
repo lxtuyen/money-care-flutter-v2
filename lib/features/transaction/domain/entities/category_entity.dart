@@ -6,6 +6,8 @@ class CategoryEntity {
   final int percentage;
   final String icon;
   final Color? color;
+  final bool isEssential;
+  final String? type;
 
   const CategoryEntity({
     this.id,
@@ -13,6 +15,8 @@ class CategoryEntity {
     this.percentage = 0,
     required this.icon,
     this.color,
+    this.isEssential = true,
+    this.type,
   });
 
   @override

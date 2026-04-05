@@ -7,6 +7,7 @@ class TotalByCategoryEntityModel {
   final double spendingPercentage;
   final double limit;
   final int total;
+  final bool isEssential;
 
   TotalByCategoryEntityModel({
     required this.categoryName,
@@ -15,6 +16,7 @@ class TotalByCategoryEntityModel {
     required this.spendingPercentage,
     required this.limit,
     required this.total,
+    required this.isEssential,
   });
 
   factory TotalByCategoryEntityModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class TotalByCategoryEntityModel {
       spendingPercentage: (json['spendingPercentage'] ?? 0).toDouble(),
       limit: (json['limit'] ?? 0).toDouble(),
       total: (json['total'] ?? 0).toInt(),
+      isEssential: json['isEssential'] ?? true,
     );
   }
 
@@ -35,6 +38,7 @@ class TotalByCategoryEntityModel {
     percentage: percentage,
     spendingPercentage: spendingPercentage,
     limit: limit,
+    isEssential: isEssential,
     color: null,
   );
 }

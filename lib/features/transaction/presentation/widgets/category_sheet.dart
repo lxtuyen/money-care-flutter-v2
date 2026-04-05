@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
+import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_item.dart';
 
 class CategorySheet extends StatefulWidget {
   final List<CategoryEntity> categories;
   final CategoryEntity? selectedCategoryInit;
+  /// 'income' hoặc 'expense' — chỉ hiển thị category khớp type hoặc type null.
+  final String? transactionType;
 
   const CategorySheet({
     super.key,
     required this.categories,
     this.selectedCategoryInit,
+    this.transactionType,
   });
 
   @override
@@ -26,105 +32,135 @@ class _CategorySheetState extends State<CategorySheet> {
     selectedCategory = widget.selectedCategoryInit;
   }
 
+  /// Returns the filtered category list.
+  /// - Lọc theo [transactionType] nếu category có type (null = hiển thị cho cả hai).
+  /// - Trong SURVIVAL mode, ẩn các category không thiết yếu (Requirement 5.8).
+  List<CategoryEntity> _filteredCategories(FinanceMode mode) {
+    var list = widget.categories.where((c) {
+      // Nếu là 'others' thì luôn cho phép hiển thị bất kể transactionType là gì.
+      if (c.type == 'others') return true;
+      
+      if (widget.transactionType != null && c.type != null) {
+        return c.type == widget.transactionType;
+      }
+      return true;
+    }).toList();
+
+    if (mode == FinanceMode.survival) {
+      list = list.where((c) => c.isEssential).toList();
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.62,
-      minChildSize: 0.38,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) {
-        return Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              Center(
-                child: Container(
-                  width: 42,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: AppColors.borderPrimary,
-                    borderRadius: BorderRadius.circular(999),
+    final financeModeController = Get.find<FinanceModeController>();
+
+    return Obx(() {
+      final mode = financeModeController.currentMode.value;
+      final isSurvival = mode == FinanceMode.survival;
+      final displayCategories = _filteredCategories(mode);
+
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.62,
+        minChildSize: 0.38,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          return Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: AppColors.borderPrimary,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 18),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.backgroundPrimary,
-                        borderRadius: BorderRadius.circular(14),
+                const SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundPrimary,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          Icons.category_rounded,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.category_rounded,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Chọn phân loại',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.text1,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Chọn phân loại',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.text1,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Chọn nhóm phù hợp cho giao dịch của bạn.',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.text4,
+                            const SizedBox(height: 4),
+                            Text(
+                              isSurvival
+                                  ? 'Chế độ Sinh tồn: chỉ hiển thị danh mục thiết yếu.'
+                                  : 'Chọn nhóm phù hợp cho giao dịch của bạn.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isSurvival
+                                    ? AppColors.error
+                                    : AppColors.text4,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundPrimary,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      selectedCategory != null
+                          ? 'Đang chọn: ${selectedCategory!.name}'
+                          : 'Chưa chọn phân loại nào',
+                      style: const TextStyle(
+                        color: AppColors.text3,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppColors.backgroundPrimary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    selectedCategory != null
-                        ? 'Đang chọn: ${selectedCategory!.name}'
-                        : 'Chưa chọn phân loại nào',
-                    style: const TextStyle(
-                      color: AppColors.text3,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              Expanded(
-                child:
-                    widget.categories.isEmpty
-                        ? const Center(
+                const SizedBox(height: 14),
+                Expanded(
+                  child: displayCategories.isEmpty
+                      ? const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24),
                             child: Text(
@@ -134,19 +170,19 @@ class _CategorySheetState extends State<CategorySheet> {
                             ),
                           ),
                         )
-                        : GridView.builder(
+                      : GridView.builder(
                           controller: scrollController,
                           padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 1.28,
-                              ),
-                          itemCount: widget.categories.length,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.28,
+                          ),
+                          itemCount: displayCategories.length,
                           itemBuilder: (context, index) {
-                            final item = widget.categories[index];
+                            final item = displayCategories[index];
                             final isSelected = selectedCategory == item;
 
                             return GestureDetector(
@@ -163,11 +199,12 @@ class _CategorySheetState extends State<CategorySheet> {
                             );
                           },
                         ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 }

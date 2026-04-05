@@ -86,7 +86,8 @@ class TransactionDetail extends StatelessWidget {
                                         ? 'Chỉnh sửa chi'
                                         : 'Chỉnh sửa thu',
                                 item: item,
-                                showCategory: isExpense,
+                                transactionType: isExpense ? 'expense' : 'income',
+                                showCategory: true,
                               ),
                         ),
                       );

@@ -13,7 +13,8 @@ class _CreateIncomeScreenState extends State<CreateIncomeScreen> {
   Widget build(BuildContext context) {
     return TransactionForm(
       title: "Tiền Thu",
-      showCategory: false,
+      transactionType: 'income',
+      showCategory: true,
     );
   }
 }

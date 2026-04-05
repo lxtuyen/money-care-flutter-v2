@@ -10,16 +10,20 @@ import 'package:money_care/core/presentation/widgets/text_field/date_picker_fiel
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
+import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
 
 class TransactionForm extends StatefulWidget {
   final String title;
   final bool showCategory;
+  /// 'income' hoặc 'expense' — dùng để filter category đúng loại.
+  final String transactionType;
   final TransactionEntity? item;
 
   const TransactionForm({
     super.key,
     required this.title,
+    required this.transactionType,
     this.showCategory = true,
     this.item,
   });
@@ -35,7 +39,7 @@ class _TransactionFormState extends State<TransactionForm> {
   void initState() {
     super.initState();
     controller = Get.find<TransactionFormController>();
-    controller.init(widget.showCategory, widget.item);
+    controller.init(widget.showCategory, widget.item, widget.transactionType);
   }
 
   @override
@@ -55,9 +59,9 @@ class _TransactionFormState extends State<TransactionForm> {
                       showBackButton: true,
                       onBackTap: () {
                         if (Navigator.canPop(context)) {
-                          Get.back();
+                          Navigator.pop(context);
                         } else {
-                          Get.toNamed(RoutePath.main);
+                          Get.offAllNamed(RoutePath.main);
                         }
                       },
                     ),
@@ -109,41 +113,46 @@ class _TransactionFormState extends State<TransactionForm> {
                                         ),
                                         builder: (context) {
                                           return Obx(() {
+                                            final fundCategories = controller
+                                                .fundController
+                                                .currentFund
+                                                .value
+                                                ?.categories;
+
+                                            final userCategoryController =
+                                                Get.find<UserCategoryController>();
+
+                                            final categories = (fundCategories != null &&
+                                                    fundCategories.isNotEmpty)
+                                                ? fundCategories
+                                                : userCategoryController.categories;
+
                                             if (controller
-                                                .savingFundController
+                                                .fundController
                                                 .isLoadingCurrent
                                                 .value) {
                                               return const SizedBox(
                                                 height: 200,
                                                 child: Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
+                                                  child: CircularProgressIndicator(),
                                                 ),
                                               );
-                                            } else if (controller
-                                                    .savingFundController
-                                                    .currentFund
-                                                    .value ==
-                                                null) {
+                                            }
+
+                                            if (categories.isEmpty) {
                                               return const SizedBox(
                                                 height: 200,
                                                 child: Center(
                                                   child: Text(
-                                                    'Không có dữ liệu',
+                                                    'Chưa có danh mục nào',
                                                   ),
                                                 ),
                                               );
                                             }
 
-                                            final categories =
-                                                controller
-                                                    .savingFundController
-                                                    .currentFund
-                                                    .value!
-                                                    .categories;
-
                                             return CategorySheet(
                                               categories: categories,
+                                              transactionType: widget.transactionType,
                                               selectedCategoryInit:
                                                   controller
                                                               .selectedCategoryId

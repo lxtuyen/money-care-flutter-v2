@@ -5,6 +5,7 @@ class TotalByCategoryEntity {
   final double spendingPercentage;
   final double limit;
   final String categoryIcon;
+  final bool isEssential;
   final String? color;
 
   const TotalByCategoryEntity({
@@ -14,6 +15,7 @@ class TotalByCategoryEntity {
     this.spendingPercentage = 0,
     this.limit = 0,
     required this.categoryIcon,
+    this.isEssential = true,
     this.color,
   });
 }

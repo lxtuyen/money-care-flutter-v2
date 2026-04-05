@@ -13,6 +13,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
   Widget build(BuildContext context) {
     return TransactionForm(
       title: "Tiền Chi",
+      transactionType: 'expense',
       showCategory: true,
     );
   }

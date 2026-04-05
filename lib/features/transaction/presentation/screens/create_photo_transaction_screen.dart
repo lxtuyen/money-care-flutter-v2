@@ -395,14 +395,14 @@ class _CreatePhotoTransactionScreenState
       ),
       builder: (context) {
         return Obx(() {
-          if (controller.savingFundController.isLoadingCurrent.value) {
+          if (controller.fundController.isLoadingCurrent.value) {
             return const SizedBox(
               height: 220,
               child: Center(child: CircularProgressIndicator()),
             );
           }
           final currentFund =
-              controller.savingFundController.currentFund.value;
+              controller.fundController.currentFund.value;
           if (currentFund == null) {
             return const SizedBox(
               height: 220,

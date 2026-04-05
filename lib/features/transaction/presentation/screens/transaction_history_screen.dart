@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
@@ -6,7 +6,7 @@ import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/core/presentation/widgets/states/transaction_empty_state.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
@@ -32,10 +32,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final SavingFundController savingFundController =
-      Get.find<SavingFundController>();
+  final FundController fundController =
+      Get.find<FundController>();
   final FilterController filterController = Get.find<FilterController>();
-  final SavingFundController fundController = Get.find<SavingFundController>();
   final StatisticsController statisticsController =
       Get.find<StatisticsController>();
 
@@ -225,12 +224,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildEmptyView() {
     return TransactionEmptyState(
-      message: 'Không có giao dịch phù hợp',
+      message: 'KhÃ´ng cÃ³ giao dá»‹ch phÃ¹ há»£p',
       action:
           filterController.hasActiveFilters
               ? TextButton(
                 onPressed: _clearFilters,
-                child: const Text('Xóa tất cả bộ lọc'),
+                child: const Text('XÃ³a táº¥t cáº£ bá»™ lá»c'),
               )
               : null,
     );
@@ -254,9 +253,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder:
           (context) => Obx(() {
-            final data = savingFundController.currentFund.value;
+            final data = fundController.currentFund.value;
 
-            if (savingFundController.isLoadingCurrent.value) {
+            if (fundController.isLoadingCurrent.value) {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 50),
@@ -270,7 +269,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             }
 
             return FilterDialog(
-              title: 'Lọc theo phân loại',
+              title: 'Lá»c theo phÃ¢n loáº¡i',
               categories: data.categories,
               onApply: (_) => _applyFilter(),
             );
@@ -283,8 +282,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder:
           (_) => FilterDialog(
-            title: 'Lọc theo thời gian',
-            items: const ['Hôm nay', 'Tuần này', 'Tháng này', 'Tùy chỉnh'],
+            title: 'Lá»c theo thá»i gian',
+            items: const ['HÃ´m nay', 'Tuáº§n nÃ y', 'ThÃ¡ng nÃ y', 'TÃ¹y chá»‰nh'],
             onApply: (_) => _applyFilter(),
           ),
     );
@@ -371,7 +370,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Bộ lọc giao dịch',
+                              'Bá»™ lá»c giao dá»‹ch',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -379,7 +378,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Chọn cách bạn muốn thu hẹp danh sách giao dịch.',
+                              'Chá»n cÃ¡ch báº¡n muá»‘n thu háº¹p danh sÃ¡ch giao dá»‹ch.',
                               style: TextStyle(
                                 color: AppColors.text4,
                                 fontSize: 13,
@@ -413,8 +412,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         Expanded(
                           child: Text(
                             filterController.hasActiveFilters
-                                ? 'Đang áp dụng ${filterController.activeFilterCount} tiêu chí lọc.'
-                                : 'Chưa có bộ lọc nào được áp dụng.',
+                                ? 'Äang Ã¡p dá»¥ng ${filterController.activeFilterCount} tiÃªu chÃ­ lá»c.'
+                                : 'ChÆ°a cÃ³ bá»™ lá»c nÃ o Ä‘Æ°á»£c Ã¡p dá»¥ng.',
                             style: const TextStyle(
                               color: AppColors.text2,
                               fontWeight: FontWeight.w600,
@@ -427,11 +426,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 16),
                   _buildFilterSheetTile(
                     icon: Icons.category_outlined,
-                    title: 'Lọc theo phân loại',
+                    title: 'Lá»c theo phÃ¢n loáº¡i',
                     subtitle:
                         filterController.categoryId.value != null
-                            ? 'Đã chọn 1 phân loại'
-                            : 'Chọn loại chi tiêu hoặc thu nhập cụ thể',
+                            ? 'ÄÃ£ chá»n 1 phÃ¢n loáº¡i'
+                            : 'Chá»n loáº¡i chi tiÃªu hoáº·c thu nháº­p cá»¥ thá»ƒ',
                     onTap: () {
                       Get.back();
                       _showCategoryFilterDialog(context);
@@ -440,7 +439,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 12),
                   _buildFilterSheetTile(
                     icon: Icons.calendar_today_rounded,
-                    title: 'Lọc theo thời gian',
+                    title: 'Lá»c theo thá»i gian',
                     subtitle: filterController.dateLabel.value,
                     onTap: () {
                       Get.back();
@@ -457,7 +456,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           _clearFilters();
                         },
                         icon: const Icon(Icons.restart_alt_rounded),
-                        label: const Text('Xóa tất cả bộ lọc'),
+                        label: const Text('XÃ³a táº¥t cáº£ bá»™ lá»c'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.text2,
                           side: const BorderSide(
@@ -552,3 +551,4 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     );
   }
 }
+

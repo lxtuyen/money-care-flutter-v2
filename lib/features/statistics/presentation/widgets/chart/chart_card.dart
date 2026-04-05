@@ -98,15 +98,16 @@ class ChartCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  'Hạn mức ${AppHelperFunction.formatAmount(limit.toDouble(), 'VND')}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
+                if (limit > 0)
+                  Text(
+                    'Hạn mức ${AppHelperFunction.formatAmount(limit.toDouble(), 'VND')}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

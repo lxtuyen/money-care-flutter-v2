@@ -1,9 +1,10 @@
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
+import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 
 class TransactionController extends GetxController {
   final FilterTransactionsUseCase filterTransactionsUseCase;
@@ -11,7 +12,7 @@ class TransactionController extends GetxController {
   final UpdateTransactionUseCase updateTransactionUseCase;
   final DeleteTransactionUseCase deleteTransactionUseCase;
 
-  final SavingFundController fundController = Get.find<SavingFundController>();
+  final FundController fundController = Get.find<FundController>();
 
   var transactionByfilter = Rxn<TransactionByTypeEntity>();
 
@@ -39,6 +40,14 @@ class TransactionController extends GetxController {
     try {
       await createTransactionUseCase(dto);
       await refreshAllData(dto.userId!);
+      
+      // Req 8.1, 8.2: Chỉ ghi nhận streak khi TẠO MỚI giao dịch, không phải sửa/xóa
+      if (Get.isRegistered<GamificationController>()) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          Get.find<GamificationController>().recordDailyTransaction();
+        });
+      }
+      
       errorMessage.value = null;
     } catch (e) {
       errorMessage.value = e.toString();
@@ -106,9 +115,7 @@ class TransactionController extends GetxController {
     await filterTransactions(userId, filterDto);
 
     if (Get.isRegistered<StatisticsController>()) {
-      await Get.find<StatisticsController>().refreshStatisticsData(userId);
-    }
-    if (Get.isRegistered<SavingFundController>()) {
+       Get.find<StatisticsController>().refreshStatisticsData(userId);
     }
   }
 

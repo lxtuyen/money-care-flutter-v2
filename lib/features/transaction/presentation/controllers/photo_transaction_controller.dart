@@ -6,7 +6,7 @@ import 'package:money_care/core/presentation/widgets/text_field/app_currency_for
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
@@ -14,8 +14,8 @@ import 'package:money_care/features/transaction/presentation/controllers/transac
 class PhotoTransactionController extends GetxController {
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final SavingFundController savingFundController =
-      Get.find<SavingFundController>();
+  final FundController fundController =
+      Get.find<FundController>();
   final AppController appController = Get.find<AppController>();
   final ImagePicker picker = ImagePicker();
 

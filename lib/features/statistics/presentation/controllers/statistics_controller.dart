@@ -1,8 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 
 class StatisticsController extends GetxController {
@@ -11,14 +12,26 @@ class StatisticsController extends GetxController {
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
 
-  final SavingFundController fundController = Get.find<SavingFundController>();
+  final FundController fundController = Get.find<FundController>();
 
   var totalByType = Rxn<TotalByTypeEntity>();
   RxList<TotalByCategoryEntity> totalByCate = <TotalByCategoryEntity>[].obs;
+  RxList<TotalByCategoryEntity> expenseCategories = <TotalByCategoryEntity>[].obs;
+  RxList<TotalByCategoryEntity> incomeCategories = <TotalByCategoryEntity>[].obs;
 
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
   var statisticsSummary = Rxn<StatisticsSummaryEntity>();
+
+  /// Total balance calculated from all category limits
+  double get totalBudget => expenseCategories.fold(0.0, (sum, cat) => sum + cat.limit);
+
+  /// Current month's spending as a percentage of total balance (0.0 to 1.0+)
+  double get utilizationPercentage {
+    if (totalBudget <= 0) return 0.0;
+    final spent = totalByType.value?.expenseTotal.toDouble() ?? 0.0;
+    return spent / totalBudget;
+  }
 
   final RxString selectedType = 'chi'.obs;
 
@@ -112,6 +125,7 @@ class StatisticsController extends GetxController {
       await Future.wait([
         _loadTotalByType(userId),
         _loadTotalByCate(userId),
+        _loadMonthlyCategories(userId),
         _loadTotalByDate(userId, totalsDto),
       ]);
 
@@ -145,6 +159,33 @@ class StatisticsController extends GetxController {
     }
   }
 
+  Future<void> _loadMonthlyCategories(int userId) async {
+    try {
+      final expenseDto = TransactionTotalsDto(
+        fundId: _currentFundIdOrNull,
+        startDate: monthStartDate.toIso8601String(),
+        endDate: monthEndDate.toIso8601String(),
+        type: 'expense',
+      );
+      final incomeDto = TransactionTotalsDto(
+        fundId: _currentFundIdOrNull,
+        startDate: monthStartDate.toIso8601String(),
+        endDate: monthEndDate.toIso8601String(),
+        type: 'income',
+      );
+
+      final results = await Future.wait([
+        getTotalByCateUseCase(userId, expenseDto),
+        getTotalByCateUseCase(userId, incomeDto),
+      ]);
+
+      expenseCategories.assignAll(results[0]);
+      incomeCategories.assignAll(results[1]);
+    } catch (e) {
+      print("Error loading monthly categories: $e");
+    }
+  }
+
   Future<void> _loadTotalByDate(int userId, TransactionTotalsDto dto) async {
     try {
       totalByDate.value = await getTotalByDateEntityUseCase(userId, dto);
@@ -163,6 +204,7 @@ class StatisticsController extends GetxController {
       await Future.wait([
         _loadTotalByType(userId),
         _loadTotalByCate(userId),
+        _loadMonthlyCategories(userId),
         _loadTotalByDate(userId, dtoWeek),
         getTotalByDateEntityLstMonth(userId),
         _loadStatisticsSummary(userId),
@@ -184,18 +226,26 @@ class StatisticsController extends GetxController {
     }
   }
 
-  void changeType(String type) {
+  void changeType(String type) async {
     selectedType.value = type;
+    final appController = Get.find<AppController>();
+    final userId = await appController.getCurrentUserId();
+    if (userId != null) {
+      _loadTotalByCate(userId);
+    }
   }
 
   int? get _currentFundIdOrNull =>
       fundController.currentFundId > 0 ? fundController.currentFundId : null;
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
+    // Map 'chi' -> 'expense', 'thu' -> 'income' for backend
+    final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
     return TransactionTotalsDto(
       fundId: _currentFundIdOrNull,
       startDate: start.toIso8601String(),
       endDate: end.toIso8601String(),
+      type: backendType,
     );
   }
 

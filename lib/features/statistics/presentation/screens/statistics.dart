@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -16,6 +17,7 @@ import 'package:money_care/features/statistics/presentation/widgets/description/
 import 'package:money_care/features/statistics/presentation/widgets/chart/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
+import 'package:money_care/features/statistics/presentation/widgets/fund_summary_card.dart';
 import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -47,8 +49,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       Get.find<TransactionController>();
   final StatisticsController statisticsController =
       Get.find<StatisticsController>();
-  final SavingFundController savingFundController =
-      Get.find<SavingFundController>();
+  final FundController fundController =
+      Get.find<FundController>();
+  final UserCategoryController userCategoryController =
+      Get.find<UserCategoryController>();
   final FilterController filterController = Get.find<FilterController>();
   final UserController userController = Get.find<UserController>();
 
@@ -62,6 +66,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
     await statisticsController.refreshStatisticsData(userId);
+    // Load fund report nếu user có quỹ
+    final fundId = fundController.fundId.value;
+    if (fundId > 0) {
+      fundController.loadFundReport(fundId);
+    }
   }
 
   @override
@@ -99,13 +108,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 25),
 
-              Padding(
+              Obx(() => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: AppSectionHeading(
-                  title: "Tổng chi tiêu theo tháng",
+                  title: statisticsController.selectedType.value == 'chi'
+                      ? "Tổng chi tiêu theo tháng"
+                      : "Tổng thu nhập theo tháng",
                   showActionButton: false,
                 ),
-              ),
+              )),
               const SizedBox(height: 10),
 
               Padding(
@@ -159,17 +170,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 25),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+              Obx(() => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: AppSectionHeading(
-                  title: AppTexts.limitOverview,
+                  title: statisticsController.selectedType.value == 'chi'
+                      ? AppTexts.limitOverview
+                      : "Tổng quan thu nhập",
                   showActionButton: false,
                 ),
-              ),
+              )),
               const SizedBox(height: 10),
               Obx(() {
                 final data = statisticsController.totalByType.value;
-                final currentFund = savingFundController.currentFund.value;
+                final categories = statisticsController.totalByCate;
+                final isExpense = statisticsController.selectedType.value == 'chi';
 
                 if (statisticsController.isLoading.value) {
                   return const SizedBox(
@@ -178,38 +192,34 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   );
                 }
 
-                if (data == null || currentFund == null) {
-                  return StatisticsOverviewCard(
-                    startDate: AppHelperFunction.getFormattedDate(
-                      monthStartDate,
-                    ),
-                    endDate: AppHelperFunction.getFormattedDate(now),
-                    totalAmount: "0",
-                    categories: const [],
-                  );
-                }
-
-                final List<CategoryEntity> updatedCategories = currentFund.categories.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final category = entry.value;
-                  return CategoryEntity(
-                    id: category.id,
-                    name: category.name,
-                    percentage: category.percentage,
-                    icon: category.icon,
-                    color: AppHelperFunction.getChartColorByIndex(index),
-                  );
-                }).toList();
+                // Lọc các danh mục có chi tiêu/thu nhập thực tế
+                final List<CategoryEntity> updatedCategories = categories
+                    .where((c) => c.total > 0)
+                    .toList()
+                    .asMap()
+                    .entries
+                    .map((entry) {
+                      final index = entry.key;
+                      final item = entry.value;
+                      return CategoryEntity(
+                        id: 0,
+                        name: item.categoryName,
+                        percentage: item.spendingPercentage.toInt(),
+                        icon: item.categoryIcon,
+                        color: AppHelperFunction.getChartColorByIndex(index),
+                      );
+                    })
+                    .toList();
 
                 return StatisticsOverviewCard(
                   startDate: AppHelperFunction.getFormattedDate(monthStartDate),
                   endDate: AppHelperFunction.getFormattedDate(now),
                   totalAmount: AppHelperFunction.formatAmount(
-                    data.expenseTotal.toDouble(),
+                    (data?.expenseTotal ?? 0).toDouble(),
                     'VND',
                   ),
                   incomeAmount: AppHelperFunction.formatAmount(
-                    data.incomeTotal.toDouble(),
+                    (data?.incomeTotal ?? 0).toDouble(),
                     'VND',
                   ),
                   categories: updatedCategories,
@@ -219,6 +229,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               const SizedBox(height: 25),
               Obx(() {
                 final categories = statisticsController.totalByCate;
+                final isExpense = statisticsController.selectedType.value == 'chi';
+                final hasFund = statisticsController.fundController.currentFund.value != null;
+
+                if (!isExpense || !hasFund) return const SizedBox.shrink();
 
                 if (statisticsController.isLoading.value) {
                   return const SizedBox(
@@ -227,17 +241,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   );
                 }
 
-                if (categories.isEmpty) {
-                  return const SizedBox(
-                    height: 120,
-                    child: Center(
-                      child: Text(
-                        'Chưa có dữ liệu danh mục',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  );
-                }
+                final filtered = categories.where((c) => c.limit > 0 || c.total > 0).toList();
+                filtered.sort((a, b) {
+                  double percentA = a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
+                  double percentB = b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
+                  return percentB.compareTo(percentA);
+                });
+
+                if (filtered.isEmpty) return const SizedBox.shrink();
 
                 return Align(
                   alignment: Alignment.centerLeft,
@@ -249,8 +260,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                     child: Row(
                       children: [
-                        const SizedBox(width: 12),
-                        ...categories.map(
+                        ...filtered.map(
                           (item) => Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: ChartCard(
@@ -267,6 +277,30 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               }),
 
               const SizedBox(height: 25),
+
+              Obx(() {
+                final fund = fundController.currentFund.value;
+                if (fund == null) return const SizedBox.shrink();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: AppSectionHeading(
+                        title: 'Thống kê quỹ tiết kiệm',
+                        showActionButton: false,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    FundSummaryCard(
+                      fund: fund,
+                      report: fundController.fundReport.value,
+                      isLoading: fundController.isLoadingReport.value,
+                    ),
+                    const SizedBox(height: 25),
+                  ],
+                );
+              }),
 
               Obx(() {
                 final lstMonth = statisticsController.totalByDateLstMonth.value;

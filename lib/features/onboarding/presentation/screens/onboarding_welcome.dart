@@ -72,7 +72,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
                             label: AppTexts.buttonText,
                             onPressed:
                                 () =>
-                                    Get.toNamed(RoutePath.onboardingSavingRule),
+                                    Get.toNamed(RoutePath.onboardingExpenseManagement),
                           ),
                         ),
                       ],

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
-import 'package:money_care/features/saving_fund/presentation/controllers/saving_fund_controller.dart';
+import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -24,8 +24,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   final AuthController authController = Get.find<AuthController>();
   final UserController userController = Get.find<UserController>();
   final StatisticsController statisticsController = Get.find<StatisticsController>();
-  final SavingFundController fundController = Get.find<SavingFundController>();
-
+  final FundController fundController = Get.find<FundController>();
 
   @override
   void initState() {
@@ -41,8 +40,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     final currentFund = fundController.currentFund.value;
     await statisticsController.getTotalByType(
       userId,
-      startDate: currentFund?.start_date,
-      endDate: currentFund?.end_date,
+      startDate: currentFund?.startDate,
+      endDate: currentFund?.endDate,
     );
   }
 
@@ -65,26 +64,29 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Obx(() {
+                      final currentFund = fundController.currentFund.value;
+                      if (currentFund == null) return const SizedBox.shrink();
+
                       final data = statisticsController.totalByType.value;
 
-                      if (statisticsController.isLoading.value) {
-                        return const SizedBox(
-                          height: 120,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
-
-                      if (data == null) {
-                        return SavingsGoals(currentSaving: 0, targetSaving: 0);
-                      }
-
-                      return SavingsGoals(
-                        currentSaving: data.currentSaving.toDouble(),
-                        targetSaving: data.targetSaving.toDouble(),
+                      return Column(
+                        children: [
+                          if (statisticsController.isLoading.value)
+                            const SizedBox(
+                              height: 120,
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          else if (data == null)
+                            const SavingsGoals(currentSaving: 0, targetSaving: 0)
+                          else
+                            SavingsGoals(
+                              currentSaving: data.currentSaving.toDouble(),
+                              targetSaving: data.targetSaving.toDouble(),
+                            ),
+                          const SizedBox(height: 20),
+                        ],
                       );
                     }),
-
-                    const SizedBox(height: 20),
 
                     UserMenuItem(
                       icon: Icons.person_outline,
@@ -94,8 +96,20 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
                     UserMenuItem(
                       icon: Icons.category_outlined,
-                      title: AppTexts.savingFunds,
-                      onTap: () => Get.toNamed(RoutePath.selectSavingFund),
+                      title: AppTexts.funds,
+                      onTap: () => Get.toNamed(RoutePath.selectFund),
+                    ),
+
+                    UserMenuItem(
+                      icon: Icons.category_rounded,
+                      title: "Quáº£n lÃ½ danh má»¥c",
+                      onTap: () => Get.toNamed(RoutePath.categoryManagement),
+                    ),
+                    
+                    UserMenuItem(
+                      icon: Icons.school_outlined,
+                      title: "Há»“ sÆ¡ sinh viÃªn",
+                      onTap: () => Get.toNamed(RoutePath.studentProfile),
                     ),
 
                     UserMenuItem(
@@ -116,3 +130,5 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     );
   }
 }
+
+

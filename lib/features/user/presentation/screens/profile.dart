@@ -8,6 +8,8 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/presentation/widgets/appbar/appbar.dart';
 import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
+import 'package:money_care/features/gamification/presentation/widgets/badges_section_widget.dart';
+import 'package:money_care/features/onboarding/presentation/widgets/complete_setup_banner_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -58,16 +60,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppbarCustom(showBackArrow: true),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   const SizedBox(height: 40),
                   const Text(
                     "Hồ sơ của bạn",
@@ -78,6 +81,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+
+                  // Hiển thị banner hoàn thành thiết lập nếu có bước onboarding bị bỏ qua
+                  // Requirements: 1.4
+                  const CompleteSetupBannerWidget(),
 
                   AppTextFormField(
                     controller: firstNameController,
@@ -105,7 +112,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       isEnabled: !userController.isLoading.value,
                     );
                   }),
+
+                  const SizedBox(height: 32),
+
+                  // Badges section — Requirements: 8.4, 8.5, 8.6, 8.8
+                  const BadgesSectionWidget(),
+
+                  const SizedBox(height: 24),
                 ],
+                ),
               ),
             ),
           ),

@@ -109,6 +109,8 @@ class CompleteSetupBannerWidget extends StatelessWidget {
         Get.toNamed(RoutePath.onboardingCategorySelect);
         break;
       case OnboardingStep.studentInfo:
+        Get.toNamed(RoutePath.profile);
+        break;
       case OnboardingStep.welcome:
       case OnboardingStep.complete:
         Get.toNamed(RoutePath.onboardingBudgetSetup);

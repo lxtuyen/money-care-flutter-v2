@@ -5,7 +5,6 @@ class AppImages {
 
   static final String logo = AppAssets.imagePngPath('logo');
   static final String welcome = AppAssets.imagePngPath('welcome');
-  static final String savingRule = AppAssets.imagePngPath('saving_rule');
   static final String google = AppAssets.imagePngPath('google');
   static final String expenseManagement =
       AppAssets.imagePngPath('expense_management');

@@ -26,7 +26,6 @@ import 'package:money_care/features/transaction/presentation/screens/photo_trans
 import 'package:money_care/features/fund/presentation/screens/expired_funds_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
-import 'package:money_care/features/student_profile/presentation/screens/student_profile_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
 import 'package:money_care/features/gamification/presentation/screens/streak_calendar_screen.dart';
 
@@ -99,11 +98,6 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/onboarding_category_select',
     page: () => const OnboardingCategorySelectScreen(),
-    transition: Transition.rightToLeft,
-  ),
-  GetPage(
-    name: '/student_profile',
-    page: () => const StudentProfileScreen(),
     transition: Transition.rightToLeft,
   ),
   GetPage(

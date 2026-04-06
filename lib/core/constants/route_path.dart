@@ -26,7 +26,6 @@ class RoutePath {
   static const fundReport = '/fund_report';
   static const photoTransactionHistory = '/photo_transaction_history';
   static const expiredFunds = '/expired_funds';
-  static const studentProfile = '/student_profile';
   static const categoryManagement = '/category_management';
   static const streakCalendar = '/streak_calendar';
 }

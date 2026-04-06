@@ -6,7 +6,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 /// Các bước trong luồng onboarding sinh viên
 enum OnboardingStep {
   welcome,        // Bước 1: Chào mừng
-  studentInfo,    // Bước 2: Thông tin sinh viên
+  studentInfo,    // Bước 2: Thông tin thu nhập
   balanceSetup,    // Bước 3: Thiết lập ngân sách
   categorySelect, // Bước 4: Chọn danh mục
   complete,       // Bước 5: Hoàn thành

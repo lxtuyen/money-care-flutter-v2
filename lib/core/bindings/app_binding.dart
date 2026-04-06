@@ -5,7 +5,6 @@ import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/services/notification_service.dart';
-import 'package:money_care/core/services/exam_period_notification_service.dart';
 
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
@@ -29,11 +28,6 @@ import 'package:money_care/features/gamification/data/repositories/gamification_
 import 'package:money_care/features/gamification/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 
-import 'package:money_care/features/student_profile/data/datasources/student_profile_local_datasource.dart';
-import 'package:money_care/features/student_profile/data/datasources/student_profile_remote_datasource.dart';
-import 'package:money_care/features/student_profile/data/repositories/student_profile_repository_impl.dart';
-import 'package:money_care/features/student_profile/domain/usecases/usecases.dart';
-import 'package:money_care/features/student_profile/presentation/controllers/student_profile_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
 class AppBinding extends Bindings {
@@ -93,36 +87,6 @@ class AppBinding extends Bindings {
         checkAndAwardBadgesUseCase:
             CheckAndAwardBadgesUseCase(gamificationRepo),
         notificationService: notificationService,
-        appController: appController,
-      ),
-      fenix: true,
-    );
-
-    // ExamPeriodController — singleton for exam period notifications (Req 9.2, 9.3, 9.4)
-    final studentProfileLocalDs =
-        StudentProfileLocalDatasourceImpl(storage: storage);
-    final studentProfileRemoteDs =
-        StudentProfileRemoteDatasourceImpl(api: apiService);
-    final studentProfileRepo = StudentProfileRepositoryImpl(
-      remoteDatasource: studentProfileRemoteDs,
-      localDatasource: studentProfileLocalDs,
-    );
-    final examPeriodService = ExamPeriodNotificationService(
-      getStudentProfileUseCase:
-          GetStudentProfileUseCase(studentProfileRepo),
-      notificationService: notificationService,
-      appController: appController,
-    );
-    Get.put<ExamPeriodController>(
-      ExamPeriodController(service: examPeriodService),
-      permanent: true,
-    );
-
-    // StudentProfileController — lazy singleton (Req 2.1–2.5, 9.1)
-    Get.lazyPut<StudentProfileController>(
-      () => StudentProfileController(
-        getStudentProfileUseCase: GetStudentProfileUseCase(studentProfileRepo),
-        saveStudentProfileUseCase: SaveStudentProfileUseCase(studentProfileRepo),
         appController: appController,
       ),
       fenix: true,

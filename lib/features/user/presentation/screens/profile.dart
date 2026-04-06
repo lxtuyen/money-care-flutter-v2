@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:money_care/features/user/data/models/user_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,33 +23,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final userController = Get.find<UserController>();
 
-  late TextEditingController firstNameController;
-  late TextEditingController lastNameController;
-
-  @override
-  void initState() {
-    super.initState();
-    final user = userController.userProfile.value;
-
-    firstNameController = TextEditingController(text: user?.firstName ?? '');
-    lastNameController = TextEditingController(text: user?.lastName ?? '');
-  }
-
-  @override
-  void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    super.dispose();
-  }
-
   Future<void> onUpdateProfile() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final dto = ProfileUpdateDto(
-          firstName: firstNameController.text,
-          lastName: lastNameController.text,
-        );
-        await userController.updateProfile(dto);
+        await userController.updateProfile();
         AppHelperFunction.showSuccessSnackBar('Cập nhật thành công');
       } catch (e) {
         AppHelperFunction.showErrorSnackBar(e.toString());
@@ -71,60 +49,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  const SizedBox(height: 40),
-                  const Text(
-                    "Hồ sơ của bạn",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.text1,
+                    const SizedBox(height: 40),
+                    const Text(
+                      "Hồ sơ của bạn",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text1,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                  // Hiển thị banner hoàn thành thiết lập nếu có bước onboarding bị bỏ qua
-                  // Requirements: 1.4
-                  const CompleteSetupBannerWidget(),
+                    // Hiển thị banner hoàn thành thiết lập nếu có bước onboarding bị bỏ qua
+                    // Requirements: 1.4
+                    const CompleteSetupBannerWidget(),
 
-                  AppTextFormField(
-                    controller: firstNameController,
-                    label: 'Tên',
-                    icon: Icons.person,
-                    hintText: 'VD: Văn A',
-                    validator: (v) => AppValidator.validateFirstName(v),
-                  ),
-                  const SizedBox(height: 16),
+                    const Text(
+                      'Thông tin cơ bản',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.text1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                  AppTextFormField(
-                    controller: lastNameController,
-                    label: 'Họ',
-                    icon: Icons.person,
-                    hintText: 'VD: Nguyễn',
-                    validator: (v) => AppValidator.validateLastName(v),
-                  ),
-                  const SizedBox(height: 24),
+                    AppTextFormField(
+                      controller: userController.firstNameController,
+                      label: 'Tên',
+                      icon: Icons.person,
+                      hintText: 'VD: Văn A',
+                      validator: (v) => AppValidator.validateFirstName(v),
+                    ),
+                    const SizedBox(height: 16),
 
-                  Obx(() {
-                    return PrimaryButton(
-                      label: 'Cập nhật',
-                      onPressed: onUpdateProfile,
-                      isLoading: userController.isLoading.value,
-                      isEnabled: !userController.isLoading.value,
-                    );
-                  }),
+                    AppTextFormField(
+                      controller: userController.lastNameController,
+                      label: 'Họ',
+                      icon: Icons.person,
+                      hintText: 'VD: Nguyễn',
+                      validator: (v) => AppValidator.validateLastName(v),
+                    ),
+                    const SizedBox(height: 32),
 
-                  const SizedBox(height: 32),
+                    const Text(
+                      'Thông tin tài chính',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.text1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // Badges section — Requirements: 8.4, 8.5, 8.6, 8.8
-                  const BadgesSectionWidget(),
+                    AppTextFormField(
+                      controller: userController.monthlyIncomeController,
+                      label: 'Thu nhập hàng tháng (VNĐ)',
+                      icon: Icons.attach_money_outlined,
+                      hintText: 'VD: 3000000',
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
 
-                  const SizedBox(height: 24),
-                ],
+                    Obx(() => _IncomeDateField(
+                          incomeDate: userController.incomeDate.value,
+                          onTap: () => userController.pickIncomeDate(context),
+                        )),
+
+                    const SizedBox(height: 32),
+
+                    Obx(() {
+                      return PrimaryButton(
+                        label: 'Cập nhật',
+                        onPressed: onUpdateProfile,
+                        isLoading: userController.isLoading.value,
+                        isEnabled: !userController.isLoading.value,
+                      );
+                    }),
+
+                    const SizedBox(height: 32),
+
+                    // Badges section — Requirements: 8.4, 8.5, 8.6, 8.8
+                    const BadgesSectionWidget(),
+
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _IncomeDateField extends StatelessWidget {
+  final DateTime? incomeDate;
+  final VoidCallback onTap;
+
+  const _IncomeDateField({required this.incomeDate, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final displayText = incomeDate != null
+        ? DateFormat('dd/MM/yyyy').format(incomeDate!)
+        : '';
+
+    return AppTextFormField(
+      label: 'Ngày nhận tiền hàng tháng',
+      icon: Icons.event_outlined,
+      hintText: 'Chọn ngày',
+      controller: TextEditingController(text: displayText),
+      readOnly: true,
+      onTap: onTap,
+      suffixIcon: const Icon(
+        Icons.arrow_drop_down,
+        color: AppColors.secondaryNavyBlue,
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:money_care/features/user/data/models/user_profile_model.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
@@ -11,6 +12,11 @@ class UserController extends GetxController {
     required this.updateMyProfileUseCase,
   });
 
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController monthlyIncomeController = TextEditingController();
+  final Rx<DateTime?> incomeDate = Rx(null);
+
   @override
   void onInit() {
     super.onInit();
@@ -18,6 +24,7 @@ class UserController extends GetxController {
     ever(authController.user, (user) {
       if (user != null) {
         userProfile.value = user.profile;
+        _fillControllers(user.profile);
       } else {
         userProfile.value = null;
       }
@@ -25,23 +32,71 @@ class UserController extends GetxController {
 
     if (authController.user.value != null) {
       userProfile.value = authController.user.value!.profile;
+      _fillControllers(authController.user.value!.profile);
     }
+  }
+
+  void _fillControllers(UserProfileEntity? profile) {
+    if (profile == null) return;
+    firstNameController.text = profile.firstName ?? '';
+    lastNameController.text = profile.lastName ?? '';
+    monthlyIncomeController.text =
+        profile.monthlyIncome != null ? profile.monthlyIncome.toString() : '';
+    incomeDate.value = profile.incomeDate;
   }
 
   var userProfile = Rxn<UserProfileEntity>();
   var isLoading = false.obs;
 
-  Future<void> updateProfile(ProfileUpdateDto dto) async {
+  Future<void> pickIncomeDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: incomeDate.value ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      incomeDate.value = picked;
+    }
+  }
+
+  Future<void> updateProfile() async {
     try {
       isLoading.value = true;
+      final dto = ProfileUpdateDto(
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        monthlyIncome: int.tryParse(monthlyIncomeController.text.trim()),
+        incomeDate: incomeDate.value,
+      );
       final updated = await updateMyProfileUseCase(dto);
       userProfile.value = updated;
+
+      // Trigger balance suggestion = floor(monthlyIncome * 0.9) (Req 2.2)
+      if (updated.monthlyIncome != null && updated.monthlyIncome! > 0) {
+        _triggerBudgetSuggestion(updated.monthlyIncome!);
+      }
     } finally {
       isLoading.value = false;
     }
   }
 
+  void _triggerBudgetSuggestion(int monthlyIncome) {
+    final suggestedAmount = (monthlyIncome * 0.9).floor();
+    // TODO: Implement actual budget suggestion logic (e.g., calling BudgetController)
+    debugPrint('Suggested monthly budget: $suggestedAmount');
+  }
+
   void currentProfile(UserProfileEntity profile) {
     userProfile.value = profile;
+    _fillControllers(profile);
+  }
+
+  @override
+  void onClose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    monthlyIncomeController.dispose();
+    super.onClose();
   }
 }

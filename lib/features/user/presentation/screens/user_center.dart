@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
@@ -102,16 +102,10 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
                     UserMenuItem(
                       icon: Icons.category_rounded,
-                      title: "Quáº£n lÃ½ danh má»¥c",
+                      title: "Quản lý danh mục",
                       onTap: () => Get.toNamed(RoutePath.categoryManagement),
                     ),
                     
-                    UserMenuItem(
-                      icon: Icons.school_outlined,
-                      title: "Há»“ sÆ¡ sinh viÃªn",
-                      onTap: () => Get.toNamed(RoutePath.studentProfile),
-                    ),
-
                     UserMenuItem(
                       icon: Icons.exit_to_app,
                       title: AppTexts.logout,

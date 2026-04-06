@@ -25,13 +25,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
       case TargetPlatform.windows:
-        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+          'DefaultFirebaseOptions are only configured for web, Android, and iOS.',
         );
       default:
         throw UnsupportedError(
@@ -65,24 +62,5 @@ class DefaultFirebaseOptions {
     projectId: 'moneycare-f7e6b',
     storageBucket: 'moneycare-f7e6b.firebasestorage.app',
     iosBundleId: 'com.example.doanCn',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAJcWCIGbToH7utPsF6-pU1gDJaakinlrE',
-    appId: '1:459211142809:ios:37eb9343ee50420ca62a08',
-    messagingSenderId: '459211142809',
-    projectId: 'moneycare-f7e6b',
-    storageBucket: 'moneycare-f7e6b.firebasestorage.app',
-    iosBundleId: 'com.example.doanCn',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCCNvTLRHRBQwUGzILb1O_QKZKcVGL1IEs',
-    appId: '1:459211142809:web:8e6bcf70284b1756a62a08',
-    messagingSenderId: '459211142809',
-    projectId: 'moneycare-f7e6b',
-    authDomain: 'moneycare-f7e6b.firebaseapp.com',
-    storageBucket: 'moneycare-f7e6b.firebasestorage.app',
-    measurementId: 'G-Z946Q29ZEK',
   );
 }

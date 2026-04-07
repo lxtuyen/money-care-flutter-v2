@@ -31,8 +31,6 @@ class NotificationService extends GetxService {
       if (LocalStorage().getToken() != null) {
         _sendTokenToServer(newToken);
       }
-      // Nếu chưa có JWT, chỉ lưu token local.
-      // syncToken() sẽ được gọi sau khi đăng nhập thành công.
     });
 
     return this;

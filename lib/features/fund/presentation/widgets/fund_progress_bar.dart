@@ -5,9 +5,6 @@ import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 
-/// Displays the target completion progress of the currently selected saving fund.
-///
-/// Only visible if a fund is active.
 class FundProgressBar extends StatelessWidget {
   const FundProgressBar({super.key});
 
@@ -26,7 +23,7 @@ class FundProgressBar extends StatelessWidget {
       final double progress = (report.targetCompletionPercentage / 100).clamp(0.0, 1.0);
       final int percent = report.targetCompletionPercentage;
       
-      const Color color = Color(0xFF4CAF50); // Mặc định màu xanh cho tiết kiệm
+      const Color color = Color(0xFF4CAF50);
 
       return Container(
         width: double.infinity,

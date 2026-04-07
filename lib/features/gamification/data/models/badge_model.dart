@@ -1,6 +1,5 @@
 import 'package:money_care/features/gamification/domain/entities/gamification_entity.dart';
 
-/// Data model cho BadgeEntity — Requirements: 8.4, 8.5, 8.6, 8.9
 class BadgeModel {
   final String key;
   final String name;

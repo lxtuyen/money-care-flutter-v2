@@ -209,7 +209,6 @@ class _FundReportScreenState extends State<FundReportScreen> {
                 : AppColors.success,
           ),
           const SizedBox(height: 12),
-          // Budget usage bar
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

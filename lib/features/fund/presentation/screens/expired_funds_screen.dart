@@ -149,8 +149,6 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
   }
 }
 
-// â”€â”€â”€ Expired Fund Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
 class _ExpiredFundCard extends StatelessWidget {
   const _ExpiredFundCard({
     required this.fund,
@@ -188,7 +186,6 @@ class _ExpiredFundCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header strip
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
@@ -240,12 +237,10 @@ class _ExpiredFundCard extends StatelessWidget {
             ),
           ),
 
-          // Body
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Date range
                 Row(
                   children: [
                     _DateChip(
@@ -278,7 +273,6 @@ class _ExpiredFundCard extends StatelessWidget {
                 const Divider(color: AppColors.borderSecondary, height: 1),
                 const SizedBox(height: 14),
 
-                // Stats row
                 Row(
                   children: [
                     _StatItem(
@@ -310,7 +304,6 @@ class _ExpiredFundCard extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // Action buttons
                 Row(
                   children: [
                     Expanded(

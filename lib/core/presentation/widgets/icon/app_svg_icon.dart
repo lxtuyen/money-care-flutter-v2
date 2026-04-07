@@ -66,17 +66,13 @@ class AppSvgIcon extends StatelessWidget {
 
   bool _isEmoji(String text) {
     if (text.isEmpty) return false;
-    
-    // If it contains dots or slashes, it's definitely a path, not a raw emoji
+
     if (text.contains('.') || text.contains('/')) return false;
 
-    // Check if the string contains any non-ASCII characters (most emojis)
     for (var rune in text.runes) {
       if (rune > 128) return true;
     }
 
-    // If it's very short and not alphanumeric, it might be a special character/emoji
-    // but names like 'home', 'user' are alphanumeric and should stay as SVG paths.
     final alphanumeric = RegExp(r'^[a-zA-Z0-9_\-]+$');
     if (alphanumeric.hasMatch(text)) return false;
 

@@ -82,7 +82,6 @@ class LocalStorage {
     return readBool(keyHasSeenOnboarding) ?? false;
   }
 
-  // Per-user onboarding completion flag
   String _onboardingDoneKey(int userId) => 'onboarding_done_$userId';
 
   Future<void> setOnboardingDone(int userId) async {

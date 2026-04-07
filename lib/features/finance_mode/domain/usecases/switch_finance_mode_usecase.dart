@@ -13,7 +13,6 @@ class SwitchFinanceModeParams {
   });
 }
 
-/// Cho phép người dùng chuyển đổi chế độ tài chính thủ công (Req 5.2)
 class SwitchFinanceModeUseCase {
   final FinanceModeRepository repository;
 

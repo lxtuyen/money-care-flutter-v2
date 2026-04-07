@@ -6,7 +6,7 @@ class SendToChatbotUseCase {
 
   SendToChatbotUseCase(this.repository);
 
-  Future<String> call(ChatDto dto) {
-    return repository.sendToChatbot(dto);
+  Future<String> call(ChatDto dto, {String? filePath}) {
+    return repository.sendToChatbot(dto, filePath: filePath);
   }
 }

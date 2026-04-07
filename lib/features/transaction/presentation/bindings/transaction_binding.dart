@@ -28,7 +28,12 @@ class TransactionBinding extends Bindings {
 
     Get.lazyPut(() => FilterController(), fenix: true);
     Get.lazyPut(() => TransactionFormController(), fenix: true);
-    Get.lazyPut(() => PhotoTransactionController(), fenix: true);
+    Get.lazyPut(
+      () => PhotoTransactionController(
+        scanReceiptUseCase: ScanReceiptUseCase(repository),
+      ),
+      fenix: true,
+    );
 
     Get.lazyPut(
       () => ScanReceiptController(

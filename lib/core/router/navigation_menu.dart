@@ -42,7 +42,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
         ExpiredFundPopup.show(fundController.expiredFund.value!);
       }
     } catch (_) {
-      // Silently fail - không interrupt UX
+      
     }
   }
 

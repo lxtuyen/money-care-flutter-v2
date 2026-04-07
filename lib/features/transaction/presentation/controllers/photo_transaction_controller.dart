@@ -10,6 +10,7 @@ import 'package:money_care/features/fund/presentation/controllers/fund_controlle
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/features/transaction/domain/usecases/scan_receipt_usecases.dart';
 
 class PhotoTransactionController extends GetxController {
   final TransactionController transactionController =
@@ -17,6 +18,10 @@ class PhotoTransactionController extends GetxController {
   final FundController fundController =
       Get.find<FundController>();
   final AppController appController = Get.find<AppController>();
+  final ScanReceiptUseCase? scanReceiptUseCase;
+
+  PhotoTransactionController({this.scanReceiptUseCase});
+
   final ImagePicker picker = ImagePicker();
 
   final formKey = GlobalKey<FormState>();
@@ -29,6 +34,7 @@ class PhotoTransactionController extends GetxController {
   final RxnString selectedImagePath = RxnString();
   final RxString transactionType = 'expense'.obs;
   final RxBool isPickingImage = false.obs;
+  final RxBool isScanning = false.obs;
 
   bool get isExpense => transactionType.value == 'expense';
 
@@ -46,6 +52,7 @@ class PhotoTransactionController extends GetxController {
     selectedCategoryId.value = null;
     selectedImagePath.value = null;
     transactionType.value = 'expense';
+    isScanning.value = false;
   }
 
   void setTransactionType(String type) {
@@ -53,6 +60,49 @@ class PhotoTransactionController extends GetxController {
     if (!isExpense) {
       selectedCategoryId.value = null;
       categoryController.clear();
+    }
+  }
+
+  Future<void> scanWithAI() async {
+    final path = selectedImagePath.value;
+    if (path == null || scanReceiptUseCase == null) return;
+
+    isScanning.value = true;
+    try {
+      final result = await scanReceiptUseCase!(XFile(path));
+      
+      if (result.totalAmount != null) {
+        amountController.text = AppCurrencyFormField.format(result.totalAmount!.toString());
+      }
+      
+      if (result.note != null && result.note!.isNotEmpty) {
+        noteController.text = result.note!;
+      } else if (result.merchantName != null) {
+        noteController.text = result.merchantName!;
+      }
+
+      if (result.date != null) {
+        selectedDate.value = result.date;
+      }
+
+      if (result.categoryName != null) {
+        final currentFund = fundController.currentFund.value;
+        if (currentFund != null) {
+          final cat = currentFund.categories.firstWhereOrNull(
+            (c) => c.name.toLowerCase().contains(result.categoryName!.toLowerCase()) ||
+                   result.categoryName!.toLowerCase().contains(c.name.toLowerCase())
+          );
+          if (cat != null) {
+            setCategory(cat);
+          }
+        }
+      }
+      
+      AppHelperFunction.showSuccessSnackBar('Đã trích xuất thông tin từ hóa đơn!');
+    } catch (e) {
+      AppHelperFunction.showErrorSnackBar('Lỗi quét hóa đơn: $e');
+    } finally {
+      isScanning.value = false;
     }
   }
 
@@ -205,3 +255,4 @@ class PhotoTransactionController extends GetxController {
     super.onClose();
   }
 }
+

@@ -636,11 +636,30 @@ class _PhotoPreviewCard extends StatelessWidget {
                   ),
                 ),
                 TextButton.icon(
+                  onPressed: controller.isScanning.value ? null : controller.scanWithAI,
+                  icon: controller.isScanning.value
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.secondaryNavyBlue,
+                          ),
+                        )
+                      : const Icon(Icons.auto_awesome_outlined, size: 18),
+                  label: Text(controller.isScanning.value ? 'Đang phân tích...' : 'Phân tích AI'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.secondaryNavyBlue,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                  ),
+                ),
+                TextButton.icon(
                   onPressed: onRetake,
                   icon: const Icon(Icons.camera_alt_outlined, size: 18),
                   label: const Text('Chụp lại'),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.secondaryNavyBlue,
+                    foregroundColor: AppColors.text3,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 6),
                   ),

@@ -1,7 +1,6 @@
 import 'package:money_care/features/gamification/data/models/badge_model.dart';
 import 'package:money_care/features/gamification/domain/entities/gamification_entity.dart';
 
-/// Data model cho GamificationEntity — Requirements: 8.1, 10.5
 class GamificationModel {
   final int userId;
   final int currentStreak;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/bubble.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/welcome_option.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:money_care/features/chatbot/presentation/screens/widgets/analysis_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/screens/widgets/receipt_items_bubble.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -15,225 +15,160 @@ class ChatbotScreen extends StatefulWidget {
 }
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
-  final TextEditingController _controller = TextEditingController();
-  final ScrollController _scroll = ScrollController();
+  final ChatController controller = Get.find<ChatController>();
   final AppController appController = Get.find<AppController>();
-  final ChatController chatController = Get.find<ChatController>();
-
-  final stt.SpeechToText _speech = stt.SpeechToText();
-  bool _speechReady = false;
-  bool _isListening = false;
   int? userId;
 
   @override
   void initState() {
     super.initState();
-    initData();
-    _initSpeech();
+    _loadUser();
   }
 
-  Future<void> initData() async {
+  Future<void> _loadUser() async {
     userId = await appController.getCurrentUserId();
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  final List<Map<String, dynamic>> _options = const [];
-
-  void _fillTemplate(String t) {
-    _controller.text = t;
-    _controller.selection = TextSelection.fromPosition(
-      TextPosition(offset: _controller.text.length),
-    );
-  }
-
-  Future<void> _sendTemplate(String t) async {
-    _fillTemplate(t);
-    await _send();
-  }
-
-  Future<void> _initSpeech() async {
-    final ok = await _speech.initialize(
-      onStatus: (status) {
-        if (status == 'done' || status == 'notListening') {
-          if (mounted) setState(() => _isListening = false);
-        }
-      },
-      onError: (_) {
-        if (mounted) setState(() => _isListening = false);
-      },
-    );
-    if (mounted) setState(() => _speechReady = ok);
-  }
-
-  Future<void> _toggleListen() async {
-    if (!_speechReady) return;
-
-    if (_isListening) {
-      await _speech.stop();
-      if (mounted) setState(() => _isListening = false);
-      return;
-    }
-
-    if (mounted) setState(() => _isListening = true);
-
-    await _speech.listen(
-      localeId: 'vi_VN',
-      listenOptions: stt.SpeechListenOptions(
-        listenMode: stt.ListenMode.dictation,
-      ),
-      onResult: (result) {
-        _controller.text = result.recognizedWords;
-        _controller.selection = TextSelection.fromPosition(
-          TextPosition(offset: _controller.text.length),
-        );
-      },
-    );
-  }
-
-  void _scrollToBottom() {
-    if (!_scroll.hasClients) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scroll.hasClients) return;
-      _scroll.animateTo(
-        _scroll.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    });
-  }
-
-  Future<void> _send() async {
-    final text = _controller.text.trim();
-    if (text.isEmpty || chatController.isLoading.value) return;
-    if (userId == null) {
-      AppHelperFunction.showErrorSnackBar(
-        'Không thể xác định người dùng hiện tại',
-      );
-      return;
-    }
-
-    chatController.addUserMessage(text);
-    chatController.addBotMessage('...');
-    _controller.clear();
-    _scrollToBottom();
-
-    try {
-      final reply = await chatController.send(text, userId!);
-      chatController.replaceLastBotMessage(reply);
-      _scrollToBottom();
-    } catch (e) {
-      chatController.replaceLastBotMessage('Loi goi chatbot: $e');
-      _scrollToBottom();
-    }
-  }
-
-  @override
-  void dispose() {
-    _speech.stop();
-    _controller.dispose();
-    _scroll.dispose();
-    super.dispose();
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.blueAccent),
-        title: Row(
-          children: [
-            ClipOval(
-              child: Image.asset(
-                'assets/images/ai.gif',
-                width: 34,
-                height: 34,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text('Money Care Chatbot'),
-          ],
-        ),
-      ),
+      backgroundColor: Colors.white,
+      appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
           children: [
             const Divider(height: 1),
-            Obx(() {
-              final listMessages = chatController.messages;
-
-              return Expanded(
-                child:
-                    listMessages.isEmpty
-                        ? WelcomeOptions(
-                          options: _options,
-                          onTapFill: _fillTemplate,
-                          onTapSend: _sendTemplate,
-                        )
-                        : ListView.builder(
-                          controller: _scroll,
-                          padding: const EdgeInsets.all(12),
-                          itemCount: listMessages.length,
-                          itemBuilder: (context, i) {
-                            final m = listMessages[i];
-                            return Bubble(isUser: m.isUser, text: m.text);
-                          },
-                        ),
-              );
-            }),
+            Expanded(child: _buildMessageList()),
             const Divider(height: 1),
-            Container(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        minLines: 1,
-                        maxLines: 4,
-                        textInputAction: TextInputAction.send,
-                        onSubmitted: (_) => _send(),
-                        decoration: InputDecoration(
-                          hintText: 'Nhap tin nhan...',
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.blueAccent,
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          isDense: true,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: _toggleListen,
-                      icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
-                      color: _speechReady ? Colors.blueAccent : Colors.grey,
-                      tooltip:
-                          _speechReady
-                              ? (_isListening ? 'Dung' : 'Noi de nhap')
-                              : 'Chua san sang',
-                    ),
-                    IconButton(
-                      onPressed: _send,
-                      icon: const Icon(Icons.send),
-                      color: Colors.blueAccent,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildInputArea(),
           ],
         ),
       ),
     );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      elevation: 0,
+      centerTitle: false,
+      title: Row(
+        children: [
+          ClipOval(
+            child: Image.asset(
+              'assets/images/Logo.png',
+              width: 34,
+              height: 34,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Text(
+            'Money Care AI',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageList() {
+    return Obx(() {
+      final messages = controller.messages;
+      if (messages.isEmpty) {
+        return WelcomeOptions(
+          options: controller.options, // Added to controller in previous steps if exists
+          onTapFill: controller.fillTemplate,
+          onTapSend: (t) => controller.sendTemplate(t, userId ?? 0),
+        );
+      }
+
+      return ListView.builder(
+        controller: controller.scrollController,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final m = messages[index];
+          if (!m.isUser && m.metadata != null) {
+            if (m.metadata!.containsKey('items')) {
+              return ReceiptItemsBubble(metadata: m.metadata!);
+            }
+            return AnalysisBubble(metadata: m.metadata!);
+          }
+          return Bubble(isUser: m.isUser, text: m.text);
+        },
+      );
+    });
+  }
+
+  Widget _buildInputArea() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller.textController,
+              minLines: 1,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: 'Hỏi AI bất cứ điều gì...',
+                hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                prefixIcon: IconButton(
+                  icon: const Icon(Icons.image_outlined, color: Colors.blueAccent),
+                  onPressed: controller.pickAndSendImage,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onSubmitted: (_) => controller.send(userId ?? 0),
+            ),
+          ),
+          const SizedBox(width: 8),
+          _buildMicButton(),
+          const SizedBox(width: 4),
+          _buildSendButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMicButton() {
+    return Obx(() => IconButton(
+      onPressed: controller.toggleListening,
+      icon: Icon(
+        controller.isListening.value ? Icons.mic : Icons.mic_none_rounded,
+        color: controller.isListening.value ? Colors.redAccent : Colors.blueAccent,
+      ),
+      style: IconButton.styleFrom(
+        backgroundColor: controller.isListening.value 
+          ? Colors.red.withValues(alpha: 0.1) 
+          : Colors.blue.withValues(alpha: 0.05),
+      ),
+    ));
+  }
+
+  Widget _buildSendButton() {
+    return Obx(() => IconButton(
+      onPressed: controller.isLoading.value ? null : () => controller.send(userId ?? 0),
+      icon: controller.isLoading.value
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
+            )
+          : const Icon(Icons.send_rounded, color: Colors.blueAccent),
+    ));
   }
 }

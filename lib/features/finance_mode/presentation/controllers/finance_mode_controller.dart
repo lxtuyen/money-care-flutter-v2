@@ -6,10 +6,6 @@ import 'package:money_care/features/finance_mode/domain/entities/finance_mode_en
 import 'package:money_care/features/finance_mode/domain/repositories/finance_mode_repository.dart';
 import 'package:money_care/features/finance_mode/domain/usecases/usecases.dart';
 
-/// GetX singleton controller for the Finance Mode system.
-/// Injected via AppBinding so the entire app can read [currentMode] and [themeColor].
-///
-/// Requirements: 5.1, 5.2, 5.3, 5.4, 5.5
 class FinanceModeController extends GetxController {
   final GetFinanceModeUseCase _getFinanceModeUseCase;
   final SwitchFinanceModeUseCase _switchFinanceModeUseCase;
@@ -29,13 +25,10 @@ class FinanceModeController extends GetxController {
         _repository = repository,
         _appController = appController;
 
-  /// Current finance mode — reactive, observed by UI (Req 5.1)
   final Rx<FinanceMode> currentMode = FinanceMode.normal.obs;
 
-  /// Theme color derived from current mode (Req 5.6)
   final Rx<Color> themeColor = AppColors.primary.obs;
 
-  /// Tracks the cooldown end time locally to avoid extra repository calls.
   DateTime? _cooldownUntil;
 
   @override
@@ -44,14 +37,13 @@ class FinanceModeController extends GetxController {
     _loadCurrentMode();
   }
 
-  /// Load the persisted mode from the repository on startup.
   Future<void> _loadCurrentMode() async {
     final userId = await _appController.getCurrentUserId();
     if (userId == null) return;
 
     final result = await _getFinanceModeUseCase(userId);
     result.fold(
-      (_) {}, // silently keep default on error
+      (_) {},
       (entity) {
         currentMode.value = entity.mode;
         themeColor.value = colorForMode(entity.mode);
@@ -60,12 +52,10 @@ class FinanceModeController extends GetxController {
     );
   }
 
-  /// Manually switch to [mode] (Req 5.2).
   Future<void> switchMode(FinanceMode mode) async {
     final userId = await _appController.getCurrentUserId();
     if (userId == null) return;
 
-    // Optimistic Update: Change status immediately for instant feedback
     final oldMode = currentMode.value;
     final oldColor = themeColor.value;
     
@@ -78,7 +68,6 @@ class FinanceModeController extends GetxController {
 
     result.fold(
       (failure) {
-        // Revert on failure
         currentMode.value = oldMode;
         themeColor.value = oldColor;
         Get.snackbar(
@@ -89,7 +78,6 @@ class FinanceModeController extends GetxController {
         );
       },
       (entity) {
-        // Final sync with server data
         currentMode.value = entity.mode;
         themeColor.value = colorForMode(entity.mode);
         _cooldownUntil = entity.suggestionCooldownUntil;

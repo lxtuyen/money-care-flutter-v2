@@ -4,7 +4,7 @@ import 'package:money_care/features/transaction/data/models/transaction_model.da
 class FundModel {
   final int id;
   final String name;
-  final String? type; // 'SPENDING' | 'SAVING_GOAL'
+  final String? type;
   bool? isSelected;
   final List<CategoryModel> categories;
 

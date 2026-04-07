@@ -35,7 +35,6 @@ class ExpiredFundPopup extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header
             const Text('🎉', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 8),
             const Text(
@@ -55,7 +54,6 @@ class ExpiredFundPopup extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Stats
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -92,7 +90,6 @@ class ExpiredFundPopup extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Progress bar
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -132,7 +129,6 @@ class ExpiredFundPopup extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Buttons
             Row(
               children: [
                 Expanded(
@@ -178,7 +174,7 @@ class ExpiredFundPopup extends StatelessWidget {
 
   Future<void> _onViewReport(FundController controller) async {
     await controller.markAsNotified(fund.id);
-    Get.back(); // close dialog
+    Get.back();
     await controller.loadFundReport(fund.id);
     Get.toNamed(RoutePath.fundReport, arguments: fund.id);
   }
@@ -192,7 +188,7 @@ class ExpiredFundPopup extends StatelessWidget {
 
     if (newEndDate == null) return;
 
-    Get.back(); // close dialog
+    Get.back();
     await controller.extendFund(fund.id, newEndDate);
   }
 }

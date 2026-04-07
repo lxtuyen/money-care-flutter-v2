@@ -4,7 +4,7 @@ class FinanceModeEntity {
   final int userId;
   final FinanceMode mode;
   final DateTime updatedAt;
-  final DateTime? suggestionCooldownUntil; // null = có thể gợi ý
+  final DateTime? suggestionCooldownUntil;
 
   const FinanceModeEntity({
     required this.userId,

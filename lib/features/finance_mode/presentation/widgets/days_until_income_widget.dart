@@ -5,12 +5,7 @@ import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
-import 'package:money_care/features/student_profile/data/datasources/student_profile_local_datasource.dart';
-import 'package:money_care/features/student_profile/data/repositories/student_profile_repository_impl.dart';
-import 'package:money_care/features/student_profile/data/datasources/student_profile_remote_datasource.dart';
-import 'package:money_care/features/student_profile/domain/usecases/get_student_profile_usecase.dart';
-import 'package:money_care/core/storage/local_storage.dart';
-import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 
 /// Redesigned to be a compact status chip for better integration.
 class DaysUntilIncomeWidget extends StatefulWidget {
@@ -31,45 +26,15 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
   }
 
   Future<void> _loadIncomeDate() async {
-    final appController = Get.find<AppController>();
-    final userId = await appController.getCurrentUserId();
-    if (userId == null) {
-      if (mounted) setState(() => _loaded = true);
-      return;
+    final userController = Get.find<UserController>();
+    
+    // The userController already handles loading the profile and filling the incomeDate Rx.
+    // We just need to wait if it's currently loading, or just use the current value.
+    // However, since this is a StatefulWidget, we can just observe the controller.
+    
+    if (mounted) {
+      setState(() => _loaded = true);
     }
-
-    final storage = Get.find<LocalStorage>();
-    final apiClient = Get.find<ApiClient>();
-
-    final useCase = GetStudentProfileUseCase(
-      StudentProfileRepositoryImpl(
-        remoteDatasource: StudentProfileRemoteDatasourceImpl(api: apiClient),
-        localDatasource: StudentProfileLocalDatasourceImpl(storage: storage),
-      ),
-    );
-
-    final result = await useCase(userId);
-    result.fold(
-      (_) { if (mounted) setState(() => _loaded = true); },
-      (profile) {
-        final incomeDate = profile.incomeDate;
-        if (incomeDate != null) {
-          final today = DateTime.now();
-          final nextIncome = _nextIncomeDate(today, incomeDate);
-          final days = nextIncome.difference(
-            DateTime(today.year, today.month, today.day),
-          ).inDays;
-          if (mounted) {
-            setState(() {
-              _daysUntilIncome = days > 0 ? days : 0;
-              _loaded = true;
-            });
-          }
-        } else {
-           if (mounted) setState(() => _loaded = true);
-        }
-      },
-    );
   }
 
   DateTime _nextIncomeDate(DateTime today, DateTime incomeDate) {
@@ -89,13 +54,24 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
   @override
   Widget build(BuildContext context) {
     final financeModeController = Get.find<FinanceModeController>();
+    final userController = Get.find<UserController>();
 
     return Obx(() {
       final mode = financeModeController.currentMode.value;
       if (mode != FinanceMode.survival) return const SizedBox.shrink();
 
       if (!_loaded) return const SizedBox.shrink();
-      if (_daysUntilIncome == null) return const SizedBox.shrink();
+      
+      final incomeDate = userController.incomeDate.value;
+      if (incomeDate == null) return const SizedBox.shrink();
+
+      final today = DateTime.now();
+      final nextIncome = _nextIncomeDate(today, incomeDate);
+      final days = nextIncome.difference(
+        DateTime(today.year, today.month, today.day),
+      ).inDays;
+      
+      final daysUntilIncome = days > 0 ? days : 0;
 
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

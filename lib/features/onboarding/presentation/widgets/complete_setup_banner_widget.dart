@@ -108,7 +108,7 @@ class CompleteSetupBannerWidget extends StatelessWidget {
       case OnboardingStep.categorySelect:
         Get.toNamed(RoutePath.onboardingCategorySelect);
         break;
-      case OnboardingStep.studentInfo:
+      case OnboardingStep.incomeInfo:
         Get.toNamed(RoutePath.profile);
         break;
       case OnboardingStep.welcome:

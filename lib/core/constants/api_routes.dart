@@ -28,7 +28,6 @@ class ApiRoutes {
 
   static const chatbot = 'chatbot';
 
-  static const studentProfile = 'student-profile';
   static const financeMode = 'finance-mode';
   static const splitSession = 'split-session';
   static const gamification = 'gamification';

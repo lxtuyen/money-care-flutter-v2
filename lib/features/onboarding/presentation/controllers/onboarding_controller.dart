@@ -3,10 +3,10 @@ import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
-/// Các bước trong luồng onboarding sinh viên
+/// Các bước trong luồng onboarding người dùng
 enum OnboardingStep {
   welcome,        // Bước 1: Chào mừng
-  studentInfo,    // Bước 2: Thông tin thu nhập
+  incomeInfo,     // Bước 2: Thông tin thu nhập
   balanceSetup,    // Bước 3: Thiết lập ngân sách
   categorySelect, // Bước 4: Chọn danh mục
   complete,       // Bước 5: Hoàn thành
@@ -117,11 +117,11 @@ class OnboardingController extends GetxController {
     }
   }
 
-  /// Hoàn thành bước nhập thông tin sinh viên → chuyển sang bước thiết lập ngân sách
-  /// Requirement 1.2: WHEN người dùng hoàn thành bước nhập thông tin sinh viên,
+  /// Hoàn thành bước nhập thông tin thu nhập → chuyển sang bước thiết lập ngân sách
+  /// Requirement 1.2: WHEN người dùng hoàn thành bước nhập thông tin thu nhập,
   /// THE Onboarding_Flow SHALL chuyển sang bước thiết lập ngân sách tháng đầu tiên.
-  Future<void> completeStudentInfoStep() async {
-    await completeStep(OnboardingStep.studentInfo);
+  Future<void> completeIncomeInfoStep() async {
+    await completeStep(OnboardingStep.incomeInfo);
     await goToStep(OnboardingStep.balanceSetup);
   }
 

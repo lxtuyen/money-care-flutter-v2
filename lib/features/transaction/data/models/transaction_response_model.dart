@@ -1,64 +1,43 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/transaction/data/models/category_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TransactionModel {
-  final int? id;
-  final int amount;
-  final String type;
-  final String? pictureUrl;
-  final DateTime? transactionDate;
-  final String? note;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final CategoryModel? category;
+part 'transaction_response_model.freezed.dart';
+part 'transaction_response_model.g.dart';
 
-  TransactionModel({
-    this.id,
-    required this.amount,
-    required this.type,
-    this.pictureUrl,
-    this.transactionDate,
-    this.note,
-    this.createdAt,
-    this.updatedAt,
-    this.category,
-  });
+Object? _readPictureUrl(Map json, String key) {
+  return json['pictureURL'] ?? json['pictuteURL'];
+}
 
-  factory TransactionModel.fromJson(Map<String, dynamic> json) {
-    return TransactionModel(
-      id: json['id'],
-      amount: (json['amount'] ?? 0),
-      type: json['type'] ?? '',
-      pictureUrl: json['pictureURL'] ?? json['pictuteURL'],
-      transactionDate:
-          json['transaction_date'] != null
-              ? DateTime.parse(json['transaction_date'])
-              : null,
-      note: json['note'],
-      createdAt:
-          json['created_at'] != null
-              ? DateTime.parse(json['created_at'])
-              : null,
-      updatedAt:
-          json['updated_at'] != null
-              ? DateTime.parse(json['updated_at'])
-              : null,
-      category:
-          json['category'] != null
-              ? CategoryModel.fromJson(json['category'])
-              : null,
-    );
-  }
+@freezed
+class TransactionModel with _$TransactionModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory TransactionModel({
+    int? id,
+    @Default(0) int amount,
+    @Default('') String type,
+    @JsonKey(readValue: _readPictureUrl) String? pictureUrl,
+    DateTime? transactionDate,
+    String? note,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    CategoryModel? category,
+  }) = _TransactionModel;
+
+  const TransactionModel._();
+
+  factory TransactionModel.fromJson(Map<String, dynamic> json) =>
+      _$TransactionModelFromJson(json);
 
   TransactionEntity toEntity() => TransactionEntity(
-    id: id,
-    amount: amount,
-    type: type,
-    pictureUrl: pictureUrl,
-    transactionDate: transactionDate,
-    note: note,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-    category: category?.toEntity(),
-  );
+        id: id,
+        amount: amount,
+        type: type,
+        pictureUrl: pictureUrl,
+        transactionDate: transactionDate,
+        note: note,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        category: category?.toEntity(),
+      );
 }

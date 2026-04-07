@@ -26,7 +26,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
     final res = await api.post<FundModel>(
       ApiRoutes.fund,
       body: dto.toJsonCreate(),
-      fromJsonT: (json) => FundModel.fromMap(json),
+      fromJsonT: (json) => FundModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -42,7 +42,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
       '${ApiRoutes.getFunds}/$userId',
       fromJsonT: (json) {
         final list = json as List;
-        return list.map((e) => FundModel.fromMap(e)).toList();
+        return list.map((e) => FundModel.fromJson(e)).toList();
       },
     );
     if (!res.success || res.data == null) {
@@ -59,7 +59,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
   Future<FundModel> getFund(int id) async {
     final res = await api.get<FundModel>(
       '${ApiRoutes.fund}/$id',
-      fromJsonT: (json) => FundModel.fromMap(json),
+      fromJsonT: (json) => FundModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -74,7 +74,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
     final res = await api.patch<FundModel>(
       '${ApiRoutes.fund}/${dto.id}',
       body: dto.toJsonUpdate(),
-      fromJsonT: (json) => FundModel.fromMap(json),
+      fromJsonT: (json) => FundModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -102,7 +102,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
     final res = await api.patch<FundModel>(
       '${ApiRoutes.selectFund}/$fundId',
       body: {'userId': userId},
-      fromJsonT: (json) => FundModel.fromMap(json),
+      fromJsonT: (json) => FundModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -116,7 +116,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
   Future<ExpiredFundCheckModel> checkExpiredFund(int userId) async {
     final res = await api.get<ExpiredFundCheckModel>(
       '${ApiRoutes.checkExpiredFund}/$userId',
-      fromJsonT: (json) => ExpiredFundCheckModel.fromMap(json),
+      fromJsonT: (json) => ExpiredFundCheckModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -152,7 +152,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
     final res = await api.patch<FundModel>(
       '${ApiRoutes.fund}/$fundId/extend',
       body: body,
-      fromJsonT: (json) => FundModel.fromMap(json),
+      fromJsonT: (json) => FundModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -166,7 +166,7 @@ class FundRemoteDatasourceImpl implements FundRemoteDatasource {
   Future<FundReportModel> getFundReport(int fundId) async {
     final res = await api.get<FundReportModel>(
       '${ApiRoutes.fund}/$fundId/report',
-      fromJsonT: (json) => FundReportModel.fromMap(json),
+      fromJsonT: (json) => FundReportModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(

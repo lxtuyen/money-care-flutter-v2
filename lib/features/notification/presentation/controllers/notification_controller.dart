@@ -42,8 +42,7 @@ class NotificationController extends GetxController {
       final index = notifications.indexWhere((n) => n.id == id);
       if (index != -1) {
         final item = notifications[index];
-        item.isRead = true;
-        notifications[index] = item;
+        notifications[index] = item.copyWith(isRead: true);
       }
     } catch (e) {
       print('Mark read error: $e');

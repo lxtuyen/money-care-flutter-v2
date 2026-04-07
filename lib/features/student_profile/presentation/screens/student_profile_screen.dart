@@ -10,9 +10,6 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/student_profile/domain/entities/student_profile_entity.dart';
 import 'package:money_care/features/student_profile/presentation/controllers/student_profile_controller.dart';
 
-/// Screen for viewing and editing the student profile.
-///
-/// Requirements: 2.1, 2.2, 2.3, 2.4, 2.5
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({super.key});
 

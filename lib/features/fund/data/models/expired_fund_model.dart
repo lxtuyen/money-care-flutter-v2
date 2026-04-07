@@ -1,50 +1,31 @@
-class ExpiredFundInfoModel {
-  final int id;
-  final String name;
-  final DateTime? endDate;
-  final int completionPercentage;
-  final double totalSpent;
-  final double target;
-  final double balance;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  ExpiredFundInfoModel({
-    required this.id,
-    required this.name,
-    this.endDate,
-    required this.completionPercentage,
-    required this.totalSpent,
-    required this.target,
-    required this.balance,
-  });
+part 'expired_fund_model.freezed.dart';
+part 'expired_fund_model.g.dart';
 
-  factory ExpiredFundInfoModel.fromMap(Map<String, dynamic> json) {
-    return ExpiredFundInfoModel(
-      id: json['id'],
-      name: json['name'],
-      endDate: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-      completionPercentage: json['completion_percentage'] ?? 0,
-      totalSpent: double.tryParse(json['total_spent'].toString()) ?? 0,
-      target: double.tryParse(json['target'].toString()) ?? 0,
-      balance: double.tryParse(json['balance'].toString()) ?? 0,
-    );
-  }
+@freezed
+class ExpiredFundInfoModel with _$ExpiredFundInfoModel {
+  const factory ExpiredFundInfoModel({
+    required int id,
+    required String name,
+    @JsonKey(name: 'end_date') DateTime? endDate,
+    @JsonKey(name: 'completion_percentage') @Default(0) int completionPercentage,
+    @JsonKey(name: 'total_spent') @Default(0) double totalSpent,
+    @Default(0) double target,
+    @Default(0) double balance,
+  }) = _ExpiredFundInfoModel;
+
+  factory ExpiredFundInfoModel.fromJson(Map<String, dynamic> json) =>
+      _$ExpiredFundInfoModelFromJson(json);
 }
 
-class ExpiredFundCheckModel {
-  final bool hasExpiredFund;
-  final ExpiredFundInfoModel? expiredFund;
+@freezed
+class ExpiredFundCheckModel with _$ExpiredFundCheckModel {
+  const factory ExpiredFundCheckModel({
+    @JsonKey(name: 'has_expired_fund') @Default(false) bool hasExpiredFund,
+    @JsonKey(name: 'expired_fund') ExpiredFundInfoModel? expiredFund,
+  }) = _ExpiredFundCheckModel;
 
-  ExpiredFundCheckModel({
-    required this.hasExpiredFund,
-    this.expiredFund,
-  });
-
-  factory ExpiredFundCheckModel.fromMap(Map<String, dynamic> json) {
-    return ExpiredFundCheckModel(
-      hasExpiredFund: json['has_expired_fund'] ?? false,
-      expiredFund: json['expired_fund'] != null
-          ? ExpiredFundInfoModel.fromMap(json['expired_fund'])
-          : null,
-    );
-  }
+  factory ExpiredFundCheckModel.fromJson(Map<String, dynamic> json) =>
+      _$ExpiredFundCheckModelFromJson(json);
 }

@@ -1,17 +1,18 @@
-class TransactionTotalsDto {
-  final int? fundId;
-  final String? startDate;
-  final String? endDate;
-  final String? type;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  TransactionTotalsDto({this.fundId, this.startDate, this.endDate, this.type});
+part 'transaction_totals_dto.freezed.dart';
+part 'transaction_totals_dto.g.dart';
 
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    if (startDate != null) map['start_date'] = startDate;
-    if (endDate != null) map['end_date'] = endDate;
-    if (fundId != null) map['fundId'] = fundId;
-    if (type != null) map['type'] = type;
-    return map;
-  }
+@freezed
+class TransactionTotalsDto with _$TransactionTotalsDto {
+  @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
+  const factory TransactionTotalsDto({
+    @JsonKey(name: 'fundId') int? fundId,
+    String? startDate,
+    String? endDate,
+    String? type,
+  }) = _TransactionTotalsDto;
+
+  factory TransactionTotalsDto.fromJson(Map<String, dynamic> json) =>
+      _$TransactionTotalsDtoFromJson(json);
 }

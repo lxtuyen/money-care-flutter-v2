@@ -1,28 +1,19 @@
-class NotificationEntity {
-  final int id;
-  final String title;
-  final String body;
-  final String type;
-  bool isRead;
-  final DateTime createdAt;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  NotificationEntity({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.type,
-    required this.isRead,
-    required this.createdAt,
-  });
+part 'notification_entity.freezed.dart';
+part 'notification_entity.g.dart';
 
-  factory NotificationEntity.fromJson(Map<String, dynamic> json) {
-    return NotificationEntity(
-      id: json['id'],
-      title: json['title'],
-      body: json['body'],
-      type: json['type'],
-      isRead: json['isRead'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-    );
-  }
+@freezed
+class NotificationEntity with _$NotificationEntity {
+  const factory NotificationEntity({
+    required int id,
+    required String title,
+    required String body,
+    required String type,
+    @Default(false) bool isRead,
+    required DateTime createdAt,
+  }) = _NotificationEntity;
+
+  factory NotificationEntity.fromJson(Map<String, dynamic> json) =>
+      _$NotificationEntityFromJson(json);
 }

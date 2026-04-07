@@ -25,7 +25,7 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     if (json == null) return null;
     final token = storage.getToken();
     try {
-      return UserModel.fromJson(json, token);
+      return UserModel.fromAuthJson(json, token);
     } catch (_) {
       return null;
     }

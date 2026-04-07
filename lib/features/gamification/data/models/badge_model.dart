@@ -1,29 +1,21 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/gamification/domain/entities/gamification_entity.dart';
 
-class BadgeModel {
-  final String key;
-  final String name;
-  final DateTime awardedAt;
+part 'badge_model.freezed.dart';
+part 'badge_model.g.dart';
 
-  const BadgeModel({
-    required this.key,
-    required this.name,
-    required this.awardedAt,
-  });
+@freezed
+class BadgeModel with _$BadgeModel {
+  const factory BadgeModel({
+    required String key,
+    required String name,
+    required DateTime awardedAt,
+  }) = _BadgeModel;
 
-  factory BadgeModel.fromJson(Map<String, dynamic> json) {
-    return BadgeModel(
-      key: json['key'] as String,
-      name: json['name'] as String,
-      awardedAt: DateTime.parse(json['awardedAt'] as String),
-    );
-  }
+  const BadgeModel._();
 
-  Map<String, dynamic> toJson() => {
-        'key': key,
-        'name': name,
-        'awardedAt': awardedAt.toIso8601String(),
-      };
+  factory BadgeModel.fromJson(Map<String, dynamic> json) =>
+      _$BadgeModelFromJson(json);
 
   factory BadgeModel.fromEntity(BadgeEntity entity) {
     return BadgeModel(

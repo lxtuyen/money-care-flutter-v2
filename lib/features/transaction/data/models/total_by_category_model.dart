@@ -1,44 +1,34 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TotalByCategoryEntityModel {
-  final String categoryName;
-  final String categoryIcon;
-  final double percentage;
-  final double spendingPercentage;
-  final double limit;
-  final int total;
-  final bool isEssential;
+part 'total_by_category_model.freezed.dart';
+part 'total_by_category_model.g.dart';
 
-  TotalByCategoryEntityModel({
-    required this.categoryName,
-    required this.categoryIcon,
-    required this.percentage,
-    required this.spendingPercentage,
-    required this.limit,
-    required this.total,
-    required this.isEssential,
-  });
+@freezed
+class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
+  const factory TotalByCategoryEntityModel({
+    @Default('') String categoryName,
+    @Default('') String categoryIcon,
+    @Default(0.0) double percentage,
+    @Default(0.0) double spendingPercentage,
+    @Default(0.0) double limit,
+    @Default(0) int total,
+    @Default(true) bool isEssential,
+  }) = _TotalByCategoryEntityModel;
 
-  factory TotalByCategoryEntityModel.fromJson(Map<String, dynamic> json) {
-    return TotalByCategoryEntityModel(
-      categoryName: json['categoryName'] ?? '',
-      categoryIcon: json['categoryIcon'] ?? '',
-      percentage: (json['percentage'] ?? 0).toDouble(),
-      spendingPercentage: (json['spendingPercentage'] ?? 0).toDouble(),
-      limit: (json['limit'] ?? 0).toDouble(),
-      total: (json['total'] ?? 0).toInt(),
-      isEssential: json['isEssential'] ?? true,
-    );
-  }
+  const TotalByCategoryEntityModel._();
+
+  factory TotalByCategoryEntityModel.fromJson(Map<String, dynamic> json) =>
+      _$TotalByCategoryEntityModelFromJson(json);
 
   TotalByCategoryEntity toEntity() => TotalByCategoryEntity(
-    categoryName: categoryName,
-    total: total,
-    categoryIcon: categoryIcon,
-    percentage: percentage,
-    spendingPercentage: spendingPercentage,
-    limit: limit,
-    isEssential: isEssential,
-    color: null,
-  );
+        categoryName: categoryName,
+        total: total,
+        categoryIcon: categoryIcon,
+        percentage: percentage,
+        spendingPercentage: spendingPercentage,
+        limit: limit,
+        isEssential: isEssential,
+        color: null,
+      );
 }

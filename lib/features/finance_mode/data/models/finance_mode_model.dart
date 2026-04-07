@@ -1,35 +1,24 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 
-class FinanceModeModel {
-  final int userId;
-  final String mode;
-  final DateTime updatedAt;
-  final DateTime? suggestionCooldownUntil;
+part 'finance_mode_model.freezed.dart';
+part 'finance_mode_model.g.dart';
 
-  const FinanceModeModel({
-    required this.userId,
-    required this.mode,
-    required this.updatedAt,
-    this.suggestionCooldownUntil,
-  });
+String _modeToJson(String mode) => mode.toUpperCase();
 
-  factory FinanceModeModel.fromJson(Map<String, dynamic> json) {
-    return FinanceModeModel(
-      userId: json['userId'] as int,
-      mode: json['mode'] as String,
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      suggestionCooldownUntil: json['suggestionCooldownUntil'] != null
-          ? DateTime.parse(json['suggestionCooldownUntil'] as String)
-          : null,
-    );
-  }
+@freezed
+class FinanceModeModel with _$FinanceModeModel {
+  const factory FinanceModeModel({
+    required int userId,
+    @JsonKey(toJson: _modeToJson) required String mode,
+    required DateTime updatedAt,
+    DateTime? suggestionCooldownUntil,
+  }) = _FinanceModeModel;
 
-  Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'mode': mode.toUpperCase(),
-        'updatedAt': updatedAt.toIso8601String(),
-        'suggestionCooldownUntil': suggestionCooldownUntil?.toIso8601String(),
-      };
+  const FinanceModeModel._();
+
+  factory FinanceModeModel.fromJson(Map<String, dynamic> json) =>
+      _$FinanceModeModelFromJson(json);
 
   Map<String, dynamic> toUpdateDto() => {
         'mode': mode.toUpperCase(),

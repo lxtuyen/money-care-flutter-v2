@@ -60,8 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Hiển thị banner hoàn thành thiết lập nếu có bước onboarding bị bỏ qua
-                    // Requirements: 1.4
                     const CompleteSetupBannerWidget(),
 
                     const Text(
@@ -129,7 +127,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 32),
 
-                    // Badges section — Requirements: 8.4, 8.5, 8.6, 8.8
                     const BadgesSectionWidget(),
 
                     const SizedBox(height: 24),

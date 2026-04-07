@@ -1,23 +1,23 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/chatbot/domain/entities/chat_entity.dart';
 
-class ChatMessageModel {
-  final bool isUser;
-  final String text;
+part 'chat_message_model.freezed.dart';
+part 'chat_message_model.g.dart';
 
-  ChatMessageModel({
-    required this.isUser,
-    required this.text,
-  });
+@freezed
+class ChatMessageModel with _$ChatMessageModel {
+  const factory ChatMessageModel({
+    @Default(false) bool isUser,
+    @Default('') String text,
+  }) = _ChatMessageModel;
 
-  factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
-    return ChatMessageModel(
-      isUser: json['isUser'] ?? false,
-      text: json['text'] ?? '',
-    );
-  }
+  const ChatMessageModel._();
+
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json) =>
+      _$ChatMessageModelFromJson(json);
 
   ChatMessageEntity toEntity() => ChatMessageEntity(
-    isUser: isUser,
-    text: text,
-  );
+        isUser: isUser,
+        text: text,
+      );
 }

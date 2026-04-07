@@ -1,22 +1,22 @@
-class TransactionFilterDto {
-  final int? categoryId;
-  final int? fundId;
-  final String? startDate;
-  final String? endDate;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  TransactionFilterDto({
-    this.categoryId,
-    this.fundId,
-    this.startDate,
-    this.endDate,
-  });
+part 'transaction_filter_dto.freezed.dart';
+part 'transaction_filter_dto.g.dart';
 
-  Map<String, dynamic> toQueryParams() {
-    final map = <String, dynamic>{};
-    if (categoryId != null) map['categoryId'] = categoryId;
-    if (fundId != null) map['fundId'] = fundId;
-    if (startDate != null) map['start_date'] = startDate;
-    if (endDate != null) map['end_date'] = endDate;
-    return map;
-  }
+@freezed
+class TransactionFilterDto with _$TransactionFilterDto {
+  @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
+  const factory TransactionFilterDto({
+    @JsonKey(name: 'categoryId') int? categoryId,
+    @JsonKey(name: 'fundId') int? fundId,
+    String? startDate,
+    String? endDate,
+  }) = _TransactionFilterDto;
+
+  const TransactionFilterDto._();
+
+  factory TransactionFilterDto.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFilterDtoFromJson(json);
+
+  Map<String, dynamic> toQueryParams() => toJson();
 }

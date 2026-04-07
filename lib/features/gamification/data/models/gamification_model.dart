@@ -1,38 +1,23 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/gamification/data/models/badge_model.dart';
 import 'package:money_care/features/gamification/domain/entities/gamification_entity.dart';
 
-class GamificationModel {
-  final int userId;
-  final int currentStreak;
-  final DateTime? lastTransactionDate;
-  final List<BadgeModel> badges;
+part 'gamification_model.freezed.dart';
+part 'gamification_model.g.dart';
 
-  const GamificationModel({
-    required this.userId,
-    required this.currentStreak,
-    this.lastTransactionDate,
-    required this.badges,
-  });
+@freezed
+class GamificationModel with _$GamificationModel {
+  const factory GamificationModel({
+    required int userId,
+    @Default(0) int currentStreak,
+    DateTime? lastTransactionDate,
+    @Default([]) List<BadgeModel> badges,
+  }) = _GamificationModel;
 
-  factory GamificationModel.fromJson(Map<String, dynamic> json) {
-    return GamificationModel(
-      userId: json['userId'] as int,
-      currentStreak: (json['currentStreak'] as int?) ?? 0,
-      lastTransactionDate: json['lastTransactionDate'] != null
-          ? DateTime.parse(json['lastTransactionDate'] as String)
-          : null,
-      badges: (json['badges'] as List<dynamic>? ?? [])
-          .map((e) => BadgeModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-  }
+  const GamificationModel._();
 
-  Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'currentStreak': currentStreak,
-        'lastTransactionDate': lastTransactionDate?.toIso8601String(),
-        'badges': badges.map((b) => b.toJson()).toList(),
-      };
+  factory GamificationModel.fromJson(Map<String, dynamic> json) =>
+      _$GamificationModelFromJson(json);
 
   factory GamificationModel.fromEntity(GamificationEntity entity) {
     return GamificationModel(

@@ -1,25 +1,24 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/transaction/data/models/total_by_date_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TotalsByDateEntityModel {
-  final List<TotalByDateEntityModel> income;
-  final List<TotalByDateEntityModel> expense;
+part 'totals_by_date_model.freezed.dart';
+part 'totals_by_date_model.g.dart';
 
-  TotalsByDateEntityModel({required this.income, required this.expense});
+@freezed
+class TotalsByDateEntityModel with _$TotalsByDateEntityModel {
+  const factory TotalsByDateEntityModel({
+    @Default([]) List<TotalByDateEntityModel> income,
+    @Default([]) List<TotalByDateEntityModel> expense,
+  }) = _TotalsByDateEntityModel;
 
-  factory TotalsByDateEntityModel.fromJson(Map<String, dynamic> json) {
-    return TotalsByDateEntityModel(
-      income: (json['income'] as List<dynamic>? ?? [])
-          .map((e) => TotalByDateEntityModel.fromJson(e))
-          .toList(),
-      expense: (json['expense'] as List<dynamic>? ?? [])
-          .map((e) => TotalByDateEntityModel.fromJson(e))
-          .toList(),
-    );
-  }
+  const TotalsByDateEntityModel._();
+
+  factory TotalsByDateEntityModel.fromJson(Map<String, dynamic> json) =>
+      _$TotalsByDateEntityModelFromJson(json);
 
   TotalsByDateEntity toEntity() => TotalsByDateEntity(
-    income: income.map((e) => e.toEntity()).toList(),
-    expense: expense.map((e) => e.toEntity()).toList(),
-  );
+        income: income.map((e) => e.toEntity()).toList(),
+        expense: expense.map((e) => e.toEntity()).toList(),
+      );
 }

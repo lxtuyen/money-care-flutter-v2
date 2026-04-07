@@ -1,45 +1,28 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
 import 'package:money_care/features/transaction/data/models/category_model.dart';
 
-class FundModel {
-  final int id;
-  final String name;
-  bool? isSelected;
-  final List<CategoryModel> categories;
+part 'fund_model.freezed.dart';
+part 'fund_model.g.dart';
 
-  FundModel({
-    required this.id,
-    required this.name,
-    this.isSelected,
-    this.categories = const [],
-  });
+@freezed
+class FundModel with _$FundModel {
+  const factory FundModel({
+    required int id,
+    required String name,
+    @JsonKey(name: 'is_selected') bool? isSelected,
+    @Default([]) List<CategoryModel> categories,
+  }) = _FundModel;
 
-  factory FundModel.fromMap(Map<String, dynamic> json) {
-    return FundModel(
-      id: json['id'],
-      name: json['name'],
-      isSelected: json['is_selected'],
-      categories: json['categories'] != null
-          ? List<CategoryModel>.from(
-              json['categories'].map((x) => CategoryModel.fromJson(x)),
-            )
-          : [],
-    );
-  }
+  const FundModel._();
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'is_selected': isSelected,
-      'categories': categories.map((e) => e.toJson()).toList(),
-    };
-  }
+  factory FundModel.fromJson(Map<String, dynamic> json) =>
+      _$FundModelFromJson(json);
 
   FundEntity toEntity() => FundEntity(
-    id: id,
-    name: name,
-    isSelected: isSelected,
-    categories: categories.map((e) => e.toEntity()).toList(),
-  );
+        id: id,
+        name: name,
+        isSelected: isSelected,
+        categories: categories.map((e) => e.toEntity()).toList(),
+      );
 }

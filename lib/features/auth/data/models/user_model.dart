@@ -1,70 +1,44 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/auth/data/models/fund_model.dart';
 import 'package:money_care/features/auth/data/models/user_profile_model.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 
-export 'fund_model.dart';
-export 'user_profile_model.dart';
+part 'user_model.freezed.dart';
+part 'user_model.g.dart';
 
-class UserModel {
-  final int id;
-  final String email;
-  final String role;
-  final bool? isVip;
-  final String? accessToken;
-  final UserProfileModel profile;
-  final FundModel? fund;
+@freezed
+class UserModel with _$UserModel {
+  const factory UserModel({
+    required int id,
+    required String email,
+    required String role,
+    bool? isVip,
+    String? accessToken,
+    required UserProfileModel profile,
+    FundModel? fund,
+  }) = _UserModel;
 
-  UserModel({
-    required this.id,
-    required this.email,
-    required this.role,
-    this.isVip,
-    required this.profile,
-    this.accessToken,
-    this.fund,
-  });
+  const UserModel._();
 
-  factory UserModel.fromJson(Map<String, dynamic> json, String? token) =>
-      UserModel(
-        id: json['id'],
-        email: json['email'],
-        role: json['role'],
-        isVip: json['isVip'],
-        accessToken: token,
-        profile: UserProfileModel.fromJson(json['profile']),
-        fund: json['fund'] != null
-            ? FundModel.fromMap(json['fund'])
-            : null,
-      );
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 
-  factory UserModel.fromJsonUpdate(Map<String, dynamic> json) => UserModel(
-    id: json['id'],
-    email: json['email'],
-    role: json['role'],
-    isVip: json['isVip'],
-    profile: UserProfileModel.fromJson(json['profile']),
-    fund: json['fund'] != null
-        ? FundModel.fromMap(json['fund'])
-        : null,
-  );
+  /// Custom factory to handle token from external source (like login response)
+  factory UserModel.fromAuthJson(Map<String, dynamic> json, String? token) {
+    final model = UserModel.fromJson(json);
+    return model.copyWith(accessToken: token);
+  }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'email': email,
-    'role': role,
-    'isVip': isVip,
-    'accessToken': accessToken,
-    'profile': profile.toJson(),
-    'fund': fund?.toMap(),
-  };
+  factory UserModel.fromJsonUpdate(Map<String, dynamic> json) =>
+      UserModel.fromJson(json);
 
   UserEntity toEntity() => UserEntity(
-    id: id,
-    email: email,
-    role: role,
-    isVip: isVip,
-    accessToken: accessToken,
-    profile: profile.toEntity(),
-    fund: fund?.toEntity(),
-  );
+        id: id,
+        email: email,
+        role: role,
+        isVip: isVip,
+        accessToken: accessToken,
+        profile: profile.toEntity(),
+        fund: fund?.toEntity(),
+      );
 }

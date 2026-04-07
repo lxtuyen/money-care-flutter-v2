@@ -1,26 +1,23 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TotalByTypeModel {
-  final int income;
-  final int expense;
-  final int currentSaving;
-  final int targetSaving;
+part 'total_by_type_model.freezed.dart';
+part 'total_by_type_model.g.dart';
 
-  TotalByTypeModel({
-    required this.income,
-    required this.expense,
-    required this.currentSaving,
-    required this.targetSaving,
-  });
+@freezed
+class TotalByTypeModel with _$TotalByTypeModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory TotalByTypeModel({
+    @JsonKey(name: 'income_total') required int income,
+    @JsonKey(name: 'expense_total') required int expense,
+    required int currentSaving,
+    required int targetSaving,
+  }) = _TotalByTypeModel;
 
-  factory TotalByTypeModel.fromJson(Map<String, dynamic> json) {
-    return TotalByTypeModel(
-      income: (json['income_total'] ?? 0).toInt(),
-      expense: (json['expense_total'] ?? 0).toInt(),
-      currentSaving: (json['current_saving'] ?? 0).toInt(),
-      targetSaving: (json['target_saving'] ?? 0).toInt(),
-    );
-  }
+  const TotalByTypeModel._();
+
+  factory TotalByTypeModel.fromJson(Map<String, dynamic> json) =>
+      _$TotalByTypeModelFromJson(json);
 
   TotalByTypeEntity toEntity() => TotalByTypeEntity(
         incomeTotal: income,

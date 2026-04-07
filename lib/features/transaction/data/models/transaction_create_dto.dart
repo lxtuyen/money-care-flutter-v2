@@ -1,34 +1,21 @@
-class TransactionCreateDto {
-  final int? amount;
-  final String? type;
-  final String? note;
-  final String? pictureUrl;
-  final DateTime? transactionDate;
-  final int? categoryId;
-  final int? userId;
-  final int? fundId;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  TransactionCreateDto({
-    this.amount,
-    this.type,
-    this.note,
-    this.pictureUrl,
-    this.categoryId,
-    this.transactionDate,
-    this.userId,
-    this.fundId,
-  });
+part 'transaction_create_dto.freezed.dart';
+part 'transaction_create_dto.g.dart';
 
-  Map<String, dynamic> toJson() {
-    return {
-      'amount': amount,
-      'type': type,
-      'note': note,
-      'pictuteURL': pictureUrl,
-      'categoryId': categoryId,
-      'transactionDate': transactionDate?.toIso8601String(),
-      'userId': userId,
-      if (fundId != null) 'fundId': fundId,
-    };
-  }
+@freezed
+class TransactionCreateDto with _$TransactionCreateDto {
+  const factory TransactionCreateDto({
+    int? amount,
+    String? type,
+    String? note,
+    @JsonKey(name: 'pictuteURL') String? pictureUrl,
+    DateTime? transactionDate,
+    int? categoryId,
+    int? userId,
+    int? fundId,
+  }) = _TransactionCreateDto;
+
+  factory TransactionCreateDto.fromJson(Map<String, dynamic> json) =>
+      _$TransactionCreateDtoFromJson(json);
 }

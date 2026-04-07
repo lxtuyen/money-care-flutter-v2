@@ -61,7 +61,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       body: {
         'idToken': idToken,
       },
-      fromJsonT: (json) => UserModel.fromJson(json['user'], json['accessToken']),
+      fromJsonT: (json) => UserModel.fromAuthJson(json['user'], json['accessToken']),
     );
 
     if (!res.success || res.data == null) {
@@ -78,7 +78,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     final res = await api.post<UserModel>(
       ApiRoutes.login,
       body: {'email': email, 'password': password},
-      fromJsonT: (json) => UserModel.fromJson(json['user'], json['accessToken']),
+      fromJsonT: (json) => UserModel.fromAuthJson(json['user'], json['accessToken']),
     );
     if (!res.success || res.data == null) {
       throw ServerException(

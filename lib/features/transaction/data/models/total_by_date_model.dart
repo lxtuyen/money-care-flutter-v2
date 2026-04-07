@@ -1,17 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TotalByDateEntityModel {
-  final DateTime date;
-  final int total;
+part 'total_by_date_model.freezed.dart';
+part 'total_by_date_model.g.dart';
 
-  TotalByDateEntityModel({required this.date, required this.total});
+@freezed
+class TotalByDateEntityModel with _$TotalByDateEntityModel {
+  const factory TotalByDateEntityModel({
+    required DateTime date,
+    @Default(0) int total,
+  }) = _TotalByDateEntityModel;
 
-  factory TotalByDateEntityModel.fromJson(Map<String, dynamic> json) {
-    return TotalByDateEntityModel(
-      date: DateTime.parse(json['date']),
-      total: (json['total'] ?? 0).toInt(),
-    );
-  }
+  const TotalByDateEntityModel._();
+
+  factory TotalByDateEntityModel.fromJson(Map<String, dynamic> json) =>
+      _$TotalByDateEntityModelFromJson(json);
 
   TotalByDateEntity toEntity() => TotalByDateEntity(date: date, total: total);
 }

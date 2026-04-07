@@ -177,7 +177,7 @@ class UserCategoryController extends GetxController {
         id: m['id'] as int?,
         name: m['name'] as String,
         percentage: (m['percentage'] as num?)?.toInt() ?? 0,
-        icon: m['icon'] as String? ?? 'freedom_icon',
+        icon: m['icon'] as String? ?? 'search',
         isEssential: m['isEssential'] as bool? ?? true,
         type: m['type'] as String?,
       );

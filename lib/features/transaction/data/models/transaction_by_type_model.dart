@@ -1,25 +1,24 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/features/transaction/data/models/transaction_response_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class TransactionByTypeModel {
-  final List<TransactionModel> income;
-  final List<TransactionModel> expense;
+part 'transaction_by_type_model.freezed.dart';
+part 'transaction_by_type_model.g.dart';
 
-  TransactionByTypeModel({required this.income, required this.expense});
+@freezed
+class TransactionByTypeModel with _$TransactionByTypeModel {
+  const factory TransactionByTypeModel({
+    @Default([]) List<TransactionModel> income,
+    @Default([]) List<TransactionModel> expense,
+  }) = _TransactionByTypeModel;
 
-  factory TransactionByTypeModel.fromJson(Map<String, dynamic> json) {
-    return TransactionByTypeModel(
-      income: (json['income'] as List<dynamic>? ?? [])
-          .map((e) => TransactionModel.fromJson(e))
-          .toList(),
-      expense: (json['expense'] as List<dynamic>? ?? [])
-          .map((e) => TransactionModel.fromJson(e))
-          .toList(),
-    );
-  }
+  const TransactionByTypeModel._();
+
+  factory TransactionByTypeModel.fromJson(Map<String, dynamic> json) =>
+      _$TransactionByTypeModelFromJson(json);
 
   TransactionByTypeEntity toEntity() => TransactionByTypeEntity(
-    incomeTransactions: income.map((e) => e.toEntity()).toList(),
-    expenseTransactions: expense.map((e) => e.toEntity()).toList(),
-  );
+        incomeTransactions: income.map((e) => e.toEntity()).toList(),
+        expenseTransactions: expense.map((e) => e.toEntity()).toList(),
+      );
 }

@@ -12,6 +12,7 @@ import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:money_care/core/services/notification_service.dart';
 
 class AuthController extends GetxController {
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final GoogleSignInUseCase googleSignInUseCase;
   final LogoutUseCase logoutUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
@@ -44,8 +45,8 @@ class AuthController extends GetxController {
     final cachedUser = getCachedUserUseCase();
     if (cachedUser != null) {
       user.value = cachedUser;
-      // ever() không fire cho giá trị đã set trước khi đăng ký listener,
-      // nên phải gọi syncToken() trực tiếp sau app restart.
+      // ever() khÃƒÂ´ng fire cho giÃƒÂ¡ trÃ¡Â»â€¹ Ã„â€˜ÃƒÂ£ set trÃ†Â°Ã¡Â»â€ºc khi Ã„â€˜Ã„Æ’ng kÃƒÂ½ listener,
+      // nÃƒÂªn phÃ¡ÂºÂ£i gÃ¡Â»Âi syncToken() trÃ¡Â»Â±c tiÃ¡ÂºÂ¿p sau app restart.
       try {
         Get.find<NotificationService>().syncToken();
       } catch (e) {
@@ -96,7 +97,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
       final email = storage.readString('user_email');
       if (email == null || email.isEmpty) {
-        return const Left(ServerFailure('Không tìm thấy email để xác thực OTP'));
+        return const Left(ServerFailure('Kh\\u00f4ng t\\u00ecm th\\u1ea5y email \\u0111\\u1ec3 x\\u00e1c th\\u1ef1c OTP'));
       }
       return await verifyOtpUseCase(email, otp);
     } finally {
@@ -110,7 +111,7 @@ class AuthController extends GetxController {
       final email = storage.readString('user_email');
       if (email == null || email.isEmpty) {
         return const Left(
-          ServerFailure('Không tìm thấy email để đặt lại mật khẩu'),
+          ServerFailure('Kh\\u00f4ng t\\u00ecm th\\u1ea5y email \\u0111\\u1ec3 \\u0111\\u1eb7t l\\u1ea1i m\\u1eadt kh\\u1ea9u'),
         );
       }
       final result = await resetPasswordUseCase(email, newPassword);
@@ -131,7 +132,7 @@ class AuthController extends GetxController {
     }
 
     if (isGoogleLogin.value) {
-      await GoogleSignIn().signOut();
+      await _googleSignIn.signOut();
     }
     isGoogleLogin.value = false;
     user.value = null;

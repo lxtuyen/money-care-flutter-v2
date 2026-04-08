@@ -1,10 +1,10 @@
 name: money_care
-description: "A new Flutter project."
+description: "Money Care"
 publish_to: "none"
-version: 0.1.0
+version: 1.1.0
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -12,29 +12,24 @@ dependencies:
 
   intl: ^0.20.2
   http: ^1.3.0
-  carousel_slider: ^5.0.0
-  google_sign_in: ^6.3.0
+  google_sign_in: ^7.2.0
   image_picker: ^1.1.2
-  camera: ^0.11.1
+  camera: ^0.12.0+1
   fl_chart: ^1.1.1
   flutter_svg: ^2.2.1
-  dotted_border: ^2.0.0
+  dotted_border: ^3.1.0
   calendar_date_picker2: ^2.0.1
   flutter_dotenv: ^6.0.0
   percent_indicator: ^4.2.3
-  video_player: ^2.9.1
   speech_to_text: ^7.3.0
-  pay: ^3.3.0
-  flutter_launcher_icons: ^0.14.4
 
   # icons
   iconsax_flutter: ^1.0.0
 
   # state management
-  get: 4.7.2
+  get: ^4.7.3
   get_storage: ^2.1.1
   shared_preferences: ^2.5.2
-  flutter_custom_keyboard: ^1.1.1
   fpdart: ^1.1.0
 
   # firebase
@@ -43,7 +38,7 @@ dependencies:
   cloud_firestore: ^6.0.2
   firebase_messaging: ^16.1.3
   flutter_local_notifications: ^21.0.0
-  freezed_annotation: ^2.4.4
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
 
 dev_dependencies:
@@ -51,8 +46,9 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.4.13
-  freezed: ^2.5.7
+  freezed: ^3.2.5
   json_serializable: ^6.9.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter_launcher_icons:
   android: true

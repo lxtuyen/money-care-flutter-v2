@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/fund/data/models/fund_report_model.dart';
 import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 
@@ -15,12 +16,6 @@ class FundReportScreen extends StatefulWidget {
 class _FundReportScreenState extends State<FundReportScreen> {
   final controller = Get.find<FundController>();
   late final int fundId;
-  final currencyFormatter = NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: '₫',
-    decimalDigits: 0,
-  );
-  final dateFormatter = DateFormat('dd/MM/yyyy');
 
   @override
   void initState() {
@@ -122,7 +117,7 @@ class _FundReportScreenState extends State<FundReportScreen> {
           const SizedBox(height: 4),
           if (report.startDate != null && report.endDate != null)
             Text(
-              '${dateFormatter.format(report.startDate!)} - ${dateFormatter.format(report.endDate!)}',
+              '${AppHelperFunction.getFormattedDate(report.startDate!)} - ${AppHelperFunction.getFormattedDate(report.endDate!)}',
               style: const TextStyle(color: Colors.white70, fontSize: 13),
             ),
           const SizedBox(height: 16),
@@ -192,18 +187,18 @@ class _FundReportScreenState extends State<FundReportScreen> {
         children: [
           _InfoRow(
             label: 'Ngân sách',
-            value: currencyFormatter.format(report.balance),
+            value: AppHelperFunction.formatAmount(report.balance, 'VND'),
           ),
           const SizedBox(height: 8),
           _InfoRow(
             label: 'Đã chi tiêu',
-            value: currencyFormatter.format(report.totalSpent),
+            value: AppHelperFunction.formatAmount(report.totalSpent, 'VND'),
             valueColor: report.isOverBudget ? AppColors.error : AppColors.text1,
           ),
           const SizedBox(height: 8),
           _InfoRow(
             label: 'Còn lại',
-            value: currencyFormatter.format(report.remainingBudget),
+            value: AppHelperFunction.formatAmount(report.remainingBudget, 'VND'),
             valueColor: report.remainingBudget < 0
                 ? AppColors.error
                 : AppColors.success,
@@ -288,7 +283,7 @@ class _FundReportScreenState extends State<FundReportScreen> {
             child: _StatBox(
               icon: Icons.trending_up_rounded,
               label: 'TB/giao dịch',
-              value: currencyFormatter.format(report.averageTransactionAmount),
+              value: AppHelperFunction.formatAmount(report.averageTransactionAmount, 'VND'),
             ),
           ),
         ],
@@ -325,7 +320,7 @@ class _FundReportScreenState extends State<FundReportScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          currencyFormatter.format(cat.totalSpent),
+                          AppHelperFunction.formatAmount(cat.totalSpent, 'VND'),
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -396,7 +391,7 @@ class _FundReportScreenState extends State<FundReportScreen> {
             child: _StatBox(
               icon: Icons.today_rounded,
               label: 'TB/ngày',
-              value: currencyFormatter.format(report.dailyAverageSpending),
+              value: AppHelperFunction.formatAmount(report.dailyAverageSpending, 'VND'),
             ),
           ),
         ],

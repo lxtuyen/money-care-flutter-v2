@@ -95,4 +95,16 @@ class FundEntity {
 
   bool get isOverMonthlyLimit =>
       (monthlyLimit ?? 0) > 0 && spentCurrentMonth > (monthlyLimit ?? 0);
+
+  // ── EXPIRATION helpers ──────────────────────────────────────────────────────
+
+  bool get isExpired {
+    if (endDate == null) return false;
+    return endDate!.isBefore(DateTime.now());
+  }
+
+  int get daysSinceExpired {
+    if (!isExpired || endDate == null) return 0;
+    return DateTime.now().difference(endDate!).inDays;
+  }
 }

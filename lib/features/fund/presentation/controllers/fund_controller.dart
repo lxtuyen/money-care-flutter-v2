@@ -238,6 +238,11 @@ class FundController extends GetxController {
 
   FundEntity? get selectedFund => currentFund.value;
 
+  List<FundEntity> get expiredFunds {
+    return funds.where((f) => f.isExpired).toList()
+      ..sort((a, b) => b.endDate!.compareTo(a.endDate!));
+  }
+
   // ============ EXPIRED FUND METHODS ============
 
   Future<void> checkExpiredFund(int userId) async {

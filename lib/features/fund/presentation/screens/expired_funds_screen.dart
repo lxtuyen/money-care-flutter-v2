@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/controllers/app_controller.dart';
 import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
 import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
 
@@ -20,13 +20,6 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
   final FundController controller = Get.find<FundController>();
   final AppController appController = Get.find<AppController>();
 
-  final _currency = NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: 'â‚«',
-    decimalDigits: 0,
-  );
-  final _date = DateFormat('dd/MM/yyyy');
-
   @override
   void initState() {
     super.initState();
@@ -38,14 +31,6 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
     if (userId != null) {
       await controller.loadFunds(userId);
     }
-  }
-
-  List<FundEntity> get _expiredFunds {
-    final now = DateTime.now();
-    return controller.funds
-        .where((f) => f.endDate != null && f.endDate!.isBefore(now))
-        .toList()
-      ..sort((a, b) => b.endDate!.compareTo(a.endDate!));
   }
 
   @override
@@ -67,7 +52,7 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
                 );
               }
 
-              final expired = _expiredFunds;
+              final expired = controller.expiredFunds;
 
               if (expired.isEmpty) {
                 return _buildEmpty();
@@ -80,9 +65,10 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
                   itemCount: expired.length,
                   itemBuilder: (_, i) => _ExpiredFundCard(
                     fund: expired[i],
-                    currency: _currency,
-                    date: _date,
-                    onViewReport: () => _viewReport(expired[i]),
+                    onViewReport: () {
+                      controller.loadFundReport(expired[i].id);
+                      Get.toNamed(RoutePath.fundReport, arguments: expired[i].id);
+                    },
                     onExtend: () => _extend(context, expired[i]),
                   ),
                 ),
@@ -132,11 +118,6 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
     );
   }
 
-  Future<void> _viewReport(FundEntity fund) async {
-    await controller.loadFundReport(fund.id);
-    Get.toNamed(RoutePath.fundReport, arguments: fund.id);
-  }
-
   Future<void> _extend(BuildContext context, FundEntity fund) async {
     final newEndDate = await showStyledDatePicker(
       context: context,
@@ -152,22 +133,14 @@ class _ExpiredFundsScreenState extends State<ExpiredFundsScreen> {
 class _ExpiredFundCard extends StatelessWidget {
   const _ExpiredFundCard({
     required this.fund,
-    required this.currency,
-    required this.date,
     required this.onViewReport,
     required this.onExtend,
   });
 
   final FundEntity fund;
-  final NumberFormat currency;
-  final DateFormat date;
   final VoidCallback onViewReport;
   final VoidCallback onExtend;
 
-  int get _daysSinceExpired {
-    if (fund.endDate == null) return 0;
-    return DateTime.now().difference(fund.endDate!).inDays;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +198,7 @@ class _ExpiredFundCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Hết hạn $_daysSinceExpired ngày trước',
+                    'Hết hạn ${fund.daysSinceExpired} ngày trước',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -247,7 +220,7 @@ class _ExpiredFundCard extends StatelessWidget {
                       icon: Icons.play_circle_outline_rounded,
                       label: 'Bắt đầu',
                       value: fund.startDate != null
-                          ? date.format(fund.startDate!)
+                          ? AppHelperFunction.getFormattedDate(fund.startDate!)
                           : '—',
                       color: AppColors.primary,
                     ),
@@ -262,7 +235,7 @@ class _ExpiredFundCard extends StatelessWidget {
                       icon: Icons.stop_circle_outlined,
                       label: 'Kết thúc',
                       value: fund.endDate != null
-                          ? date.format(fund.endDate!)
+                          ? AppHelperFunction.getFormattedDate(fund.endDate!)
                           : '—',
                       color: AppColors.secondaryOrange,
                     ),
@@ -279,7 +252,7 @@ class _ExpiredFundCard extends StatelessWidget {
                       icon: Icons.track_changes_rounded,
                       label: 'Mục tiêu',
                       value: fund.target != null
-                          ? currency.format(fund.target)
+                          ? AppHelperFunction.formatAmount(fund.target!, 'VND')
                           : '—',
                       color: AppColors.primary,
                     ),
@@ -288,7 +261,7 @@ class _ExpiredFundCard extends StatelessWidget {
                       icon: Icons.account_balance_wallet_outlined,
                       label: 'Ngân sách',
                       value: fund.balance != null
-                          ? currency.format(fund.balance)
+                          ? AppHelperFunction.formatAmount(fund.balance!, 'VND')
                           : '—',
                       color: AppColors.secondaryNavyBlue,
                     ),

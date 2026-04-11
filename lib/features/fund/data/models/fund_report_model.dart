@@ -4,7 +4,7 @@ part 'fund_report_model.freezed.dart';
 part 'fund_report_model.g.dart';
 
 @freezed
-class CategorySpendingModel with _$CategorySpendingModel {
+abstract class CategorySpendingModel with _$CategorySpendingModel {
   const factory CategorySpendingModel({
     @JsonKey(name: 'category_id') required int categoryId,
     @JsonKey(name: 'category_name') required String categoryName,
@@ -18,7 +18,7 @@ class CategorySpendingModel with _$CategorySpendingModel {
 }
 
 @freezed
-class FundReportModel with _$FundReportModel {
+abstract class FundReportModel with _$FundReportModel {
   const factory FundReportModel({
     @JsonKey(name: 'fund_id') required int fundId,
     @JsonKey(name: 'fund_name') required String fundName,

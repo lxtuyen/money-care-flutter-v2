@@ -1,7 +1,7 @@
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
@@ -19,13 +19,14 @@ class TransactionController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = RxnString();
 
+  final RxInt transactionChangedCount = 0.obs;
+
   final now = DateTime.now();
   late DateTime monthStartDate = DateTime(now.year, now.month, 1);
   late DateTime monthEndDate = DateTime(now.year, now.month + 1, 0);
   DateTime get weekStartDate => now.subtract(const Duration(days: 6));
   DateTime get weekEndDate => now;
 
-  // Lưu lại filter hiện tại để dùng khi refresh
   TransactionFilterDto? _lastFilter;
 
   TransactionController({
@@ -41,7 +42,6 @@ class TransactionController extends GetxController {
       await createTransactionUseCase(dto);
       await refreshAllData(dto.userId!);
       
-      // Req 8.1, 8.2: Chỉ ghi nhận streak khi TẠO MỚI giao dịch, không phải sửa/xóa
       if (Get.isRegistered<GamificationController>()) {
         Future.delayed(const Duration(milliseconds: 300), () {
           Get.find<GamificationController>().recordDailyTransaction();
@@ -115,8 +115,10 @@ class TransactionController extends GetxController {
     await filterTransactions(userId, filterDto);
 
     if (Get.isRegistered<StatisticsController>()) {
-       Get.find<StatisticsController>().refreshStatisticsData(userId);
+      await Get.find<StatisticsController>().refreshStatisticsData(userId);
     }
+
+    transactionChangedCount.value++;
   }
 
   int? get _currentFundIdOrNull =>

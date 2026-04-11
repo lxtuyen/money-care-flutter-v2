@@ -25,7 +25,7 @@ class AppController extends GetxController {
         return;
       }
 
-      final user = UserModel.fromJson(userInfoJson, '');
+      final user = UserModel.fromJson(userInfoJson);
       userId.value = user.id;
       isUserInitialized.value = true;
     } catch (e) {
@@ -41,3 +41,4 @@ class AppController extends GetxController {
     return userId.value;
   }
 }
+

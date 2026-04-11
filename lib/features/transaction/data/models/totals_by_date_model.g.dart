@@ -6,9 +6,9 @@ part of 'totals_by_date_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TotalsByDateEntityModelImpl _$$TotalsByDateEntityModelImplFromJson(
+_TotalsByDateEntityModel _$TotalsByDateEntityModelFromJson(
   Map<String, dynamic> json,
-) => _$TotalsByDateEntityModelImpl(
+) => _TotalsByDateEntityModel(
   income:
       (json['income'] as List<dynamic>?)
           ?.map(
@@ -25,6 +25,6 @@ _$TotalsByDateEntityModelImpl _$$TotalsByDateEntityModelImplFromJson(
       const [],
 );
 
-Map<String, dynamic> _$$TotalsByDateEntityModelImplToJson(
-  _$TotalsByDateEntityModelImpl instance,
+Map<String, dynamic> _$TotalsByDateEntityModelToJson(
+  _TotalsByDateEntityModel instance,
 ) => <String, dynamic>{'income': instance.income, 'expense': instance.expense};

@@ -1,4 +1,4 @@
-import 'package:money_care/features/user/data/models/user_profile_model.dart';
+import 'package:money_care/features/user/data/models/profile_update_dto.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 import 'package:money_care/features/user/domain/repositories/user_repository.dart';
 

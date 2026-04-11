@@ -1,13 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
-import 'package:money_care/core/presentation/widgets/states/transaction_empty_state.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/states/transaction_empty_state.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -55,24 +55,33 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
-    await Future.wait([
-      transactionController.loadTransactionScreenData(
-        userId,
-        TransactionFilterDto(
-          fundId:
-              fundController.fundId.value > 0
-                  ? fundController.fundId.value
-                  : null,
-          startDate: filterController.startDate.value?.toIso8601String(),
-          endDate: filterController.endDate.value?.toIso8601String(),
+    final futures = <Future>[];
+
+    if (transactionController.transactionByfilter.value == null) {
+      futures.add(
+        transactionController.loadTransactionScreenData(
+          userId,
+          TransactionFilterDto(
+            fundId:
+                fundController.fundId.value > 0
+                    ? fundController.fundId.value
+                    : null,
+            startDate: filterController.startDate.value?.toIso8601String(),
+            endDate: filterController.endDate.value?.toIso8601String(),
+          ),
         ),
-      ),
+      );
+    }
+
+    futures.add(
       statisticsController.getTotalByType(
         userId,
         startDate: filterController.startDate.value,
         endDate: filterController.endDate.value,
       ),
-    ]);
+    );
+
+    await Future.wait(futures);
   }
 
   @override
@@ -224,12 +233,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildEmptyView() {
     return TransactionEmptyState(
-      message: 'KhÃ´ng cÃ³ giao dá»‹ch phÃ¹ há»£p',
+      message: 'Không có giao d?ch phù h?p',
       action:
           filterController.hasActiveFilters
               ? TextButton(
                 onPressed: _clearFilters,
-                child: const Text('XÃ³a táº¥t cáº£ bá»™ lá»c'),
+                child: const Text('Xóa t?t c? b? l?c'),
               )
               : null,
     );
@@ -269,7 +278,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             }
 
             return FilterDialog(
-              title: 'Lá»c theo phÃ¢n loáº¡i',
+              title: 'L?c theo phân lo?i',
               categories: data.categories,
               onApply: (_) => _applyFilter(),
             );
@@ -282,8 +291,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder:
           (_) => FilterDialog(
-            title: 'Lá»c theo thá»i gian',
-            items: const ['HÃ´m nay', 'Tuáº§n nÃ y', 'ThÃ¡ng nÃ y', 'TÃ¹y chá»‰nh'],
+            title: 'L?c theo th?i gian',
+            items: const ['Hôm nay', 'Tu?n này', 'Tháng này', 'Tùy ch?nh'],
             onApply: (_) => _applyFilter(),
           ),
     );
@@ -370,7 +379,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Bá»™ lá»c giao dá»‹ch',
+                              'B? l?c giao d?ch',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -378,7 +387,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Chá»n cÃ¡ch báº¡n muá»‘n thu háº¹p danh sÃ¡ch giao dá»‹ch.',
+                              'Ch?n cách b?n mu?n thu h?p danh sách giao d?ch.',
                               style: TextStyle(
                                 color: AppColors.text4,
                                 fontSize: 13,
@@ -412,8 +421,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         Expanded(
                           child: Text(
                             filterController.hasActiveFilters
-                                ? 'Äang Ã¡p dá»¥ng ${filterController.activeFilterCount} tiÃªu chÃ­ lá»c.'
-                                : 'ChÆ°a cÃ³ bá»™ lá»c nÃ o Ä‘Æ°á»£c Ã¡p dá»¥ng.',
+                                ? 'Ðang áp d?ng ${filterController.activeFilterCount} tiêu chí l?c.'
+                                : 'Chua có b? l?c nào du?c áp d?ng.',
                             style: const TextStyle(
                               color: AppColors.text2,
                               fontWeight: FontWeight.w600,
@@ -426,11 +435,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 16),
                   _buildFilterSheetTile(
                     icon: Icons.category_outlined,
-                    title: 'Lá»c theo phÃ¢n loáº¡i',
+                    title: 'L?c theo phân lo?i',
                     subtitle:
                         filterController.categoryId.value != null
-                            ? 'ÄÃ£ chá»n 1 phÃ¢n loáº¡i'
-                            : 'Chá»n loáº¡i chi tiÃªu hoáº·c thu nháº­p cá»¥ thá»ƒ',
+                            ? 'Ðã ch?n 1 phân lo?i'
+                            : 'Ch?n lo?i chi tiêu ho?c thu nh?p c? th?',
                     onTap: () {
                       Get.back();
                       _showCategoryFilterDialog(context);
@@ -439,7 +448,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 12),
                   _buildFilterSheetTile(
                     icon: Icons.calendar_today_rounded,
-                    title: 'Lá»c theo thá»i gian',
+                    title: 'L?c theo th?i gian',
                     subtitle: filterController.dateLabel.value,
                     onTap: () {
                       Get.back();
@@ -456,7 +465,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           _clearFilters();
                         },
                         icon: const Icon(Icons.restart_alt_rounded),
-                        label: const Text('XÃ³a táº¥t cáº£ bá»™ lá»c'),
+                        label: const Text('Xóa t?t c? b? l?c'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.text2,
                           side: const BorderSide(

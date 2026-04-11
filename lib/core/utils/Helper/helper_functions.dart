@@ -270,6 +270,17 @@ class AppHelperFunction {
   }
 
   static int clampZero(int value) => value < 0 ? 0 : value;
+
+  static String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Chào buổi sáng ☀️';
+    } else if (hour < 18) {
+      return 'Chào buổi chiều 🌤️';
+    } else {
+      return 'Chào buổi tối 🌙';
+    }
+  }
 }
 
 class _SnackBarContent extends StatelessWidget {

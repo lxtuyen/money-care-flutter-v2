@@ -6,23 +6,19 @@ part of 'user_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
-    _$UserModelImpl(
-      id: (json['id'] as num).toInt(),
-      email: json['email'] as String,
-      role: json['role'] as String,
-      isVip: json['isVip'] as bool?,
-      accessToken: json['accessToken'] as String?,
-      profile: UserProfileModel.fromJson(
-        json['profile'] as Map<String, dynamic>,
-      ),
-      fund:
-          json['fund'] == null
-              ? null
-              : FundModel.fromJson(json['fund'] as Map<String, dynamic>),
-    );
+_UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
+  id: (json['id'] as num).toInt(),
+  email: json['email'] as String,
+  role: json['role'] as String,
+  isVip: json['isVip'] as bool?,
+  accessToken: json['accessToken'] as String?,
+  profile: UserProfileModel.fromJson(json['profile'] as Map<String, dynamic>),
+  fund: json['fund'] == null
+      ? null
+      : FundModel.fromJson(json['fund'] as Map<String, dynamic>),
+);
 
-Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
+Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'email': instance.email,

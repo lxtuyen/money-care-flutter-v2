@@ -5,7 +5,7 @@ part 'total_by_date_model.freezed.dart';
 part 'total_by_date_model.g.dart';
 
 @freezed
-class TotalByDateEntityModel with _$TotalByDateEntityModel {
+abstract class TotalByDateEntityModel with _$TotalByDateEntityModel {
   const factory TotalByDateEntityModel({
     required DateTime date,
     @Default(0) int total,

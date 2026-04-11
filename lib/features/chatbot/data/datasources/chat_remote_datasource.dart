@@ -1,5 +1,7 @@
 import 'package:image_picker/image_picker.dart';
-import 'package:money_care/features/chatbot/data/models/chat_model.dart';
+import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/core/constants/api_routes.dart';
+import 'package:money_care/features/chatbot/data/models/models.dart';
 
 abstract class ChatRemoteDatasource {
   Future<String> sendToChatbot(ChatDto dto, {XFile? file});
@@ -30,3 +32,5 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
     return res.message;
   }
 }
+
+

@@ -6,7 +6,7 @@ part 'totals_by_date_model.freezed.dart';
 part 'totals_by_date_model.g.dart';
 
 @freezed
-class TotalsByDateEntityModel with _$TotalsByDateEntityModel {
+abstract class TotalsByDateEntityModel with _$TotalsByDateEntityModel {
   const factory TotalsByDateEntityModel({
     @Default([]) List<TotalByDateEntityModel> income,
     @Default([]) List<TotalByDateEntityModel> expense,

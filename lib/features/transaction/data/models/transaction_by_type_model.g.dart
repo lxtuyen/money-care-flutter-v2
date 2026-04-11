@@ -6,9 +6,9 @@ part of 'transaction_by_type_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TransactionByTypeModelImpl _$$TransactionByTypeModelImplFromJson(
+_TransactionByTypeModel _$TransactionByTypeModelFromJson(
   Map<String, dynamic> json,
-) => _$TransactionByTypeModelImpl(
+) => _TransactionByTypeModel(
   income:
       (json['income'] as List<dynamic>?)
           ?.map((e) => TransactionModel.fromJson(e as Map<String, dynamic>))
@@ -21,6 +21,6 @@ _$TransactionByTypeModelImpl _$$TransactionByTypeModelImplFromJson(
       const [],
 );
 
-Map<String, dynamic> _$$TransactionByTypeModelImplToJson(
-  _$TransactionByTypeModelImpl instance,
+Map<String, dynamic> _$TransactionByTypeModelToJson(
+  _TransactionByTypeModel instance,
 ) => <String, dynamic>{'income': instance.income, 'expense': instance.expense};

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/user/presentation/widgets/user_menu_item.dart';
 import 'package:money_care/features/user/presentation/widgets/savings_goals.dart';
 

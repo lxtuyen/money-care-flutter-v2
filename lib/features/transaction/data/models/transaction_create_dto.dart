@@ -4,7 +4,7 @@ part 'transaction_create_dto.freezed.dart';
 part 'transaction_create_dto.g.dart';
 
 @freezed
-class TransactionCreateDto with _$TransactionCreateDto {
+abstract class TransactionCreateDto with _$TransactionCreateDto {
   const factory TransactionCreateDto({
     int? amount,
     String? type,
@@ -13,7 +13,6 @@ class TransactionCreateDto with _$TransactionCreateDto {
     DateTime? transactionDate,
     int? categoryId,
     int? userId,
-    int? fundId,
   }) = _TransactionCreateDto;
 
   factory TransactionCreateDto.fromJson(Map<String, dynamic> json) =>

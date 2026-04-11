@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class SpendingSummary extends StatelessWidget {
@@ -69,10 +69,11 @@ class SpendingSummary extends StatelessWidget {
             ],
           ),
           DottedBorder(
-            borderType: BorderType.RRect,
-            radius: const Radius.circular(AppSizes.borderRadiusLg),
-            dashPattern: const [6, 3],
-            color: AppColors.text4,
+            options: RoundedRectDottedBorderOptions(
+              radius: const Radius.circular(AppSizes.borderRadiusLg),
+              dashPattern: const [6, 3],
+              color: AppColors.text4,
+            ),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.27,
               height: MediaQuery.of(context).size.height * 0.15,

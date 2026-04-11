@@ -4,7 +4,7 @@ part 'expired_fund_model.freezed.dart';
 part 'expired_fund_model.g.dart';
 
 @freezed
-class ExpiredFundInfoModel with _$ExpiredFundInfoModel {
+abstract class ExpiredFundInfoModel with _$ExpiredFundInfoModel {
   const factory ExpiredFundInfoModel({
     required int id,
     required String name,
@@ -20,7 +20,7 @@ class ExpiredFundInfoModel with _$ExpiredFundInfoModel {
 }
 
 @freezed
-class ExpiredFundCheckModel with _$ExpiredFundCheckModel {
+abstract class ExpiredFundCheckModel with _$ExpiredFundCheckModel {
   const factory ExpiredFundCheckModel({
     @JsonKey(name: 'has_expired_fund') @Default(false) bool hasExpiredFund,
     @JsonKey(name: 'expired_fund') ExpiredFundInfoModel? expiredFund,

@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,257 +9,278 @@ part of 'transaction_filter_dto.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-TransactionFilterDto _$TransactionFilterDtoFromJson(Map<String, dynamic> json) {
-  return _TransactionFilterDto.fromJson(json);
-}
 
 /// @nodoc
 mixin _$TransactionFilterDto {
-  @JsonKey(name: 'categoryId')
-  int? get categoryId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'fundId')
-  int? get fundId => throw _privateConstructorUsedError;
-  String? get startDate => throw _privateConstructorUsedError;
-  String? get endDate => throw _privateConstructorUsedError;
+
+@JsonKey(name: 'categoryId') int? get categoryId;@JsonKey(name: 'fundId') int? get fundId;@JsonKey(name: 'start_date') String? get startDate;@JsonKey(name: 'end_date') String? get endDate;
+/// Create a copy of TransactionFilterDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TransactionFilterDtoCopyWith<TransactionFilterDto> get copyWith => _$TransactionFilterDtoCopyWithImpl<TransactionFilterDto>(this as TransactionFilterDto, _$identity);
 
   /// Serializes this TransactionFilterDto to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of TransactionFilterDto
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $TransactionFilterDtoCopyWith<TransactionFilterDto> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionFilterDto&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.fundId, fundId) || other.fundId == fundId)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,categoryId,fundId,startDate,endDate);
+
+@override
+String toString() {
+  return 'TransactionFilterDto(categoryId: $categoryId, fundId: $fundId, startDate: $startDate, endDate: $endDate)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $TransactionFilterDtoCopyWith<$Res> {
-  factory $TransactionFilterDtoCopyWith(
-    TransactionFilterDto value,
-    $Res Function(TransactionFilterDto) then,
-  ) = _$TransactionFilterDtoCopyWithImpl<$Res, TransactionFilterDto>;
-  @useResult
-  $Res call({
-    @JsonKey(name: 'categoryId') int? categoryId,
-    @JsonKey(name: 'fundId') int? fundId,
-    String? startDate,
-    String? endDate,
-  });
-}
+abstract mixin class $TransactionFilterDtoCopyWith<$Res>  {
+  factory $TransactionFilterDtoCopyWith(TransactionFilterDto value, $Res Function(TransactionFilterDto) _then) = _$TransactionFilterDtoCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'fundId') int? fundId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate
+});
 
+
+
+
+}
 /// @nodoc
-class _$TransactionFilterDtoCopyWithImpl<
-  $Res,
-  $Val extends TransactionFilterDto
->
+class _$TransactionFilterDtoCopyWithImpl<$Res>
     implements $TransactionFilterDtoCopyWith<$Res> {
-  _$TransactionFilterDtoCopyWithImpl(this._value, this._then);
+  _$TransactionFilterDtoCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final TransactionFilterDto _self;
+  final $Res Function(TransactionFilterDto) _then;
 
-  /// Create a copy of TransactionFilterDto
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? categoryId = freezed,
-    Object? fundId = freezed,
-    Object? startDate = freezed,
-    Object? endDate = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            categoryId:
-                freezed == categoryId
-                    ? _value.categoryId
-                    : categoryId // ignore: cast_nullable_to_non_nullable
-                        as int?,
-            fundId:
-                freezed == fundId
-                    ? _value.fundId
-                    : fundId // ignore: cast_nullable_to_non_nullable
-                        as int?,
-            startDate:
-                freezed == startDate
-                    ? _value.startDate
-                    : startDate // ignore: cast_nullable_to_non_nullable
-                        as String?,
-            endDate:
-                freezed == endDate
-                    ? _value.endDate
-                    : endDate // ignore: cast_nullable_to_non_nullable
-                        as String?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of TransactionFilterDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? categoryId = freezed,Object? fundId = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
+  return _then(_self.copyWith(
+categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as int?,fundId: freezed == fundId ? _self.fundId : fundId // ignore: cast_nullable_to_non_nullable
+as int?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TransactionFilterDto].
+extension TransactionFilterDtoPatterns on TransactionFilterDto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TransactionFilterDto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TransactionFilterDto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TransactionFilterDto value)  $default,){
+final _that = this;
+switch (_that) {
+case _TransactionFilterDto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TransactionFilterDto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TransactionFilterDto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'fundId')  int? fundId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TransactionFilterDto() when $default != null:
+return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'fundId')  int? fundId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate)  $default,) {final _that = this;
+switch (_that) {
+case _TransactionFilterDto():
+return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'fundId')  int? fundId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate)?  $default,) {final _that = this;
+switch (_that) {
+case _TransactionFilterDto() when $default != null:
+return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$TransactionFilterDtoImplCopyWith<$Res>
-    implements $TransactionFilterDtoCopyWith<$Res> {
-  factory _$$TransactionFilterDtoImplCopyWith(
-    _$TransactionFilterDtoImpl value,
-    $Res Function(_$TransactionFilterDtoImpl) then,
-  ) = __$$TransactionFilterDtoImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    @JsonKey(name: 'categoryId') int? categoryId,
-    @JsonKey(name: 'fundId') int? fundId,
-    String? startDate,
-    String? endDate,
-  });
+@JsonSerializable()
+
+class _TransactionFilterDto extends TransactionFilterDto {
+  const _TransactionFilterDto({@JsonKey(name: 'categoryId') this.categoryId, @JsonKey(name: 'fundId') this.fundId, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate}): super._();
+  factory _TransactionFilterDto.fromJson(Map<String, dynamic> json) => _$TransactionFilterDtoFromJson(json);
+
+@override@JsonKey(name: 'categoryId') final  int? categoryId;
+@override@JsonKey(name: 'fundId') final  int? fundId;
+@override@JsonKey(name: 'start_date') final  String? startDate;
+@override@JsonKey(name: 'end_date') final  String? endDate;
+
+/// Create a copy of TransactionFilterDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TransactionFilterDtoCopyWith<_TransactionFilterDto> get copyWith => __$TransactionFilterDtoCopyWithImpl<_TransactionFilterDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TransactionFilterDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionFilterDto&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.fundId, fundId) || other.fundId == fundId)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,categoryId,fundId,startDate,endDate);
+
+@override
+String toString() {
+  return 'TransactionFilterDto(categoryId: $categoryId, fundId: $fundId, startDate: $startDate, endDate: $endDate)';
+}
+
+
 }
 
 /// @nodoc
-class __$$TransactionFilterDtoImplCopyWithImpl<$Res>
-    extends _$TransactionFilterDtoCopyWithImpl<$Res, _$TransactionFilterDtoImpl>
-    implements _$$TransactionFilterDtoImplCopyWith<$Res> {
-  __$$TransactionFilterDtoImplCopyWithImpl(
-    _$TransactionFilterDtoImpl _value,
-    $Res Function(_$TransactionFilterDtoImpl) _then,
-  ) : super(_value, _then);
+abstract mixin class _$TransactionFilterDtoCopyWith<$Res> implements $TransactionFilterDtoCopyWith<$Res> {
+  factory _$TransactionFilterDtoCopyWith(_TransactionFilterDto value, $Res Function(_TransactionFilterDto) _then) = __$TransactionFilterDtoCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'fundId') int? fundId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate
+});
 
-  /// Create a copy of TransactionFilterDto
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? categoryId = freezed,
-    Object? fundId = freezed,
-    Object? startDate = freezed,
-    Object? endDate = freezed,
-  }) {
-    return _then(
-      _$TransactionFilterDtoImpl(
-        categoryId:
-            freezed == categoryId
-                ? _value.categoryId
-                : categoryId // ignore: cast_nullable_to_non_nullable
-                    as int?,
-        fundId:
-            freezed == fundId
-                ? _value.fundId
-                : fundId // ignore: cast_nullable_to_non_nullable
-                    as int?,
-        startDate:
-            freezed == startDate
-                ? _value.startDate
-                : startDate // ignore: cast_nullable_to_non_nullable
-                    as String?,
-        endDate:
-            freezed == endDate
-                ? _value.endDate
-                : endDate // ignore: cast_nullable_to_non_nullable
-                    as String?,
-      ),
-    );
-  }
+
+
+
 }
-
 /// @nodoc
+class __$TransactionFilterDtoCopyWithImpl<$Res>
+    implements _$TransactionFilterDtoCopyWith<$Res> {
+  __$TransactionFilterDtoCopyWithImpl(this._self, this._then);
 
-@JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
-class _$TransactionFilterDtoImpl extends _TransactionFilterDto {
-  const _$TransactionFilterDtoImpl({
-    @JsonKey(name: 'categoryId') this.categoryId,
-    @JsonKey(name: 'fundId') this.fundId,
-    this.startDate,
-    this.endDate,
-  }) : super._();
+  final _TransactionFilterDto _self;
+  final $Res Function(_TransactionFilterDto) _then;
 
-  factory _$TransactionFilterDtoImpl.fromJson(Map<String, dynamic> json) =>
-      _$$TransactionFilterDtoImplFromJson(json);
-
-  @override
-  @JsonKey(name: 'categoryId')
-  final int? categoryId;
-  @override
-  @JsonKey(name: 'fundId')
-  final int? fundId;
-  @override
-  final String? startDate;
-  @override
-  final String? endDate;
-
-  @override
-  String toString() {
-    return 'TransactionFilterDto(categoryId: $categoryId, fundId: $fundId, startDate: $startDate, endDate: $endDate)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$TransactionFilterDtoImpl &&
-            (identical(other.categoryId, categoryId) ||
-                other.categoryId == categoryId) &&
-            (identical(other.fundId, fundId) || other.fundId == fundId) &&
-            (identical(other.startDate, startDate) ||
-                other.startDate == startDate) &&
-            (identical(other.endDate, endDate) || other.endDate == endDate));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, categoryId, fundId, startDate, endDate);
-
-  /// Create a copy of TransactionFilterDto
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$TransactionFilterDtoImplCopyWith<_$TransactionFilterDtoImpl>
-  get copyWith =>
-      __$$TransactionFilterDtoImplCopyWithImpl<_$TransactionFilterDtoImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$TransactionFilterDtoImplToJson(this);
-  }
+/// Create a copy of TransactionFilterDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? categoryId = freezed,Object? fundId = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
+  return _then(_TransactionFilterDto(
+categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as int?,fundId: freezed == fundId ? _self.fundId : fundId // ignore: cast_nullable_to_non_nullable
+as int?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-abstract class _TransactionFilterDto extends TransactionFilterDto {
-  const factory _TransactionFilterDto({
-    @JsonKey(name: 'categoryId') final int? categoryId,
-    @JsonKey(name: 'fundId') final int? fundId,
-    final String? startDate,
-    final String? endDate,
-  }) = _$TransactionFilterDtoImpl;
-  const _TransactionFilterDto._() : super._();
 
-  factory _TransactionFilterDto.fromJson(Map<String, dynamic> json) =
-      _$TransactionFilterDtoImpl.fromJson;
-
-  @override
-  @JsonKey(name: 'categoryId')
-  int? get categoryId;
-  @override
-  @JsonKey(name: 'fundId')
-  int? get fundId;
-  @override
-  String? get startDate;
-  @override
-  String? get endDate;
-
-  /// Create a copy of TransactionFilterDto
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$TransactionFilterDtoImplCopyWith<_$TransactionFilterDtoImpl>
-  get copyWith => throw _privateConstructorUsedError;
 }
+
+// dart format on

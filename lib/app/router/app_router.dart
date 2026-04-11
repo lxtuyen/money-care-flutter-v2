@@ -1,8 +1,5 @@
 import 'package:get/get.dart';
-import 'package:money_care/core/router/navigation_menu.dart';
-import 'package:money_care/features/admin/presentation/screens/admin_dashboard.dart';
-import 'package:money_care/features/admin/presentation/screens/dashboard_content.dart';
-import 'package:money_care/features/admin/presentation/screens/user_content.dart';
+import 'package:money_care/app/router/navigation_menu.dart';
 import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
 import 'package:money_care/features/auth/presentation/screens/otp.dart';
 import 'package:money_care/features/auth/presentation/screens/reset_password.dart';
@@ -69,16 +66,6 @@ final List<GetPage> appPages = [
   ),
   GetPage(name: '/profile', page: () => const ProfileScreen()),
   GetPage(name: '/chatbot', page: () => const ChatbotScreen()),
-
-  GetPage(
-    name: '/admin/home',
-    page: () => const AdminDashboard(child: DashboardContent()),
-  ),
-
-  GetPage(
-    name: '/admin/users',
-    page: () => const AdminDashboard(child: UsersContent()),
-  ),
 
   GetPage(name: '/main', page: () => const ScaffoldWithNavBar()),
 

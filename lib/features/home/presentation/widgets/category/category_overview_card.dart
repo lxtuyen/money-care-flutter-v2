@@ -1,8 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:money_care/features/home/presentation/widgets/budget_detail_dialog.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
+import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class CategoryOverviewCard extends StatelessWidget {
@@ -35,7 +35,7 @@ class CategoryOverviewCard extends StatelessWidget {
       else if (isNearLimit) themeColor = Colors.orange; // Amber/Warning color
     }
     
-    final String spentLabel = isIncome ? "ÄÃ£ nháº­n:" : "ÄÃ£ tiÃªu:";
+    final String spentLabel = isIncome ? "Đã nhận:" : "Đã tiêu:";
     final bool showLimit = limit > 0;
 
     return GestureDetector(
@@ -95,7 +95,7 @@ class CategoryOverviewCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              "Háº¡n má»©c:",
+                              "Hạn mức:",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,

@@ -1,6 +1,6 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:money_care/features/chatbot/data/datasources/chat_remote_datasource.dart';
-import 'package:money_care/features/chatbot/data/models/chat_model.dart';
+import 'package:money_care/features/chatbot/data/models/models.dart';
 import 'package:money_care/features/chatbot/domain/repositories/chat_repository.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -16,3 +16,4 @@ class ChatRepositoryImpl implements ChatRepository {
     );
   }
 }
+

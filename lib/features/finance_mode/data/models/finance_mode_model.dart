@@ -7,7 +7,7 @@ part 'finance_mode_model.g.dart';
 String _modeToJson(String mode) => mode.toUpperCase();
 
 @freezed
-class FinanceModeModel with _$FinanceModeModel {
+abstract class FinanceModeModel with _$FinanceModeModel {
   const factory FinanceModeModel({
     required int userId,
     @JsonKey(toJson: _modeToJson) required String mode,

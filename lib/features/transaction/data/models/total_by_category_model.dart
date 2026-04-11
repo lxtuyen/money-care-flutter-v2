@@ -5,7 +5,7 @@ part 'total_by_category_model.freezed.dart';
 part 'total_by_category_model.g.dart';
 
 @freezed
-class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
+abstract class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
   const factory TotalByCategoryEntityModel({
     @Default('') String categoryName,
     @Default('') String categoryIcon,

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/fund/data/models/models.dart';
 import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
 import 'package:money_care/features/fund/domain/usecases/usecases.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
@@ -197,8 +197,8 @@ class CreateFundController extends GetxController {
       id: isEditMode.value ? editingFundId.value : userId.value,
       balance: balance.value,
       target: target.value,
-      start_date: startDate.value,
-      end_date: endDate.value,
+      startDate: startDate.value,
+      endDate: endDate.value,
     );
 
     if (isEditMode.value) {
@@ -283,6 +283,7 @@ class CreateFundController extends GetxController {
     categoriesPreset.value = false;
   }
 }
+
 
 
 

@@ -1,9 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 
 class StatisticsController extends GetxController {
@@ -12,7 +12,7 @@ class StatisticsController extends GetxController {
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
 
-  final FundController fundController = Get.find<FundController>();
+  FundController get fundController => Get.find<FundController>();
 
   var totalByType = Rxn<TotalByTypeEntity>();
   RxList<TotalByCategoryEntity> totalByCate = <TotalByCategoryEntity>[].obs;
@@ -23,10 +23,8 @@ class StatisticsController extends GetxController {
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
   var statisticsSummary = Rxn<StatisticsSummaryEntity>();
 
-  /// Total balance calculated from all category limits
   double get totalBudget => expenseCategories.fold(0.0, (sum, cat) => sum + cat.limit);
 
-  /// Current month's spending as a percentage of total balance (0.0 to 1.0+)
   double get utilizationPercentage {
     if (totalBudget <= 0) return 0.0;
     final spent = totalByType.value?.expenseTotal.toDouble() ?? 0.0;

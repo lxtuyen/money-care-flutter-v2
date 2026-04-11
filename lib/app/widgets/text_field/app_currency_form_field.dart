@@ -51,6 +51,11 @@ class AppCurrencyFormField extends StatefulWidget {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
   }
 
+  static String format(String value) {
+    if (value.isEmpty) return '';
+    return _ThousandsSeparatorInputFormatter.formatRaw(value);
+  }
+
   @override
   State<AppCurrencyFormField> createState() => _AppCurrencyFormFieldState();
 }
@@ -202,3 +207,5 @@ class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
     );
   }
 }
+
+

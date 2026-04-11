@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/presentation/widgets/choice_chip/choice_chips.dart';
+import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 
@@ -275,7 +275,7 @@ class _FilterDialogState extends State<FilterDialog> {
             });
           },
         );
-      }).toList();
+      }).toList().cast<Widget>();
     }
 
     return widget.categories!.map((cat) {
@@ -289,7 +289,7 @@ class _FilterDialogState extends State<FilterDialog> {
           });
         },
       );
-    }).toList();
+    }).toList().cast<Widget>();
   }
 
   String _buildSummaryText() {

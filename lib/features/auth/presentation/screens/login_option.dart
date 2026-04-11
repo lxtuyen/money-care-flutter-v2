@@ -4,8 +4,8 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
-import 'package:money_care/core/presentation/widgets/image/circular_image.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/app/widgets/image/circular_image.dart';
 import 'package:money_care/features/auth/presentation/controllers/login_option_controller.dart';
 import 'package:money_care/features/auth/presentation/widgets/auth_redirect_text.dart';
 

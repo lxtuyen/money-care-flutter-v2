@@ -4,12 +4,11 @@ part 'transaction_totals_dto.freezed.dart';
 part 'transaction_totals_dto.g.dart';
 
 @freezed
-class TransactionTotalsDto with _$TransactionTotalsDto {
-  @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
+abstract class TransactionTotalsDto with _$TransactionTotalsDto {
   const factory TransactionTotalsDto({
     @JsonKey(name: 'fundId') int? fundId,
-    String? startDate,
-    String? endDate,
+    @JsonKey(name: 'start_date') String? startDate,
+    @JsonKey(name: 'end_date') String? endDate,
     String? type,
   }) = _TransactionTotalsDto;
 

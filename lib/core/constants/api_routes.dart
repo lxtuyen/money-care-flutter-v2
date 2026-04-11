@@ -24,9 +24,9 @@ class ApiRoutes {
 
   static const notification = 'notifications';
 
-  static const scanReceipt = 'receipt/scan';
+  static const scanReceipt = 'ai/receipt/scan';
 
-  static const chatbot = 'chatbot';
+  static const chatbot = 'ai/chat';
 
   static const financeMode = 'finance-mode';
   static const splitSession = 'split-session';

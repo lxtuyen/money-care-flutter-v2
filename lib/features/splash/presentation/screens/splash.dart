@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/features/splash/presentation/controllers/splash_controller.dart';

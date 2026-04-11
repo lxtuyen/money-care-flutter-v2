@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -173,3 +175,4 @@ class ReceiptItemsBubble extends StatelessWidget {
     );
   }
 }
+

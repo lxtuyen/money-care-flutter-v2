@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -9,7 +9,6 @@ import 'package:money_care/features/fund/data/models/models.dart';
 import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
 import 'package:money_care/features/fund/domain/usecases/usecases.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
 
 class FundController extends GetxController {
   final GetFundsByUserUseCase getFundsByUserUseCase;
@@ -22,7 +21,6 @@ class FundController extends GetxController {
   final ExtendFundUseCase extendFundUseCase;
   final GetFundReportUseCase getFundReportUseCase;
   final AppController appController = Get.find<AppController>();
-  final UserController userController = Get.find<UserController>();
 
   FundController({
     required this.getFundsByUserUseCase,
@@ -98,7 +96,7 @@ class FundController extends GetxController {
     }
 
     try {
-      final user = UserModel.fromJson(userInfoJson, '');
+      final user = UserModel.fromJson(userInfoJson);
       final result = await getFundsByUserUseCase(user.id);
       result.fold(_handleFailure, (list) {
         funds.assignAll(list);
@@ -289,3 +287,4 @@ class FundController extends GetxController {
     isLoadingReport.value = false;
   }
 }
+

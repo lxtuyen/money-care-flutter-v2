@@ -5,7 +5,7 @@ part 'statistics_summary_model.freezed.dart';
 part 'statistics_summary_model.g.dart';
 
 @freezed
-class StatisticsSummaryModel with _$StatisticsSummaryModel {
+abstract class StatisticsSummaryModel with _$StatisticsSummaryModel {
   const factory StatisticsSummaryModel({
     required double dailyAverage,
     required double dailyAverageChange,

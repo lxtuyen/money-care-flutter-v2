@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/auth/data/datasources/auth_local_datasource.dart';

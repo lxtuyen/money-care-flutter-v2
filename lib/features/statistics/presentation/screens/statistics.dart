@@ -1,16 +1,16 @@
-import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
-import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/statistics/presentation/widgets/chart/chart_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/description/statistics_highlights.dart';
@@ -18,7 +18,7 @@ import 'package:money_care/features/statistics/presentation/widgets/chart/saving
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/statistics/presentation/widgets/fund_summary_card.dart';
-import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
+import 'package:money_care/app/widgets/texts/section_heading.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/presentation/widgets/container/circular_container.dart';
+import 'package:money_care/app/widgets/container/circular_container.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class CustomChoiceChip extends StatelessWidget {

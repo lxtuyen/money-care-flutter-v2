@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
-import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
+import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 
 class SearchWithFilter extends StatelessWidget {
   final String hintText;

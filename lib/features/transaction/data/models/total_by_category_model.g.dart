@@ -6,9 +6,9 @@ part of 'total_by_category_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TotalByCategoryEntityModelImpl _$$TotalByCategoryEntityModelImplFromJson(
+_TotalByCategoryEntityModel _$TotalByCategoryEntityModelFromJson(
   Map<String, dynamic> json,
-) => _$TotalByCategoryEntityModelImpl(
+) => _TotalByCategoryEntityModel(
   categoryName: json['categoryName'] as String? ?? '',
   categoryIcon: json['categoryIcon'] as String? ?? '',
   percentage: (json['percentage'] as num?)?.toDouble() ?? 0.0,
@@ -18,8 +18,8 @@ _$TotalByCategoryEntityModelImpl _$$TotalByCategoryEntityModelImplFromJson(
   isEssential: json['isEssential'] as bool? ?? true,
 );
 
-Map<String, dynamic> _$$TotalByCategoryEntityModelImplToJson(
-  _$TotalByCategoryEntityModelImpl instance,
+Map<String, dynamic> _$TotalByCategoryEntityModelToJson(
+  _TotalByCategoryEntityModel instance,
 ) => <String, dynamic>{
   'categoryName': instance.categoryName,
   'categoryIcon': instance.categoryIcon,

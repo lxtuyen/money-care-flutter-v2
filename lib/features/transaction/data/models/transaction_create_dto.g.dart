@@ -6,24 +6,22 @@ part of 'transaction_create_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TransactionCreateDtoImpl _$$TransactionCreateDtoImplFromJson(
+_TransactionCreateDto _$TransactionCreateDtoFromJson(
   Map<String, dynamic> json,
-) => _$TransactionCreateDtoImpl(
+) => _TransactionCreateDto(
   amount: (json['amount'] as num?)?.toInt(),
   type: json['type'] as String?,
   note: json['note'] as String?,
   pictureUrl: json['pictuteURL'] as String?,
-  transactionDate:
-      json['transactionDate'] == null
-          ? null
-          : DateTime.parse(json['transactionDate'] as String),
+  transactionDate: json['transactionDate'] == null
+      ? null
+      : DateTime.parse(json['transactionDate'] as String),
   categoryId: (json['categoryId'] as num?)?.toInt(),
   userId: (json['userId'] as num?)?.toInt(),
-  fundId: (json['fundId'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$$TransactionCreateDtoImplToJson(
-  _$TransactionCreateDtoImpl instance,
+Map<String, dynamic> _$TransactionCreateDtoToJson(
+  _TransactionCreateDto instance,
 ) => <String, dynamic>{
   'amount': instance.amount,
   'type': instance.type,
@@ -32,5 +30,4 @@ Map<String, dynamic> _$$TransactionCreateDtoImplToJson(
   'transactionDate': instance.transactionDate?.toIso8601String(),
   'categoryId': instance.categoryId,
   'userId': instance.userId,
-  'fundId': instance.fundId,
 };

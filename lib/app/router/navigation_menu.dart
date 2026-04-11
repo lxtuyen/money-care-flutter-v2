@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
-import 'package:money_care/core/router/nav_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/app/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/fund/presentation/widgets/expired_fund_popup.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
 import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
@@ -420,6 +420,18 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   onTap: () {
                     Navigator.pop(context);
                     Get.toNamed(RoutePath.transactionWithImage);
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildTransactionOptionTile(
+                  icon: Icons.smart_toy_outlined,
+                  iconColor: AppColors.primary,
+                  iconBackground: AppColors.primary.withOpacity(0.12),
+                  title: 'Chat với AI',
+                  subtitle: 'Nhờ trợ lý AI giúp bạn quản lý tài chính',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.toNamed(RoutePath.chatbot);
                   },
                 ),
                 const SizedBox(height: 16),

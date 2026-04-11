@@ -6,7 +6,7 @@ part 'transaction_by_type_model.freezed.dart';
 part 'transaction_by_type_model.g.dart';
 
 @freezed
-class TransactionByTypeModel with _$TransactionByTypeModel {
+abstract class TransactionByTypeModel with _$TransactionByTypeModel {
   const factory TransactionByTypeModel({
     @Default([]) List<TransactionModel> income,
     @Default([]) List<TransactionModel> expense,

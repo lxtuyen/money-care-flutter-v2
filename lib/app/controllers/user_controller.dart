@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/features/user/data/models/user_profile_model.dart';
+import 'package:money_care/features/user/data/models/profile_update_dto.dart';
+import 'package:money_care/features/user/data/models/user_update_dto.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
@@ -15,13 +17,16 @@ class UserController extends GetxController {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController monthlyIncomeController = TextEditingController();
+  final TextEditingController avatarController = TextEditingController();
   final Rx<DateTime?> incomeDate = Rx(null);
+
+  Worker? _userWorker;
 
   @override
   void onInit() {
     super.onInit();
     final authController = Get.find<AuthController>();
-    ever(authController.user, (user) {
+    _userWorker = ever(authController.user, (user) {
       if (user != null) {
         userProfile.value = user.profile;
         _fillControllers(user.profile);
@@ -37,12 +42,13 @@ class UserController extends GetxController {
   }
 
   void _fillControllers(UserProfileEntity? profile) {
-    if (profile == null) return;
+    if (profile == null || isClosed) return;
     firstNameController.text = profile.firstName ?? '';
     lastNameController.text = profile.lastName ?? '';
     monthlyIncomeController.text =
         profile.monthlyIncome != null ? profile.monthlyIncome.toString() : '';
     incomeDate.value = profile.incomeDate;
+    avatarController.text = profile.avatar ?? '';
   }
 
   var userProfile = Rxn<UserProfileEntity>();
@@ -68,6 +74,7 @@ class UserController extends GetxController {
         lastName: lastNameController.text.trim(),
         monthlyIncome: int.tryParse(monthlyIncomeController.text.trim()),
         incomeDate: incomeDate.value,
+        avatar: avatarController.text.trim(),
       );
       final updated = await updateMyProfileUseCase(dto);
       userProfile.value = updated;
@@ -94,6 +101,7 @@ class UserController extends GetxController {
 
   @override
   void onClose() {
+    _userWorker?.dispose();
     firstNameController.dispose();
     lastNameController.dispose();
     monthlyIncomeController.dispose();

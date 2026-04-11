@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 
 class TransactionEmptyState extends StatelessWidget {
   const TransactionEmptyState({

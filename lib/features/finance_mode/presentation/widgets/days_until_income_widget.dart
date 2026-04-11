@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
+import 'package:money_care/app/controllers/user_controller.dart';
 
 /// Redesigned to be a compact status chip for better integration.
 class DaysUntilIncomeWidget extends StatefulWidget {

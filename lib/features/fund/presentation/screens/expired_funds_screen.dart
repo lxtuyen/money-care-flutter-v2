@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 
 class ExpiredFundsScreen extends StatefulWidget {
   const ExpiredFundsScreen({super.key});
@@ -268,7 +268,7 @@ class _ExpiredFundCard extends StatelessWidget {
                     const SizedBox(width: 12),
                     _StatItem(
                       icon: Icons.category_outlined,
-                      label: 'Danh má»¥c',
+                      label: 'Danh mục',
                       value: '${fund.categories.length}',
                       color: AppColors.success,
                     ),
@@ -299,7 +299,7 @@ class _ExpiredFundCard extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onExtend,
                         icon: const Icon(Icons.update_rounded, size: 18),
-                        label: const Text('Gia háº¡n'),
+                        label: const Text('Gia hạn'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,

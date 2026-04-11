@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
-import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/core/constants/app_assets.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 
 class CategoryItem extends StatelessWidget {
   final String title;

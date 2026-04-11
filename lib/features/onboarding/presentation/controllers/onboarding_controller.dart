@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 

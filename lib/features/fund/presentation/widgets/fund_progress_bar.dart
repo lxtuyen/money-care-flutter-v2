@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 
 class FundProgressBar extends StatelessWidget {
   const FundProgressBar({super.key});

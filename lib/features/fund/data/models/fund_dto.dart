@@ -4,7 +4,7 @@ import 'package:money_care/features/transaction/domain/entities/category_entity.
 part 'fund_dto.freezed.dart';
 
 @freezed
-class FundDto with _$FundDto {
+abstract class FundDto with _$FundDto {
   const factory FundDto({
     String? name,
     String? type,

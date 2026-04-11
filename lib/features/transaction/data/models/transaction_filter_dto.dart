@@ -4,13 +4,12 @@ part 'transaction_filter_dto.freezed.dart';
 part 'transaction_filter_dto.g.dart';
 
 @freezed
-class TransactionFilterDto with _$TransactionFilterDto {
-  @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
+abstract class TransactionFilterDto with _$TransactionFilterDto {
   const factory TransactionFilterDto({
     @JsonKey(name: 'categoryId') int? categoryId,
     @JsonKey(name: 'fundId') int? fundId,
-    String? startDate,
-    String? endDate,
+    @JsonKey(name: 'start_date') String? startDate,
+    @JsonKey(name: 'end_date') String? endDate,
   }) = _TransactionFilterDto;
 
   const TransactionFilterDto._();

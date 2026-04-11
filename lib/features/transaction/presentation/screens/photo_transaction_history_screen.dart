@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/core/presentation/widgets/layout/app_header.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 
 class PhotoTransactionHistoryScreen extends StatefulWidget {

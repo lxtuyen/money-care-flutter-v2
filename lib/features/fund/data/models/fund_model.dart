@@ -6,7 +6,7 @@ part 'fund_model.freezed.dart';
 part 'fund_model.g.dart';
 
 @freezed
-class FundModel with _$FundModel {
+abstract class FundModel with _$FundModel {
   const factory FundModel({
     required int id,
     required String name,

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/api_routes.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 

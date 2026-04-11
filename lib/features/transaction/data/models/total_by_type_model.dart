@@ -5,7 +5,7 @@ part 'total_by_type_model.freezed.dart';
 part 'total_by_type_model.g.dart';
 
 @freezed
-class TotalByTypeModel with _$TotalByTypeModel {
+abstract class TotalByTypeModel with _$TotalByTypeModel {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory TotalByTypeModel({
     @JsonKey(name: 'income_total') required int income,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/bubble.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/welcome_option.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/analysis_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/screens/widgets/receipt_items_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/screens/widgets/transaction_saved_bubble.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -58,7 +59,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         children: [
           ClipOval(
             child: Image.asset(
-              'assets/images/Logo.png',
+              'assets/images/logo.png',
               width: 34,
               height: 34,
               fit: BoxFit.cover,
@@ -92,6 +93,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         itemBuilder: (context, index) {
           final m = messages[index];
           if (!m.isUser && m.metadata != null) {
+            if (m.metadata!['__type'] == 'transaction_saved') {
+              return TransactionSavedBubble(metadata: m.metadata!);
+            }
             if (m.metadata!.containsKey('items')) {
               return ReceiptItemsBubble(metadata: m.metadata!);
             }

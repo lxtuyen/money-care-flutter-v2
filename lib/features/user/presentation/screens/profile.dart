@@ -2,13 +2,13 @@ import 'package:intl/intl.dart';
 import 'package:money_care/features/user/data/models/user_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
+import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/core/presentation/widgets/appbar/appbar.dart';
-import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
-import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
+import 'package:money_care/app/widgets/appbar/appbar.dart';
+import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/features/gamification/presentation/widgets/badges_section_widget.dart';
 import 'package:money_care/features/onboarding/presentation/widgets/complete_setup_banner_widget.dart';
 
@@ -60,7 +60,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
 
+                    // Avatar Display & Edit
+                    Center(
+                      child: Column(
+                        children: [
+                          Obx(() {
+                            final profile = userController.userProfile.value;
+                            return Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary.withOpacity(0.1),
+                                image: profile?.avatar != null && profile!.avatar!.isNotEmpty
+                                    ? DecorationImage(
+                                        image: NetworkImage(profile.avatar!),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: profile?.avatar == null || profile!.avatar!.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        (profile?.firstName?.isNotEmpty == true)
+                                            ? profile!.firstName![0].toUpperCase()
+                                            : "U",
+                                        style: const TextStyle(
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            );
+                          }),
+                          const SizedBox(height: 12),
+                          const Text(
+                            "Ảnh đại diện",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.text4,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
                     const CompleteSetupBannerWidget(),
+
+                    const SizedBox(height: 24),
 
                     const Text(
                       'Thông tin cơ bản',
@@ -69,6 +120,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.w700,
                         color: AppColors.text1,
                       ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    AppTextFormField(
+                      controller: userController.avatarController,
+                      label: 'Link ảnh đại diện',
+                      icon: Icons.link,
+                      hintText: 'Nhập URL ảnh của bạn',
                     ),
                     const SizedBox(height: 16),
 

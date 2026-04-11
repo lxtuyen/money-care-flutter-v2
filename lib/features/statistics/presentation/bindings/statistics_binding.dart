@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:money_care/core/network/api_client.dart';
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/datasources/transaction_remote_datasource.dart';
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';

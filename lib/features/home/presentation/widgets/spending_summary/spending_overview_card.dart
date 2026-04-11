@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/core/presentation/widgets/chart/app_bar_chart.dart';
+import 'package:money_care/app/widgets/chart/app_bar_chart.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class SpendingOverviewCard extends StatelessWidget {

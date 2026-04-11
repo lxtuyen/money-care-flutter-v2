@@ -5,7 +5,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/features/fund/data/models/models.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 
 class ExpiredFundPopup extends StatelessWidget {
   final ExpiredFundInfoModel fund;

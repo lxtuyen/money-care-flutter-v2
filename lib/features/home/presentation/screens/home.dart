@@ -1,20 +1,20 @@
-import 'package:money_care/features/statistics/presentation/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
-import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
-import 'package:money_care/features/user/presentation/controllers/user_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/widgets.dart';
-import 'package:money_care/core/presentation/widgets/icon/circular_icon.dart';
-import 'package:money_care/core/presentation/widgets/texts/section_heading.dart';
+import 'package:money_care/app/widgets/icon/circular_icon.dart';
+import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/app_assets.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
@@ -23,6 +23,7 @@ import 'package:money_care/features/finance_mode/presentation/widgets/days_until
 import 'package:money_care/features/fund/presentation/widgets/fund_progress_bar.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,6 +52,14 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
   void initState() {
     super.initState();
     initData();
+    _listenToTransactionChanges();
+  }
+
+  void _listenToTransactionChanges() {
+    ever(
+      transactionController.transactionChangedCount,
+      (_) => initData(),
+    );
   }
 
   Future<void> initData() async {
@@ -71,7 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
       ),
     ]);
     
-    // Automatically check for mode suggestions after data loads
     _checkModeSuggestion();
   }
 
@@ -99,7 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 42, height: 5,
+              width: 42,
+              height: 5,
               decoration: BoxDecoration(
                 color: AppColors.borderPrimary,
                 borderRadius: BorderRadius.circular(999),
@@ -111,8 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-             Text(
-              'Bạn đã tiêu quá ${ (statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
+            Text(
+              'Bạn đã tiêu quá ${(statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 14, color: AppColors.text4),
             ),
@@ -127,7 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                     },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                     child: const Text('Bỏ qua'),
                   ),
@@ -142,9 +153,14 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.error,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: const Text('Bật Sinh tồn', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Bật Sinh tồn',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -163,122 +179,184 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
         padding: const EdgeInsets.all(AppSizes.md),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
               children: [
-                Obx(() {
-                  final profile = userController.userProfile.value;
-
-                  if (userController.isLoading.value) {
-                    return const SizedBox(
-                      height: 40,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        profile == null ? "Chào mừng" : "Chào mừng, ${profile.fullName}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          color: AppColors.text1,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const FinanceModeBanner(),
-                          const SizedBox(width: 8),
-                          const DaysUntilIncomeWidget(),
-                        ],
-                      ),
-                    ],
-                  );
-                }),
-
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const StreakBadgeWidget(),
-                    const SizedBox(width: 12),
-                    CircularIcon(
-                      iconPath: AppIcons.search,
-                      backgroundColor: const Color(0XFFF5FAFE),
-                      height: 36,
-                      width: 36,
-                      onTap: () {
-                        showGeneralDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          barrierLabel: '',
-                          transitionDuration: const Duration(milliseconds: 200),
-                          pageBuilder: (context, anim1, anim2) {
-                            return Align(
-                              alignment: Alignment.topCenter,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Container(
-                                  margin: const EdgeInsets.only(top: 80),
-                                  width: MediaQuery.of(context).size.width * 0.9,
-                                  child: Obx(() {
-                                    final transactions = transactionController
-                                            .transactionByfilter
-                                            .value
-                                            ?.expenseTransactions ??
-                                        [];
+                    Expanded(
+                      child: Obx(() {
+                        final profile = userController.userProfile.value;
+                        final String greeting = AppHelperFunction.getGreeting();
+                        
+                        if (userController.isLoading.value) {
+                          return const SizedBox(
+                            height: 48,
+                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          );
+                        }
 
-                                    if (transactionController.isLoading.value) {
-                                      return const SizedBox(
-                                        height: 120,
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      );
-                                    }
-
-                                    return TransactionSearchAnchor(
-                                      listData: transactions,
-                                    );
-                                  }),
+                        return Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(width: AppSizes.spaceBtwItems),
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        CircularIcon(
-                          onTap: () => Get.toNamed(RoutePath.notification),
-                          iconPath: AppIcons.notification,
-                          backgroundColor: const Color(0XFFF5FAFE),
-                          height: 36,
-                          width: 36,
-                        ),
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 1.5,
+                              child: Center(
+                                child: profile?.avatar != null 
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(22),
+                                      child: Image.network(profile!.avatar!, width: 44, height: 44, fit: BoxFit.cover),
+                                    )
+                                  : Text(
+                                      (profile?.firstName?.isNotEmpty == true) ? profile!.firstName![0].toUpperCase() : "U",
+                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                    ),
                               ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    greeting,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.text4,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  Text(
+                                    profile?.fullName ?? "Người dùng",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                      color: AppColors.text1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+
+                    // Right: Actions
+                    Row(
+                      children: [
+                        CircularIcon(
+                          iconPath: AppIcons.search,
+                          backgroundColor: const Color(0XFFF5FAFE),
+                          height: 38,
+                          width: 38,
+                          onTap: () {
+                            showGeneralDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              barrierLabel: '',
+                              transitionDuration: const Duration(milliseconds: 200),
+                              pageBuilder: (context, anim1, anim2) {
+                                return Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(top: 80),
+                                      width: MediaQuery.of(context).size.width * 0.9,
+                                      child: Obx(() {
+                                        final transactions = transactionController
+                                                .transactionByfilter
+                                                .value
+                                                ?.expenseTransactions ??
+                                            [];
+
+                                        if (transactionController.isLoading.value) {
+                                          return const SizedBox(
+                                            height: 120,
+                                            child: Center(
+                                              child: CircularProgressIndicator(),
+                                            ),
+                                          );
+                                        }
+
+                                        return TransactionSearchAnchor(
+                                          listData: transactions,
+                                        );
+                                      }),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            CircularIcon(
+                              onTap: () => Get.toNamed(RoutePath.notification),
+                              iconPath: AppIcons.notification,
+                              backgroundColor: const Color(0XFFF5FAFE),
+                              height: 38,
+                              width: 38,
+                            ),
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Bottom Row: Status Chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      const StreakBadgeWidget(),
+                      const SizedBox(width: 8),
+                      const FinanceModeBanner(),
+                      const SizedBox(width: 8),
+                      const DaysUntilIncomeWidget(),
+                    ],
+                  ),
                 ),
               ],
             ),

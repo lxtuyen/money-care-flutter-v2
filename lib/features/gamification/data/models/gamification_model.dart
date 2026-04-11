@@ -6,7 +6,7 @@ part 'gamification_model.freezed.dart';
 part 'gamification_model.g.dart';
 
 @freezed
-class GamificationModel with _$GamificationModel {
+abstract class GamificationModel with _$GamificationModel {
   const factory GamificationModel({
     required int userId,
     @Default(0) int currentStreak,

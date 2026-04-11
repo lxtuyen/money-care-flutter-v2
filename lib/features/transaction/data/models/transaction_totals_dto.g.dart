@@ -6,20 +6,20 @@ part of 'transaction_totals_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TransactionTotalsDtoImpl _$$TransactionTotalsDtoImplFromJson(
+_TransactionTotalsDto _$TransactionTotalsDtoFromJson(
   Map<String, dynamic> json,
-) => _$TransactionTotalsDtoImpl(
+) => _TransactionTotalsDto(
   fundId: (json['fundId'] as num?)?.toInt(),
   startDate: json['start_date'] as String?,
   endDate: json['end_date'] as String?,
   type: json['type'] as String?,
 );
 
-Map<String, dynamic> _$$TransactionTotalsDtoImplToJson(
-  _$TransactionTotalsDtoImpl instance,
+Map<String, dynamic> _$TransactionTotalsDtoToJson(
+  _TransactionTotalsDto instance,
 ) => <String, dynamic>{
-  if (instance.fundId case final value?) 'fundId': value,
-  if (instance.startDate case final value?) 'start_date': value,
-  if (instance.endDate case final value?) 'end_date': value,
-  if (instance.type case final value?) 'type': value,
+  'fundId': instance.fundId,
+  'start_date': instance.startDate,
+  'end_date': instance.endDate,
+  'type': instance.type,
 };

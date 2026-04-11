@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
-import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
-import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/domain/usecases/scan_receipt_usecases.dart';
 
 class PhotoTransactionController extends GetxController {
@@ -71,18 +71,15 @@ class PhotoTransactionController extends GetxController {
     try {
       final result = await scanReceiptUseCase!(XFile(path));
       
-      if (result.totalAmount != null) {
-        amountController.text = AppCurrencyFormField.format(result.totalAmount!.toString());
-      }
+      amountController.text = AppCurrencyFormField.format(result.totalAmount.toString());
       
-      if (result.note != null && result.note!.isNotEmpty) {
-        noteController.text = result.note!;
-      } else if (result.merchantName != null) {
+      if (result.merchantName != null && result.merchantName!.isNotEmpty) {
         noteController.text = result.merchantName!;
       }
 
-      if (result.date != null) {
-        selectedDate.value = result.date;
+      final parsedDate = DateTime.tryParse(result.date);
+      if (parsedDate != null) {
+        selectedDate.value = parsedDate;
       }
 
       if (result.categoryName != null) {
@@ -98,9 +95,9 @@ class PhotoTransactionController extends GetxController {
         }
       }
       
-      AppHelperFunction.showSuccessSnackBar('Đã trích xuất thông tin từ hóa đơn!');
+      AppHelperFunction.showSuccessSnackBar('Ã„ÂÃƒÂ£ trÃƒÂ­ch xuÃ¡ÂºÂ¥t thÃƒÂ´ng tin tÃ¡Â»Â« hÃƒÂ³a Ã„â€˜Ã†Â¡n!');
     } catch (e) {
-      AppHelperFunction.showErrorSnackBar('Lỗi quét hóa đơn: $e');
+      AppHelperFunction.showErrorSnackBar('LÃ¡Â»â€”i quÃƒÂ©t hÃƒÂ³a Ã„â€˜Ã†Â¡n: $e');
     } finally {
       isScanning.value = false;
     }
@@ -143,12 +140,12 @@ class PhotoTransactionController extends GetxController {
               const SizedBox(height: 16),
               ListTile(
                 leading: const Icon(Icons.photo_camera_outlined),
-                title: const Text('Chụp ảnh'),
+                title: const Text('ChÃ¡Â»Â¥p Ã¡ÂºÂ£nh'),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Chọn từ thư viện'),
+                title: const Text('ChÃ¡Â»Ân tÃ¡Â»Â« thÃ†Â° viÃ¡Â»â€¡n'),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
               if (selectedImagePath.value != null)
@@ -157,7 +154,7 @@ class PhotoTransactionController extends GetxController {
                     Icons.delete_outline,
                     color: Colors.redAccent,
                   ),
-                  title: const Text('Gỡ ảnh hiện tại'),
+                  title: const Text('GÃ¡Â»Â¡ Ã¡ÂºÂ£nh hiÃ¡Â»â€¡n tÃ¡ÂºÂ¡i'),
                   onTap: () {
                     Navigator.pop(context);
                     removeImage();
@@ -184,7 +181,7 @@ class PhotoTransactionController extends GetxController {
         selectedImagePath.value = image.path;
       }
     } catch (e) {
-      AppHelperFunction.showErrorSnackBar('Không thể chọn ảnh: $e');
+      AppHelperFunction.showErrorSnackBar('KhÃƒÂ´ng thÃ¡Â»Æ’ chÃ¡Â»Ân Ã¡ÂºÂ£nh: $e');
     } finally {
       isPickingImage.value = false;
     }
@@ -223,7 +220,7 @@ class PhotoTransactionController extends GetxController {
 
     if (selectedImagePath.value == null || selectedImagePath.value!.isEmpty) {
       AppHelperFunction.showErrorSnackBar(
-        'Vui lòng chụp hoặc chọn ảnh cho bản ghi.',
+        'Vui lÃƒÂ²ng chÃ¡Â»Â¥p hoÃ¡ÂºÂ·c chÃ¡Â»Ân Ã¡ÂºÂ£nh cho bÃ¡ÂºÂ£n ghi.',
       );
       return;
     }
@@ -231,7 +228,7 @@ class PhotoTransactionController extends GetxController {
     final userId = await appController.getCurrentUserId();
     if (userId == null) {
       AppHelperFunction.showErrorSnackBar(
-        'Không thể xác định người dùng. Vui lòng đăng nhập lại.',
+        'KhÃƒÂ´ng thÃ¡Â»Æ’ xÃƒÂ¡c Ã„â€˜Ã¡Â»â€¹nh ngÃ†Â°Ã¡Â»Âi dÃƒÂ¹ng. Vui lÃƒÂ²ng Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p lÃ¡ÂºÂ¡i.',
       );
       return;
     }
@@ -240,7 +237,7 @@ class PhotoTransactionController extends GetxController {
       final dto = buildTransactionDto();
       await transactionController.createTransaction(dto);
       Get.back();
-      AppHelperFunction.showSuccessSnackBar('Tạo bản ghi kèm ảnh thành công');
+      AppHelperFunction.showSuccessSnackBar('TÃ¡ÂºÂ¡o bÃ¡ÂºÂ£n ghi kÃƒÂ¨m Ã¡ÂºÂ£nh thÃƒÂ nh cÃƒÂ´ng');
       reset();
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
@@ -255,4 +252,6 @@ class PhotoTransactionController extends GetxController {
     super.onClose();
   }
 }
+
+
 

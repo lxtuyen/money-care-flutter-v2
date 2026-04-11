@@ -24,7 +24,7 @@ class ColorConverter implements JsonConverter<Color?, dynamic> {
 }
 
 @freezed
-class CategoryModel with _$CategoryModel {
+abstract class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
     int? id,
     required String name,

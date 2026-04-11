@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/features/home/presentation/widgets/balance_detail_dialog.dart';
+import 'package:money_care/features/home/presentation/widgets/budget_detail_dialog.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/core/presentation/widgets/icon/rounded_icon.dart';
+import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class SpendingLimitCard extends StatelessWidget {

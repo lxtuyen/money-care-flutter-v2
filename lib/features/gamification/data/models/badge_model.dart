@@ -5,7 +5,7 @@ part 'badge_model.freezed.dart';
 part 'badge_model.g.dart';
 
 @freezed
-class BadgeModel with _$BadgeModel {
+abstract class BadgeModel with _$BadgeModel {
   const factory BadgeModel({
     required String key,
     required String name,

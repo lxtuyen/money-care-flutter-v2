@@ -10,17 +10,16 @@ Object? _readPictureUrl(Map json, String key) {
 }
 
 @freezed
-class TransactionModel with _$TransactionModel {
-  @JsonSerializable(fieldRename: FieldRename.snake)
+abstract class TransactionModel with _$TransactionModel {
   const factory TransactionModel({
     int? id,
     @Default(0) int amount,
     @Default('') String type,
-    @JsonKey(readValue: _readPictureUrl) String? pictureUrl,
-    DateTime? transactionDate,
+    @JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,
+    @JsonKey(name: 'transaction_date') DateTime? transactionDate,
     String? note,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
     CategoryModel? category,
   }) = _TransactionModel;
 

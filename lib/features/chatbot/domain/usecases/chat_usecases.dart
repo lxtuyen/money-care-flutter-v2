@@ -1,4 +1,4 @@
-import 'package:money_care/features/chatbot/data/models/chat_model.dart';
+import 'package:money_care/features/chatbot/data/models/models.dart';
 import 'package:money_care/features/chatbot/domain/repositories/chat_repository.dart';
 
 class SendToChatbotUseCase {
@@ -10,3 +10,4 @@ class SendToChatbotUseCase {
     return repository.sendToChatbot(dto, filePath: filePath);
   }
 }
+

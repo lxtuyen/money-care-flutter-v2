@@ -1,5 +1,6 @@
-import 'package:money_care/features/chatbot/data/models/chat_model.dart';
+import 'package:money_care/features/chatbot/data/models/models.dart';
 
 abstract class ChatRepository {
   Future<String> sendToChatbot(ChatDto dto, {String? filePath});
 }
+

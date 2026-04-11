@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/fund/data/models/fund_report_model.dart';
-import 'package:money_care/features/fund/presentation/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 
 class FundReportScreen extends StatefulWidget {
   const FundReportScreen({super.key});

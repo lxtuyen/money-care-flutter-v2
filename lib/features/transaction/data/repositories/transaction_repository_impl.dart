@@ -66,6 +66,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<StatisticsSummaryEntity> getStatisticsSummary(
       int userId, TransactionTotalsDto dto) async {
-    return await remoteDatasource.getStatisticsSummary(userId, dto);
+    final model = await remoteDatasource.getStatisticsSummary(userId, dto);
+    return model.toEntity();
   }
 }
+

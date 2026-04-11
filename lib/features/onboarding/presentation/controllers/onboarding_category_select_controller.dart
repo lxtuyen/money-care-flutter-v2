@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/onboarding/onboarding_data.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
@@ -8,23 +8,23 @@ import 'package:money_care/features/transaction/presentation/controllers/user_ca
 
 class OnboardingCategorySelectController extends GetxController {
   final RxList<SuggestedCategory> expenseCategories =
-      List.from(suggestedExpenseCategories).obs;
+      List<SuggestedCategory>.from(suggestedExpenseCategories).obs;
   final RxList<SuggestedCategory> incomeCategories =
-      List.from(suggestedIncomeCategories).obs;
+      List<SuggestedCategory>.from(suggestedIncomeCategories).obs;
 
-  final RxSet<String> selectedExpenseNames = <String>{}.obs;
-  final RxSet<String> selectedIncomeNames = <String>{}.obs;
+  final RxList<String> selectedExpenseNames = <String>[].obs;
+  final RxList<String> selectedIncomeNames = <String>[].obs;
 
   int get selectedExpenseCount => selectedExpenseNames.length;
   int get selectedIncomeCount => selectedIncomeNames.length;
   bool get isValid => selectedExpenseCount >= 3 && selectedIncomeCount >= 1;
 
   void toggleCategory(String name, bool isExpense) {
-    final set = isExpense ? selectedExpenseNames : selectedIncomeNames;
-    if (set.contains(name)) {
-      set.remove(name);
+    final list = isExpense ? selectedExpenseNames : selectedIncomeNames;
+    if (list.contains(name)) {
+      list.remove(name);
     } else {
-      set.add(name);
+      list.add(name);
     }
   }
 
@@ -32,10 +32,10 @@ class OnboardingCategorySelectController extends GetxController {
     final newCat = SuggestedCategory(name, emoji, type == 'expense');
     if (type == 'expense') {
       expenseCategories.add(newCat);
-      selectedExpenseNames.add(name);
+      if (!selectedExpenseNames.contains(name)) selectedExpenseNames.add(name);
     } else {
       incomeCategories.add(newCat);
-      selectedIncomeNames.add(name);
+      if (!selectedIncomeNames.contains(name)) selectedIncomeNames.add(name);
     }
   }
 
@@ -87,7 +87,6 @@ class OnboardingCategorySelectController extends GetxController {
   }
 
   void onSkip() {
-    // Bỏ qua onboarding - cũng đánh dấu là đã xem để không hiện lại
     final appController = Get.find<AppController>();
     final userId = appController.userId.value;
     if (userId != null) {

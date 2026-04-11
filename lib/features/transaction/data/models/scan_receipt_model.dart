@@ -5,7 +5,7 @@ part 'scan_receipt_model.freezed.dart';
 part 'scan_receipt_model.g.dart';
 
 @freezed
-class ScanReceiptModel with _$ScanReceiptModel {
+abstract class ScanReceiptModel with _$ScanReceiptModel {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ScanReceiptModel({
     required String rawText,

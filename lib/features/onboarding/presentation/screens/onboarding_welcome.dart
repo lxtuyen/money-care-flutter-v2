@@ -4,7 +4,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/image_string.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 class OnboardingWelcomeScreen extends StatelessWidget {
   const OnboardingWelcomeScreen({super.key});

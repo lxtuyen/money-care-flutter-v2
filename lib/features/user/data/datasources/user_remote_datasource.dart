@@ -1,6 +1,7 @@
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/user/data/models/user_profile_model.dart';
+import 'package:money_care/features/user/data/models/profile_update_dto.dart';
 
 abstract class UserRemoteDatasource {
   Future<UserProfileModel> updateMyProfile(ProfileUpdateDto dto);

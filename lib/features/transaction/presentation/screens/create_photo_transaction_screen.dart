@@ -6,10 +6,10 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/presentation/widgets/button/primary_button.dart';
-import 'package:money_care/core/presentation/widgets/text_field/app_currency_form_field.dart';
-import 'package:money_care/core/presentation/widgets/text_field/app_text_form_field.dart';
-import 'package:money_care/core/presentation/widgets/text_field/date_picker_field.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
+import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
+import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
@@ -250,6 +250,7 @@ class _CreatePhotoTransactionScreenState
               Obx(() {
                 final path = controller.selectedImagePath.value;
                 return _PhotoPreviewCard(
+                  controller: controller,
                   imagePath: path,
                   onRetake: () => setState(() {
                     _showForm = false;
@@ -597,9 +598,12 @@ class _FlashButton extends StatelessWidget {
 
 class _PhotoPreviewCard extends StatelessWidget {
   const _PhotoPreviewCard({
+    required this.controller,
     required this.imagePath,
     required this.onRetake,
   });
+
+  final PhotoTransactionController controller;
 
   final String? imagePath;
   final VoidCallback onRetake;
@@ -787,3 +791,4 @@ class _TypeChip extends StatelessWidget {
     );
   }
 }
+

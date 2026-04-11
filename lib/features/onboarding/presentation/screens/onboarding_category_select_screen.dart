@@ -72,35 +72,48 @@ class OnboardingCategorySelectScreen
                           'Bạn có thể thêm các danh mục phụ sau này (ví dụ: nhà hàng, quán cà phê)',
                     ),
                     const SizedBox(height: 12),
-                    Obx(() => OnboardingCategoryChipGrid(
-                          categories: controller.expenseCategories,
-                          selectedNames: controller.selectedExpenseNames,
-                          onToggle: (name) =>
-                              controller.toggleCategory(name, true),
-                        )),
+                    Obx(() {
+                      final cats = controller.expenseCategories.toList();
+                      final selected = controller.selectedExpenseNames.toSet();
+                      return OnboardingCategoryChipGrid(
+                        categories: cats,
+                        selectedNames: selected,
+                        onToggle: (name) =>
+                            controller.toggleCategory(name, true),
+                      );
+                    }),
                     const SizedBox(height: 16),
                     OnboardingAddNewButton(
                         onTap: () => _showAddCategoryDialog(context)),
                     const SizedBox(height: 24),
                     const OnboardingSectionLabel(label: 'Đề xuất thu nhập'),
                     const SizedBox(height: 12),
-                    Obx(() => OnboardingCategoryChipGrid(
-                          categories: controller.incomeCategories,
-                          selectedNames: controller.selectedIncomeNames,
-                          onToggle: (name) =>
-                              controller.toggleCategory(name, false),
-                        )),
+                    Obx(() {
+                      final cats = controller.incomeCategories.toList();
+                      final selected = controller.selectedIncomeNames.toSet();
+                      return OnboardingCategoryChipGrid(
+                        categories: cats,
+                        selectedNames: selected,
+                        onToggle: (name) =>
+                            controller.toggleCategory(name, false),
+                      );
+                    }),
                     const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
-            Obx(() => OnboardingCategoryBottomBar(
-                  selectedExpenseCount: controller.selectedExpenseCount,
-                  selectedIncomeCount: controller.selectedIncomeCount,
-                  isValid: controller.isValid,
-                  onContinue: controller.onContinue,
-                )),
+            Obx(() {
+              final expenseCount = controller.selectedExpenseNames.length;
+              final incomeCount = controller.selectedIncomeNames.length;
+              final valid = expenseCount >= 3 && incomeCount >= 1;
+              return OnboardingCategoryBottomBar(
+                selectedExpenseCount: expenseCount,
+                selectedIncomeCount: incomeCount,
+                isValid: valid,
+                onContinue: controller.onContinue,
+              );
+            }),
           ],
         ),
       ),

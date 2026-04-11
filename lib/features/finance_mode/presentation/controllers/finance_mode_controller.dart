@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/domain/repositories/finance_mode_repository.dart';
 import 'package:money_care/features/finance_mode/domain/usecases/usecases.dart';

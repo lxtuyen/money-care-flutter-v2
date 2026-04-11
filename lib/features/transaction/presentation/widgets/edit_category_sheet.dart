@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/presentation/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/widgets/edit_category.dart';
 

@@ -12,7 +12,7 @@ import 'package:money_care/features/statistics/presentation/widgets/transaction_
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/features/transaction/presentation/controllers/transaction_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/filter_dialog.dart';
 import 'package:money_care/features/transaction/presentation/widgets/search_filter.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
@@ -55,33 +55,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
-    final futures = <Future>[];
-
     if (transactionController.transactionByfilter.value == null) {
-      futures.add(
-        transactionController.loadTransactionScreenData(
-          userId,
-          TransactionFilterDto(
-            fundId:
-                fundController.fundId.value > 0
-                    ? fundController.fundId.value
-                    : null,
-            startDate: filterController.startDate.value?.toIso8601String(),
-            endDate: filterController.endDate.value?.toIso8601String(),
-          ),
-        ),
-      );
+      await transactionController.applyFilters(userId);
     }
-
-    futures.add(
-      statisticsController.getTotalByType(
-        userId,
-        startDate: filterController.startDate.value,
-        endDate: filterController.endDate.value,
-      ),
-    );
-
-    await Future.wait(futures);
   }
 
   @override
@@ -233,12 +209,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildEmptyView() {
     return TransactionEmptyState(
-      message: 'Không có giao d?ch phù h?p',
+      message: 'Không có giao dịch phù hợp',
       action:
           filterController.hasActiveFilters
               ? TextButton(
                 onPressed: _clearFilters,
-                child: const Text('Xóa t?t c? b? l?c'),
+                child: const Text('Xóa tất cả bộ lọc'),
               )
               : null,
     );
@@ -262,9 +238,32 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder:
           (context) => Obx(() {
-            final data = fundController.currentFund.value;
+            final isExpenseTab = selected == 'chi';
 
-            if (fundController.isLoadingCurrent.value) {
+            final categoriesFromStats = isExpenseTab
+                ? statisticsController.expenseCategories
+                : statisticsController.incomeCategories;
+
+            List<CategoryEntity> filteredCategories = categoriesFromStats
+                .map((e) => CategoryEntity(
+                      id: e.categoryId,
+                      name: e.categoryName,
+                      icon: e.categoryIcon,
+                      type: isExpenseTab ? 'expense' : 'income',
+                    ))
+                .toList();
+
+            if (filteredCategories.isEmpty) {
+              final data = fundController.currentFund.value;
+              final fundCategories = data?.categories ?? [];
+              filteredCategories = fundCategories.where((c) {
+                final catType = c.type?.toLowerCase() ?? '';
+                return isExpenseTab ? catType != 'income' : catType == 'income';
+              }).toList();
+            }
+
+            if (fundController.isLoadingCurrent.value &&
+                filteredCategories.isEmpty) {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 50),
@@ -273,13 +272,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               );
             }
 
-            if (data == null) {
-              return const SizedBox.shrink();
-            }
-
             return FilterDialog(
-              title: 'L?c theo phân lo?i',
-              categories: data.categories,
+              title: 'Lọc theo phân loại',
+              categories: filteredCategories,
               onApply: (_) => _applyFilter(),
             );
           }),
@@ -291,8 +286,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder:
           (_) => FilterDialog(
-            title: 'L?c theo th?i gian',
-            items: const ['Hôm nay', 'Tu?n này', 'Tháng này', 'Tùy ch?nh'],
+            title: 'Lọc theo thời gian',
+            items: const ['Hôm nay', 'Tuần này', 'Tháng này', 'Tùy chỉnh'],
             onApply: (_) => _applyFilter(),
           ),
     );
@@ -302,23 +297,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final userId = appController.userId.value;
     if (userId == null) return;
 
-    await Future.wait([
-      transactionController.filterTransactions(
-        userId,
-        TransactionFilterDto(
-          categoryId: filterController.categoryId.value,
-          fundId:
-              fundController.fundId.value > 0 ? fundController.fundId.value : null,
-          startDate: filterController.startDate.value?.toIso8601String(),
-          endDate: filterController.endDate.value?.toIso8601String(),
-        ),
-      ),
-      statisticsController.getTotalByType(
-        userId,
-        startDate: filterController.startDate.value,
-        endDate: filterController.endDate.value,
-      ),
-    ]);
+    await transactionController.applyFilters(userId);
   }
 
   void _clearFilters() {
@@ -338,123 +317,136 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       builder: (context) {
         return SafeArea(
           child: Obx(
-            () => Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 44,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: AppColors.borderPrimary,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      Container(
+            () {
+              String categorySubtitle = 'Chọn loại chi tiêu hoặc thu nhập cụ thể';
+              if (filterController.categoryId.value != null) {
+                final categoryId = filterController.categoryId.value;
+                final cats = fundController.currentFund.value?.categories ?? [];
+                final cat = cats.cast<CategoryEntity?>().firstWhere(
+                      (c) => c?.id == categoryId,
+                      orElse: () => null,
+                    );
+                if (cat != null) {
+                  categorySubtitle = 'Đã chọn: ${cat.name}';
+                } else {
+                  categorySubtitle = 'Đã chọn 1 phân loại';
+                }
+              }
+
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                ),
+                padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
                         width: 44,
-                        height: 44,
+                        height: 5,
                         decoration: BoxDecoration(
-                          color: AppColors.backgroundPrimary,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Icon(
-                          Icons.tune_rounded,
-                          color: AppColors.primary,
+                          color: AppColors.borderPrimary,
+                          borderRadius: BorderRadius.circular(999),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'B? l?c giao d?ch',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Ch?n cách b?n mu?n thu h?p danh sách giao d?ch.',
-                              style: TextStyle(
-                                color: AppColors.text4,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary.withOpacity(0.12),
-                          AppColors.secondaryOrange.withOpacity(0.1),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Row(
+                    const SizedBox(height: 18),
+                    Row(
                       children: [
-                        const Icon(
-                          Icons.auto_awesome_rounded,
-                          color: AppColors.primary,
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundPrimary,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Icon(
+                            Icons.tune_rounded,
+                            color: AppColors.primary,
+                          ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            filterController.hasActiveFilters
-                                ? 'Ðang áp d?ng ${filterController.activeFilterCount} tiêu chí l?c.'
-                                : 'Chua có b? l?c nào du?c áp d?ng.',
-                            style: const TextStyle(
-                              color: AppColors.text2,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Bộ lọc giao dịch',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Chọn cách bạn muốn thu hẹp danh sách giao dịch.',
+                                style: TextStyle(
+                                  color: AppColors.text4,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildFilterSheetTile(
-                    icon: Icons.category_outlined,
-                    title: 'L?c theo phân lo?i',
-                    subtitle:
-                        filterController.categoryId.value != null
-                            ? 'Ðã ch?n 1 phân lo?i'
-                            : 'Ch?n lo?i chi tiêu ho?c thu nh?p c? th?',
-                    onTap: () {
-                      Get.back();
-                      _showCategoryFilterDialog(context);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  _buildFilterSheetTile(
-                    icon: Icons.calendar_today_rounded,
-                    title: 'L?c theo th?i gian',
-                    subtitle: filterController.dateLabel.value,
-                    onTap: () {
-                      Get.back();
-                      _showTimeFilterDialog(context);
-                    },
-                  ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withOpacity(0.12),
+                            AppColors.secondaryOrange.withOpacity(0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.auto_awesome_rounded,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              filterController.hasActiveFilters
+                                  ? 'Đang áp dụng ${filterController.activeFilterCount} tiêu chí lọc.'
+                                  : 'Chưa có bộ lọc nào được áp dụng.',
+                              style: const TextStyle(
+                                color: AppColors.text2,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFilterSheetTile(
+                      icon: Icons.category_outlined,
+                      title: 'Lọc theo phân loại',
+                      subtitle: categorySubtitle,
+                      onTap: () {
+                        Get.back();
+                        _showCategoryFilterDialog(context);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFilterSheetTile(
+                      icon: Icons.calendar_today_rounded,
+                      title: 'Lọc theo thời gian',
+                      subtitle: filterController.dateLabel.value,
+                      onTap: () {
+                        Get.back();
+                        _showTimeFilterDialog(context);
+                      },
+                    ),
                   if (filterController.hasActiveFilters) ...[
                     const SizedBox(height: 16),
                     SizedBox(
@@ -481,12 +473,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   ],
                 ],
               ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+            );
+          },
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildFilterSheetTile({
     required IconData icon,

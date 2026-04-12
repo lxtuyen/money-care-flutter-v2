@@ -7,6 +7,7 @@ part 'total_by_category_model.g.dart';
 @freezed
 abstract class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
   const factory TotalByCategoryEntityModel({
+    @JsonKey(name: 'category_id') int? categoryId,
     @Default('') String categoryName,
     @Default('') String categoryIcon,
     @Default(0.0) double percentage,
@@ -22,6 +23,7 @@ abstract class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
       _$TotalByCategoryEntityModelFromJson(json);
 
   TotalByCategoryEntity toEntity() => TotalByCategoryEntity(
+        categoryId: categoryId,
         categoryName: categoryName,
         total: total,
         categoryIcon: categoryIcon,

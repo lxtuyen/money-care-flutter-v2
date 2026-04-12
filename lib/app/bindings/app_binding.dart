@@ -46,6 +46,7 @@ import 'package:money_care/features/user/data/datasources/user_remote_datasource
 import 'package:money_care/features/user/data/repositories/user_repository_impl.dart';
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
+import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
 
 class AppBinding extends Bindings {
   final LocalStorage storage;
@@ -109,20 +110,6 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final transactionRemoteDs = TransactionRemoteDatasourceImpl(api: apiService);
-    final transactionRepo = TransactionRepositoryImpl(
-      remoteDatasource: transactionRemoteDs,
-    );
-    Get.put<TransactionController>(
-      TransactionController(
-        filterTransactionsUseCase: FilterTransactionsUseCase(transactionRepo),
-        createTransactionUseCase: CreateTransactionUseCase(transactionRepo),
-        updateTransactionUseCase: UpdateTransactionUseCase(transactionRepo),
-        deleteTransactionUseCase: DeleteTransactionUseCase(transactionRepo),
-      ),
-      permanent: true,
-    );
-
     final fundRemoteDs = FundRemoteDatasourceImpl(api: apiService);
     final fundRepo = FundRepositoryImpl(remoteDatasource: fundRemoteDs);
     Get.put<FundController>(
@@ -140,6 +127,20 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
+    final transactionRemoteDs = TransactionRemoteDatasourceImpl(api: apiService);
+    final transactionRepo = TransactionRepositoryImpl(
+      remoteDatasource: transactionRemoteDs,
+    );
+    Get.put<TransactionController>(
+      TransactionController(
+        filterTransactionsUseCase: FilterTransactionsUseCase(transactionRepo),
+        createTransactionUseCase: CreateTransactionUseCase(transactionRepo),
+        updateTransactionUseCase: UpdateTransactionUseCase(transactionRepo),
+        deleteTransactionUseCase: DeleteTransactionUseCase(transactionRepo),
+      ),
+      permanent: true,
+    );
+
     final userRemoteDs = UserRemoteDatasourceImpl(api: apiService);
     final userRepo = UserRepositoryImpl(remoteDatasource: userRemoteDs);
     Get.put<UserController>(
@@ -150,6 +151,7 @@ class AppBinding extends Bindings {
     );
 
     AppStateBinding(apiClient: apiService).dependencies();
+    Get.put<HomeController>(HomeController());
 
     TransactionBinding(apiClient: apiService).dependencies();
     FundBinding(apiClient: apiService).dependencies();

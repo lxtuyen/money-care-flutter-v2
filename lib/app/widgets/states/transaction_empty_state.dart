@@ -21,7 +21,7 @@ class TransactionEmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AppSvgIcon(assetPath: AppIcons.emptyFolder, width: 150, height: 150),
-          const SizedBox(height: AppSizes.spaceBtwItems),
+          const SizedBox(height: AppSizes.sm),
           Text(
             message,
             style: const TextStyle(fontSize: 16, color: AppColors.text5),

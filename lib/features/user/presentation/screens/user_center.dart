@@ -33,16 +33,9 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   }
 
   Future<void> initData() async {
-    final userId = await appController.getCurrentUserId();
-
-    if (userId == null) return;
-
-    final currentFund = fundController.currentFund.value;
-    await statisticsController.getTotalByType(
-      userId,
-      startDate: currentFund?.startDate,
-      endDate: currentFund?.endDate,
-    );
+    // Không cần gọi getTotalByType thủ công ở đây nữa
+    // vì dữ liệu thống kê đã được nạp và đồng bộ toàn cục.
+    await appController.getCurrentUserId();
   }
 
   @override

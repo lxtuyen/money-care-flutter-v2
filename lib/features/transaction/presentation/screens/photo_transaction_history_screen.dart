@@ -44,17 +44,14 @@ class _PhotoTransactionHistoryScreenState
       final userId = await appController.getCurrentUserId();
       if (userId == null) return;
 
-      await transactionController.filterTransactions(
+      // Sử dụng UseCase trực tiếp để tránh ghi đè lên State toàn cục của HomeScreen
+      final data = await transactionController.filterTransactionsUseCase(
         userId,
         TransactionFilterDto(
-          fundId:
-              fundController.fundId.value > 0
-                  ? fundController.fundId.value
-                  : null,
+          fundId: fundController.fundId.value > 0 ? fundController.fundId.value : null,
         ),
       );
 
-      final data = transactionController.transactionByfilter.value;
       if (data != null) {
         final all = [
           ...data.expenseTransactions,

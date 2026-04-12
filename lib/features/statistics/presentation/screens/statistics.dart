@@ -66,7 +66,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
     await statisticsController.refreshStatisticsData(userId);
-    // Load fund report nếu user có quỹ
     final fundId = fundController.fundId.value;
     if (fundId > 0) {
       fundController.loadFundReport(fundId);

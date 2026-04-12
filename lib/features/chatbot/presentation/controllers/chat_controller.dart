@@ -9,6 +9,7 @@ import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatController extends GetxController {
@@ -17,6 +18,7 @@ class ChatController extends GetxController {
   ChatController({required this.sendToChatbotUseCase});
 
   final AppController appController = Get.find<AppController>();
+  final FundController fundController = Get.find<FundController>();
 
   final TextEditingController textController = TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -119,7 +121,12 @@ class ChatController extends GetxController {
       isLoading.value = true;
       errorMessage.value = null;
 
-      final dto = ChatDto(message: text, userId: userId);
+      final fundId = fundController.fundId.value;
+      final dto = ChatDto(
+        message: text,
+        userId: userId,
+        fundId: fundId > 0 ? fundId : null,
+      );
       final reply = await sendToChatbotUseCase(dto);
 
       if (reply.startsWith('__STRUCTURED_ANALYSIS__')) {
@@ -210,7 +217,12 @@ class ChatController extends GetxController {
       final userId = await appController.getCurrentUserId();
       if (userId == null) return;
 
-      final dto = ChatDto(message: "Quét hóa đơn", userId: userId);
+      final fundId = fundController.fundId.value;
+      final dto = ChatDto(
+        message: "Quét hóa đơn",
+        userId: userId,
+        fundId: fundId > 0 ? fundId : null,
+      );
       final reply = await sendToChatbotUseCase(dto, filePath: image.path);
 
       if (reply.startsWith('__STRUCTURED_RECEIPT__')) {
@@ -236,9 +248,11 @@ class ChatController extends GetxController {
       isLoading.value = true;
       final apiClient = Get.find<ApiClient>();
       
+      final fundId = fundController.fundId.value;
       final response = await apiClient.post('/ai/chat/bulk-save', body: {
         'userId': userId,
         'items': items,
+        'fundId': fundId > 0 ? fundId : null,
       });
 
       if (response.success) {

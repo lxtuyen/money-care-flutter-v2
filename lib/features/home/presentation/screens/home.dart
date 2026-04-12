@@ -13,6 +13,7 @@ import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/widgets.dart';
+import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
 import 'package:money_care/app/widgets/icon/circular_icon.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/app_assets.dart';
@@ -25,151 +26,8 @@ import 'package:money_care/features/gamification/presentation/widgets/streak_bad
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
-  late DateTime startDate = now.subtract(const Duration(days: 6));
-  late DateTime endDate = now;
-
-  final AppController appController = Get.find<AppController>();
-  final TransactionController transactionController =
-      Get.find<TransactionController>();
-  final FilterController filterController = Get.find<FilterController>();
-  final FundController fundController = Get.find<FundController>();
-  final UserController userController = Get.find<UserController>();
-  final AuthController authController = Get.find<AuthController>();
-  final StatisticsController statisticsController =
-      Get.find<StatisticsController>();
-  final FinanceModeController financeModeController =
-      Get.find<FinanceModeController>();
-
-  @override
-  void initState() {
-    super.initState();
-    initData();
-    _listenToTransactionChanges();
-  }
-
-  void _listenToTransactionChanges() {
-    ever(
-      transactionController.transactionChangedCount,
-      (_) => initData(),
-    );
-  }
-
-  Future<void> initData() async {
-    final userId = await appController.getCurrentUserId();
-
-    final fundId =
-        fundController.fundId.value > 0 ? fundController.fundId.value : null;
-
-    await Future.wait([
-      statisticsController.loadStatisticsData(userId!, startDate, endDate),
-      transactionController.filterTransactions(
-        userId,
-        TransactionFilterDto(
-          fundId: fundId,
-          startDate: startDate.toIso8601String(),
-          endDate: endDate.toIso8601String(),
-        ),
-      ),
-    ]);
-    
-    _checkModeSuggestion();
-  }
-
-  void _checkModeSuggestion() async {
-    final utilization = statisticsController.utilizationPercentage;
-    if (utilization >= 0.8) {
-      final suggestedMode = await financeModeController.checkAndSuggestMode(utilization);
-      if (suggestedMode != null && mounted) {
-        _showSuggestionDialog(suggestedMode);
-      }
-    }
-  }
-
-  void _showSuggestionDialog(FinanceMode suggestedMode) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(AppSizes.md),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 42,
-              height: 5,
-              decoration: BoxDecoration(
-                color: AppColors.borderPrimary,
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Gợi ý chế độ tài chính',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Bạn đã tiêu quá ${(statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: AppColors.text4),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      financeModeController.declineSuggestion();
-                      Navigator.pop(context);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text('Bỏ qua'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      financeModeController.switchMode(suggestedMode);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.error,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Bật Sinh tồn',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,10 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                   children: [
                     Expanded(
                       child: Obx(() {
-                        final profile = userController.userProfile.value;
+                        final profile = controller.userController.userProfile.value;
                         final String greeting = AppHelperFunction.getGreeting();
                         
-                        if (userController.isLoading.value) {
+                        if (controller.userController.isLoading.value) {
                           return const SizedBox(
                             height: 48,
                             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
@@ -259,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                       }),
                     ),
 
-                    // Right: Actions
                     Row(
                       children: [
                         CircularIcon(
@@ -282,13 +139,13 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                                       margin: const EdgeInsets.only(top: 80),
                                       width: MediaQuery.of(context).size.width * 0.9,
                                       child: Obx(() {
-                                        final transactions = transactionController
+                                        final transactions = controller.transactionController
                                                 .transactionByfilter
                                                 .value
                                                 ?.expenseTransactions ??
                                             [];
 
-                                        if (transactionController.isLoading.value) {
+                                        if (controller.transactionController.isLoading.value) {
                                           return const SizedBox(
                                             height: 120,
                                             child: Center(
@@ -344,15 +201,14 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                 
                 const SizedBox(height: 16),
                 
-                // Bottom Row: Status Chips
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   child: Row(
                     children: [
-                      const StreakBadgeWidget(),
-                      const SizedBox(width: 8),
                       const FinanceModeBanner(),
+                      const SizedBox(width: 8),
+                      const StreakBadgeWidget(),
                       const SizedBox(width: 8),
                       const DaysUntilIncomeWidget(),
                     ],
@@ -363,9 +219,9 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
 
             const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
-              final totals = statisticsController.totalByType.value;
+              final totals = controller.statisticsController.totalByType.value;
 
-              if (statisticsController.isLoading.value) {
+              if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -390,8 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
             AppSectionHeading(title: "Giao dịch gần đây", showActionButton: false),
             Obx(() {
               final transactions =
-                  transactionController.transactionByfilter.value;
-              if (transactionController.isLoading.value) {
+                  controller.transactionController.transactionByfilter.value;
+              if (controller.transactionController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -416,9 +272,9 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
             AppSectionHeading(title: "Tổng quan", showActionButton: false),
             const SizedBox(height: AppSizes.spaceBtwItems),
             Obx(() {
-              final totalsData = statisticsController.totalByDate.value;
+              final totalsData = controller.statisticsController.totalByDate.value;
 
-              if (statisticsController.isLoading.value) {
+              if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),
@@ -427,8 +283,8 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
 
               if (totalsData == null || totalsData.expense.isEmpty) {
                 return SpendingOverviewCard(
-                  startDate: startDate,
-                  endDate: endDate,
+                  startDate: controller.startDate,
+                  endDate: controller.endDate,
                   totals: [],
                   amountSpent: 0,
                 );
@@ -438,8 +294,8 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
               double totalSpent = totals.fold(0, (sum, t) => sum + t.total);
 
               return SpendingOverviewCard(
-                startDate: startDate,
-                endDate: endDate,
+                startDate: controller.startDate,
+                endDate: controller.endDate,
                 totals: totals,
                 amountSpent: totalSpent,
               );
@@ -448,8 +304,8 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
             const SizedBox(height: AppSizes.defaultSpace),
 
             Obx(() {
-              final categories = statisticsController.totalByCate;
-              final mode = financeModeController.currentMode.value;
+              final categories = controller.statisticsController.totalByCate;
+              final mode = controller.financeModeController.currentMode.value;
 
               // Lọc: Có hạn mức > 0 HOẶC (Chế độ sinh tồn & là khoản không thiết yếu & đã tiêu > 0)
               final filtered = categories.where((cat) {
@@ -494,15 +350,15 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
                         const SizedBox(height: AppSizes.defaultSpace),
 
             Obx(() {
-              if (statisticsController.isLoading.value) {
+              if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 124,
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
               
-              final mode = financeModeController.currentMode.value;
-              final categories = statisticsController.expenseCategories;
+              final mode = controller.financeModeController.currentMode.value;
+              final categories = controller.statisticsController.expenseCategories;
               
               // Filter logic
               List<TotalByCategoryEntity> filteredCategories;
@@ -583,23 +439,23 @@ class _HomeScreenState extends State<HomeScreen> {  final now = DateTime.now();
             const SizedBox(height: AppSizes.md),
 
             Obx(() {
-              if (statisticsController.isLoading.value) {
+              if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 124,
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              if (statisticsController.incomeCategories.isEmpty) {
+              if (controller.statisticsController.incomeCategories.isEmpty) {
                 return const SizedBox.shrink();
               }
               return Column(
                 children: [
-                  AppSectionHeading(
+                   AppSectionHeading(
                     title: "Thu nhập tháng này", 
                     showActionButton: false,
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
-                  ...statisticsController.incomeCategories.map((category) {
+                  ...controller.statisticsController.incomeCategories.map((category) {
                     return CategoryOverviewCard(
                       title: category.categoryName,
                       limit: category.limit,

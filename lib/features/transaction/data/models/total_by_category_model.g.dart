@@ -9,6 +9,7 @@ part of 'total_by_category_model.dart';
 _TotalByCategoryEntityModel _$TotalByCategoryEntityModelFromJson(
   Map<String, dynamic> json,
 ) => _TotalByCategoryEntityModel(
+  categoryId: (json['category_id'] as num?)?.toInt(),
   categoryName: json['categoryName'] as String? ?? '',
   categoryIcon: json['categoryIcon'] as String? ?? '',
   percentage: (json['percentage'] as num?)?.toDouble() ?? 0.0,
@@ -21,6 +22,7 @@ _TotalByCategoryEntityModel _$TotalByCategoryEntityModelFromJson(
 Map<String, dynamic> _$TotalByCategoryEntityModelToJson(
   _TotalByCategoryEntityModel instance,
 ) => <String, dynamic>{
+  'category_id': instance.categoryId,
   'categoryName': instance.categoryName,
   'categoryIcon': instance.categoryIcon,
   'percentage': instance.percentage,

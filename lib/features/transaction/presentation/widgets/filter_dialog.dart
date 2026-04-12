@@ -279,11 +279,12 @@ class _FilterDialogState extends State<FilterDialog> {
     }
 
     return widget.categories!.map((cat) {
-      final isSelected = selectedId == cat.id.toString();
+      final isSelected = cat.id != null && selectedId == cat.id.toString();
       return CustomChoiceChip(
         text: cat.name,
         isSelected: isSelected,
         onSelected: (selected) {
+          if (cat.id == null) return;
           setState(() {
             selectedId = selected ? cat.id.toString() : null;
           });
@@ -299,9 +300,16 @@ class _FilterDialogState extends State<FilterDialog> {
           : 'Chưa chọn khoảng thời gian';
     }
 
-    return selectedId != null
-        ? 'Đã chọn 1 phân loại giao dịch'
-        : 'Chưa chọn phân loại nào';
+    if (selectedId != null && widget.categories != null) {
+      try {
+        final cat = widget.categories!.firstWhere((c) => c.id.toString() == selectedId);
+        return 'Đã chọn: ${cat.name}';
+      } catch (_) {
+        return 'Đã chọn 1 phân loại giao dịch';
+      }
+    }
+    
+    return 'Chưa chọn phân loại nào';
   }
 
   void _clearFilter() {
@@ -322,7 +330,7 @@ class _FilterDialogState extends State<FilterDialog> {
   void _applySelection() {
     if (widget.categories != null) {
       filterController.updateCategory(
-        selectedId != null ? int.parse(selectedId!) : null,
+        selectedId != null ? int.tryParse(selectedId!) : null,
       );
     } else {
       if (selectedId == null || startDate == null || endDate == null) {

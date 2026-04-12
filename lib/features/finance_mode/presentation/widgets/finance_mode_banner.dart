@@ -5,7 +5,6 @@ import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 
-/// Redesigned to be a compact status chip for better integration.
 class FinanceModeBanner extends StatelessWidget {
   const FinanceModeBanner({super.key});
 
@@ -38,14 +37,6 @@ class FinanceModeBanner extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Chế độ: ',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.text4,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
               Text(
                 _modeLabel(mode),
                 style: TextStyle(

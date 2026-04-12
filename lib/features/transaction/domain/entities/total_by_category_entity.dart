@@ -1,4 +1,5 @@
 class TotalByCategoryEntity {
+  final int? categoryId;
   final String categoryName;
   final int total;
   final double percentage;
@@ -9,6 +10,7 @@ class TotalByCategoryEntity {
   final String? color;
 
   const TotalByCategoryEntity({
+    this.categoryId,
     required this.categoryName,
     required this.total,
     this.percentage = 0,

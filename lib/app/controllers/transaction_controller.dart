@@ -5,6 +5,8 @@ import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 
 class TransactionController extends GetxController {
   final FilterTransactionsUseCase filterTransactionsUseCase;
@@ -35,6 +37,24 @@ class TransactionController extends GetxController {
     required this.updateTransactionUseCase,
     required this.deleteTransactionUseCase,
   });
+
+  @override
+  void onInit() {
+    super.onInit();
+    
+    ever(fundController.fundId, (int id) {
+      final userId = Get.find<AppController>().userId.value;
+      if (userId != null && id > 0) {
+        refreshAllData(userId);
+      }
+    });
+
+    ever(Get.find<AppController>().userId, (int? userId) {
+      if (userId != null) {
+        refreshAllData(userId);
+      }
+    });
+  }
 
   Future<void> createTransaction(TransactionCreateDto dto) async {
     isLoading.value = true;
@@ -119,6 +139,27 @@ class TransactionController extends GetxController {
     }
 
     transactionChangedCount.value++;
+  }
+
+  Future<void> applyFilters(int userId) async {
+    final filterController = Get.find<FilterController>();
+    
+    final dto = TransactionFilterDto(
+      categoryId: filterController.categoryId.value,
+      fundId: _currentFundIdOrNull,
+      startDate: filterController.startDate.value?.toIso8601String(),
+      endDate: filterController.endDate.value?.toIso8601String(),
+    );
+
+    await filterTransactions(userId, dto);
+    
+    if (Get.isRegistered<StatisticsController>()) {
+      await Get.find<StatisticsController>().getTotalByType(
+        userId,
+        startDate: filterController.startDate.value,
+        endDate: filterController.endDate.value,
+      );
+    }
   }
 
   int? get _currentFundIdOrNull =>

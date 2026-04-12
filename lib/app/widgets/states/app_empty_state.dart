@@ -4,10 +4,10 @@ import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 
-class TransactionEmptyState extends StatelessWidget {
-  const TransactionEmptyState({
+class AppEmptyState extends StatelessWidget {
+  const AppEmptyState({
     super.key,
-    this.message = 'Không có giao dịch nào gần đây.',
+    this.message = 'Không có dữ liệu nào.',
     this.action,
   });
 

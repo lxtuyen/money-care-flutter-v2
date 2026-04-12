@@ -63,13 +63,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> initData() async {
+    if (statisticsController.totalByType.value != null) return;
+
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
     await statisticsController.refreshStatisticsData(userId);
-    final fundId = fundController.fundId.value;
-    if (fundId > 0) {
-      fundController.loadFundReport(fundId);
-    }
   }
 
   @override

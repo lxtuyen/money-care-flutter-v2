@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/app/widgets/states/transaction_empty_state.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -47,7 +47,7 @@ class _TransactionSectionState extends State<TransactionSection> {
           ),
           const SizedBox(height: AppSizes.defaultSpace),
           if (currentList.isEmpty)
-            const TransactionEmptyState()
+            const AppEmptyState(message: 'Không có giao dịch nào gần đây.')
           else
             ...currentList.take(5).toList().asMap().entries.map(
               (entry) => Padding(

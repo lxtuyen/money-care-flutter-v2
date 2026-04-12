@@ -47,28 +47,6 @@ class WelcomeOptions extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 10,
-              children: options.map((o) {
-                return ActionChip(
-                  label: Text(o['title'] ?? ''),
-                  labelStyle: const TextStyle(
-                    color: Colors.blueAccent,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  backgroundColor: Colors.blue.shade50,
-                  side: BorderSide(color: Colors.blue.shade100),
-                  onPressed: () => onTapFill(o['template'] ?? ''),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Chi tiết tính năng:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
             ...options.map(
               (o) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -133,27 +111,6 @@ class WelcomeOptions extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.amber.shade100),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.tips_and_updates_outlined, color: Colors.amber, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Mẹo: Bấm mic và nói "ăn trưa 50k" để ghi chép nhanh.',
-                      style: TextStyle(color: Colors.amber.shade900, fontSize: 13),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],

@@ -386,6 +386,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   'Chọn loại giao dịch bạn muốn tạo mới.',
                   style: TextStyle(fontSize: 13, color: AppColors.text4),
                 ),
+                /*
                 const SizedBox(height: 18),
                 _buildTransactionOptionTile(
                   icon: Icons.north_east_rounded,
@@ -410,6 +411,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                     Get.toNamed(RoutePath.expense);
                   },
                 ),
+                */
                 const SizedBox(height: 12),
                 _buildTransactionOptionTile(
                   icon: Icons.add_a_photo_outlined,

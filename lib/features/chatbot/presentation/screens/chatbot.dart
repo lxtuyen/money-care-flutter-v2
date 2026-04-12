@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
-import 'package:money_care/features/chatbot/presentation/screens/widgets/bubble.dart';
-import 'package:money_care/features/chatbot/presentation/screens/widgets/welcome_option.dart';
-import 'package:money_care/features/chatbot/presentation/screens/widgets/analysis_bubble.dart';
-import 'package:money_care/features/chatbot/presentation/screens/widgets/receipt_items_bubble.dart';
-import 'package:money_care/features/chatbot/presentation/screens/widgets/transaction_saved_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/welcome_option.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/analysis_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/receipt_items_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/transaction_saved_bubble.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -80,7 +80,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       final messages = controller.messages;
       if (messages.isEmpty) {
         return WelcomeOptions(
-          options: controller.options, // Added to controller in previous steps if exists
+          options: controller.options,
           onTapFill: controller.fillTemplate,
           onTapSend: (t) => controller.sendTemplate(t, userId ?? 0),
         );

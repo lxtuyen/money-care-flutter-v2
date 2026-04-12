@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
-import 'package:money_care/app/widgets/states/transaction_empty_state.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/app/controllers/fund_controller.dart';
@@ -208,7 +208,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   Widget _buildEmptyView() {
-    return TransactionEmptyState(
+    return AppEmptyState(
       message: 'Không có giao dịch phù hợp',
       action:
           filterController.hasActiveFilters

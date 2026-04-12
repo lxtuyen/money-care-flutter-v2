@@ -8,6 +8,7 @@ import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/fund/presentation/screens/expired_funds_screen.dart';
 import 'package:money_care/features/fund/presentation/widgets/fund_item_card.dart';
 import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
 class SelectFundScreen extends StatefulWidget {
   const SelectFundScreen({super.key});
@@ -49,8 +50,8 @@ class _SelectFundScreenState extends State<SelectFundScreen> {
                     }
 
                     if (controller.funds.isEmpty) {
-                      return const Center(
-                        child: Text('Chưa có quỹ tiết kiệm nào'),
+                      return const AppEmptyState(
+                        message: 'Chưa có quỹ tiết kiệm nào.',
                       );
                     }
 

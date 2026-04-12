@@ -25,7 +25,6 @@ class TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Safely try to find FinanceModeController — it may not be registered in all contexts.
     final FinanceModeController? financeModeController =
         Get.isRegistered<FinanceModeController>()
             ? Get.find<FinanceModeController>()
@@ -41,80 +40,99 @@ class TransactionItem extends StatelessWidget {
       });
     }
 
-    return GestureDetector(onTap: onTap, child: content);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: content,
+    );
   }
 
   Widget _buildContent({required bool isSavingMode}) {
-    // Show "Có thể bỏ qua" label when SAVING mode is active and category is non-essential.
-    // Requirement 5.7: highlight Non_Essential_Category transactions with "Có thể bỏ qua".
+    final bool isIncome = item.type == 'income';
+    final Color typeColor = isIncome ? AppColors.success : AppColors.error;
     final bool showSkippableLabel =
         isSavingMode && (item.category?.isEssential == false);
 
     return Column(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: typeColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  item.category?.icon ?? '💰',
+                  style: const TextStyle(fontSize: 22),
+                ),
               ),
-            ),
-            const SizedBox(width: AppSizes.spaceBtwItems),
+              const SizedBox(width: AppSizes.spaceBtwItems),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.note ?? "",
+                      style: const TextStyle(
+                        fontSize: AppSizes.fontSizeSm + 1,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      item.category?.name ?? 'Không có danh mục',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.text4,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (showSkippableLabel) ...[
+                      const SizedBox(height: 4),
+                      _SkippableLabel(),
+                    ],
+                  ],
+                ),
+              ),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    item.note ?? "",
-                    style: const TextStyle(
-                      fontSize: AppSizes.fontSizeSm,
-                      fontWeight: FontWeight.w500,
+                    '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(
+                      item.amount.toDouble(),
+                      '',
+                    )} ₫',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: typeColor,
                     ),
                   ),
-                  Text(
-                    item.category?.name ?? 'Không có danh mục',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.text4,
+                  if (isShowDate && item.transactionDate != null)
+                    Text(
+                      AppHelperFunction.formatDateTime(item.transactionDate!),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.text5,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  if (showSkippableLabel) ...[
-                    const SizedBox(height: 4),
-                    _SkippableLabel(),
-                  ],
                 ],
               ),
-            ),
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (isShowDate)
-                  Text(
-                    AppHelperFunction.formatDateTime(item.transactionDate!),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.text4,
-                    ),
-                  ),
-                Text(
-                  AppHelperFunction.formatAmount(
-                    item.amount.toDouble(),
-                    'VND',
-                  ),
-                  style: const TextStyle(
-                    fontSize: AppSizes.fontSizeMd,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
 
         const SizedBox(height: 8),
@@ -123,13 +141,13 @@ class TransactionItem extends StatelessWidget {
           const Divider(
             color: AppColors.borderSecondary,
             height: AppSizes.dividerHeight,
+            indent: 56,
           ),
       ],
     );
   }
 }
 
-/// Small badge label shown on non-essential transactions in SAVING mode.
 class _SkippableLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

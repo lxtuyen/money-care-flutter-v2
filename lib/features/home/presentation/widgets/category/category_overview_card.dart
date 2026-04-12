@@ -28,11 +28,10 @@ class CategoryOverviewCard extends StatelessWidget {
     final bool isOverLimit = limit > 0 && spent >= limit;
     final bool isNearLimit = limit > 0 && spent >= (limit * 0.8) && !isOverLimit;
     
-    // Dynamic themes
-    Color themeColor = isIncome ? AppColors.success : AppColors.primary;
+    Color themeColor = isIncome ? AppColors.success : AppColors.error;
     if (!isIncome) {
-      if (isOverLimit) themeColor = AppColors.error;
-      else if (isNearLimit) themeColor = Colors.orange; // Amber/Warning color
+      if (isNearLimit) themeColor = AppColors.warning;
+      else if (isOverLimit) themeColor = AppColors.error;
     }
     
     final String spentLabel = isIncome ? "Đã nhận:" : "Đã tiêu:";
@@ -46,101 +45,104 @@ class CategoryOverviewCard extends StatelessWidget {
           limit: limitText,
           spent: spentText,
           isOverLimit: isOverLimit,
+          isIncome: isIncome,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(AppSizes.borderRadiusLg),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.borderSecondary.withOpacity(0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.text1.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Row(
-              children: [
-                RoundedIcon(
-                  padding: const EdgeInsets.all(AppSizes.sm),
-                  applyIconRadius: true,
-                  width: 44,
-                  height: 44,
-                  backgroundColor: themeColor.withOpacity(0.12),
-                  iconName: iconPath,
-                  color: themeColor,
-                  size: 24,
-                ),
-                const SizedBox(width: AppSizes.spaceBtwItems),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+        child: Row(
+          children: [
+            // Category Icon (Matching TransactionItem)
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: themeColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                iconPath, // This is likely the emoji string in this context
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+            const SizedBox(width: AppSizes.spaceBtwItems),
+
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.text2,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  if (showLimit)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Hạn mức:",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.text4,
+                          ),
+                        ),
+                        Text(
+                          limitText,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.text2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        title,
+                        spentLabel,
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.text1,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.text4,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      if (showLimit) 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Hạn mức:",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.text3,
-                              ),
-                            ),
-                            Text(
-                              limitText,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.text2,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        '${isIncome ? '+' : '-'} $spentText',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: isOverLimit ? AppColors.error : themeColor,
                         ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            spentLabel,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.text3,
-                            ),
-                          ),
-                          Text(
-                            spentText,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: isOverLimit ? AppColors.error : themeColor,
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-        ],
+          ],
+        ),
       ),
     );
   }

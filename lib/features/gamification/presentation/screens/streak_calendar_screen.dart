@@ -2,102 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
-import 'package:money_care/features/transaction/data/models/transaction_model.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/gamification/presentation/controllers/streak_calendar_controller.dart';
 
-/// Màn hình Lịch Thành tích
-/// Hiển thị lịch tháng với 🔥 cho ngày có giao dịch và tổng tiền bên dưới.
-class StreakCalendarScreen extends StatefulWidget {
+class StreakCalendarScreen extends StatelessWidget {
   const StreakCalendarScreen({super.key});
 
   @override
-  State<StreakCalendarScreen> createState() => _StreakCalendarScreenState();
-}
-
-class _StreakCalendarScreenState extends State<StreakCalendarScreen> {
-  late final TransactionController _txController;
-  final AppController _appController = Get.find<AppController>();
-
-  DateTime _focusedMonth = DateTime.now();
-  bool _isLoading = false;
-
-  final Map<int, int> _dailyNet = {};
-  final Set<int> _daysWithTx = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _txController = Get.find<TransactionController>();
-    _loadMonthData();
-  }
-
-  Future<void> _loadMonthData() async {
-    setState(() => _isLoading = true);
-    final userId = await _appController.getCurrentUserId();
-    if (userId == null) {
-      setState(() => _isLoading = false);
-      return;
-    }
-
-    final firstDay = DateTime(_focusedMonth.year, _focusedMonth.month, 1);
-    final lastDay = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0,
-        23, 59, 59);
-
-    try {
-      final data = await _txController.filterTransactionsUseCase(
-        userId,
-        TransactionFilterDto(
-          startDate: firstDay.toIso8601String(),
-          endDate: lastDay.toIso8601String(),
-        ),
-      );
-
-      final Map<int, int> net = {};
-      final Set<int> days = {};
-
-      void process(List<TransactionEntity> txs, int multiplier) {
-        for (final tx in txs) {
-          final d = tx.transactionDate;
-          if (d == null) continue;
-          if (d.year != _focusedMonth.year || d.month != _focusedMonth.month) {
-            continue;
-          }
-          days.add(d.day);
-          net[d.day] = (net[d.day] ?? 0) + (tx.amount * multiplier);
-        }
-      }
-
-      process(data.incomeTransactions, 1);
-      process(data.expenseTransactions, -1);
-
-      setState(() {
-        _dailyNet
-          ..clear()
-          ..addAll(net);
-        _daysWithTx
-          ..clear()
-          ..addAll(days);
-        _isLoading = false;
-      });
-    } catch (_) {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  void _prevMonth() {
-    _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
-    _loadMonthData();
-  }
-
-  void _nextMonth() {
-    _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
-    _loadMonthData();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = Get.isRegistered<StreakCalendarController>()
+        ? Get.find<StreakCalendarController>()
+        : Get.put(StreakCalendarController());
+
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
       appBar: AppBar(
@@ -121,59 +36,75 @@ class _StreakCalendarScreenState extends State<StreakCalendarScreen> {
       body: Column(
         children: [
           const SizedBox(height: 16),
-          _buildMonthHeader(),
+          _buildMonthHeader(controller),
           const SizedBox(height: 16),
           _buildWeekdayRow(),
           const SizedBox(height: 8),
-          if (_isLoading)
-            const Expanded(
-              child: Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            )
-          else
-            _buildCalendarGrid(),
-          const SizedBox(height: 16),
-          _buildLegend(),
-          const SizedBox(height: 24),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                );
+              }
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildCalendarGrid(controller),
+                    const SizedBox(height: 16),
+                    _buildLegend(),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              );
+            }),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMonthHeader() {
-    final monthName =
-        DateFormat('MMMM yyyy', 'vi_VN').format(_focusedMonth);
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _NavButton(icon: Icons.chevron_left_rounded, onTap: _prevMonth),
-          Text(
-            monthName,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: AppColors.text1,
+  Widget _buildMonthHeader(StreakCalendarController controller) {
+    return Obx(() {
+      final monthName = DateFormat('MMMM yyyy', 'vi_VN').format(controller.focusedMonth.value);
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          _NavButton(icon: Icons.chevron_right_rounded, onTap: _nextMonth),
-        ],
-      ),
-    );
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _NavButton(
+              icon: Icons.chevron_left_rounded,
+              onTap: controller.prevMonth,
+            ),
+            Text(
+              monthName,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: AppColors.text1,
+              ),
+            ),
+            _NavButton(
+              icon: Icons.chevron_right_rounded,
+              onTap: controller.nextMonth,
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildWeekdayRow() {
@@ -201,18 +132,14 @@ class _StreakCalendarScreenState extends State<StreakCalendarScreen> {
     );
   }
 
-  Widget _buildCalendarGrid() {
-    final firstDay = DateTime(_focusedMonth.year, _focusedMonth.month, 1);
-    final daysInMonth =
-        DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0).day;
+  Widget _buildCalendarGrid(StreakCalendarController controller) {
+    final focus = controller.focusedMonth.value;
+    final firstDay = DateTime(focus.year, focus.month, 1);
+    final daysInMonth = DateTime(focus.year, focus.month + 1, 0).day;
     final startOffset = firstDay.weekday - 1; // Mon=0
 
     final totalCells = startOffset + daysInMonth;
     final rows = (totalCells / 7).ceil();
-
-    final today = DateTime.now();
-    final isCurrentMonth = _focusedMonth.year == today.year &&
-        _focusedMonth.month == today.month;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -243,9 +170,9 @@ class _StreakCalendarScreenState extends State<StreakCalendarScreen> {
               return const SizedBox.shrink();
             }
 
-            final hasTx = _daysWithTx.contains(dayNum);
-            final net = _dailyNet[dayNum] ?? 0;
-            final isToday = isCurrentMonth && dayNum == today.day;
+            final hasTx = controller.daysWithTx.contains(dayNum);
+            final net = controller.dailyNet[dayNum] ?? 0;
+            final isToday = controller.isToday(dayNum);
 
             return _DayCell(
               day: dayNum,
@@ -325,16 +252,11 @@ class _DayCell extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Flame icon trên đầu
         SizedBox(
           height: 18,
-          child: hasTx
-              ? const Text('🔥', style: TextStyle(fontSize: 12))
-              : null,
+          child: hasTx ? const Text('🔥', style: TextStyle(fontSize: 12)) : null,
         ),
         const SizedBox(height: 1),
-
-        // Vòng tròn ngày
         Container(
           width: 34,
           height: 34,
@@ -348,8 +270,7 @@ class _DayCell extends StatelessWidget {
             border: isToday
                 ? null
                 : hasTx
-                    ? Border.all(
-                        color: const Color(0xFFFFB300), width: 1.5)
+                    ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
                     : null,
           ),
           child: Center(
@@ -357,8 +278,7 @@ class _DayCell extends StatelessWidget {
               '$day',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight:
-                    isToday || hasTx ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isToday || hasTx ? FontWeight.w700 : FontWeight.w500,
                 color: isToday
                     ? Colors.white
                     : hasTx
@@ -368,23 +288,16 @@ class _DayCell extends StatelessWidget {
             ),
           ),
         ),
-
         const SizedBox(height: 2),
-
-        // Số tiền tổng bên dưới
         SizedBox(
           height: 13,
           child: hasTx
               ? Text(
-                  net >= 0
-                      ? '+${formatter.format(net)}'
-                      : formatter.format(net),
+                  net >= 0 ? '+${formatter.format(net)}' : formatter.format(net),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
-                    color: net >= 0
-                        ? const Color(0xFF27AE60)
-                        : const Color(0xFFE53935),
+                    color: net >= 0 ? const Color(0xFF27AE60) : const Color(0xFFE53935),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.clip,
@@ -421,13 +334,10 @@ class _LegendItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
-            border: borderColor != null
-                ? Border.all(color: borderColor!, width: 1.5)
-                : null,
+            border: borderColor != null ? Border.all(color: borderColor!, width: 1.5) : null,
           ),
           child: icon != null
-              ? Center(
-                  child: Text(icon!, style: const TextStyle(fontSize: 11)))
+              ? Center(child: Text(icon!, style: const TextStyle(fontSize: 11)))
               : null,
         ),
         const SizedBox(width: 6),

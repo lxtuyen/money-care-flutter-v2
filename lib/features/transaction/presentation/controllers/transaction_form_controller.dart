@@ -32,8 +32,6 @@ class TransactionFormController extends GetxController {
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final RxnInt selectedCategoryId = RxnInt();
 
-  /// Keeps the full selected category so we can check [CategoryEntity.isEssential]
-  /// when validating SURVIVAL mode (Req 5.10).
   CategoryEntity? selectedCategory;
 
   bool showCategory = true;
@@ -134,7 +132,7 @@ class TransactionFormController extends GetxController {
   }
 
   TransactionCreateDto buildTransactionDto() {
-    final rawValue = AppCurrencyFormField.unformat(amountController.text);
+    final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     return TransactionCreateDto(
       amount: int.tryParse(rawValue) ?? 0,
       type: transactionType,
@@ -154,7 +152,6 @@ class TransactionFormController extends GetxController {
   Future<void> submit() async {
     if (!formKey.currentState!.validate()) return;
 
-    // Req 5.10: In SURVIVAL mode, warn before saving a Non_Essential transaction.
     if (showCategory && await _shouldWarnSurvivalMode()) {
       _showSurvivalWarningDialog();
       return;
@@ -167,22 +164,18 @@ class TransactionFormController extends GetxController {
     }
   }
 
-  /// Returns true when the current finance mode is SURVIVAL and the selected
-  /// category is non-essential (Req 5.10).
   Future<bool> _shouldWarnSurvivalMode() async {
     try {
       final financeModeController = Get.find<FinanceModeController>();
       if (financeModeController.currentMode.value != FinanceMode.survival) {
         return false;
       }
-      // Use the stored full entity; fall back to essential if unknown.
       return selectedCategory != null && !selectedCategory!.isEssential;
     } catch (_) {
       return false;
     }
   }
 
-  /// Show the SURVIVAL mode confirmation dialog (Req 5.10).
   void _showSurvivalWarningDialog() {
     Get.dialog(
       AlertDialog(
@@ -221,7 +214,6 @@ class TransactionFormController extends GetxController {
       await transactionController.createTransaction(dto);
       Get.back();
       AppHelperFunction.showSuccessSnackBar('Tao giao dich thanh cong');
-      // Budget and goal-fund suggestions are disabled until their controllers are restored.
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
     }

@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/utils/date_picker_util.dart';
 
 class UserController extends GetxController {
   final UpdateMyProfileUseCase updateMyProfileUseCase;
@@ -54,15 +56,14 @@ class UserController extends GetxController {
   var userProfile = Rxn<UserProfileEntity>();
   var isLoading = false.obs;
 
-  Future<void> pickIncomeDate(BuildContext context) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: incomeDate.value ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+  Future<void> pickIncomeDay(BuildContext context) async {
+    final pickedDay = await pickDayOfMonth(
+      context,
+      initialDay: incomeDate.value?.day,
     );
-    if (picked != null) {
-      incomeDate.value = picked;
+    if (pickedDay != null) {
+      final now = DateTime.now();
+      incomeDate.value = DateTime(now.year, now.month, pickedDay);
     }
   }
 
@@ -72,7 +73,7 @@ class UserController extends GetxController {
       final dto = ProfileUpdateDto(
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
-        monthlyIncome: int.tryParse(monthlyIncomeController.text.trim()),
+        monthlyIncome: int.tryParse(AppHelperFunction.unformatCurrency(monthlyIncomeController.text)),
         incomeDate: incomeDate.value,
         avatar: avatarController.text.trim(),
       );

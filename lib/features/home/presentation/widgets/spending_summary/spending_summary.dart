@@ -75,8 +75,8 @@ class SpendingSummary extends StatelessWidget {
               color: AppColors.text4,
             ),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.27,
-              height: MediaQuery.of(context).size.height * 0.15,
+              width: MediaQuery.of(context).size.width * 0.32,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 32),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(AppSizes.borderRadiusLg),
@@ -84,21 +84,28 @@ class SpendingSummary extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    AppHelperFunction.formatAmount(expenseTotal.toDouble(),''),
-                    style: const TextStyle(
-                      color: AppColors.secondaryOrange,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      AppHelperFunction.formatAmount(
+                          expenseTotal.toDouble(), ''),
+                      style: const TextStyle(
+                        color: AppColors.secondaryOrange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'Số dư: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(incomeTotal - expenseTotal).toDouble(),'VND')}',
-                    style: const TextStyle(
-                      color: AppColors.text3,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Số dư: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(incomeTotal - expenseTotal).toDouble(), 'VND')}',
+                      style: const TextStyle(
+                        color: AppColors.text3,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],

@@ -9,12 +9,15 @@ class BudgetDetailDialog extends StatelessWidget {
   final String spent;
   final bool isOverLimit;
 
+  final bool isIncome;
+
   const BudgetDetailDialog({
     super.key,
     required this.title,
     required this.limit,
     required this.spent,
     required this.isOverLimit,
+    this.isIncome = false,
   });
 
   double _parseNumber(String s) =>
@@ -41,9 +44,9 @@ class BudgetDetailDialog extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Hạn mức chi tiêu',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  isIncome ? 'Tổng quan thu nhập' : 'Hạn mức chi tiêu',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 GestureDetector(
                   onTap: () => Get.back(),
@@ -73,9 +76,11 @@ class BudgetDetailDialog extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
-                  progressColor:
-                      isOverLimit ? AppColors.error : AppColors.primary,
-                  backgroundColor: AppColors.primary.withOpacity(0.15),
+                  progressColor: isIncome
+                      ? AppColors.success
+                      : (isOverLimit ? AppColors.error : AppColors.error),
+                  backgroundColor: (isIncome ? AppColors.success : AppColors.error)
+                      .withOpacity(0.15),
                   circularStrokeCap: CircularStrokeCap.round,
                 ),
                 const SizedBox(width: 24),
@@ -84,15 +89,15 @@ class BudgetDetailDialog extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          "Hạn mức: ",
-                          style: TextStyle(color: AppColors.text1),
+                        Text(
+                          isIncome ? "Mục tiêu: " : "Hạn mức: ",
+                          style: const TextStyle(color: AppColors.text1),
                         ),
                         Text(
-                          limit,
-                          style: const TextStyle(
+                          limitValue > 0 ? limit : "Chưa thiết lập",
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.text1,
+                            color: limitValue > 0 ? AppColors.text1 : AppColors.text3,
                           ),
                         ),
                       ],
@@ -100,17 +105,18 @@ class BudgetDetailDialog extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Text(
-                          "Đã tiêu: ",
-                          style: TextStyle(color: AppColors.text1),
+                        Text(
+                          isIncome ? "Đã nhận: " : "Đã tiêu: ",
+                          style: const TextStyle(color: AppColors.text1),
                         ),
                         Text(
                           spent,
                           style: TextStyle(
-                            color:
-                                isOverLimit
+                            color: isIncome
+                                ? AppColors.success
+                                : (isOverLimit
                                     ? AppColors.error
-                                    : AppColors.success,
+                                    : AppColors.success),
                             fontWeight: FontWeight.bold,
                           ),
                         ),

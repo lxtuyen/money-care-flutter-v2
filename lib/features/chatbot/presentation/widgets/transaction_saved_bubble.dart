@@ -14,6 +14,9 @@ class TransactionSavedBubble extends StatelessWidget {
     final String note = metadata['note'] ?? '';
     final String? dateStr = metadata['date'] as String?;
 
+    final String type = metadata['type'] ?? 'expense';
+    final bool isIncome = type == 'income';
+
     final currencyFormat =
         NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
 
@@ -47,15 +50,17 @@ class TransactionSavedBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header xanh lá
+            // Header
             Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF11998e), Color(0xFF38ef7d)],
+                  colors: isIncome
+                      ? [const Color(0xFF00b09b), const Color(0xFF96c93d)]
+                      : [const Color(0xFF11998e), const Color(0xFF38ef7d)],
                 ),
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
@@ -65,9 +70,9 @@ class TransactionSavedBubble extends StatelessWidget {
                   const Icon(Icons.check_circle_rounded,
                       color: Colors.white, size: 18),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Đã ghi nhận chi tiêu',
-                    style: TextStyle(
+                  Text(
+                    isIncome ? 'Đã ghi nhận thu nhập' : 'Đã ghi nhận chi tiêu',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -95,7 +100,10 @@ class TransactionSavedBubble extends StatelessWidget {
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF11998e).withValues(alpha: 0.1),
+                      color: (isIncome
+                              ? const Color(0xFF00b09b)
+                              : const Color(0xFF11998e))
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Center(
@@ -137,11 +145,13 @@ class TransactionSavedBubble extends StatelessWidget {
 
                   // Amount
                   Text(
-                    '- ${currencyFormat.format(amount)}',
-                    style: const TextStyle(
+                    '${isIncome ? '+' : '-'} ${currencyFormat.format(amount)}',
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Color(0xFFE53935),
+                      color: isIncome
+                          ? const Color(0xFF43A047)
+                          : const Color(0xFFE53935),
                     ),
                   ),
                 ],

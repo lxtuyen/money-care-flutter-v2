@@ -154,7 +154,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         children:
             filtered.asMap().entries.map((entry) {
               return TransactionItem(
-                color: AppHelperFunction.getChartColorByIndex(entry.key),
                 item: entry.value,
                 isShowDate: true,
                 onTap: () => _showTransactionDetail(context, entry.value),
@@ -197,7 +196,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         children:
             filtered.asMap().entries.map((entry) {
               return TransactionItem(
-                color: AppHelperFunction.getChartColorByIndex(entry.key),
                 item: entry.value,
                 isShowDate: true,
                 onTap: () => _showTransactionDetail(context, entry.value),
@@ -457,7 +455,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           _clearFilters();
                         },
                         icon: const Icon(Icons.restart_alt_rounded),
-                        label: const Text('Xóa t?t c? b? l?c'),
+                        label: const Text('Xóa tất cả bộ lọc'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.text2,
                           side: const BorderSide(

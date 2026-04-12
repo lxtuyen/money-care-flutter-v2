@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class AppCurrencyFormField extends StatefulWidget {
   final TextEditingController? controller;
@@ -47,14 +48,7 @@ class AppCurrencyFormField extends StatefulWidget {
     this.hintStyle,
   });
 
-  static String unformat(String value) {
-    return value.replaceAll(RegExp(r'[^0-9]'), '');
-  }
 
-  static String format(String value) {
-    if (value.isEmpty) return '';
-    return _ThousandsSeparatorInputFormatter.formatRaw(value);
-  }
 
   @override
   State<AppCurrencyFormField> createState() => _AppCurrencyFormFieldState();
@@ -134,8 +128,8 @@ class _AppCurrencyFormFieldState extends State<AppCurrencyFormField> {
     final controller = widget.controller;
     if (controller == null || _isSyncingController) return;
 
-    final rawValue = AppCurrencyFormField.unformat(controller.text);
-    final formattedValue = _ThousandsSeparatorInputFormatter.formatRaw(
+    final rawValue = AppHelperFunction.unformatCurrency(controller.text);
+    final formattedValue = AppHelperFunction.formatCurrency(
       rawValue,
     );
 
@@ -165,7 +159,7 @@ class _AppCurrencyFormFieldState extends State<AppCurrencyFormField> {
       textInputAction: widget.textInputAction,
       onChanged: (value) {
         widget.onChanged?.call(value);
-        widget.onRawChanged?.call(AppCurrencyFormField.unformat(value));
+        widget.onRawChanged?.call(AppHelperFunction.unformatCurrency(value));
       },
       onTap: widget.onTap,
       readOnly: widget.readOnly,
@@ -188,8 +182,7 @@ class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
   static final NumberFormat _numberFormat = NumberFormat.decimalPattern('vi_VN');
 
   static String formatRaw(String value) {
-    if (value.isEmpty) return '';
-    return _numberFormat.format(int.parse(value));
+    return AppHelperFunction.formatCurrency(value);
   }
 
   @override
@@ -197,7 +190,7 @@ class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final rawValue = AppCurrencyFormField.unformat(newValue.text);
+    final rawValue = AppHelperFunction.unformatCurrency(newValue.text);
     final formattedValue = formatRaw(rawValue);
 
     return TextEditingValue(

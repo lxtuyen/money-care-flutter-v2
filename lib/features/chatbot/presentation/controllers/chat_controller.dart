@@ -10,6 +10,7 @@ import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatController extends GetxController {
@@ -157,6 +158,11 @@ class ChatController extends GetxController {
         }
         try {
           await transactionController.refreshAllData(userId);
+          if (Get.isRegistered<GamificationController>()) {
+            Future.delayed(const Duration(milliseconds: 300), () {
+              Get.find<GamificationController>().recordDailyTransaction();
+            });
+          }
         } catch (_) {}
       } else {
         replaceLastBotMessage(reply);
@@ -258,6 +264,11 @@ class ChatController extends GetxController {
       if (response.success) {
         addBotMessage('✅ Đã lưu tất cả các mục vào lịch sử chi tiêu của bạn!');
         await transactionController.refreshAllData(userId);
+        if (Get.isRegistered<GamificationController>()) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            Get.find<GamificationController>().recordDailyTransaction();
+          });
+        }
       } else {
         addBotMessage('❌ Không thể lưu một số mục. Vui lòng thử lại.');
       }

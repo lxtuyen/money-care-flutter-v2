@@ -106,7 +106,6 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
             ),
             const SizedBox(height: 20),
             
-            // Name Input
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -117,7 +116,6 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
             ),
             const SizedBox(height: 16),
 
-            // Type Selection
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -146,29 +144,16 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                         labelStyle: TextStyle(color: _selectedType == 'income' ? Colors.white : AppColors.text2),
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: ChoiceChip(
-                        label: const Center(child: Text('Khác', style: TextStyle(fontSize: 12))),
-                        selected: _selectedType == 'others',
-                        onSelected: (val) => setState(() => _selectedType = 'others'),
-                        showCheckmark: false,
-                        selectedColor: AppColors.primary,
-                        labelStyle: TextStyle(color: _selectedType == 'others' ? Colors.white : AppColors.text2),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
               ],
             ),
 
-            // Icon Picker Section
             const Text('Biểu tượng', style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             Row(
               children: [
-                // Current Icon Preview
                 Container(
                   width: 64,
                   height: 64,

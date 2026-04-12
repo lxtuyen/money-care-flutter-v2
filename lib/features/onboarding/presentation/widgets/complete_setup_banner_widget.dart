@@ -4,10 +4,6 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
-/// Banner hiển thị trong ProfileScreen khi người dùng có bước onboarding bị bỏ qua.
-///
-/// Cho phép người dùng quay lại hoàn thành thiết lập từ màn hình hồ sơ.
-/// Requirements: 1.4
 class CompleteSetupBannerWidget extends StatelessWidget {
   const CompleteSetupBannerWidget({super.key});
 
@@ -99,7 +95,6 @@ class CompleteSetupBannerWidget extends StatelessWidget {
     });
   }
 
-  /// Điều hướng đến bước onboarding bị bỏ qua đầu tiên
   void _navigateToSkippedStep(OnboardingStep step) {
     switch (step) {
       case OnboardingStep.balanceSetup:

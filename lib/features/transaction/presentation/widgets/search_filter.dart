@@ -53,11 +53,6 @@ class SearchWithFilter extends StatelessWidget {
                 onChanged: onChanged,
                 decoration: InputDecoration(
                   prefixIcon: Container(
-                    margin: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.backgroundPrimary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
                     child: const Icon(
                       Icons.search_rounded,
                       color: AppColors.text3,

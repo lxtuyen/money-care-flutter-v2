@@ -4,20 +4,11 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/gamification/domain/entities/gamification_entity.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 
-/// Displays all earned badges in the user profile screen.
-///
-/// Reactively updates via [Obx] whenever [GamificationController.badges] changes.
-/// Shows a section header and a row of badge chips. If no badges have been
-/// earned yet, shows an encouraging empty-state message.
-///
-/// Requirements: 8.4, 8.5, 8.6, 8.8
 class BadgesSectionWidget extends StatelessWidget {
   const BadgesSectionWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // GamificationController is registered as a lazy singleton in AppBinding.
-    // Use Get.find with a fallback to avoid crash if not yet initialised.
     final GamificationController? controller =
         Get.isRegistered<GamificationController>()
             ? Get.find<GamificationController>()
@@ -82,7 +73,6 @@ class BadgesSectionWidget extends StatelessWidget {
   }
 }
 
-/// A single badge chip showing the badge icon, name, and award date.
 class _BadgeChip extends StatelessWidget {
   final BadgeEntity badge;
 

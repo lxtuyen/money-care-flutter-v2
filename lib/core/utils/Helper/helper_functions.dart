@@ -281,6 +281,20 @@ class AppHelperFunction {
       return 'Chào buổi tối 🌙';
     }
   }
+
+  static String formatCurrency(String value) {
+    if (value.isEmpty) return '';
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    try {
+      return formatter.format(int.parse(value));
+    } catch (_) {
+      return value;
+    }
+  }
+
+  static String unformatCurrency(String value) {
+    return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
 }
 
 class _SnackBarContent extends StatelessWidget {

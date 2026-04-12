@@ -71,7 +71,7 @@ class PhotoTransactionController extends GetxController {
     try {
       final result = await scanReceiptUseCase!(XFile(path));
       
-      amountController.text = AppCurrencyFormField.format(result.totalAmount.toString());
+      amountController.text = AppHelperFunction.formatCurrency(result.totalAmount.toString());
       
       if (result.merchantName != null && result.merchantName!.isNotEmpty) {
         noteController.text = result.merchantName!;
@@ -197,7 +197,7 @@ class PhotoTransactionController extends GetxController {
   }
 
   TransactionCreateDto buildTransactionDto() {
-    final rawValue = AppCurrencyFormField.unformat(amountController.text);
+    final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     return TransactionCreateDto(
       amount: int.tryParse(rawValue) ?? 0,
       type: transactionType.value,

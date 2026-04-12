@@ -9,6 +9,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/app/widgets/appbar/appbar.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/features/gamification/presentation/widgets/badges_section_widget.dart';
 import 'package:money_care/features/onboarding/presentation/widgets/complete_setup_banner_widget.dart';
 
@@ -60,7 +61,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Avatar Display & Edit
                     Center(
                       child: Column(
                         children: [
@@ -159,18 +159,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    AppTextFormField(
+                    AppCurrencyFormField(
                       controller: userController.monthlyIncomeController,
                       label: 'Thu nhập hàng tháng (VNĐ)',
                       icon: Icons.attach_money_outlined,
-                      hintText: 'VD: 3000000',
-                      keyboardType: TextInputType.number,
+                      hintText: 'VD: 3.000.000',
                     ),
                     const SizedBox(height: 16),
 
                     Obx(() => _IncomeDateField(
                           incomeDate: userController.incomeDate.value,
-                          onTap: () => userController.pickIncomeDate(context),
+                          onTap: () => userController.pickIncomeDay(context),
                         )),
 
                     const SizedBox(height: 32),
@@ -183,11 +182,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         isEnabled: !userController.isLoading.value,
                       );
                     }),
-
                     const SizedBox(height: 32),
-
                     const BadgesSectionWidget(),
-
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -209,7 +205,7 @@ class _IncomeDateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayText = incomeDate != null
-        ? DateFormat('dd/MM/yyyy').format(incomeDate!)
+        ? 'Ngày ${incomeDate!.day.toString().padLeft(2, '0')}'
         : '';
 
     return AppTextFormField(

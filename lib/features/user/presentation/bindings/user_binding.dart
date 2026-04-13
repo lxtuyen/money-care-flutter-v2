@@ -6,12 +6,9 @@ import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 
 
 class UserBinding extends Bindings {
-  final ApiClient apiClient;
-
-  UserBinding({required this.apiClient});
-
   @override
   void dependencies() {
+    final apiClient = Get.find<ApiClient>();
     final remoteDatasource = UserRemoteDatasourceImpl(api: apiClient);
     final repository = UserRepositoryImpl(remoteDatasource: remoteDatasource);
 

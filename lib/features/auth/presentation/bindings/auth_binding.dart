@@ -20,13 +20,10 @@ import 'package:money_care/features/auth/presentation/controllers/register_contr
 import 'package:money_care/features/auth/presentation/controllers/reset_password_controller.dart';
 
 class AuthBinding extends Bindings {
-  final ApiClient apiClient;
-  final LocalStorage localStorage;
-
-  AuthBinding({required this.apiClient, required this.localStorage});
-
   @override
   void dependencies() {
+    final apiClient = Get.find<ApiClient>();
+    final localStorage = Get.find<LocalStorage>();
     final remoteDatasource = AuthRemoteDatasourceImpl(api: apiClient);
     final localDatasource = AuthLocalDatasourceImpl(storage: localStorage);
 

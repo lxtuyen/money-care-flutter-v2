@@ -5,6 +5,7 @@ import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/onboarding/onboarding_data.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 
 class OnboardingCategorySelectController extends GetxController {
   final RxList<SuggestedCategory> expenseCategories =
@@ -74,21 +75,50 @@ class OnboardingCategorySelectController extends GetxController {
       ));
     }
 
-    userCategoryController.saveCategories(selected);
+    // Chờ quá trình lưu danh mục hoàn tất thành công
+    userCategoryController.saveCategories(selected).then((_) {
+      // Đánh dấu onboarding đã hoàn thành cho user này sau khi đã lưu xong
+      final appController = Get.find<AppController>();
+      int? userId = appController.userId.value;
 
-    // Đánh dấu onboarding đã hoàn thành cho user này
-    final appController = Get.find<AppController>();
-    final userId = appController.userId.value;
-    if (userId != null) {
-      LocalStorage().setOnboardingDone(userId);
-    }
+      // Fallback nếu appController chưa kịp sync
+      if (userId == null) {
+        try {
+          final authController = Get.find<AuthController>();
+          userId = authController.user.value?.id;
+          if (userId != null) {
+            appController.setUserId(userId);
+            print('OnboardingController: Sync userId to AppController: $userId');
+          }
+        } catch (_) {}
+      }
 
-    Get.offAllNamed(RoutePath.main);
+      print('OnboardingController: Finishing onboarding for userId: $userId');
+      if (userId != null) {
+        LocalStorage().setOnboardingDone(userId).then((_) {
+          Get.offAllNamed(RoutePath.main);
+        });
+      } else {
+        print('OnboardingController Error: userId is still null, cannot save onboarding status!');
+        Get.offAllNamed(RoutePath.main);
+      }
+    }).catchError((e) {
+      print('OnboardingController Error saving categories: $e');
+      Get.offAllNamed(RoutePath.main);
+    });
   }
 
   void onSkip() {
     final appController = Get.find<AppController>();
-    final userId = appController.userId.value;
+    int? userId = appController.userId.value;
+
+    if (userId == null) {
+      try {
+        final authController = Get.find<AuthController>();
+        userId = authController.user.value?.id;
+      } catch (_) {}
+    }
+
     if (userId != null) {
       LocalStorage().setOnboardingDone(userId);
     }

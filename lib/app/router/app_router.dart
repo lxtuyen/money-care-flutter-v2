@@ -25,72 +25,141 @@ import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
 import 'package:money_care/features/gamification/presentation/screens/streak_calendar_screen.dart';
+import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
+import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
+import 'package:money_care/features/onboarding/presentation/bindings/onboarding_binding.dart';
+import 'package:money_care/features/transaction/presentation/bindings/transaction_binding.dart';
+import 'package:money_care/features/fund/presentation/bindings/fund_binding.dart';
+import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
+import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
+import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
 
 final List<GetPage> appPages = [
-  GetPage(name: '/splash', page: () => const SplashScreen()),
+  GetPage(
+    name: '/splash',
+    page: () => const SplashScreen(),
+    binding: SplashBinding(),
+  ),
   GetPage(
     name: '/onboarding_expense_management',
     page: () => const OnboardingExpenseManagementScreen(),
     transition: Transition.rightToLeft,
+    binding: OnboardingBinding(),
   ),
   GetPage(
     name: '/onboarding_financial_freedom',
     page: () => const OnboardingFinancialFreedomScreen(),
     transition: Transition.leftToRight,
+    binding: OnboardingBinding(),
   ),
-  GetPage(name: '/select_method_login', page: () => const LoginOptionScreen()),
-  GetPage(name: '/forgot_password', page: () => const ForgotPasswordScreen()),
-  GetPage(name: '/otp', page: () => const OtpScreen()),
-  GetPage(name: '/reset_password', page: () => const ResetPasswordScreen()),
-  GetPage(name: '/login', page: () => const LoginScreen()),
-  GetPage(name: '/register', page: () => const RegisterScreen()),
+  GetPage(
+    name: '/select_method_login',
+    page: () => const LoginOptionScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: '/forgot_password',
+    page: () => const ForgotPasswordScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: '/otp',
+    page: () => const OtpScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: '/reset_password',
+    page: () => const ResetPasswordScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: '/login',
+    page: () => const LoginScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: '/register',
+    page: () => const RegisterScreen(),
+    binding: AuthBinding(),
+  ),
   GetPage(
     name: '/onboarding_welcome',
     page: () => const OnboardingWelcomeScreen(),
+    binding: OnboardingBinding(),
   ),
   GetPage(
     name: '/select_fund',
     page: () => const SelectFundScreen(),
+    binding: FundBinding(),
   ),
-  GetPage(name: '/create_fund', page: () => const CreateFund()),
+  GetPage(
+    name: '/create_fund',
+    page: () => const CreateFund(),
+    binding: FundBinding(),
+  ),
   GetPage(
     name: '/onboarding_balance_setup',
     page: () => const CreateFund(),
     transition: Transition.rightToLeft,
+    binding: FundBinding(),
   ),
-  GetPage(name: '/expense', page: () => const CreateExpenseScreen()),
-  GetPage(name: '/income', page: () => const CreateIncomeScreen()),
+  GetPage(
+    name: '/expense',
+    page: () => const CreateExpenseScreen(),
+    binding: TransactionBinding(),
+  ),
+  GetPage(
+    name: '/income',
+    page: () => const CreateIncomeScreen(),
+    binding: TransactionBinding(),
+  ),
   GetPage(
     name: '/transaction_with_image',
     page: () => const CreatePhotoTransactionScreen(),
+    binding: TransactionBinding(),
   ),
-  GetPage(name: '/profile', page: () => const ProfileScreen()),
-  GetPage(name: '/chatbot', page: () => const ChatbotScreen()),
-
+  GetPage(
+    name: '/profile',
+    page: () => const ProfileScreen(),
+    binding: UserBinding(),
+  ),
+  GetPage(
+    name: '/chatbot',
+    page: () => const ChatbotScreen(),
+    binding: ChatBinding(),
+  ),
   GetPage(name: '/main', page: () => const ScaffoldWithNavBar()),
-
-  GetPage(name: '/notification', page: () => const NotificationScreen()),
+  GetPage(
+    name: '/notification',
+    page: () => const NotificationScreen(),
+    binding: NotificationBinding(),
+  ),
   GetPage(
     name: '/fund_report',
     page: () => const FundReportScreen(),
+    binding: FundBinding(),
   ),
   GetPage(
     name: '/photo_transaction_history',
     page: () => const PhotoTransactionHistoryScreen(),
+    binding: TransactionBinding(),
   ),
   GetPage(
     name: '/expired_funds',
     page: () => const ExpiredFundsScreen(),
+    binding: FundBinding(),
   ),
   GetPage(
     name: '/onboarding_category_select',
     page: () => const OnboardingCategorySelectScreen(),
     transition: Transition.rightToLeft,
+    binding: OnboardingBinding(),
   ),
   GetPage(
     name: '/category_management',
     page: () => const UserCategoryManagementScreen(),
     transition: Transition.rightToLeft,
+    binding: TransactionBinding(),
   ),
   GetPage(
     name: '/streak_calendar',

@@ -34,26 +34,10 @@ class OnboardingCategorySelectScreen
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () => Get.back(),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded,
-                              size: 20, color: AppColors.text2),
-                        ),
-                        GestureDetector(
-                          onTap: controller.onSkip,
-                          child: const Text(
-                            'Bỏ qua',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.text3,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 20, color: AppColors.text2),
                     ),
                     const SizedBox(height: 20),
                     const Text(

@@ -11,7 +11,6 @@ import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/features/gamification/presentation/widgets/badges_section_widget.dart';
-import 'package:money_care/features/onboarding/presentation/widgets/complete_setup_banner_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -107,9 +106,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    const CompleteSetupBannerWidget(),
 
                     const SizedBox(height: 24),
 

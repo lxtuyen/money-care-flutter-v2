@@ -17,7 +17,7 @@ class LoginOptionController extends GetxController {
       (currentUser) {
         if (currentUser.role == 'user') {
           Get.offAllNamed(
-            currentUser.fund != null
+            currentUser.hasCategories
                 ? RoutePath.main
                 : RoutePath.onboardingWelcome,
           );

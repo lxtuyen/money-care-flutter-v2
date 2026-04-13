@@ -3,7 +3,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/errors/failure.dart';
-import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
@@ -64,10 +63,11 @@ class LoginController extends GetxController {
       (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
       (currentUser) {
         if (currentUser.role == 'user') {
-          final destination = LocalStorage().isOnboardingDone(currentUser.id)
-              ? RoutePath.main
-              : RoutePath.onboardingWelcome;
-          Get.offAllNamed(destination);
+          Get.offAllNamed(
+            currentUser.hasCategories
+                ? RoutePath.main
+                : RoutePath.onboardingWelcome,
+          );
           return;
         }
 

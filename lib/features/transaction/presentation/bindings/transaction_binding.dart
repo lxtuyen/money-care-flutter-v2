@@ -10,12 +10,9 @@ import 'package:money_care/features/transaction/presentation/controllers/photo_t
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 
 class TransactionBinding extends Bindings {
-  final ApiClient apiClient;
-
-  TransactionBinding({required this.apiClient});
-
   @override
   void dependencies() {
+    final apiClient = Get.find<ApiClient>();
     final remoteDatasource = TransactionRemoteDatasourceImpl(api: apiClient);
     final repository = TransactionRepositoryImpl(
       remoteDatasource: remoteDatasource,

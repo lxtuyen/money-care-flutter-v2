@@ -16,6 +16,7 @@ abstract class UserModel with _$UserModel {
     String? accessToken,
     required UserProfileModel profile,
     FundModel? fund,
+    bool? hasCategories,
   }) = _UserModel;
 
   const UserModel._();
@@ -36,9 +37,10 @@ abstract class UserModel with _$UserModel {
         id: id,
         email: email,
         role: role,
-        isVip: isVip,
+        isVip: isVip ?? false,
         accessToken: accessToken,
         profile: profile.toEntity(),
         fund: fund?.toEntity(),
+        hasCategories: hasCategories ?? false,
       );
 }

@@ -1,4 +1,4 @@
-﻿import 'package:fpdart/fpdart.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:money_care/core/constants/route_path.dart';
@@ -10,6 +10,7 @@ import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.d
 import 'package:money_care/features/auth/domain/usecases/get_cached_user_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:money_care/app/services/notification_service.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 class AuthController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
@@ -45,8 +46,6 @@ class AuthController extends GetxController {
     final cachedUser = getCachedUserUseCase();
     if (cachedUser != null) {
       user.value = cachedUser;
-      // ever() kh�ng fire cho gi� tr? d� set tru?c khi dang k� listener,
-      // n�n ph?i g?i syncToken() tr?c ti?p sau app restart.
       try {
         Get.find<NotificationService>().syncToken();
       } catch (e) {
@@ -57,9 +56,10 @@ class AuthController extends GetxController {
     ever(user, (UserEntity? currentUser) {
       if (currentUser != null) {
         try {
+          Get.find<AppController>().setUserId(currentUser.id);
           Get.find<NotificationService>().syncToken();
         } catch (e) {
-          print('NotificationService error: $e');
+          print('AuthController error during user sync: $e');
         }
       }
     });
@@ -136,22 +136,29 @@ class AuthController extends GetxController {
     }
     isGoogleLogin.value = false;
     user.value = null;
+    try {
+      Get.find<AppController>().clearUser();
+    } catch (_) {}
     await logoutUseCase();
   }
 
   Future<void> loginWithGoogleAndNavigate() async {
     final result = await loginWithGoogle();
     result.match((_) {}, (currentUser) {
-      if (currentUser.role == 'user') {
-        final destination = LocalStorage().isOnboardingDone(currentUser.id)
-            ? RoutePath.main
-            : RoutePath.onboardingWelcome;
-        Get.offAllNamed(destination);
-        return;
-      }
-      if (currentUser.role == 'admin') {
-        Get.offAllNamed(RoutePath.adminHome);
-      }
+      try {
+        Get.find<AppController>().setUserId(currentUser.id);
+
+        if (currentUser.role == 'user') {
+          final destination = currentUser.hasCategories
+              ? RoutePath.main
+              : RoutePath.onboardingWelcome;
+          Get.offAllNamed(destination);
+          return;
+        }
+        if (currentUser.role == 'admin') {
+          Get.offAllNamed(RoutePath.adminHome);
+        }
+      } catch (_) {}
     });
   }
 

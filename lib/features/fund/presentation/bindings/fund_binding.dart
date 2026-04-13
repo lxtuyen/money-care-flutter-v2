@@ -6,12 +6,9 @@ import 'package:money_care/features/fund/domain/usecases/usecases.dart';
 import 'package:money_care/features/fund/presentation/controllers/create_fund_controller.dart';
 
 class FundBinding extends Bindings {
-  final ApiClient apiClient;
-
-  FundBinding({required this.apiClient});
-
   @override
   void dependencies() {
+    final apiClient = Get.find<ApiClient>();
     final remoteDatasource = FundRemoteDatasourceImpl(api: apiClient);
     final repository = FundRepositoryImpl(
       remoteDatasource: remoteDatasource,

@@ -4,12 +4,10 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
-import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
-import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -26,7 +24,6 @@ class TransactionHistoryScreen extends StatefulWidget {
 }
 
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
-  String selected = 'chi';
   final TextEditingController searchController = TextEditingController();
 
   final AppController appController = Get.find<AppController>();
@@ -70,6 +67,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             title: 'Thu - Chi',
             child: Obx(() {
               final data = statisticsController.totalByType.value;
+              final selectedType = statisticsController.selectedType.value;
 
               if (transactionController.isLoading.value || 
                   statisticsController.isLoading.value) {
@@ -79,20 +77,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 );
               }
 
-              if (data == null) {
-                return TransactionTypeSummaryToggle(
-                  selected: selected,
-                  onSelected: (value) => setState(() => selected = value),
-                  spendText: 0,
-                  incomeText: 0,
-                );
-              }
-
               return TransactionTypeSummaryToggle(
-                selected: selected,
-                onSelected: (value) => setState(() => selected = value),
-                spendText: data.expenseTotal,
-                incomeText: data.incomeTotal,
+                selected: selectedType,
+                onSelected: (value) => statisticsController.changeType(value),
+                spendText: data?.expenseTotal ?? 0,
+                incomeText: data?.incomeTotal ?? 0,
               );
             }),
           ),
@@ -110,11 +99,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             ),
           ),
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child:
-                  selected == 'chi' ? _buildExpenseList() : _buildIncomeList(),
-            ),
+            child: Obx(() => AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: statisticsController.selectedType.value == 'chi'
+                      ? _buildExpenseList()
+                      : _buildIncomeList(),
+                )),
           ),
         ],
       ),
@@ -224,7 +214,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       builder: (context) {
         return TransactionDetail(
           item: item,
-          isExpense: selected == 'chi',
+          isExpense: statisticsController.selectedType.value == 'chi',
           userId: appController.userId.value ?? 0,
         );
       },
@@ -236,7 +226,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder:
           (context) => Obx(() {
-            final isExpenseTab = selected == 'chi';
+            final isExpenseTab = statisticsController.selectedType.value == 'chi';
 
             final categoriesFromStats = isExpenseTab
                 ? statisticsController.expenseCategories

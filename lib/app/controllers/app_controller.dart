@@ -21,6 +21,7 @@ class AppController extends GetxController {
     try {
       final userInfoJson = storage.getUserInfo();
       if (userInfoJson == null) {
+        userId.value = null;
         isUserInitialized.value = true;
         return;
       }
@@ -32,6 +33,18 @@ class AppController extends GetxController {
       errorMessage.value = e.toString();
       isUserInitialized.value = true;
     }
+  }
+
+  void setUserId(int? id) {
+    userId.value = id;
+    if (id != null) {
+      isUserInitialized.value = true;
+    }
+  }
+
+  void clearUser() {
+    userId.value = null;
+    isUserInitialized.value = false;
   }
 
   Future<int?> getCurrentUserId() async {

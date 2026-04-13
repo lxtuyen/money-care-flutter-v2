@@ -102,7 +102,7 @@ class AppBinding extends Bindings {
     );
 
     SplashBinding().dependencies();
-    AuthBinding(apiClient: apiService, localStorage: storage).dependencies();
+    AuthBinding().dependencies();
     OnboardingBinding().dependencies();
 
     Get.put<UserCategoryController>(
@@ -153,10 +153,10 @@ class AppBinding extends Bindings {
     AppStateBinding(apiClient: apiService).dependencies();
     Get.put<HomeController>(HomeController());
 
-    TransactionBinding(apiClient: apiService).dependencies();
-    FundBinding(apiClient: apiService).dependencies();
-    UserBinding(apiClient: apiService).dependencies();
-    ChatBinding(apiClient: apiService).dependencies();
-    NotificationBinding(apiClient: apiService).dependencies();
+    TransactionBinding().dependencies();
+    FundBinding().dependencies();
+    UserBinding().dependencies();
+    ChatBinding().dependencies();
+    NotificationBinding().dependencies();
   }
 }

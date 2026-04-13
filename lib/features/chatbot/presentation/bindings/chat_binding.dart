@@ -6,12 +6,9 @@ import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 
 class ChatBinding extends Bindings {
-  final ApiClient apiClient;
-
-  ChatBinding({required this.apiClient});
-
   @override
   void dependencies() {
+    final apiClient = Get.find<ApiClient>();
     final remoteDatasource = ChatRemoteDatasourceImpl(api: apiClient);
     final repository = ChatRepositoryImpl(remoteDatasource: remoteDatasource);
 

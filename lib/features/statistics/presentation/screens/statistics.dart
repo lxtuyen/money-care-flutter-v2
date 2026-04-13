@@ -79,29 +79,28 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => AppHeader(
-                    title: statisticsController.selectedType.value == 'chi'
-                        ? "Thống kê chi"
-                        : "Thống kê thu",
-                    child: Builder(builder: (context) {
-                      final data = statisticsController.totalByType.value;
+              AppHeader(
+            title: 'Thu - Chi',
+            child: Obx(() {
+              final data = statisticsController.totalByType.value;
+              final selectedType = statisticsController.selectedType.value;
 
-                      if (statisticsController.isLoading.value) {
-                        return const SizedBox(
-                          height: 120,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
+              if (transactionController.isLoading.value || 
+                  statisticsController.isLoading.value) {
+                return const SizedBox(
+                  height: 120,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
 
-                      return TransactionTypeSummaryToggle(
-                        selected: statisticsController.selectedType.value,
-                        onSelected: (value) =>
-                            statisticsController.changeType(value),
-                        spendText: data?.expenseTotal ?? 0,
-                        incomeText: data?.incomeTotal ?? 0,
-                      );
-                    }),
-                  )),
+              return TransactionTypeSummaryToggle(
+                selected: selectedType,
+                onSelected: (value) => statisticsController.changeType(value),
+                spendText: data?.expenseTotal ?? 0,
+                incomeText: data?.incomeTotal ?? 0,
+              );
+            }),
+          ),
 
               const SizedBox(height: 25),
 

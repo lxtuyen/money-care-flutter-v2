@@ -307,7 +307,6 @@ class HomeScreen extends GetView<HomeController> {
               final categories = controller.statisticsController.totalByCate;
               final mode = controller.financeModeController.currentMode.value;
 
-              // Lọc: Có hạn mức > 0 HOẶC (Chế độ sinh tồn & là khoản không thiết yếu & đã tiêu > 0)
               final filtered = categories.where((cat) {
                 if (cat.limit > 0) return true;
                 if (mode == FinanceMode.survival && !cat.isEssential && cat.total > 0) {
@@ -315,8 +314,6 @@ class HomeScreen extends GetView<HomeController> {
                 }
                 return false;
               }).toList();
-
-              // Sắp xếp theo tỷ lệ đã tiêu giảm dần
               filtered.sort((a, b) {
                 double percentA = a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
                 double percentB = b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
@@ -332,7 +329,6 @@ class HomeScreen extends GetView<HomeController> {
                     showActionButton: filtered.length > 3,
                     buttonTitle: "Tất cả",
                     onPressed: () {
-                      // Hiện tại có thể mở rộng danh sách hoặc chuyển trang
                     },
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
@@ -347,7 +343,7 @@ class HomeScreen extends GetView<HomeController> {
                 ],
               );
             }),
-                        const SizedBox(height: AppSizes.defaultSpace),
+            const SizedBox(height: AppSizes.defaultSpace),
 
             Obx(() {
               if (controller.statisticsController.isLoading.value) {
@@ -360,7 +356,6 @@ class HomeScreen extends GetView<HomeController> {
               final mode = controller.financeModeController.currentMode.value;
               final categories = controller.statisticsController.expenseCategories;
               
-              // Filter logic
               List<TotalByCategoryEntity> filteredCategories;
               if (mode == FinanceMode.survival) {
                 filteredCategories = categories.where((c) => c.isEssential).toList();
@@ -368,7 +363,6 @@ class HomeScreen extends GetView<HomeController> {
                 filteredCategories = categories.toList();
               }
 
-              // Sorting logic for Saving Mode: prioritize categories with highest balance usage
               if (mode == FinanceMode.saving) {
                 filteredCategories.sort((a, b) {
                   if (a.limit <= 0 && b.limit <= 0) return 0;

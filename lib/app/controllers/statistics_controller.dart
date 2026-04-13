@@ -49,6 +49,36 @@ class StatisticsController extends GetxController {
     required this.getStatisticsSummaryUseCase,
   });
 
+  @override
+  void onInit() {
+    super.onInit();
+    final appController = Get.find<AppController>();
+    
+    // Lắng nghe sự thay đổi của userId để tải lại dữ liệu
+    ever(appController.userId, (int? id) {
+      if (id != null) {
+        refreshStatisticsData(id);
+      } else {
+        _clearData();
+      }
+    });
+
+    final currentId = appController.userId.value;
+    if (currentId != null) {
+      refreshStatisticsData(currentId);
+    }
+  }
+
+  void _clearData() {
+    totalByType.value = null;
+    totalByCate.clear();
+    expenseCategories.clear();
+    incomeCategories.clear();
+    totalByDate.value = null;
+    totalByDateLstMonth.value = null;
+    statisticsSummary.value = null;
+  }
+
   Future<void> getTotalByType(int userId,
       {DateTime? startDate, DateTime? endDate}) async {
     isLoading.value = true;
@@ -192,12 +222,20 @@ class StatisticsController extends GetxController {
     }
   }
 
+  bool _isRefreshing = false;
+
   Future<void> refreshStatisticsData(int userId) async {
+    if (_isRefreshing) {
+      print('StatisticsController: refreshStatisticsData already in progress, skipping...');
+      return;
+    }
+    
+    _isRefreshing = true;
     isLoading.value = true;
     try {
       final dtoWeek = _createTotalsDto(weekStartDate, weekEndDate);
-      _createTotalsDto(monthStartDate, monthEndDate);
-      _createTotalsDto(lastMonth7DaysStart, lastMonthToday);
+      // _createTotalsDto(monthStartDate, monthEndDate); // Unused result removed
+      // _createTotalsDto(lastMonth7DaysStart, lastMonthToday); // Unused result removed
 
       await Future.wait([
         _loadTotalByType(userId),
@@ -209,9 +247,11 @@ class StatisticsController extends GetxController {
       ]);
       errorMessage.value = null;
     } catch (e) {
+      print('StatisticsController: Error in refreshStatisticsData: $e');
       errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
+      _isRefreshing = false;
     }
   }
 
@@ -237,7 +277,6 @@ class StatisticsController extends GetxController {
       fundController.currentFundId > 0 ? fundController.currentFundId : null;
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
-    // Map 'chi' -> 'expense', 'thu' -> 'income' for backend
     final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
     return TransactionTotalsDto(
       fundId: _currentFundIdOrNull,

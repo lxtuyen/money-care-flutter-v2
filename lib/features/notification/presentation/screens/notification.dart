@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/notification/presentation/controllers/notification_controller.dart';
-import 'package:intl/intl.dart';
+import 'package:money_care/features/notification/domain/entities/notification_entity.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -21,9 +23,7 @@ class NotificationScreen extends StatelessWidget {
         }
 
         if (controller.notifications.isEmpty) {
-          return const Center(
-            child: Text('Bạn chưa có thông báo nào.'),
-          );
+          return const AppEmptyState(message: 'Bạn chưa có thông báo nào.');
         }
 
         return ListView.separated(
@@ -31,31 +31,32 @@ class NotificationScreen extends StatelessWidget {
           separatorBuilder: (context, index) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final notification = controller.notifications[index];
+            final bool isRead = notification.isRead;
+
             return ListTile(
               onTap: () {
-                if (!notification.isRead) {
-                  controller.markAsRead(notification.id);
-                }
+                if (!isRead) controller.markAsRead(notification.id);
               },
-              tileColor: notification.isRead ? null : Colors.blue.withOpacity(0.05),
-              leading: Icon(
-                Icons.notifications,
-                color: notification.isRead ? Colors.grey : Colors.blue,
-              ),
+              tileColor: isRead ? null : Colors.blue.withValues(alpha: 0.05),
+              leading: _buildLeadingIcon(notification),
               title: Text(
                 notification.title,
                 style: TextStyle(
-                  fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+                  fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                  fontSize: 15,
                 ),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(notification.body),
+                  Text(
+                    notification.body,
+                    style: TextStyle(color: isRead ? Colors.grey : Colors.black87),
+                  ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('dd/MM/yyyy HH:mm').format(notification.createdAt.toLocal()),
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    AppHelperFunction.formatDateTime(notification.createdAt.toLocal()),
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ],
               ),
@@ -63,6 +64,38 @@ class NotificationScreen extends StatelessWidget {
           },
         );
       }),
+    );
+  }
+
+  Widget _buildLeadingIcon(NotificationEntity notification) {
+    final bool isRead = notification.isRead;
+    final String type = notification.type.toLowerCase();
+
+    IconData iconData;
+    Color iconColor;
+
+    switch (type) {
+      case 'alert':
+        iconData = Icons.report_problem_rounded;
+        iconColor = isRead ? Colors.grey : Colors.red;
+        break;
+      case 'reminder':
+        iconData = Icons.notifications_active_rounded;
+        iconColor = isRead ? Colors.grey : Colors.orange;
+        break;
+      case 'system':
+      default:
+        iconData = Icons.notifications_rounded;
+        iconColor = isRead ? Colors.grey : Colors.blue;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: iconColor.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(iconData, color: iconColor, size: 22),
     );
   }
 }

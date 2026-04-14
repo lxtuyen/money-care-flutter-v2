@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/constants/route_path.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -24,7 +25,6 @@ class NotificationService extends GetxService {
     await _setupFCMListener();
 
     fcmToken = await _firebaseMessaging.getToken();
-    print("FCM Token: $fcmToken");
 
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       fcmToken = newToken;
@@ -42,7 +42,6 @@ class NotificationService extends GetxService {
       badge: true,
       sound: true,
     );
-    print('User granted permission: ${settings.authorizationStatus}');
   }
 
   Future<void> _initLocalNotifications() async {
@@ -65,7 +64,7 @@ class NotificationService extends GetxService {
     await _localNotificationsPlugin.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Xử lý khi nhấn vào thông báo (Foreground/Background)
+        Get.toNamed(RoutePath.notification);
       },
     );
   }
@@ -87,6 +86,7 @@ class NotificationService extends GetxService {
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
+      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -102,9 +102,14 @@ class NotificationService extends GetxService {
   Future<void> _sendTokenToServer(String token) async {
     try {
       final apiClient = Get.find<ApiClient>();
-      await apiClient.post('/users/device-tokens', body: {'token': token});
+      final response = await apiClient.post('users/device-tokens', body: {'token': token});
+      if (response.success) {
+        print('DEBUG: Đã gửi FCM token lên server thành công');
+      } else {
+        print('DEBUG: Lỗi khi gửi FCM token: ${response.message}');
+      }
     } catch (e) {
-      print('Error sending FCM token: $e');
+      print('Error sending FCM token exception: $e');
     }
   }
 
@@ -129,6 +134,7 @@ class NotificationService extends GetxService {
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
+      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
     const NotificationDetails details =
         NotificationDetails(android: androidDetails);
@@ -141,7 +147,7 @@ class NotificationService extends GetxService {
     if (fcmToken != null) {
       try {
         final apiClient = Get.find<ApiClient>();
-        await apiClient.delete('/users/device-tokens', body: {'token': fcmToken});
+        await apiClient.delete('users/device-tokens', body: {'token': fcmToken});
       } catch (e) {
         print('Error removing FCM token: $e');
       }

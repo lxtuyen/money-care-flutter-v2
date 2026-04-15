@@ -11,6 +11,11 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
+import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatController extends GetxController {
@@ -164,6 +169,41 @@ class ChatController extends GetxController {
             });
           }
         } catch (_) {}
+      } else if (reply.startsWith('__TRANSACTION_LIST__')) {
+        final jsonStr = reply.replaceFirst('__TRANSACTION_LIST__', '');
+        try {
+          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+          data['__type'] = 'transaction_list';
+          replaceLastBotMessageWithMetadata('', data);
+        } catch (e) {
+          replaceLastBotMessage('Không thể hiển thị danh sách giao dịch.');
+        }
+      } else if (reply.startsWith('__CATEGORY_LIST__')) {
+        final jsonStr = reply.replaceFirst('__CATEGORY_LIST__', '');
+        try {
+          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+          data['__type'] = 'category_list';
+          replaceLastBotMessageWithMetadata('', data);
+        } catch (e) {
+          replaceLastBotMessage('Không thể hiển thị danh sách hạng mục.');
+        }
+      } else if (reply.startsWith('__CATEGORY_CREATED__')) {
+        final jsonStr = reply.replaceFirst('__CATEGORY_CREATED__', '');
+        try {
+          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+          data['__type'] = 'category_created';
+          replaceLastBotMessageWithMetadata('', data);
+
+          // Refresh categories and statistics in the app
+          if (Get.isRegistered<UserCategoryController>()) {
+            Get.find<UserCategoryController>().loadCategories(userId);
+          }
+          if (Get.isRegistered<StatisticsController>()) {
+            Get.find<StatisticsController>().refreshStatisticsData(userId);
+          }
+        } catch (e) {
+          replaceLastBotMessage('✅ Đã tạo hạng mục mới thành công!');
+        }
       } else {
         replaceLastBotMessage(reply);
       }
@@ -281,6 +321,22 @@ class ChatController extends GetxController {
   }
 
   void clear() => messages.clear();
+
+  void onCategoryTap() {
+    Get.toNamed(RoutePath.categoryManagement);
+  }
+
+  void onTransactionTap(Map<String, dynamic> metadata) {
+    if (metadata.isEmpty) return;
+    final context = Get.context;
+    if (context == null) return;
+
+    final userId = appController.userId.value;
+    if (userId == null) return;
+
+    final transaction = TransactionEntity.fromMap(metadata);
+    TransactionDetail.show(context, item: transaction, userId: userId);
+  }
 
   @override
   void onClose() {

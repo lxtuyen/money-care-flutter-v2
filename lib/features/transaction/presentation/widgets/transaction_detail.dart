@@ -20,6 +20,21 @@ class TransactionDetail extends StatelessWidget {
     required this.userId,
   });
 
+  static Future<void> show(BuildContext context, {
+    required TransactionEntity item,
+    required int userId,
+    bool? isExpense,
+  }) {
+    return showDialog(
+      context: context,
+      builder: (context) => TransactionDetail(
+        item: item,
+        isExpense: isExpense ?? (item.type == 'expense' || item.type == 'chi'),
+        userId: userId,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final TransactionController transactionController =

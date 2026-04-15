@@ -30,4 +30,20 @@ class TransactionEntity {
     this.updatedAt,
     this.category,
   });
+
+  factory TransactionEntity.fromMap(Map<String, dynamic> map) {
+    return TransactionEntity(
+      id: map['id'] is int ? map['id'] : null,
+      amount: map['amount'] ?? 0,
+      type: map['type'] ?? 'expense',
+      note: map['note'],
+      transactionDate:
+          map['date'] != null ? DateTime.tryParse(map['date'].toString()) : null,
+      category: CategoryEntity(
+        name: map['category'] ?? 'Khác',
+        icon: map['categoryIcon'] ?? '💰',
+        type: map['type'],
+      ),
+    );
+  }
 }

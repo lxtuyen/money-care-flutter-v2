@@ -7,6 +7,9 @@ import 'package:money_care/features/chatbot/presentation/widgets/welcome_option.
 import 'package:money_care/features/chatbot/presentation/widgets/analysis_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/receipt_items_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_saved_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/transaction_list_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/category_list_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/category_created_bubble.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -95,6 +98,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           if (!m.isUser && m.metadata != null) {
             if (m.metadata!['__type'] == 'transaction_saved') {
               return TransactionSavedBubble(metadata: m.metadata!);
+            }
+            if (m.metadata!['__type'] == 'transaction_list') {
+              return TransactionListBubble(metadata: m.metadata!);
+            }
+            if (m.metadata!['__type'] == 'category_list') {
+              return CategoryListBubble(metadata: m.metadata!);
+            }
+            if (m.metadata!['__type'] == 'category_created') {
+              return CategoryCreatedBubble(metadata: m.metadata!);
             }
             if (m.metadata!.containsKey('items')) {
               return ReceiptItemsBubble(metadata: m.metadata!);

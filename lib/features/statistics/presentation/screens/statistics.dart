@@ -13,7 +13,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
-import 'package:money_care/features/statistics/presentation/widgets/ai_financial_assistant_card.dart';
+
 import 'package:money_care/features/statistics/presentation/widgets/chart/chart_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/chart/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/fund_summary_card.dart';
@@ -62,41 +62,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               AppHeader(
                 title: 'Thu - Chi',
-                actions: [
-                  Obx(() => GestureDetector(
-                    onTap: () => statisticsController.togglePeriodType(),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      margin: const EdgeInsets.only(right: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.menu, size: 14, color: AppColors.primary),
-                          const SizedBox(width: 6),
-                          Text(
-                            statisticsController.periodType.value,
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )),
-                ],
+
                 child: Obx(() {
-                  final data = statisticsController.totalByType.value;
+                  final data = statisticsController.globalTotalByType.value;
                   final selectedType = statisticsController.selectedType.value;
 
                   return Stack(
@@ -127,6 +95,47 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 12),
               
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Obx(() => GestureDetector(
+                      onTap: () => statisticsController.togglePeriodType(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.menu, size: 14, color: AppColors.primary),
+                            const SizedBox(width: 6),
+                            Text(
+                              statisticsController.periodType.value,
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
               Obx(() => _buildTimeNavigator()),
 
               const SizedBox(height: 20),
@@ -167,9 +176,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   return SavingsBarChart(
                       key: ValueKey("${statisticsController.periodType.value}_${statisticsController.currentStartDate}"),
                       thisMonthSpots: spots,
-                      lastMonthSpots: const [],
                       xLabels: labels,
-                      isComparison: false,
                     );
                 }),
               ),
@@ -292,16 +299,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ],
                 );
               }),
-
-              const SizedBox(height: 10),
-              Obx(() {
-                final insight = statisticsController.aiInsight.value;
-                return AIFinancialAssistantCard(
-                  insight: insight,
-                  onAskAI: () => Get.to(() => const ChatbotScreen()),
-                );
-              }),
-
               const SizedBox(height: 25),
             ],
           ),

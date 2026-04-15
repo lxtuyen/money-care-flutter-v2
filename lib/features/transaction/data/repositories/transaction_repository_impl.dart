@@ -3,7 +3,7 @@ import 'package:money_care/features/transaction/data/datasources/transaction_rem
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/transaction/domain/entities/ai_insight_entity.dart';
+
 import 'package:money_care/features/transaction/domain/repositories/transaction_repository.dart';
 
 class TransactionRepositoryImpl implements TransactionRepository {
@@ -71,11 +71,6 @@ class TransactionRepositoryImpl implements TransactionRepository {
     return model.toEntity();
   }
 
-  @override
-  Future<AiInsightEntity> getFinancialInsights(int userId,
-      {int? fundId, String? period}) {
-    return remoteDatasource.getFinancialInsights(userId,
-        fundId: fundId, period: period);
-  }
+
 }
 

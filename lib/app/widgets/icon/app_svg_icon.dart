@@ -57,7 +57,7 @@ class AppSvgIcon extends StatelessWidget {
       color: color,
       fit: fit,
       placeholderBuilder: (context) => Icon(
-        Icons.category_outlined,
+        Icons.category_rounded,
         size: size ?? width ?? 20,
         color: color ?? Colors.grey,
       ),

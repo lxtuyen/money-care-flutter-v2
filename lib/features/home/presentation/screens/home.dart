@@ -219,7 +219,7 @@ class HomeScreen extends GetView<HomeController> {
 
             const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
-              final totals = controller.statisticsController.totalByType.value;
+              final totals = controller.statisticsController.globalTotalByType.value;
 
               if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(

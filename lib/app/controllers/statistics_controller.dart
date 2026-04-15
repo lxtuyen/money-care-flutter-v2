@@ -1,9 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/fund_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
-import 'package:money_care/features/transaction/domain/entities/ai_insight_entity.dart';
+
 import 'package:money_care/features/transaction/domain/entities/entities.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -13,11 +14,11 @@ class StatisticsController extends GetxController {
   final GetTotalByCateUseCase getTotalByCateUseCase;
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
-  final GetFinancialInsightsUseCase getFinancialInsightsUseCase;
 
   FundController get fundController => Get.find<FundController>();
 
   var totalByType = Rxn<TotalByTypeEntity>();
+  var globalTotalByType = Rxn<TotalByTypeEntity>();
   RxList<TotalByCategoryEntity> totalByCate = <TotalByCategoryEntity>[].obs;
   RxList<TotalByCategoryEntity> expenseCategories = <TotalByCategoryEntity>[].obs;
   RxList<TotalByCategoryEntity> incomeCategories = <TotalByCategoryEntity>[].obs;
@@ -25,9 +26,7 @@ class StatisticsController extends GetxController {
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
   var statisticsSummary = Rxn<StatisticsSummaryEntity>();
-  var aiInsight = Rxn<AiInsightEntity>();
 
-  // Processed data for charts
   RxList<FlSpot> chartSpots = <FlSpot>[].obs;
   RxList<String> chartLabels = <String>[].obs;
   var isSilentLoading = false.obs;
@@ -42,7 +41,7 @@ class StatisticsController extends GetxController {
 
   final RxString selectedType = 'chi'.obs;
 
-  final RxString periodType = 'hàng tháng'.obs; // 'hàng tháng' or 'hàng ngày'
+  final RxString periodType = 'hàng tháng'.obs;
   final Rx<DateTime> selectedMonth = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
   final Rx<DateTime> selectedDay = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).obs;
 
@@ -50,7 +49,9 @@ class StatisticsController extends GetxController {
   DateTime get monthEndDate => DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 0);
 
   DateTime get currentStartDate => periodType.value == 'hàng tháng' ? monthStartDate : selectedDay.value;
-  DateTime get currentEndDate => periodType.value == 'hàng tháng' ? monthEndDate : selectedDay.value;
+  DateTime get currentEndDate => periodType.value == 'hàng tháng' 
+      ? DateTime(monthEndDate.year, monthEndDate.month, monthEndDate.day, 23, 59, 59) 
+      : DateTime(selectedDay.value.year, selectedDay.value.month, selectedDay.value.day, 23, 59, 59);
 
   var isLoading = false.obs;
   var errorMessage = RxnString();
@@ -64,7 +65,7 @@ class StatisticsController extends GetxController {
     required this.getTotalByCateUseCase,
     required this.getTotalByDateEntityUseCase,
     required this.getStatisticsSummaryUseCase,
-    required this.getFinancialInsightsUseCase,
+
   });
 
   @override
@@ -72,7 +73,6 @@ class StatisticsController extends GetxController {
     super.onInit();
     final appController = Get.find<AppController>();
     
-    // Lắng nghe sự thay đổi của userId để tải lại dữ liệu
     ever(appController.userId, (int? id) {
       if (id != null) {
         refreshStatisticsData(id);
@@ -86,8 +86,13 @@ class StatisticsController extends GetxController {
       refreshStatisticsData(currentId);
     }
 
-    // Lắng nghe thay đổi thời gian
-    everAll([selectedMonth, selectedDay, periodType, selectedType], (_) {
+    everAll([
+      selectedMonth,
+      selectedDay,
+      periodType,
+      selectedType,
+      fundController.fundId
+    ], (_) {
       final id = appController.userId.value;
       if (id != null) refreshStatisticsData(id);
     });
@@ -95,13 +100,31 @@ class StatisticsController extends GetxController {
 
   void _clearData() {
     totalByType.value = null;
+    globalTotalByType.value = null;
     totalByCate.clear();
     expenseCategories.clear();
     incomeCategories.clear();
     totalByDate.value = null;
     totalByDateLstMonth.value = null;
     statisticsSummary.value = null;
-    aiInsight.value = null;
+  }
+
+  Future<void> _loadGlobalTotalByType(int userId) async {
+    try {
+      final now = DateTime.now();
+      final start = DateTime(now.year, now.month, 1);
+      final end = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+      
+      final dto = TransactionTotalsDto(
+        fundId: _currentFundIdOrNull,
+        startDate: start.toIso8601String(),
+        endDate: end.toIso8601String(),
+      );
+      
+      globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
+    } catch (e) {
+      debugPrint('Error loading global totals: $e');
+    }
   }
 
   Future<void> getTotalByType(int userId,
@@ -202,9 +225,12 @@ class StatisticsController extends GetxController {
     }
   }
 
-  Future<void> _loadTotalByCate(int userId) async {
+  Future<void> _loadTotalByCate(int userId,
+      {DateTime? startDate, DateTime? endDate}) async {
     try {
-      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      final dto = _createTotalsDto(
+          startDate ?? (periodType.value == 'hàng tháng' ? monthStartDate : currentStartDate), 
+          endDate ?? (periodType.value == 'hàng tháng' ? monthEndDate : currentEndDate));
       final list = await getTotalByCateUseCase(userId, dto);
       totalByCate.assignAll(list);
     } catch (e) {
@@ -253,7 +279,6 @@ class StatisticsController extends GetxController {
     if (_isRefreshing) return;
     
     _isRefreshing = true;
-    // Only show full loading if it's the first time or if data is null
     if (totalByDate.value == null) {
       isLoading.value = true;
     } else {
@@ -266,21 +291,20 @@ class StatisticsController extends GetxController {
       if (periodType.value == 'hàng tháng') {
         await Future.wait([
           _loadTotalByType(userId, startDate: currentStartDate, endDate: currentEndDate),
-          _loadTotalByCate(userId),
+          _loadGlobalTotalByType(userId),
+          _loadTotalByCate(userId, startDate: currentStartDate, endDate: currentEndDate),
           _loadMonthlyCategories(userId),
           _loadTotalByDate(userId, dtoRange),
           _loadStatisticsSummary(userId),
-          _loadFinancialInsights(userId),
         ]);
         _processMonthlyData();
       } else {
-        // Daily Hourly View
         await Future.wait([
           _loadTotalByType(userId, startDate: currentStartDate, endDate: currentEndDate),
-          _loadTotalByCate(userId),
+          _loadGlobalTotalByType(userId),
+          _loadTotalByCate(userId, startDate: currentStartDate, endDate: currentEndDate),
           _loadDailyHourlyData(userId),
           _loadStatisticsSummary(userId),
-          _loadFinancialInsights(userId),
         ]);
       }
       errorMessage.value = null;
@@ -305,10 +329,9 @@ class StatisticsController extends GetxController {
       
       final transactions = selectedType.value == 'chi' ? result.expenseTransactions : result.incomeTransactions;
       
-      // Initialize with 24 hours
       final List<double> hourlyTotals = List.filled(24, 0.0);
       for (var t in transactions) {
-        final hour = t.transactionDate?.hour ?? 0;
+        final hour = t.transactionDate?.toLocal().hour ?? 0;
         hourlyTotals[hour] += t.amount.toDouble();
       }
 
@@ -380,18 +403,6 @@ class StatisticsController extends GetxController {
       statisticsSummary.value = await getStatisticsSummaryUseCase(userId, dto);
     } catch (e) {
       statisticsSummary.value = null;
-    }
-  }
-
-  Future<void> _loadFinancialInsights(int userId) async {
-    try {
-      aiInsight.value = await getFinancialInsightsUseCase(
-        userId,
-        fundId: _currentFundIdOrNull,
-        period: 'last_30_days',
-      );
-    } catch (e) {
-      aiInsight.value = null;
     }
   }
 

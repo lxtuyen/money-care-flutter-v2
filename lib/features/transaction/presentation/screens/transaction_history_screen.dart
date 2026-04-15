@@ -52,6 +52,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
+    // Refresh statistics for the header
+    statisticsController.refreshStatisticsData(userId);
+
     if (transactionController.transactionByfilter.value == null) {
       await transactionController.applyFilters(userId);
     }
@@ -66,7 +69,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           AppHeader(
             title: 'Thu - Chi',
             child: Obx(() {
-              final data = statisticsController.totalByType.value;
+              final data = statisticsController.globalTotalByType.value;
               final selectedType = statisticsController.selectedType.value;
 
               if (transactionController.isLoading.value || 

@@ -21,42 +21,56 @@ class UserCategoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final initialUserId = appController.userId.value;
+    if (initialUserId != null && categories.isEmpty) {
+      loadCategories(initialUserId);
+    }
+
     ever(appController.userId, (id) {
-      if (id != null) loadCategories(id);
+      if (id != null) {
+        loadCategories(id);
+      } else {
+        categories.clear();
+      }
     });
-    final userId = appController.userId.value;
-    if (userId != null) loadCategories(userId);
   }
 
   Future<void> loadCategories(int userId) async {
+    if (userId <= 0) return;
     isLoading.value = true;
-    print('UserCategoryController: Loading categories for userId: $userId');
     try {
       final res = await apiClient.get<List<dynamic>>(
         '${ApiRoutes.userCategories}/$userId',
         fromJsonT: (json) => json as List<dynamic>,
       );
-      print('UserCategoryController: Load result: ${res.success}, Count: ${res.data?.length}');
+      
       if (res.success && res.data != null) {
-        categories.assignAll(
-          res.data!.map((e) => _fromJson(e as Map<String, dynamic>)).toList(),
-        );
-      } else {
-        print('UserCategoryController: Load failed or empty data: ${res.message}');
+        final List<CategoryEntity> loaded = [];
+        for (var e in res.data!) {
+          try {
+            if (e is Map<String, dynamic>) {
+              loaded.add(_fromJson(e));
+            } else {
+              print('UserCategoryController: Skipping non-map item: $e');
+            }
+          } catch (err) {
+            print('UserCategoryController: Error parsing category item: $err. Data: $e');
+          }
+        }
+        categories.assignAll(loaded);
+      } else if (!res.success) {
       }
-    } catch (e) {
+    } catch (e, stack) {
       print('UserCategoryController: Catch error loading categories: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> saveCategories(List<CategoryEntity> cats) async {
+  Future<bool> saveCategories(List<CategoryEntity> cats) async {
     final userId = appController.userId.value;
-    print('UserCategoryController: Saving categories for userId: $userId');
     if (userId == null) {
-      print('UserCategoryController: Cannot save categories, userId is null!');
-      return;
+      return false;
     }
 
     isLoading.value = true;
@@ -67,15 +81,23 @@ class UserCategoryController extends GetxController {
         bodyList: body,
         fromJsonT: (json) => json as List<dynamic>,
       );
-      print('UserCategoryController: Save result: ${res.success}');
       if (res.success && res.data != null) {
-        categories.assignAll(
-          res.data!.map((e) => _fromJson(e as Map<String, dynamic>)).toList(),
-        );
+        final List<CategoryEntity> saved = [];
+        for (var e in res.data!) {
+          try {
+            saved.add(_fromJson(e as Map<String, dynamic>));
+          } catch (err) {
+            print('UserCategoryController: Error parsing saved category: $err');
+          }
+        }
+        categories.assignAll(saved);
         _refreshStatistics(userId);
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
-      print('UserCategoryController: Catch error saving categories: $e');
+      return false;
     } finally {
       isLoading.value = false;
     }

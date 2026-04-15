@@ -4,6 +4,7 @@ import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/transaction/data/models/scan_receipt_model.dart';
 import 'package:money_care/features/transaction/data/models/statistics_summary_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
+import 'package:money_care/features/transaction/data/models/ai_insight_model.dart';
 
 abstract class TransactionRemoteDatasource {
   Future<TransactionByTypeModel> findAllByFilter(
@@ -21,6 +22,8 @@ abstract class TransactionRemoteDatasource {
   Future<ScanReceiptModel> scanReceipt(XFile image);
   Future<StatisticsSummaryModel> getStatisticsSummary(
       int userId, TransactionTotalsDto dto);
+  Future<AiInsightModel> getFinancialInsights(
+      int userId, {int? fundId, String? period});
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
@@ -125,6 +128,22 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     } catch (e) {
       throw Exception('Quét hoá đơn thất bại: $e');
     }
+  }
+
+  @override
+  Future<AiInsightModel> getFinancialInsights(int userId,
+      {int? fundId, String? period}) async {
+    final res = await api.get<AiInsightModel>(
+      ApiRoutes.insights,
+      queryParameters: {
+        'userId': userId,
+        if (fundId != null) 'fundId': fundId,
+        if (period != null) 'period': period,
+      },
+      fromJsonT: (json) => AiInsightModel.fromJson(json),
+    );
+    if (!res.success || res.data == null) throw Exception(res.message);
+    return res.data!;
   }
 
   @override

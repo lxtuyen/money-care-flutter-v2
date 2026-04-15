@@ -307,14 +307,14 @@ class HomeScreen extends GetView<HomeController> {
               final categories = controller.statisticsController.totalByCate;
               final mode = controller.financeModeController.currentMode.value;
 
-              final filtered = categories.where((cat) {
+              final filtered = categories.where((TotalByCategoryEntity cat) {
                 if (cat.limit > 0) return true;
                 if (mode == FinanceMode.survival && !cat.isEssential && cat.total > 0) {
                   return true;
                 }
                 return false;
               }).toList();
-              filtered.sort((a, b) {
+              filtered.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
                 double percentA = a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
                 double percentB = b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
                 return percentB.compareTo(percentA);
@@ -332,7 +332,7 @@ class HomeScreen extends GetView<HomeController> {
                     },
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
-                  ...filtered.take(3).map((category) {
+                  ...filtered.take(3).map((TotalByCategoryEntity category) {
                     return CategoryOverviewCard(
                       title: category.categoryName,
                       limit: category.limit,
@@ -358,13 +358,13 @@ class HomeScreen extends GetView<HomeController> {
               
               List<TotalByCategoryEntity> filteredCategories;
               if (mode == FinanceMode.survival) {
-                filteredCategories = categories.where((c) => c.isEssential).toList();
+                filteredCategories = categories.where((TotalByCategoryEntity c) => c.isEssential).toList();
               } else {
                 filteredCategories = categories.toList();
               }
 
               if (mode == FinanceMode.saving) {
-                filteredCategories.sort((a, b) {
+                filteredCategories.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
                   if (a.limit <= 0 && b.limit <= 0) return 0;
                   if (a.limit <= 0) return 1;
                   if (b.limit <= 0) return -1;
@@ -409,7 +409,7 @@ class HomeScreen extends GetView<HomeController> {
                       ),
                     ),
                   SizedBox(height: sectionSubtitle != null ? 0 : AppSizes.spaceBtwItems),
-                  ...filteredCategories.map((category) {
+                  ...filteredCategories.map((TotalByCategoryEntity category) {
                     return CategoryOverviewCard(
                       title: category.categoryName,
                       limit: category.limit,
@@ -418,11 +418,11 @@ class HomeScreen extends GetView<HomeController> {
                       isIncome: false,
                     );
                   }).toList(),
-                  if (mode == FinanceMode.survival && categories.any((c) => !c.isEssential && c.total > 0))
+                  if (mode == FinanceMode.survival && categories.any((TotalByCategoryEntity c) => !c.isEssential && c.total > 0))
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        "Đã ẩn ${categories.where((c) => !c.isEssential).length} mục không thiết yếu",
+                        "Đã ẩn ${categories.where((TotalByCategoryEntity c) => !c.isEssential).length} mục không thiết yếu",
                         style: const TextStyle(fontSize: 11, color: AppColors.error, fontStyle: FontStyle.italic),
                       ),
                     ),
@@ -449,7 +449,7 @@ class HomeScreen extends GetView<HomeController> {
                     showActionButton: false,
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
-                  ...controller.statisticsController.incomeCategories.map((category) {
+                  ...controller.statisticsController.incomeCategories.map((TotalByCategoryEntity category) {
                     return CategoryOverviewCard(
                       title: category.categoryName,
                       limit: category.limit,

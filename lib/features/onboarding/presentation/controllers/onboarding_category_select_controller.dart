@@ -6,6 +6,7 @@ import 'package:money_care/features/onboarding/onboarding_data.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class OnboardingCategorySelectController extends GetxController {
   final RxList<SuggestedCategory> expenseCategories =
@@ -76,7 +77,12 @@ class OnboardingCategorySelectController extends GetxController {
     }
 
     // Chờ quá trình lưu danh mục hoàn tất thành công
-    userCategoryController.saveCategories(selected).then((_) {
+    userCategoryController.saveCategories(selected).then((success) {
+      if (!success) {
+        AppHelperFunction.showErrorSnackBar('Lưu danh mục thất bại. Vui lòng thử lại.');
+        return;
+      }
+
       // Đánh dấu onboarding đã hoàn thành cho user này sau khi đã lưu xong
       final appController = Get.find<AppController>();
       int? userId = appController.userId.value;
@@ -102,9 +108,6 @@ class OnboardingCategorySelectController extends GetxController {
         print('OnboardingController Error: userId is still null, cannot save onboarding status!');
         Get.offAllNamed(RoutePath.main);
       }
-    }).catchError((e) {
-      print('OnboardingController Error saving categories: $e');
-      Get.offAllNamed(RoutePath.main);
     });
   }
 

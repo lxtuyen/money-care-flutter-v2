@@ -8,6 +8,7 @@ class AppHeader extends StatelessWidget {
   final VoidCallback? onBackTap;
   final Widget? child;
   final Color? backgroundColor;
+  final List<Widget>? actions;
 
   const AppHeader({
     super.key,
@@ -17,6 +18,7 @@ class AppHeader extends StatelessWidget {
     this.onBackTap,
     this.child,
     this.backgroundColor,
+    this.actions,
   });
 
   @override
@@ -131,7 +133,13 @@ class AppHeader extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 36),
+                        if (actions != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: actions!,
+                          )
+                        else
+                          const SizedBox(width: 36),
                       ],
                     ),
                   ),

@@ -25,6 +25,8 @@ class AppStateBinding extends Bindings {
         getTotalByDateEntityUseCase: GetTotalByDateEntityUseCase(repository),
         getStatisticsSummaryUseCase:
             GetStatisticsSummaryUseCase(repository: repository),
+        getFinancialInsightsUseCase:
+            GetFinancialInsightsUseCase(repository: repository),
       ),
       permanent: true,
     );

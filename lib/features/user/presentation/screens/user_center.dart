@@ -33,8 +33,6 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   }
 
   Future<void> initData() async {
-    // Không cần gọi getTotalByType thủ công ở đây nữa
-    // vì dữ liệu thống kê đã được nạp và đồng bộ toàn cục.
     await appController.getCurrentUserId();
   }
 

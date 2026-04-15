@@ -233,7 +233,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 : statisticsController.incomeCategories;
 
             List<CategoryEntity> filteredCategories = categoriesFromStats
-                .map((e) => CategoryEntity(
+                .map<CategoryEntity>((e) => CategoryEntity(
                       id: e.categoryId,
                       name: e.categoryName,
                       icon: e.categoryIcon,

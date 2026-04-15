@@ -9,6 +9,8 @@ class AppBarChart extends StatelessWidget {
   final BarTouchTooltipData? tooltipData;
   final double maxY;
   final double minY;
+  final BarChartAlignment alignment;
+  final double? groupsSpace;
 
   const AppBarChart({
     super.key,
@@ -17,6 +19,8 @@ class AppBarChart extends StatelessWidget {
     this.tooltipData,
     this.maxY = 0,
     this.minY = 0,
+    this.alignment = BarChartAlignment.spaceAround,
+    this.groupsSpace,
   });
 
   @override
@@ -41,7 +45,8 @@ final chartMaxY = roundedMaxY + interval * 2;
 
     return BarChart(
       BarChartData(
-        alignment: BarChartAlignment.spaceAround,
+        alignment: alignment,
+        groupsSpace: groupsSpace,
         minY: minY,
         maxY: chartMaxY,
         gridData: FlGridData(
@@ -96,27 +101,25 @@ checkToShowHorizontalLine: (value) {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 35,
+              reservedSize: 22,
               interval: interval,
-getTitlesWidget: (value, meta) {
-if ((value - chartMaxY).abs() < epsilon) { return const SizedBox.shrink(); } 
-  return Padding(
-    padding: const EdgeInsets.only(right: 4.0),
-    child: Text(
-      chartHelper.formatCurrencyShort(value.toInt()),
-      style: TextStyle(
-        fontSize: 10,
-        color: value.abs() < epsilon
-            ? AppColors.text1
-            : AppColors.text4,
-        fontWeight: value.abs() < epsilon
-            ? FontWeight.w600
-            : FontWeight.w400,
-      ),
-      textAlign: TextAlign.right,
-    ),
-  );
-},
+              getTitlesWidget: (value, meta) {
+                if ((value - chartMaxY).abs() < epsilon) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(right: 2.0),
+                  child: Text(
+                    chartHelper.formatCurrencyShort(value.toInt()),
+                    style: TextStyle(
+                      fontSize: 8,
+                      color: value.abs() < epsilon ? AppColors.text1 : AppColors.text4,
+                      fontWeight: value.abs() < epsilon ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                );
+              },
             ),
           ),
         ),

@@ -8,9 +8,11 @@ part of 'category_model.dart';
 
 _CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>
     _CategoryModel(
-      id: (json['id'] as num?)?.toInt(),
+      id: NumParser.parseIntNullable(json['id']),
       name: json['name'] as String,
-      percentage: (json['percentage'] as num?)?.toInt() ?? 0,
+      percentage: json['percentage'] == null
+          ? 0
+          : NumParser.parseInt(json['percentage']),
       icon: json['icon'] as String? ?? '',
       color: const ColorConverter().fromJson(json['color']),
       isEssential: json['isEssential'] as bool? ?? true,

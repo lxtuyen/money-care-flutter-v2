@@ -34,3 +34,5 @@ abstract class ScanReceiptModel with _$ScanReceiptModel {
         categoryName: categoryName,
       );
 }
+
+

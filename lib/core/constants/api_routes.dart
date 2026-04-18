@@ -7,10 +7,10 @@ class ApiRoutes {
   static const resetPassword = 'otp/reset-password';
   static const verifyOtp = 'otp/verify-otp';
 
-  static const fund = 'funds';
-  static const getFunds = 'funds/user';
-  static const selectFund = 'funds/select';
-  static const checkExpiredFund = 'funds/check-expired';
+  static const savingGoal = 'saving-goals';
+  static const getSavingGoals = 'saving-goals/user';
+  static const selectSavingGoal = 'saving-goals/select';
+  static const checkExpiredSavingGoal = 'saving-goals/check-expired';
 
   static const userProfile = 'user-profile/me';
   static const users = 'users';
@@ -28,7 +28,6 @@ class ApiRoutes {
 
   static const chatbot = 'ai/chat';
 
-
   static const financeMode = 'finance-mode';
   static const splitSession = 'split-session';
   static const gamification = 'gamification';
@@ -36,3 +35,5 @@ class ApiRoutes {
   static const paymentconfirm = 'vip-payments/confirm';
   static const getMonthlyRevenue = 'vip-payments/monthly-revenue';
 }
+
+

@@ -7,7 +7,7 @@ import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -19,7 +19,7 @@ import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
   final ScanReceiptController scanReceiptController =
       Get.find<ScanReceiptController>();
   final AppController appController = Get.find<AppController>();
@@ -111,7 +111,7 @@ class TransactionFormController extends GetxController {
     selectedDate.value = DateTime.parse(data.date);
 
     if (showCategory) {
-      final fundCategories = fundController.currentFund.value?.categories ?? [];
+      final fundCategories = savingGoalController.currentGoal.value?.categories ?? [];
       final userCategoryController = Get.find<UserCategoryController>();
       final categories = fundCategories.isNotEmpty
           ? fundCategories

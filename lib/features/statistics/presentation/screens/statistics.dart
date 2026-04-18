@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
@@ -14,9 +14,8 @@ import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
 
-import 'package:money_care/features/statistics/presentation/widgets/chart/chart_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/chart/savings_bar_chart.dart';
-import 'package:money_care/features/statistics/presentation/widgets/fund_summary_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
+import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -34,7 +33,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController = Get.find<TransactionController>();
   final StatisticsController statisticsController = Get.find<StatisticsController>();
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
   final UserCategoryController userCategoryController = Get.find<UserCategoryController>();
   final FilterController filterController = Get.find<FilterController>();
   final UserController userController = Get.find<UserController>();
@@ -64,7 +63,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 title: 'Thu - Chi',
 
                 child: Obx(() {
-                  final data = statisticsController.globalTotalByType.value;
+                  final data = statisticsController.totalByType.value;
                   final selectedType = statisticsController.selectedType.value;
 
                   return Stack(
@@ -231,53 +230,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               }),
 
               const SizedBox(height: 25),
-              Obx(() {
-                final categories = statisticsController.totalByCate;
-                final isExpense = statisticsController.selectedType.value == 'chi';
-                final hasFund = statisticsController.fundController.currentFund.value != null;
-
-                if (!isExpense || !hasFund) return const SizedBox.shrink();
-
-                 if (!isExpense || !hasFund) return const SizedBox.shrink();
-
-                final filtered = categories.where((TotalByCategoryEntity c) => c.limit > 0 || c.total > 0).toList();
-                filtered.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
-                  double percentA = a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
-                  double percentB = b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
-                  return percentB.compareTo(percentA);
-                });
-
-                if (filtered.isEmpty) return const SizedBox.shrink();
-
-                return Align(
-                  alignment: Alignment.centerLeft,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      children: [
-                        ...filtered.map((TotalByCategoryEntity item) => Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: ChartCard(
-                              title: item.categoryName,
-                              amount: item.total,
-                              limit: item.limit,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-
-              const SizedBox(height: 25),
 
               Obx(() {
-                final fund = fundController.currentFund.value;
+                final fund = savingGoalController.currentGoal.value;
                 if (fund == null) return const SizedBox.shrink();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,10 +245,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    FundSummaryCard(
+                    SavingGoalSummaryCard(
                       fund: fund,
-                      report: fundController.fundReport.value,
-                      isLoading: fundController.isLoadingReport.value,
+                      report: savingGoalController.goalReport.value,
+                      isLoading: savingGoalController.isLoadingReport.value,
                     ),
                     const SizedBox(height: 25),
                   ],

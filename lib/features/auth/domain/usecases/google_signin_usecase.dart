@@ -11,3 +11,5 @@ class GoogleSignInUseCase {
     return repository.loginWithGoogle();
   }
 }
+
+

@@ -7,3 +7,5 @@ abstract class FinanceModeRepository {
   Future<Either<Failure, FinanceModeEntity>> saveFinanceMode(
       FinanceModeEntity financeMode);
 }
+
+

@@ -396,15 +396,15 @@ class _CreatePhotoTransactionScreenState
       ),
       builder: (context) {
         return Obx(() {
-          if (controller.fundController.isLoadingCurrent.value) {
+          if (controller.savingGoalController.isLoadingCurrent.value) {
             return const SizedBox(
               height: 220,
               child: Center(child: CircularProgressIndicator()),
             );
           }
-          final currentFund =
-              controller.fundController.currentFund.value;
-          if (currentFund == null) {
+          final currentGoal =
+              controller.savingGoalController.currentGoal.value;
+          if (currentGoal == null) {
             return const SizedBox(
               height: 220,
               child: Center(
@@ -412,7 +412,7 @@ class _CreatePhotoTransactionScreenState
               ),
             );
           }
-          final categories = currentFund.categories;
+          final categories = currentGoal.categories;
           return CategorySheet(
             categories: categories,
             selectedCategoryInit: controller.selectedCategoryId.value != null
@@ -791,4 +791,3 @@ class _TypeChip extends StatelessWidget {
     );
   }
 }
-

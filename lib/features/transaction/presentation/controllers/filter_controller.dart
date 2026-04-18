@@ -25,6 +25,12 @@ class FilterController extends GetxController {
     }
   }
 
+  void setGoalRange(DateTime start, DateTime end, String goalName) {
+    startDate.value = start;
+    endDate.value = end;
+    dateLabel.value = 'Mục tiêu: $goalName';
+  }
+
   void updateKeyword(String value) => keyword.value = value;
 
   bool get hasKeyword => keyword.value.trim().isNotEmpty;

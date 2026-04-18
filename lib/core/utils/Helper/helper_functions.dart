@@ -293,7 +293,8 @@ class AppHelperFunction {
   }
 
   static String unformatCurrency(String value) {
-    return value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (value.isEmpty) return '';
+    return value.replaceAll(RegExp(r'[^0-9]'), '').trim();
   }
 }
 

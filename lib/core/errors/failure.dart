@@ -22,3 +22,5 @@ class UnknownFailure extends Failure {
 class ValidationFailure extends Failure {
   const ValidationFailure(super.message);
 }
+
+

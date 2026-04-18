@@ -5,7 +5,7 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -29,8 +29,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final FundController fundController =
-      Get.find<FundController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
   final FilterController filterController = Get.find<FilterController>();
   final StatisticsController statisticsController =
       Get.find<StatisticsController>();
@@ -69,7 +69,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           AppHeader(
             title: 'Thu - Chi',
             child: Obx(() {
-              final data = statisticsController.globalTotalByType.value;
+              final data = statisticsController.totalByType.value;
               final selectedType = statisticsController.selectedType.value;
 
               if (transactionController.isLoading.value || 
@@ -245,7 +245,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 .toList();
 
             if (filteredCategories.isEmpty) {
-              final data = fundController.currentFund.value;
+              final data = savingGoalController.currentGoal.value;
               final fundCategories = data?.categories ?? [];
               filteredCategories = fundCategories.where((c) {
                 final catType = c.type?.toLowerCase() ?? '';
@@ -253,7 +253,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               }).toList();
             }
 
-            if (fundController.isLoadingCurrent.value &&
+            if (savingGoalController.isLoadingCurrent.value &&
                 filteredCategories.isEmpty) {
               return const Center(
                 child: Padding(
@@ -312,7 +312,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               String categorySubtitle = 'Chọn loại chi tiêu hoặc thu nhập cụ thể';
               if (filterController.categoryId.value != null) {
                 final categoryId = filterController.categoryId.value;
-                final cats = fundController.currentFund.value?.categories ?? [];
+                final cats = savingGoalController.currentGoal.value?.categories ?? [];
                 final cat = cats.cast<CategoryEntity?>().firstWhere(
                       (c) => c?.id == categoryId,
                       orElse: () => null,
@@ -544,4 +544,3 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     );
   }
 }
-

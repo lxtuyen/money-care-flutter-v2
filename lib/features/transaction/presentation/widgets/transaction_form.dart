@@ -114,8 +114,8 @@ class _TransactionFormState extends State<TransactionForm> {
                                         builder: (context) {
                                           return Obx(() {
                                             final fundCategories = controller
-                                                .fundController
-                                                .currentFund
+                                                .savingGoalController
+                                                .currentGoal
                                                 .value
                                                 ?.categories;
 
@@ -128,7 +128,7 @@ class _TransactionFormState extends State<TransactionForm> {
                                                 : userCategoryController.categories;
 
                                             if (controller
-                                                .fundController
+                                                .savingGoalController
                                                 .isLoadingCurrent
                                                 .value) {
                                               return const SizedBox(

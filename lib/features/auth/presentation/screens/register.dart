@@ -147,3 +147,5 @@ class RegisterScreen extends GetView<RegisterController> {
     );
   }
 }
+
+

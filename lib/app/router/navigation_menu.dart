@@ -6,8 +6,8 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/app/router/nav_controller.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
-import 'package:money_care/features/fund/presentation/widgets/expired_fund_popup.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/expired_goal_popup.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
 import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/user_center.dart';
@@ -25,21 +25,21 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkExpiredFund());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkExpiredSavingGoal());
   }
 
-  Future<void> _checkExpiredFund() async {
+  Future<void> _checkExpiredSavingGoal() async {
     try {
-      final fundController = Get.find<FundController>();
+      final savingGoalController = Get.find<SavingGoalController>();
       final appController = Get.find<AppController>();
       final userId = appController.userId.value;
       if (userId == null) return;
 
-      await fundController.checkExpiredFund(userId);
+      await savingGoalController.checkExpiredSavingGoal(userId);
 
-      if (fundController.hasExpiredFund.value &&
-          fundController.expiredFund.value != null) {
-        ExpiredFundPopup.show(fundController.expiredFund.value!);
+      if (savingGoalController.hasExpiredGoal.value &&
+          savingGoalController.expiredGoal.value != null) {
+        ExpiredGoalPopup.show(savingGoalController.expiredGoal.value!);
       }
     } catch (_) {
       

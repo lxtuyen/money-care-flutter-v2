@@ -28,3 +28,5 @@ abstract class UserProfileModel with _$UserProfileModel {
         avatar: avatar,
       );
 }
+
+

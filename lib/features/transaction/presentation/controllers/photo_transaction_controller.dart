@@ -6,7 +6,7 @@ import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -15,8 +15,8 @@ import 'package:money_care/features/transaction/domain/usecases/scan_receipt_use
 class PhotoTransactionController extends GetxController {
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final FundController fundController =
-      Get.find<FundController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
   final AppController appController = Get.find<AppController>();
   final ScanReceiptUseCase? scanReceiptUseCase;
 
@@ -83,9 +83,9 @@ class PhotoTransactionController extends GetxController {
       }
 
       if (result.categoryName != null) {
-        final currentFund = fundController.currentFund.value;
-        if (currentFund != null) {
-          final cat = currentFund.categories.firstWhereOrNull(
+        final currentGoal = savingGoalController.currentGoal.value;
+        if (currentGoal != null) {
+          final cat = currentGoal.categories.firstWhereOrNull(
             (c) => c.name.toLowerCase().contains(result.categoryName!.toLowerCase()) ||
                    result.categoryName!.toLowerCase().contains(c.name.toLowerCase())
           );

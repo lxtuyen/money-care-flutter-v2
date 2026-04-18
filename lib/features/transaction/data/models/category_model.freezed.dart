@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CategoryModel {
 
- int? get id; String get name; int get percentage; String get icon;@ColorConverter() Color? get color; bool get isEssential; String? get type;
+@JsonKey(fromJson: NumParser.parseIntNullable) int? get id; String get name;@JsonKey(fromJson: NumParser.parseInt) int get percentage; String get icon;@ColorConverter() Color? get color; bool get isEssential; String? get type;
 /// Create a copy of CategoryModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $CategoryModelCopyWith<$Res>  {
   factory $CategoryModelCopyWith(CategoryModel value, $Res Function(CategoryModel) _then) = _$CategoryModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, String name, int percentage, String icon,@ColorConverter() Color? color, bool isEssential, String? type
+@JsonKey(fromJson: NumParser.parseIntNullable) int? id, String name,@JsonKey(fromJson: NumParser.parseInt) int percentage, String icon,@ColorConverter() Color? color, bool isEssential, String? type
 });
 
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  int percentage,  String icon, @ColorConverter()  Color? color,  bool isEssential,  String? type)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseIntNullable)  int? id,  String name, @JsonKey(fromJson: NumParser.parseInt)  int percentage,  String icon, @ColorConverter()  Color? color,  bool isEssential,  String? type)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CategoryModel() when $default != null:
 return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_that.isEssential,_that.type);case _:
@@ -180,7 +180,7 @@ return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  int percentage,  String icon, @ColorConverter()  Color? color,  bool isEssential,  String? type)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseIntNullable)  int? id,  String name, @JsonKey(fromJson: NumParser.parseInt)  int percentage,  String icon, @ColorConverter()  Color? color,  bool isEssential,  String? type)  $default,) {final _that = this;
 switch (_that) {
 case _CategoryModel():
 return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_that.isEssential,_that.type);case _:
@@ -200,7 +200,7 @@ return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  int percentage,  String icon, @ColorConverter()  Color? color,  bool isEssential,  String? type)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseIntNullable)  int? id,  String name, @JsonKey(fromJson: NumParser.parseInt)  int percentage,  String icon, @ColorConverter()  Color? color,  bool isEssential,  String? type)?  $default,) {final _that = this;
 switch (_that) {
 case _CategoryModel() when $default != null:
 return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_that.isEssential,_that.type);case _:
@@ -215,12 +215,12 @@ return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_tha
 @JsonSerializable()
 
 class _CategoryModel extends CategoryModel {
-  const _CategoryModel({this.id, required this.name, this.percentage = 0, this.icon = '', @ColorConverter() this.color, this.isEssential = true, this.type}): super._();
+  const _CategoryModel({@JsonKey(fromJson: NumParser.parseIntNullable) this.id, required this.name, @JsonKey(fromJson: NumParser.parseInt) this.percentage = 0, this.icon = '', @ColorConverter() this.color, this.isEssential = true, this.type}): super._();
   factory _CategoryModel.fromJson(Map<String, dynamic> json) => _$CategoryModelFromJson(json);
 
-@override final  int? id;
+@override@JsonKey(fromJson: NumParser.parseIntNullable) final  int? id;
 @override final  String name;
-@override@JsonKey() final  int percentage;
+@override@JsonKey(fromJson: NumParser.parseInt) final  int percentage;
 @override@JsonKey() final  String icon;
 @override@ColorConverter() final  Color? color;
 @override@JsonKey() final  bool isEssential;
@@ -259,7 +259,7 @@ abstract mixin class _$CategoryModelCopyWith<$Res> implements $CategoryModelCopy
   factory _$CategoryModelCopyWith(_CategoryModel value, $Res Function(_CategoryModel) _then) = __$CategoryModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String name, int percentage, String icon,@ColorConverter() Color? color, bool isEssential, String? type
+@JsonKey(fromJson: NumParser.parseIntNullable) int? id, String name,@JsonKey(fromJson: NumParser.parseInt) int percentage, String icon,@ColorConverter() Color? color, bool isEssential, String? type
 });
 
 

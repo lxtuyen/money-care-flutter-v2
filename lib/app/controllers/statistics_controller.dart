@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 
@@ -15,7 +15,7 @@ class StatisticsController extends GetxController {
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
 
-  FundController get fundController => Get.find<FundController>();
+  SavingGoalController get savingGoalController => Get.find<SavingGoalController>();
 
   var totalByType = Rxn<TotalByTypeEntity>();
   var globalTotalByType = Rxn<TotalByTypeEntity>();
@@ -48,10 +48,32 @@ class StatisticsController extends GetxController {
   DateTime get monthStartDate => DateTime(selectedMonth.value.year, selectedMonth.value.month, 1);
   DateTime get monthEndDate => DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 0);
 
-  DateTime get currentStartDate => periodType.value == 'hàng tháng' ? monthStartDate : selectedDay.value;
-  DateTime get currentEndDate => periodType.value == 'hàng tháng' 
-      ? DateTime(monthEndDate.year, monthEndDate.month, monthEndDate.day, 23, 59, 59) 
-      : DateTime(selectedDay.value.year, selectedDay.value.month, selectedDay.value.day, 23, 59, 59);
+  DateTime get currentStartDate {
+    final baseDate = periodType.value == 'hàng tháng' ? monthStartDate : selectedDay.value;
+    return _clampToGoalStart(baseDate);
+  }
+
+  DateTime get currentEndDate {
+    final baseDate = periodType.value == 'hàng tháng'
+        ? DateTime(monthEndDate.year, monthEndDate.month, monthEndDate.day, 23, 59, 59)
+        : DateTime(selectedDay.value.year, selectedDay.value.month, selectedDay.value.day, 23, 59, 59);
+    return _clampToGoalEnd(baseDate);
+  }
+
+  DateTime _clampToGoalStart(DateTime date) {
+    final goal = savingGoalController.currentGoal.value;
+    if (goal == null || goal.startDate == null) return date;
+    if (date.isBefore(goal.startDate!)) return goal.startDate!;
+    return date;
+  }
+
+  DateTime _clampToGoalEnd(DateTime date) {
+    final goal = savingGoalController.currentGoal.value;
+    if (goal == null || goal.endDate == null) return date;
+    // For end date, we must ensure it doesn't exceed the goal end date
+    if (date.isAfter(goal.endDate!)) return goal.endDate!;
+    return date;
+  }
 
   var isLoading = false.obs;
   var errorMessage = RxnString();
@@ -91,7 +113,7 @@ class StatisticsController extends GetxController {
       selectedDay,
       periodType,
       selectedType,
-      fundController.fundId
+      savingGoalController.goalId
     ], (_) {
       final id = appController.userId.value;
       if (id != null) refreshStatisticsData(id);
@@ -111,14 +133,10 @@ class StatisticsController extends GetxController {
 
   Future<void> _loadGlobalTotalByType(int userId) async {
     try {
-      final now = DateTime.now();
-      final start = DateTime(now.year, now.month, 1);
-      final end = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-      
       final dto = TransactionTotalsDto(
-        fundId: _currentFundIdOrNull,
-        startDate: start.toIso8601String(),
-        endDate: end.toIso8601String(),
+        goalId: _currentGoalIdOrNull,
+        startDate: currentStartDate.toIso8601String(),
+        endDate: currentEndDate.toIso8601String(),
       );
       
       globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
@@ -193,7 +211,7 @@ class StatisticsController extends GetxController {
     isLoading.value = true;
     try {
       final totalsDto = TransactionTotalsDto(
-        fundId: _currentFundIdOrNull,
+        goalId: _currentGoalIdOrNull,
         startDate: startDate.toIso8601String(),
         endDate: endDate.toIso8601String(),
       );
@@ -241,15 +259,15 @@ class StatisticsController extends GetxController {
   Future<void> _loadMonthlyCategories(int userId) async {
     try {
       final expenseDto = TransactionTotalsDto(
-        fundId: _currentFundIdOrNull,
-        startDate: monthStartDate.toIso8601String(),
-        endDate: monthEndDate.toIso8601String(),
+        goalId: _currentGoalIdOrNull,
+        startDate: currentStartDate.toIso8601String(),
+        endDate: currentEndDate.toIso8601String(),
         type: 'expense',
       );
       final incomeDto = TransactionTotalsDto(
-        fundId: _currentFundIdOrNull,
-        startDate: monthStartDate.toIso8601String(),
-        endDate: monthEndDate.toIso8601String(),
+        goalId: _currentGoalIdOrNull,
+        startDate: currentStartDate.toIso8601String(),
+        endDate: currentEndDate.toIso8601String(),
         type: 'income',
       );
 
@@ -322,7 +340,7 @@ class StatisticsController extends GetxController {
       final filterDto = TransactionFilterDto(
         startDate: currentStartDate.toIso8601String(),
         endDate: currentEndDate.toIso8601String(),
-        fundId: _currentFundIdOrNull,
+        goalId: _currentGoalIdOrNull,
       );
 
       final result = await Get.find<TransactionController>().filterTransactionsUseCase(userId, filterDto);
@@ -399,7 +417,7 @@ class StatisticsController extends GetxController {
 
   Future<void> _loadStatisticsSummary(int userId) async {
     try {
-      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      final dto = _createTotalsDto(currentStartDate, currentEndDate);
       statisticsSummary.value = await getStatisticsSummaryUseCase(userId, dto);
     } catch (e) {
       statisticsSummary.value = null;
@@ -415,13 +433,13 @@ class StatisticsController extends GetxController {
     }
   }
 
-  int? get _currentFundIdOrNull =>
-      fundController.currentFundId > 0 ? fundController.currentFundId : null;
+  int? get _currentGoalIdOrNull =>
+      savingGoalController.currentGoalId > 0 ? savingGoalController.currentGoalId : null;
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
     final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
     return TransactionTotalsDto(
-      fundId: _currentFundIdOrNull,
+      goalId: _currentGoalIdOrNull,
       startDate: start.toIso8601String(),
       endDate: end.toIso8601String(),
       type: backendType,

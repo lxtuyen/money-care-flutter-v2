@@ -123,3 +123,5 @@ class BadgeNames {
   static const String streak30 = 'Tiết kiệm 30 ngày';
   static const String goalCompleted = 'Mục tiêu hoàn thành';
 }
+
+

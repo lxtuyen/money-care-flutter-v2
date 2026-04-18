@@ -9,7 +9,7 @@ part of 'transaction_totals_dto.dart';
 _TransactionTotalsDto _$TransactionTotalsDtoFromJson(
   Map<String, dynamic> json,
 ) => _TransactionTotalsDto(
-  fundId: (json['fundId'] as num?)?.toInt(),
+  goalId: (json['savingGoalId'] as num?)?.toInt(),
   startDate: json['start_date'] as String?,
   endDate: json['end_date'] as String?,
   type: json['type'] as String?,
@@ -18,7 +18,7 @@ _TransactionTotalsDto _$TransactionTotalsDtoFromJson(
 Map<String, dynamic> _$TransactionTotalsDtoToJson(
   _TransactionTotalsDto instance,
 ) => <String, dynamic>{
-  'fundId': instance.fundId,
+  'savingGoalId': instance.goalId,
   'start_date': instance.startDate,
   'end_date': instance.endDate,
   'type': instance.type,

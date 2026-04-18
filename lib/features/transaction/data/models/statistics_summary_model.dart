@@ -25,3 +25,5 @@ abstract class StatisticsSummaryModel with _$StatisticsSummaryModel {
         monthlyBalance: monthlyBalance,
       );
 }
+
+

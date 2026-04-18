@@ -11,7 +11,7 @@ import 'package:money_care/features/finance_mode/presentation/controllers/financ
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 
 class HomeController extends GetxController {
   final AppController appController = Get.find<AppController>();
@@ -19,7 +19,7 @@ class HomeController extends GetxController {
   final StatisticsController statisticsController = Get.find<StatisticsController>();
   final FinanceModeController financeModeController = Get.find<FinanceModeController>();
   final UserController userController = Get.find<UserController>();
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
 
   final now = DateTime.now();
   late DateTime startDate = now.subtract(const Duration(days: 6));
@@ -122,3 +122,5 @@ class HomeController extends GetxController {
     );
   }
 }
+
+

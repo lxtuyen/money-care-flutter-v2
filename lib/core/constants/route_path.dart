@@ -12,8 +12,8 @@ class RoutePath {
   static const onboardingBudgetSetup = '/onboarding_balance_setup';
   static const onboardingCategorySelect = '/onboarding_category_select';
   static const main = '/main';
-  static const selectFund = '/select_fund';
-  static const createFund = '/create_fund';
+  static const selectSavingGoal = '/select_saving_goal';
+  static const createSavingGoal = '/create_saving_goal';
   static const expense = '/expense';
   static const income = '/income';
   static const transactionWithImage = '/transaction_with_image';
@@ -23,9 +23,14 @@ class RoutePath {
   static const adminUsers = '/admin/users';
   static const payment = '/payment';
   static const notification = '/notification';
-  static const fundReport = '/fund_report';
   static const photoTransactionHistory = '/photo_transaction_history';
-  static const expiredFunds = '/expired_funds';
+  static const expiredSavingGoals = '/expired_saving_goals';
   static const categoryManagement = '/category_management';
   static const streakCalendar = '/streak_calendar';
+
+  // Legacy mappings for backward compatibility during transition if needed
+  static const selectFund = selectSavingGoal;
+  static const createFund = createSavingGoal;
 }
+
+

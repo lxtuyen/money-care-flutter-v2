@@ -12,7 +12,7 @@ import 'package:money_care/features/splash/presentation/bindings/splash_binding.
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
 import 'package:money_care/features/onboarding/presentation/bindings/onboarding_binding.dart';
 import 'package:money_care/features/transaction/presentation/bindings/transaction_binding.dart';
-import 'package:money_care/features/fund/presentation/bindings/fund_binding.dart';
+import 'package:money_care/features/saving_goal/presentation/bindings/saving_goal_binding.dart';
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
@@ -37,10 +37,10 @@ import 'package:money_care/features/transaction/domain/usecases/update_transacti
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
-import 'package:money_care/features/fund/data/datasources/fund_remote_datasource.dart';
-import 'package:money_care/features/fund/data/repositories/fund_repository_impl.dart';
-import 'package:money_care/features/fund/domain/usecases/usecases.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/features/saving_goal/data/datasources/saving_goal_remote_datasource.dart';
+import 'package:money_care/features/saving_goal/data/repositories/saving_goal_repository_impl.dart';
+import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 
 import 'package:money_care/features/user/data/datasources/user_remote_datasource.dart';
 import 'package:money_care/features/user/data/repositories/user_repository_impl.dart';
@@ -110,19 +110,19 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final fundRemoteDs = FundRemoteDatasourceImpl(api: apiService);
-    final fundRepo = FundRepositoryImpl(remoteDatasource: fundRemoteDs);
-    Get.put<FundController>(
-      FundController(
-        getFundsByUserUseCase: GetFundsByUserUseCase(fundRepo),
-        getFundUseCase: GetFundUseCase(fundRepo),
-        updateFundUseCase: UpdateFundUseCase(fundRepo),
-        deleteFundUseCase: DeleteFundUseCase(fundRepo),
-        selectFundUseCase: SelectFundUseCase(fundRepo),
-        checkExpiredFundUseCase: CheckExpiredFundUseCase(fundRepo),
-        markAsNotifiedUseCase: MarkAsNotifiedUseCase(fundRepo),
-        extendFundUseCase: ExtendFundUseCase(fundRepo),
-        getFundReportUseCase: GetFundReportUseCase(fundRepo),
+    final savingGoalRemoteDs = SavingGoalRemoteDatasourceImpl(api: apiService);
+    final savingGoalRepo = SavingGoalRepositoryImpl(remoteDatasource: savingGoalRemoteDs);
+    Get.put<SavingGoalController>(
+      SavingGoalController(
+        getSavingGoalsByUserUseCase: GetSavingGoalsByUserUseCase(savingGoalRepo),
+        getSavingGoalUseCase: GetSavingGoalUseCase(savingGoalRepo),
+        updateSavingGoalUseCase: UpdateSavingGoalUseCase(savingGoalRepo),
+        deleteSavingGoalUseCase: DeleteSavingGoalUseCase(savingGoalRepo),
+        selectSavingGoalUseCase: SelectSavingGoalUseCase(savingGoalRepo),
+        checkExpiredSavingGoalUseCase: CheckExpiredSavingGoalUseCase(savingGoalRepo),
+        markAsNotifiedUseCase: MarkAsNotifiedUseCase(savingGoalRepo),
+        extendSavingGoalUseCase: ExtendSavingGoalUseCase(savingGoalRepo),
+        getSavingGoalReportUseCase: GetSavingGoalReportUseCase(savingGoalRepo),
       ),
       permanent: true,
     );
@@ -154,7 +154,7 @@ class AppBinding extends Bindings {
     Get.put<HomeController>(HomeController());
 
     TransactionBinding().dependencies();
-    FundBinding().dependencies();
+    SavingGoalBinding().dependencies();
     UserBinding().dependencies();
     ChatBinding().dependencies();
     NotificationBinding().dependencies();

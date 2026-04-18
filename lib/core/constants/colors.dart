@@ -40,3 +40,5 @@ class AppColors {
   static const Color info = Color(0xFF0D8BFF);
   static const Color disabled = Color(0xFFD5D5D6);
 }
+
+

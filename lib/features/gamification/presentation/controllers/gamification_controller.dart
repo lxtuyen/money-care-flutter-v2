@@ -71,7 +71,7 @@ class GamificationController extends GetxController {
     if (!Get.isRegistered<TransactionController>()) return;
     
     final txController = Get.find<TransactionController>();
-    final txData = txController.transactionByfilter.value;
+    final txData = txController.recentTransactions.value;
     if (txData == null) return;
 
     final allTxs = [...txData.expenseTransactions, ...txData.incomeTransactions];

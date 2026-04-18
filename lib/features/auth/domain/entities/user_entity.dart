@@ -1,4 +1,4 @@
-import 'package:money_care/features/fund/domain/entities/fund_entity.dart';
+import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 
 class UserEntity {
@@ -8,7 +8,7 @@ class UserEntity {
   final bool isVip;
   final String? accessToken;
   final UserProfileEntity profile;
-  final FundEntity? fund;
+  final SavingGoalEntity? savingGoal;
   final bool hasCategories;
 
   const UserEntity({
@@ -18,7 +18,7 @@ class UserEntity {
     this.isVip = false,
     this.accessToken,
     required this.profile,
-    this.fund,
+    this.savingGoal,
     this.hasCategories = false,
   });
 
@@ -29,7 +29,7 @@ class UserEntity {
     bool? isVip,
     String? accessToken,
     UserProfileEntity? profile,
-    FundEntity? fund,
+    SavingGoalEntity? savingGoal,
     bool? hasCategories,
   }) {
     return UserEntity(
@@ -39,7 +39,7 @@ class UserEntity {
       isVip: isVip ?? this.isVip,
       accessToken: accessToken ?? this.accessToken,
       profile: profile ?? this.profile,
-      fund: fund ?? this.fund,
+      savingGoal: savingGoal ?? this.savingGoal,
       hasCategories: hasCategories ?? this.hasCategories,
     );
   }

@@ -164,3 +164,5 @@ class AuthController extends GetxController {
 
   UserEntity? getUserInfo() => user.value;
 }
+
+

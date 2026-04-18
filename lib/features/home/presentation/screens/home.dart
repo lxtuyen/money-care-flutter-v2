@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -21,7 +21,7 @@ import 'package:money_care/features/finance_mode/domain/entities/finance_mode_en
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/finance_mode/presentation/widgets/finance_mode_banner.dart';
 import 'package:money_care/features/finance_mode/presentation/widgets/days_until_income_widget.dart';
-import 'package:money_care/features/fund/presentation/widgets/fund_progress_bar.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_progress_bar.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -140,7 +140,7 @@ class HomeScreen extends GetView<HomeController> {
                                       width: MediaQuery.of(context).size.width * 0.9,
                                       child: Obx(() {
                                         final transactions = controller.transactionController
-                                                .transactionByfilter
+                                                .recentTransactions
                                                 .value
                                                 ?.expenseTransactions ??
                                             [];
@@ -246,7 +246,7 @@ class HomeScreen extends GetView<HomeController> {
             AppSectionHeading(title: "Giao dịch gần đây", showActionButton: false),
             Obx(() {
               final transactions =
-                  controller.transactionController.transactionByfilter.value;
+                  controller.transactionController.recentTransactions.value;
               if (controller.transactionController.isLoading.value) {
                 return const SizedBox(
                   height: 120,

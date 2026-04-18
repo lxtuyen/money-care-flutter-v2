@@ -6,7 +6,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -25,7 +25,7 @@ class _PhotoTransactionHistoryScreenState
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
 
   // 'all' | 'expense' | 'income'
   String _selectedType = 'all';
@@ -48,7 +48,7 @@ class _PhotoTransactionHistoryScreenState
       final data = await transactionController.filterTransactionsUseCase(
         userId,
         TransactionFilterDto(
-          fundId: fundController.fundId.value > 0 ? fundController.fundId.value : null,
+          goalId: savingGoalController.goalId.value > 0 ? savingGoalController.goalId.value : null,
         ),
       );
 

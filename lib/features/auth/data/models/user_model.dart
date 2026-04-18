@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:money_care/features/auth/data/models/fund_model.dart';
+import 'package:money_care/features/saving_goal/data/models/saving_goal_model.dart';
 import 'package:money_care/features/auth/data/models/user_profile_model.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 
@@ -15,7 +15,7 @@ abstract class UserModel with _$UserModel {
     bool? isVip,
     String? accessToken,
     required UserProfileModel profile,
-    FundModel? fund,
+    @JsonKey(name: 'savingGoal') SavingGoalModel? savingGoal,
     bool? hasCategories,
   }) = _UserModel;
 
@@ -40,7 +40,7 @@ abstract class UserModel with _$UserModel {
         isVip: isVip ?? false,
         accessToken: accessToken,
         profile: profile.toEntity(),
-        fund: fund?.toEntity(),
+        savingGoal: savingGoal?.toEntity(),
         hasCategories: hasCategories ?? false,
       );
 }

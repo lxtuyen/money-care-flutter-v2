@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:money_care/core/utils/helper/num_parser.dart';
 import 'package:money_care/features/transaction/data/models/category_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
@@ -12,8 +13,8 @@ Object? _readPictureUrl(Map json, String key) {
 @freezed
 abstract class TransactionModel with _$TransactionModel {
   const factory TransactionModel({
-    int? id,
-    @Default(0) int amount,
+    @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
+    @JsonKey(fromJson: NumParser.parseInt) @Default(0) int amount,
     @Default('') String type,
     @JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,
     @JsonKey(name: 'transaction_date') DateTime? transactionDate,

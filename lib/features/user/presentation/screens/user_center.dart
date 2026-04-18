@@ -4,7 +4,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
@@ -24,7 +24,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   final AuthController authController = Get.find<AuthController>();
   final UserController userController = Get.find<UserController>();
   final StatisticsController statisticsController = Get.find<StatisticsController>();
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
 
   @override
   void initState() {
@@ -55,8 +55,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Obx(() {
-                      final currentFund = fundController.currentFund.value;
-                      if (currentFund == null) return const SizedBox.shrink();
+                      final currentGoal = savingGoalController.currentGoal.value;
+                      if (currentGoal == null) return const SizedBox.shrink();
 
                       final data = statisticsController.totalByType.value;
 
@@ -88,7 +88,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     UserMenuItem(
                       icon: Icons.category_outlined,
                       title: AppTexts.funds,
-                      onTap: () => Get.toNamed(RoutePath.selectFund),
+                      onTap: () => Get.toNamed(RoutePath.selectSavingGoal),
                     ),
 
                     UserMenuItem(
@@ -115,5 +115,3 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     );
   }
 }
-
-

@@ -13,12 +13,14 @@ abstract class SavingGoalDto with _$SavingGoalDto {
     @JsonKey(name: 'start_date') DateTime? startDate,
     @JsonKey(name: 'end_date') DateTime? endDate,
     List<int>? categoryIds,
+    @JsonKey(name: 'is_completed') bool? isCompleted,
   }) = _SavingGoalDto;
+
 
   const SavingGoalDto._();
 
   Map<String, dynamic> toJsonCreate() {
-    return {
+    final map = {
       'name': name,
       'userId': userId,
       'target': target,
@@ -27,16 +29,23 @@ abstract class SavingGoalDto with _$SavingGoalDto {
       'end_date': endDate?.toIso8601String(),
       'categoryIds': categoryIds,
     };
+    map.removeWhere((key, value) => value == null);
+    return map;
   }
 
   Map<String, dynamic> toJsonUpdate() {
-    return {
+    final map = {
       'name': name,
       'target': target,
       'saved_amount': savedAmount,
       'start_date': startDate?.toIso8601String(),
       'end_date': endDate?.toIso8601String(),
       'categoryIds': categoryIds,
+      'is_completed': isCompleted,
     };
+    map.removeWhere((key, value) => value == null);
+    return map;
   }
+
 }
+

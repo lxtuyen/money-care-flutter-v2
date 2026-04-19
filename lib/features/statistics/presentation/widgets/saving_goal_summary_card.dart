@@ -2,9 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
+
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
 
@@ -74,7 +76,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
     );
   }
 
-  // Khi chưa có report, dùng dữ liệu từ fund entity
   Widget _buildFromFundOnly() {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -107,20 +108,8 @@ class SavingGoalSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Budget + Target row
           Row(
             children: [
-              Expanded(
-                child: _CircleMetric(
-                  label: 'Ngân sách',
-                  percent: (r.balanceUsagePercentage / 100).clamp(0.0, 1.0),
-                  centerText: '${r.balanceUsagePercentage}%',
-                  color: r.isOverBudget ? AppColors.error : AppColors.primary,
-                  subtitle: AppHelperFunction.formatAmount(r.totalSpent, 'VND'),
-                  subtitleLabel: 'đã chi',
-                ),
-              ),
-              const SizedBox(width: 12),
               Expanded(
                 child: _CircleMetric(
                   label: 'Mục tiêu',
@@ -133,20 +122,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-
-          if (r.categoryBreakdown.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 12),
-            const Text(
-              'Chi tiêu theo danh mục',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text2),
-            ),
-            const SizedBox(height: 10),
-            _CategoryPieRow(categories: r.categoryBreakdown),
-          ],
-
-          // Quick stats
           const SizedBox(height: 16),
           const Divider(height: 1),
           const SizedBox(height: 12),
@@ -182,6 +157,45 @@ class SavingGoalSummaryCard extends StatelessWidget {
             const Divider(height: 1),
             const SizedBox(height: 16),
             MilestoneMap(milestones: r.milestones),
+          ],
+
+          if (!r.isCompleted && r.currentBalance >= r.target && r.currentMilestoneIndex >= 0 && r.currentMilestoneIndex < r.milestones.length - 1) ...[
+            const SizedBox(height: 20),
+            Center(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.success.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    final controller = Get.find<SavingGoalController>();
+                    controller.completeGoalEarly(r.id);
+                  },
+                  icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
+                  label: const Text(
+                    'Hoàn thành sớm mục tiêu',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.success,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ),
           ],
         ],
       ),

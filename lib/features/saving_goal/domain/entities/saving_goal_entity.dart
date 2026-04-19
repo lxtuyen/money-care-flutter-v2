@@ -16,6 +16,7 @@ class SavingGoalEntity {
 
   final DateTime? startDate;
   final DateTime? endDate;
+  final DateTime? updatedAt;
   final String? status;
 
   const SavingGoalEntity({
@@ -29,6 +30,7 @@ class SavingGoalEntity {
     this.templateKey,
     this.startDate,
     this.endDate,
+    this.updatedAt,
     this.status,
   });
 

@@ -145,7 +145,7 @@ class HomeScreen extends GetView<HomeController> {
                                                 ?.expenseTransactions ??
                                             [];
 
-                                        if (controller.transactionController.isLoading.value) {
+                                        if (controller.transactionController.isRecentLoading.value) {
                                           return const SizedBox(
                                             height: 120,
                                             child: Center(
@@ -247,7 +247,7 @@ class HomeScreen extends GetView<HomeController> {
             Obx(() {
               final transactions =
                   controller.transactionController.recentTransactions.value;
-              if (controller.transactionController.isLoading.value) {
+              if (controller.transactionController.isRecentLoading.value) {
                 return const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),

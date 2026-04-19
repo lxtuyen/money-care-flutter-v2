@@ -21,6 +21,7 @@ class TransactionController extends GetxController {
   var recentTransactions = Rxn<TransactionByTypeEntity>();
 
   var isLoading = false.obs;
+  var isRecentLoading = false.obs;
   var errorMessage = RxnString();
 
   final RxInt transactionChangedCount = 0.obs;
@@ -45,6 +46,9 @@ class TransactionController extends GetxController {
     ever(savingGoalController.goalId, (int id) {
       final userId = Get.find<AppController>().userId.value;
       if (userId != null) {
+        recentTransactions.value = null;
+        transactionByfilter.value = null;
+
         final goal = savingGoalController.currentGoal.value;
         if (goal != null && goal.startDate != null && goal.endDate != null) {
           Get.find<FilterController>().setGoalRange(
@@ -53,7 +57,6 @@ class TransactionController extends GetxController {
             goal.name,
           );
         } else {
-          // If goal is null or id is 0 (normal mode), reset filter range
           Get.find<FilterController>().clearAll();
         }
         refreshAllData(userId);
@@ -139,8 +142,6 @@ class TransactionController extends GetxController {
   Future<void> refreshAllData(int userId) async {
     final currentGoal = savingGoalController.currentGoal.value;
     
-    // 1. Refresh "Recent" transactions for Home screen
-    // We use clamped dates even for recent transactions to remain consistent with goal state
     final rawStart = currentGoal?.startDate;
     final rawEnd = currentGoal?.endDate;
     final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
@@ -153,14 +154,15 @@ class TransactionController extends GetxController {
       limit: 5,
     );
     
+    isRecentLoading.value = true;
     try {
       final recentRes = await filterTransactionsUseCase(userId, recentFilterDto);
       recentTransactions.value = recentRes;
     } catch (e) {
-      debugPrint('Error loading recent transactions: $e');
+    } finally {
+      isRecentLoading.value = false;
     }
 
-    // 2. Refresh the "Filtered" data for the current screen (History)
     await applyFilters(userId);
 
 
@@ -173,7 +175,6 @@ class TransactionController extends GetxController {
     final rawStart = filterController.startDate.value;
     final rawEnd = filterController.endDate.value;
 
-    // Ensure the filter range is clamped to the current saving goal's boundaries
     final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
     final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
 
@@ -185,11 +186,6 @@ class TransactionController extends GetxController {
     );
 
     await filterTransactions(userId, dto);
-
-    // Optional: Sync statistics header if needed
-    if (Get.isRegistered<StatisticsController>()) {
-      await Get.find<StatisticsController>().refreshStatisticsData(userId);
-    }
   }
 
   DateTime _clampToGoalStart(DateTime date) {

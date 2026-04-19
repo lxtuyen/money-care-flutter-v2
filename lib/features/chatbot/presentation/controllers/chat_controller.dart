@@ -122,11 +122,9 @@ class ChatController extends GetxController {
       isLoading.value = true;
       errorMessage.value = null;
 
-      final goalId = savingGoalController.goalId.value;
       final dto = ChatDto(
         message: text,
         userId: userId,
-        goalId: goalId > 0 ? goalId : null,
       );
       final reply = await sendToChatbotUseCase(dto);
 
@@ -223,11 +221,9 @@ class ChatController extends GetxController {
       final userId = await appController.getCurrentUserId();
       if (userId == null) return;
 
-      final goalId = savingGoalController.goalId.value;
       final dto = ChatDto(
         message: "Quét hóa đơn",
         userId: userId,
-        goalId: goalId > 0 ? goalId : null,
       );
       final reply = await sendToChatbotUseCase(dto, filePath: image.path);
 
@@ -254,11 +250,9 @@ class ChatController extends GetxController {
       isLoading.value = true;
       final apiClient = Get.find<ApiClient>();
       
-      final goalId = savingGoalController.goalId.value;
       final response = await apiClient.post('/ai/chat/bulk-save', body: {
         'userId': userId,
         'items': items,
-        'goalId': goalId > 0 ? goalId : null,
       });
 
       if (response.success) {

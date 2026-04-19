@@ -107,6 +107,40 @@ class ExpiredGoalPopup extends StatelessWidget {
             
             const SizedBox(height: 12),
             
+            if (!isSuccess) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final baseDate = goal.endDate ?? DateTime.now();
+                    final newDate = await showStyledDatePicker(
+                      context: context,
+                      initialDate: baseDate.add(const Duration(days: 30)),
+                      firstDate: baseDate.add(const Duration(days: 1)),
+                    );
+                    if (newDate != null) {
+                      final success = await controller.extendGoal(goal.id, newDate);
+                      if (success) {
+                        Get.back();
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: const Text(
+                    'Gia hạn mục tiêu',
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            
             Row(
               children: [
                 Expanded(

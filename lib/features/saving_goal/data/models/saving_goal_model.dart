@@ -23,6 +23,7 @@ abstract class SavingGoalModel with _$SavingGoalModel {
 
     @JsonKey(name: 'start_date') DateTime? startDate,
     @JsonKey(name: 'end_date') DateTime? endDate,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
     String? status,
   }) = _SavingGoalModel;
 
@@ -43,6 +44,7 @@ abstract class SavingGoalModel with _$SavingGoalModel {
       templateKey: templateKey,
       startDate: startDate,
       endDate: endDate,
+      updatedAt: updatedAt,
       status: status,
     );
   }

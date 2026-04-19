@@ -3,14 +3,9 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/app/controllers/statistics_controller.dart';
-import 'package:money_care/app/controllers/saving_goal_controller.dart';
-import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/user/presentation/widgets/user_menu_item.dart';
-import 'package:money_care/features/user/presentation/widgets/savings_goals.dart';
 
 class UserCenterScreen extends StatefulWidget {
   const UserCenterScreen({super.key});
@@ -20,21 +15,7 @@ class UserCenterScreen extends StatefulWidget {
 }
 
 class _UserCenterScreenState extends State<UserCenterScreen> {
-  final AppController appController = Get.find<AppController>();
   final AuthController authController = Get.find<AuthController>();
-  final UserController userController = Get.find<UserController>();
-  final StatisticsController statisticsController = Get.find<StatisticsController>();
-  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
-
-  @override
-  void initState() {
-    super.initState();
-    initData();
-  }
-
-  Future<void> initData() async {
-    await appController.getCurrentUserId();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,31 +35,6 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Obx(() {
-                      final currentGoal = savingGoalController.currentGoal.value;
-                      if (currentGoal == null) return const SizedBox.shrink();
-
-                      final data = statisticsController.totalByType.value;
-
-                      return Column(
-                        children: [
-                          if (statisticsController.isLoading.value)
-                            const SizedBox(
-                              height: 120,
-                              child: Center(child: CircularProgressIndicator()),
-                            )
-                          else if (data == null)
-                            const SavingsGoals(currentSaving: 0, targetSaving: 0)
-                          else
-                            SavingsGoals(
-                              currentSaving: data.currentSaving.toDouble(),
-                              targetSaving: data.targetSaving.toDouble(),
-                            ),
-                          const SizedBox(height: 20),
-                        ],
-                      );
-                    }),
-
                     UserMenuItem(
                       icon: Icons.person_outline,
                       title: AppTexts.profile,
@@ -86,9 +42,15 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     ),
 
                     UserMenuItem(
-                      icon: Icons.category_outlined,
+                      icon: Icons.track_changes_outlined,
                       title: AppTexts.funds,
                       onTap: () => Get.toNamed(RoutePath.selectSavingGoal),
+                    ),
+
+                    UserMenuItem(
+                      icon: Icons.timer_off_outlined,
+                      title: "Mục tiêu đã hết hạn",
+                      onTap: () => Get.toNamed(RoutePath.expiredSavingGoals),
                     ),
 
                     UserMenuItem(

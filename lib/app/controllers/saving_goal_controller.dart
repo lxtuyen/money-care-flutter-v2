@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
+
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
@@ -9,6 +13,8 @@ import 'package:money_care/features/saving_goal/data/models/models.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/goal_completion_dialog.dart';
+
 
 class SavingGoalController extends GetxController {
   final GetSavingGoalsByUserUseCase getSavingGoalsByUserUseCase;
@@ -35,6 +41,7 @@ class SavingGoalController extends GetxController {
   });
 
   RxList<SavingGoalEntity> goals = <SavingGoalEntity>[].obs;
+  RxList<SavingGoalEntity> completedGoals = <SavingGoalEntity>[].obs;
   Rxn<SavingGoalEntity> currentGoal = Rxn<SavingGoalEntity>();
   RxBool isLoadingGoals = false.obs;
   RxBool isLoadingCurrent = false.obs;
@@ -42,7 +49,6 @@ class SavingGoalController extends GetxController {
   var goalId = 0.obs;
   RxInt selectedGoalIndex = 0.obs;
 
-  // Expired goal state
   Rxn<ExpiredGoalInfoModel> expiredGoal = Rxn<ExpiredGoalInfoModel>();
   RxBool hasExpiredGoal = false.obs;
   Rxn<SavingGoalReportModel> goalReport = Rxn<SavingGoalReportModel>();
@@ -53,68 +59,62 @@ class SavingGoalController extends GetxController {
     super.onInit();
     final authController = Get.find<AuthController>();
     
-    // We assume the user model now uses savingGoal instead of fund
     ever(authController.user, (user) {
-      if (user != null && user.savingGoal != null) {
-        currentGoal.value = user.savingGoal;
-        goalId.value = user.savingGoal!.id;
+      if (user?.savingGoal != null) {
+        _syncCurrentGoal(user!.savingGoal!);
+      } else {
+        _clearCurrentGoal();
       }
     });
 
     if (authController.user.value?.savingGoal != null) {
-      currentGoal.value = authController.user.value!.savingGoal;
-      goalId.value = authController.user.value!.savingGoal!.id;
-      loadGoalById();
+      _syncCurrentGoal(authController.user.value!.savingGoal!);
+    } else {
+      _clearCurrentGoal();
     }
 
-    ever(goalId, (_) {
-      if (goalId.value > 0) {
+    ever(goalId, (id) {
+      if (id > 0) {
         loadGoalById();
       }
     });
   }
 
-  void updateGoalId(int id) {
-    goalId.value = id;
+  void _syncCurrentGoal(SavingGoalEntity goal) {
+    currentGoal.value = goal;
+    goalId.value = goal.id;
   }
 
-  Future<void> loadGoals(int userId) async {
+  void _clearCurrentGoal() {
+    currentGoal.value = null;
+    goalId.value = 0;
+    selectedGoalIndex.value = -1;
+  }
+
+
+  Future<void> loadGoals([int? manualUserId]) async {
+    final uid = manualUserId ?? appController.userId.value;
+    if (uid == null || uid <= 0) return;
+
     isLoadingGoals.value = true;
-    final result = await getSavingGoalsByUserUseCase(userId);
+    final result = await getSavingGoalsByUserUseCase(uid);
     result.fold(_handleFailure, (list) {
-      goals.assignAll(list);
+      goals.assignAll(list.where((g) => !g.isCompleted).toList());
+      completedGoals.assignAll(list.where((g) => g.isCompleted).toList());
+      
+      if (goalId.value > 0) {
+        selectedGoalIndex.value = goals.indexWhere((f) => f.id == goalId.value);
+      }
     });
     isLoadingGoals.value = false;
   }
 
   Future<void> loadUserAndGoals() async {
-    isLoadingGoals.value = true;
-
-    final userInfoJson = LocalStorage().getUserInfo();
-    if (userInfoJson == null) {
-      _showError('Không thể xác định người dùng hiện tại');
-      isLoadingGoals.value = false;
-      return;
-    }
-
-    try {
-      final user = UserModel.fromJson(userInfoJson);
-      final result = await getSavingGoalsByUserUseCase(user.id);
-      result.fold(_handleFailure, (list) {
-        goals.assignAll(list);
-        selectedGoalIndex.value = goals.indexWhere(
-          (f) => f.id == goalId.value,
-        );
-      });
-    } catch (_) {
-      _showError('Không thể xác định người dùng hiện tại');
-    } finally {
-      isLoadingGoals.value = false;
-    }
+    await loadGoals();
   }
 
   Future<void> initializeSelectGoal() async {
-    await loadUserAndGoals();
+    await loadGoals();
   }
 
   void updateSelectedGoalIndex(int index) {
@@ -126,7 +126,7 @@ class SavingGoalController extends GetxController {
   }
 
   void goToCreateGoal() {
-    Get.toNamed(RoutePath.createSavingGoal); // Might want to rename RoutePath too
+    Get.toNamed(RoutePath.createSavingGoal);
   }
 
   Future<void> loadGoalById() async {
@@ -150,6 +150,14 @@ class SavingGoalController extends GetxController {
       (selected) {
         currentGoal.value = selected;
         goalId.value = id;
+        
+        final authController = Get.find<AuthController>();
+        if (authController.user.value != null) {
+          authController.user.value = authController.user.value!.copyWith(
+            savingGoal: selected,
+          );
+        }
+        
         loadGoals(userId);
         return true;
       },
@@ -182,7 +190,13 @@ class SavingGoalController extends GetxController {
     currentGoal.value = null;
     goalId.value = 0;
     
-    // Optionally update user on server to persist "Normal Mode"
+    final authController = Get.find<AuthController>();
+    if (authController.user.value != null) {
+      authController.user.value = authController.user.value!.copyWith(
+        savingGoal: null,
+      );
+    }
+    
     final currentUserId = appController.userId.value;
     if (currentUserId != null) {
       await selectSavingGoalUseCase(currentUserId, 0);
@@ -200,7 +214,11 @@ class SavingGoalController extends GetxController {
       (updated) {
         final index = goals.indexWhere((f) => f.id == dto.id);
         if (index != -1) {
-          goals[index] = updated;
+          if (updated.isCompleted) {
+            goals.removeAt(index);
+          } else {
+            goals[index] = updated;
+          }
           goals.refresh();
         }
 
@@ -258,10 +276,20 @@ class SavingGoalController extends GetxController {
 
   List<SavingGoalEntity> get expiredSavingGoals {
     return goals.where((f) => f.isExpired).toList()
-      ..sort((a, b) => b.endDate!.compareTo(a.endDate!));
+      ..sort((a, b) => (b.endDate ?? DateTime(0)).compareTo(a.endDate ?? DateTime(0)));
   }
 
-  // ============ EXPIRED GOAL METHODS ============
+  List<SavingGoalEntity> get finishedSavingGoals {
+    final combined = [...expiredSavingGoals, ...completedGoals];
+    
+    combined.sort((a, b) {
+      final dateA = a.endDate ?? DateTime(0);
+      final dateB = b.endDate ?? DateTime(0);
+      return dateB.compareTo(dateA);
+    });
+    
+    return combined;
+  }
 
   Future<void> checkExpiredSavingGoal(int userId) async {
     final result = await checkExpiredSavingGoalUseCase(userId);
@@ -298,12 +326,44 @@ class SavingGoalController extends GetxController {
   }
 
   Future<void> loadGoalReport(int id) async {
+    if (id <= 0) return;
     isLoadingReport.value = true;
     final result = await getSavingGoalReportUseCase(id);
     result.fold(
       _handleFailure,
-      (report) => goalReport.value = report,
+      (report) {
+        goalReport.value = report;
+        if (report.isCompleted && !report.completionNotified) {
+          GoalCompletionDialog.show(report);
+        }
+      },
     );
     isLoadingReport.value = false;
   }
+
+
+  Future<void> completeGoalEarly(int id) async {
+    final result = await updateSavingGoalUseCase(SavingGoalDto(
+      id: id,
+      isCompleted: true,
+    ));
+
+    result.fold(
+      _handleFailure,
+      (updated) {
+        goals.removeWhere((g) => g.id == updated.id);
+        goals.refresh();
+
+        loadGoalReport(id);
+        if (currentGoal.value?.id == id) {
+          currentGoal.value = updated;
+        }
+
+        if (!completedGoals.any((g) => g.id == updated.id)) {
+          completedGoals.add(updated);
+        }
+      },
+    );
+  }
 }
+

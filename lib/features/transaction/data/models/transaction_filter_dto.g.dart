@@ -11,8 +11,8 @@ _TransactionFilterDto _$TransactionFilterDtoFromJson(
 ) => _TransactionFilterDto(
   categoryId: (json['categoryId'] as num?)?.toInt(),
   goalId: (json['savingGoalId'] as num?)?.toInt(),
-  startDate: json['start_date'] as String?,
-  endDate: json['end_date'] as String?,
+  startDate: json['startDate'] as String?,
+  endDate: json['endDate'] as String?,
   limit: (json['limit'] as num?)?.toInt(),
 );
 
@@ -21,7 +21,7 @@ Map<String, dynamic> _$TransactionFilterDtoToJson(
 ) => <String, dynamic>{
   'categoryId': instance.categoryId,
   'savingGoalId': instance.goalId,
-  'start_date': instance.startDate,
-  'end_date': instance.endDate,
+  'startDate': instance.startDate,
+  'endDate': instance.endDate,
   'limit': instance.limit,
 };

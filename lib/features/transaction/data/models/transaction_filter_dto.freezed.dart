@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionFilterDto {
 
-@JsonKey(name: 'categoryId') int? get categoryId;@JsonKey(name: 'savingGoalId') int? get goalId;@JsonKey(name: 'start_date') String? get startDate;@JsonKey(name: 'end_date') String? get endDate;@JsonKey(name: 'limit') int? get limit;
+@JsonKey(name: 'categoryId') int? get categoryId;@JsonKey(name: 'savingGoalId') int? get goalId;@JsonKey(name: 'startDate') String? get startDate;@JsonKey(name: 'endDate') String? get endDate;@JsonKey(name: 'limit') int? get limit;
 /// Create a copy of TransactionFilterDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TransactionFilterDtoCopyWith<$Res>  {
   factory $TransactionFilterDtoCopyWith(TransactionFilterDto value, $Res Function(TransactionFilterDto) _then) = _$TransactionFilterDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate,@JsonKey(name: 'limit') int? limit
+@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'startDate') String? startDate,@JsonKey(name: 'endDate') String? endDate,@JsonKey(name: 'limit') int? limit
 });
 
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate, @JsonKey(name: 'limit')  int? limit)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate, @JsonKey(name: 'limit')  int? limit)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionFilterDto() when $default != null:
 return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_that.limit);case _:
@@ -178,7 +178,7 @@ return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate, @JsonKey(name: 'limit')  int? limit)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate, @JsonKey(name: 'limit')  int? limit)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionFilterDto():
 return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_that.limit);case _:
@@ -198,7 +198,7 @@ return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate, @JsonKey(name: 'limit')  int? limit)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate, @JsonKey(name: 'limit')  int? limit)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionFilterDto() when $default != null:
 return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_that.limit);case _:
@@ -213,13 +213,13 @@ return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_tha
 @JsonSerializable()
 
 class _TransactionFilterDto extends TransactionFilterDto {
-  const _TransactionFilterDto({@JsonKey(name: 'categoryId') this.categoryId, @JsonKey(name: 'savingGoalId') this.goalId, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'limit') this.limit}): super._();
+  const _TransactionFilterDto({@JsonKey(name: 'categoryId') this.categoryId, @JsonKey(name: 'savingGoalId') this.goalId, @JsonKey(name: 'startDate') this.startDate, @JsonKey(name: 'endDate') this.endDate, @JsonKey(name: 'limit') this.limit}): super._();
   factory _TransactionFilterDto.fromJson(Map<String, dynamic> json) => _$TransactionFilterDtoFromJson(json);
 
 @override@JsonKey(name: 'categoryId') final  int? categoryId;
 @override@JsonKey(name: 'savingGoalId') final  int? goalId;
-@override@JsonKey(name: 'start_date') final  String? startDate;
-@override@JsonKey(name: 'end_date') final  String? endDate;
+@override@JsonKey(name: 'startDate') final  String? startDate;
+@override@JsonKey(name: 'endDate') final  String? endDate;
 @override@JsonKey(name: 'limit') final  int? limit;
 
 /// Create a copy of TransactionFilterDto
@@ -255,7 +255,7 @@ abstract mixin class _$TransactionFilterDtoCopyWith<$Res> implements $Transactio
   factory _$TransactionFilterDtoCopyWith(_TransactionFilterDto value, $Res Function(_TransactionFilterDto) _then) = __$TransactionFilterDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate,@JsonKey(name: 'limit') int? limit
+@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'startDate') String? startDate,@JsonKey(name: 'endDate') String? endDate,@JsonKey(name: 'limit') int? limit
 });
 
 

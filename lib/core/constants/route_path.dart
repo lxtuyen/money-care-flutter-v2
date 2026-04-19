@@ -28,7 +28,6 @@ class RoutePath {
   static const categoryManagement = '/category_management';
   static const streakCalendar = '/streak_calendar';
 
-  // Legacy mappings for backward compatibility during transition if needed
   static const selectFund = selectSavingGoal;
   static const createFund = createSavingGoal;
 }

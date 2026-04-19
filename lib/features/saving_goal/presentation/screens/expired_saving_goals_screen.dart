@@ -40,7 +40,7 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
       body: Column(
         children: [
           const AppHeader(
-            title: 'Mục tiêu đã hết hạn',
+            title: 'Lịch sử mục tiêu tiết kiệm',
             showBackButton: true,
             height: 130,
           ),
@@ -52,8 +52,8 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
                 );
               }
 
-              final expired = controller.expiredSavingGoals;
-
+              final expired = controller.finishedSavingGoals;
+              
               if (expired.isEmpty) {
                 return _buildEmpty();
               }
@@ -154,9 +154,11 @@ class _ExpiredGoalCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFFF7D39), Color(0xFFFF4E4E)],
+                colors: goal.isCompleted
+                    ? [const Color(0xFF4CAF50), const Color(0xFF2E7D32)]
+                    : [const Color(0xFFFF7D39), const Color(0xFFFF4E4E)],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -164,8 +166,8 @@ class _ExpiredGoalCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.timer_off_rounded,
+                Icon(
+                  goal.isCompleted ? Icons.workspace_premium_rounded : Icons.timer_off_rounded,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -191,7 +193,9 @@ class _ExpiredGoalCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Hết hạn ${goal.daysSinceExpired} ngày trước',
+                    goal.isCompleted 
+                        ? 'Đã hoàn thành' 
+                        : 'Hết hạn ${goal.daysSinceExpired} ngày trước',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -225,12 +229,14 @@ class _ExpiredGoalCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _DateChip(
-                      icon: Icons.stop_circle_outlined,
-                      label: 'Dự kiến',
-                      value: goal.endDate != null
-                          ? AppHelperFunction.getFormattedDate(goal.endDate!)
-                          : '—',
-                      color: AppColors.secondaryOrange,
+                      icon: goal.isCompleted ? Icons.check_circle_rounded : Icons.stop_circle_outlined,
+                      label: goal.isCompleted ? 'Hoàn thành' : 'Dự kiến',
+                      value: (goal.isCompleted && goal.updatedAt != null)
+                          ? AppHelperFunction.getFormattedDate(goal.updatedAt!)
+                          : (goal.endDate != null
+                              ? AppHelperFunction.getFormattedDate(goal.endDate!)
+                              : '—'),
+                      color: goal.isCompleted ? AppColors.success : AppColors.secondaryOrange,
                     ),
                   ],
                 ),
@@ -249,19 +255,12 @@ class _ExpiredGoalCard extends StatelessWidget {
                           : '—',
                       color: AppColors.primary,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 24),
                     _StatItem(
                       icon: Icons.savings_outlined,
                       label: 'Đã tiết kiệm',
                       value: AppHelperFunction.formatAmount(goal.savedAmount, 'VND'),
                       color: AppColors.success,
-                    ),
-                    const SizedBox(width: 12),
-                    _StatItem(
-                      icon: Icons.category_outlined,
-                      label: 'Danh mục',
-                      value: '${goal.categories.length}',
-                      color: AppColors.info,
                     ),
                   ],
                 ),
@@ -270,22 +269,23 @@ class _ExpiredGoalCard extends StatelessWidget {
 
                 Row(
                   children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onExtend,
-                        icon: const Icon(Icons.update_rounded, size: 18),
-                        label: const Text('Gia hạn'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 11),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    if (!goal.isCompleted)
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: onExtend,
+                          icon: const Icon(Icons.update_rounded, size: 18),
+                          label: const Text('Gia hạn'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ],

@@ -43,7 +43,6 @@ class StatisticsOverviewCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header row: title + date
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

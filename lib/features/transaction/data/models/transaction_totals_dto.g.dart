@@ -10,8 +10,8 @@ _TransactionTotalsDto _$TransactionTotalsDtoFromJson(
   Map<String, dynamic> json,
 ) => _TransactionTotalsDto(
   goalId: (json['savingGoalId'] as num?)?.toInt(),
-  startDate: json['start_date'] as String?,
-  endDate: json['end_date'] as String?,
+  startDate: json['startDate'] as String?,
+  endDate: json['endDate'] as String?,
   type: json['type'] as String?,
 );
 
@@ -19,7 +19,7 @@ Map<String, dynamic> _$TransactionTotalsDtoToJson(
   _TransactionTotalsDto instance,
 ) => <String, dynamic>{
   'savingGoalId': instance.goalId,
-  'start_date': instance.startDate,
-  'end_date': instance.endDate,
+  'startDate': instance.startDate,
+  'endDate': instance.endDate,
   'type': instance.type,
 };

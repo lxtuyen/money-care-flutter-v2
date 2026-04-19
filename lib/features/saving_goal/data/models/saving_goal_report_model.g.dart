@@ -62,6 +62,10 @@ _SavingGoalReportModel _$SavingGoalReportModelFromJson(
       ? 0
       : NumParser.parseInt(json['progress_percent']),
   isCompleted: json['is_completed'] as bool? ?? false,
+  completionNotified: json['completion_notified'] as bool? ?? false,
+  currentMilestoneIndex: json['current_milestone_index'] == null
+      ? -1
+      : NumParser.parseInt(json['current_milestone_index']),
   milestones:
       (json['milestones'] as List<dynamic>?)
           ?.map((e) => MilestoneModel.fromJson(e as Map<String, dynamic>))
@@ -97,6 +101,8 @@ Map<String, dynamic> _$SavingGoalReportModelToJson(
   'current_balance': instance.currentBalance,
   'progress_percent': instance.progressPercent,
   'is_completed': instance.isCompleted,
+  'completion_notified': instance.completionNotified,
+  'current_milestone_index': instance.currentMilestoneIndex,
   'milestones': instance.milestones,
   'balanceUsagePercentage': instance.balanceUsagePercentage,
   'totalSpent': instance.totalSpent,

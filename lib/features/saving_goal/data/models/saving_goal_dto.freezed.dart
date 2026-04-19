@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SavingGoalDto {
 
- String? get name; int? get id; int? get userId; double? get target;@JsonKey(name: 'saved_amount') double? get savedAmount;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate; List<int>? get categoryIds;
+ String? get name; int? get id; int? get userId; double? get target;@JsonKey(name: 'saved_amount') double? get savedAmount;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate; List<int>? get categoryIds;@JsonKey(name: 'is_completed') bool? get isCompleted;
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SavingGoalDtoCopyWith<SavingGoalDto> get copyWith => _$SavingGoalDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&const DeepCollectionEquality().equals(other.categoryIds, categoryIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&const DeepCollectionEquality().equals(other.categoryIds, categoryIds)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,const DeepCollectionEquality().hash(categoryIds));
+int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,const DeepCollectionEquality().hash(categoryIds),isCompleted);
 
 @override
 String toString() {
-  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, categoryIds: $categoryIds)';
+  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, categoryIds: $categoryIds, isCompleted: $isCompleted)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SavingGoalDtoCopyWith<$Res>  {
   factory $SavingGoalDtoCopyWith(SavingGoalDto value, $Res Function(SavingGoalDto) _then) = _$SavingGoalDtoCopyWithImpl;
 @useResult
 $Res call({
- String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate, List<int>? categoryIds
+ String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate, List<int>? categoryIds,@JsonKey(name: 'is_completed') bool? isCompleted
 });
 
 
@@ -62,7 +62,7 @@ class _$SavingGoalDtoCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? categoryIds = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? categoryIds = freezed,Object? isCompleted = freezed,}) {
   return _then(_self.copyWith(
 name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
@@ -72,7 +72,8 @@ as double?,savedAmount: freezed == savedAmount ? _self.savedAmount : savedAmount
 as double?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,categoryIds: freezed == categoryIds ? _self.categoryIds : categoryIds // ignore: cast_nullable_to_non_nullable
-as List<int>?,
+as List<int>?,isCompleted: freezed == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate,  List<int>? categoryIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate,  List<int>? categoryIds, @JsonKey(name: 'is_completed')  bool? isCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SavingGoalDto() when $default != null:
-return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.categoryIds);case _:
+return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.categoryIds,_that.isCompleted);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate,  List<int>? categoryIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate,  List<int>? categoryIds, @JsonKey(name: 'is_completed')  bool? isCompleted)  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalDto():
-return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.categoryIds);case _:
+return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.categoryIds,_that.isCompleted);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate,  List<int>? categoryIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate,  List<int>? categoryIds, @JsonKey(name: 'is_completed')  bool? isCompleted)?  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalDto() when $default != null:
-return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.categoryIds);case _:
+return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.categoryIds,_that.isCompleted);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,
 
 
 class _SavingGoalDto extends SavingGoalDto {
-  const _SavingGoalDto({this.name, this.id, this.userId, this.target, @JsonKey(name: 'saved_amount') this.savedAmount, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, final  List<int>? categoryIds}): _categoryIds = categoryIds,super._();
+  const _SavingGoalDto({this.name, this.id, this.userId, this.target, @JsonKey(name: 'saved_amount') this.savedAmount, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, final  List<int>? categoryIds, @JsonKey(name: 'is_completed') this.isCompleted}): _categoryIds = categoryIds,super._();
   
 
 @override final  String? name;
@@ -232,6 +233,7 @@ class _SavingGoalDto extends SavingGoalDto {
   return EqualUnmodifiableListView(value);
 }
 
+@override@JsonKey(name: 'is_completed') final  bool? isCompleted;
 
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ _$SavingGoalDtoCopyWith<_SavingGoalDto> get copyWith => __$SavingGoalDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&const DeepCollectionEquality().equals(other._categoryIds, _categoryIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&const DeepCollectionEquality().equals(other._categoryIds, _categoryIds)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,const DeepCollectionEquality().hash(_categoryIds));
+int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,const DeepCollectionEquality().hash(_categoryIds),isCompleted);
 
 @override
 String toString() {
-  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, categoryIds: $categoryIds)';
+  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, categoryIds: $categoryIds, isCompleted: $isCompleted)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$SavingGoalDtoCopyWith<$Res> implements $SavingGoalDtoCopy
   factory _$SavingGoalDtoCopyWith(_SavingGoalDto value, $Res Function(_SavingGoalDto) _then) = __$SavingGoalDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate, List<int>? categoryIds
+ String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate, List<int>? categoryIds,@JsonKey(name: 'is_completed') bool? isCompleted
 });
 
 
@@ -280,7 +282,7 @@ class __$SavingGoalDtoCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? categoryIds = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? categoryIds = freezed,Object? isCompleted = freezed,}) {
   return _then(_SavingGoalDto(
 name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
@@ -290,7 +292,8 @@ as double?,savedAmount: freezed == savedAmount ? _self.savedAmount : savedAmount
 as double?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,categoryIds: freezed == categoryIds ? _self._categoryIds : categoryIds // ignore: cast_nullable_to_non_nullable
-as List<int>?,
+as List<int>?,isCompleted: freezed == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 

@@ -8,8 +8,8 @@ abstract class TransactionFilterDto with _$TransactionFilterDto {
   const factory TransactionFilterDto({
     @JsonKey(name: 'categoryId') int? categoryId,
     @JsonKey(name: 'savingGoalId') int? goalId,
-    @JsonKey(name: 'start_date') String? startDate,
-    @JsonKey(name: 'end_date') String? endDate,
+    @JsonKey(name: 'startDate') String? startDate,
+    @JsonKey(name: 'endDate') String? endDate,
     @JsonKey(name: 'limit') int? limit,
   }) = _TransactionFilterDto;
 

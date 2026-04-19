@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionTotalsDto {
 
-@JsonKey(name: 'savingGoalId') int? get goalId;@JsonKey(name: 'start_date') String? get startDate;@JsonKey(name: 'end_date') String? get endDate; String? get type;
+@JsonKey(name: 'savingGoalId') int? get goalId;@JsonKey(name: 'startDate') String? get startDate;@JsonKey(name: 'endDate') String? get endDate; String? get type;
 /// Create a copy of TransactionTotalsDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TransactionTotalsDtoCopyWith<$Res>  {
   factory $TransactionTotalsDtoCopyWith(TransactionTotalsDto value, $Res Function(TransactionTotalsDto) _then) = _$TransactionTotalsDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate, String? type
+@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'startDate') String? startDate,@JsonKey(name: 'endDate') String? endDate, String? type
 });
 
 
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate,  String? type)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate,  String? type)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionTotalsDto() when $default != null:
 return $default(_that.goalId,_that.startDate,_that.endDate,_that.type);case _:
@@ -177,7 +177,7 @@ return $default(_that.goalId,_that.startDate,_that.endDate,_that.type);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate,  String? type)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate,  String? type)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionTotalsDto():
 return $default(_that.goalId,_that.startDate,_that.endDate,_that.type);case _:
@@ -197,7 +197,7 @@ return $default(_that.goalId,_that.startDate,_that.endDate,_that.type);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate,  String? type)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate,  String? type)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionTotalsDto() when $default != null:
 return $default(_that.goalId,_that.startDate,_that.endDate,_that.type);case _:
@@ -212,12 +212,12 @@ return $default(_that.goalId,_that.startDate,_that.endDate,_that.type);case _:
 @JsonSerializable()
 
 class _TransactionTotalsDto implements TransactionTotalsDto {
-  const _TransactionTotalsDto({@JsonKey(name: 'savingGoalId') this.goalId, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, this.type});
+  const _TransactionTotalsDto({@JsonKey(name: 'savingGoalId') this.goalId, @JsonKey(name: 'startDate') this.startDate, @JsonKey(name: 'endDate') this.endDate, this.type});
   factory _TransactionTotalsDto.fromJson(Map<String, dynamic> json) => _$TransactionTotalsDtoFromJson(json);
 
 @override@JsonKey(name: 'savingGoalId') final  int? goalId;
-@override@JsonKey(name: 'start_date') final  String? startDate;
-@override@JsonKey(name: 'end_date') final  String? endDate;
+@override@JsonKey(name: 'startDate') final  String? startDate;
+@override@JsonKey(name: 'endDate') final  String? endDate;
 @override final  String? type;
 
 /// Create a copy of TransactionTotalsDto
@@ -253,7 +253,7 @@ abstract mixin class _$TransactionTotalsDtoCopyWith<$Res> implements $Transactio
   factory _$TransactionTotalsDtoCopyWith(_TransactionTotalsDto value, $Res Function(_TransactionTotalsDto) _then) = __$TransactionTotalsDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate, String? type
+@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'startDate') String? startDate,@JsonKey(name: 'endDate') String? endDate, String? type
 });
 
 

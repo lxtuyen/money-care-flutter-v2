@@ -70,7 +70,6 @@ class StatisticsController extends GetxController {
   DateTime _clampToGoalEnd(DateTime date) {
     final goal = savingGoalController.currentGoal.value;
     if (goal == null || goal.endDate == null) return date;
-    // For end date, we must ensure it doesn't exceed the goal end date
     if (date.isAfter(goal.endDate!)) return goal.endDate!;
     return date;
   }
@@ -150,7 +149,7 @@ class StatisticsController extends GetxController {
     isLoading.value = true;
     try {
       final dto =
-          _createTotalsDto(startDate ?? monthStartDate, endDate ?? monthEndDate);
+          _createTotalsDto(startDate ?? currentStartDate, endDate ?? currentEndDate);
       totalByType.value = await getTotalByTypeUseCase(userId, dto);
       errorMessage.value = null;
     } catch (e) {
@@ -164,7 +163,7 @@ class StatisticsController extends GetxController {
   Future<void> getTotalByCate(int userId) async {
     isLoading.value = true;
     try {
-      final dto = _createTotalsDto(monthStartDate, monthEndDate);
+      final dto = _createTotalsDto(currentStartDate, currentEndDate);
       final list = await getTotalByCateUseCase(userId, dto);
       totalByCate.assignAll(list);
       errorMessage.value = null;
@@ -235,7 +234,7 @@ class StatisticsController extends GetxController {
       {DateTime? startDate, DateTime? endDate}) async {
     try {
       final dto = _createTotalsDto(
-          startDate ?? monthStartDate, endDate ?? monthEndDate);
+          startDate ?? currentStartDate, endDate ?? currentEndDate);
       totalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
       totalByType.value = null;
@@ -247,8 +246,8 @@ class StatisticsController extends GetxController {
       {DateTime? startDate, DateTime? endDate}) async {
     try {
       final dto = _createTotalsDto(
-          startDate ?? (periodType.value == 'hàng tháng' ? monthStartDate : currentStartDate), 
-          endDate ?? (periodType.value == 'hàng tháng' ? monthEndDate : currentEndDate));
+          startDate ?? currentStartDate, 
+          endDate ?? currentEndDate);
       final list = await getTotalByCateUseCase(userId, dto);
       totalByCate.assignAll(list);
     } catch (e) {
@@ -291,12 +290,11 @@ class StatisticsController extends GetxController {
     }
   }
 
-  bool _isRefreshing = false;
+  int _refreshCounter = 0;
 
   Future<void> refreshStatisticsData(int userId) async {
-    if (_isRefreshing) return;
+    final int currentRefresh = ++_refreshCounter;
     
-    _isRefreshing = true;
     if (totalByDate.value == null) {
       isLoading.value = true;
     } else {
@@ -307,31 +305,51 @@ class StatisticsController extends GetxController {
       final dtoRange = _createTotalsDto(currentStartDate, currentEndDate);
 
       if (periodType.value == 'hàng tháng') {
-        await Future.wait([
+        final List<Future> futures = [
           _loadTotalByType(userId, startDate: currentStartDate, endDate: currentEndDate),
           _loadGlobalTotalByType(userId),
           _loadTotalByCate(userId, startDate: currentStartDate, endDate: currentEndDate),
           _loadMonthlyCategories(userId),
           _loadTotalByDate(userId, dtoRange),
           _loadStatisticsSummary(userId),
-        ]);
-        _processMonthlyData();
+        ];
+
+        if (_currentGoalIdOrNull != null) {
+          futures.add(savingGoalController.loadGoalReport(_currentGoalIdOrNull!));
+        }
+
+        await Future.wait(futures);
+        if (currentRefresh == _refreshCounter) {
+          _processMonthlyData();
+        }
       } else {
-        await Future.wait([
+        final List<Future> futures = [
           _loadTotalByType(userId, startDate: currentStartDate, endDate: currentEndDate),
           _loadGlobalTotalByType(userId),
           _loadTotalByCate(userId, startDate: currentStartDate, endDate: currentEndDate),
           _loadDailyHourlyData(userId),
           _loadStatisticsSummary(userId),
-        ]);
+        ];
+
+        if (_currentGoalIdOrNull != null) {
+          futures.add(savingGoalController.loadGoalReport(_currentGoalIdOrNull!));
+        }
+
+        await Future.wait(futures);
       }
-      errorMessage.value = null;
+      
+      if (currentRefresh == _refreshCounter) {
+        errorMessage.value = null;
+      }
     } catch (e) {
-      errorMessage.value = e.toString();
+      if (currentRefresh == _refreshCounter) {
+        errorMessage.value = e.toString();
+      }
     } finally {
-      isLoading.value = false;
-      isSilentLoading.value = false;
-      _isRefreshing = false;
+      if (currentRefresh == _refreshCounter) {
+        isLoading.value = false;
+        isSilentLoading.value = false;
+      }
     }
   }
 
@@ -511,5 +529,4 @@ class StatisticsController extends GetxController {
     }
     return spots;
   }
-
 }

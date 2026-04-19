@@ -240,7 +240,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: AppSectionHeading(
-                        title: 'Thống kê quỹ tiết kiệm',
+                        title: 'Thống kê mục tiêu tiết kiệm',
                         showActionButton: false,
                       ),
                     ),

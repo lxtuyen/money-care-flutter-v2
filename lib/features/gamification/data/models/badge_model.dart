@@ -31,3 +31,5 @@ abstract class BadgeModel with _$BadgeModel {
         awardedAt: awardedAt,
       );
 }
+
+

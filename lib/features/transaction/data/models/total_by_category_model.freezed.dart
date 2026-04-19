@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TotalByCategoryEntityModel {
 
-@JsonKey(name: 'category_id') int? get categoryId; String get categoryName; String get categoryIcon; double get percentage; double get spendingPercentage; double get limit; int get total; bool get isEssential;
+@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? get categoryId; String get categoryName; String get categoryIcon;@JsonKey(fromJson: NumParser.parseDouble) double get percentage;@JsonKey(fromJson: NumParser.parseDouble) double get spendingPercentage;@JsonKey(fromJson: NumParser.parseDouble) double get limit;@JsonKey(fromJson: NumParser.parseInt) int get total; bool get isEssential;
 /// Create a copy of TotalByCategoryEntityModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TotalByCategoryEntityModelCopyWith<$Res>  {
   factory $TotalByCategoryEntityModelCopyWith(TotalByCategoryEntityModel value, $Res Function(TotalByCategoryEntityModel) _then) = _$TotalByCategoryEntityModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'category_id') int? categoryId, String categoryName, String categoryIcon, double percentage, double spendingPercentage, double limit, int total, bool isEssential
+@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? categoryId, String categoryName, String categoryIcon,@JsonKey(fromJson: NumParser.parseDouble) double percentage,@JsonKey(fromJson: NumParser.parseDouble) double spendingPercentage,@JsonKey(fromJson: NumParser.parseDouble) double limit,@JsonKey(fromJson: NumParser.parseInt) int total, bool isEssential
 });
 
 
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id')  int? categoryId,  String categoryName,  String categoryIcon,  double percentage,  double spendingPercentage,  double limit,  int total,  bool isEssential)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double percentage, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseDouble)  double limit, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TotalByCategoryEntityModel() when $default != null:
 return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.percentage,_that.spendingPercentage,_that.limit,_that.total,_that.isEssential);case _:
@@ -181,7 +181,7 @@ return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.per
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id')  int? categoryId,  String categoryName,  String categoryIcon,  double percentage,  double spendingPercentage,  double limit,  int total,  bool isEssential)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double percentage, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseDouble)  double limit, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)  $default,) {final _that = this;
 switch (_that) {
 case _TotalByCategoryEntityModel():
 return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.percentage,_that.spendingPercentage,_that.limit,_that.total,_that.isEssential);case _:
@@ -201,7 +201,7 @@ return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.per
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'category_id')  int? categoryId,  String categoryName,  String categoryIcon,  double percentage,  double spendingPercentage,  double limit,  int total,  bool isEssential)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double percentage, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseDouble)  double limit, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)?  $default,) {final _that = this;
 switch (_that) {
 case _TotalByCategoryEntityModel() when $default != null:
 return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.percentage,_that.spendingPercentage,_that.limit,_that.total,_that.isEssential);case _:
@@ -216,16 +216,16 @@ return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.per
 @JsonSerializable()
 
 class _TotalByCategoryEntityModel extends TotalByCategoryEntityModel {
-  const _TotalByCategoryEntityModel({@JsonKey(name: 'category_id') this.categoryId, this.categoryName = '', this.categoryIcon = '', this.percentage = 0.0, this.spendingPercentage = 0.0, this.limit = 0.0, this.total = 0, this.isEssential = true}): super._();
+  const _TotalByCategoryEntityModel({@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) this.categoryId, this.categoryName = '', this.categoryIcon = '', @JsonKey(fromJson: NumParser.parseDouble) this.percentage = 0.0, @JsonKey(fromJson: NumParser.parseDouble) this.spendingPercentage = 0.0, @JsonKey(fromJson: NumParser.parseDouble) this.limit = 0.0, @JsonKey(fromJson: NumParser.parseInt) this.total = 0, this.isEssential = true}): super._();
   factory _TotalByCategoryEntityModel.fromJson(Map<String, dynamic> json) => _$TotalByCategoryEntityModelFromJson(json);
 
-@override@JsonKey(name: 'category_id') final  int? categoryId;
+@override@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) final  int? categoryId;
 @override@JsonKey() final  String categoryName;
 @override@JsonKey() final  String categoryIcon;
-@override@JsonKey() final  double percentage;
-@override@JsonKey() final  double spendingPercentage;
-@override@JsonKey() final  double limit;
-@override@JsonKey() final  int total;
+@override@JsonKey(fromJson: NumParser.parseDouble) final  double percentage;
+@override@JsonKey(fromJson: NumParser.parseDouble) final  double spendingPercentage;
+@override@JsonKey(fromJson: NumParser.parseDouble) final  double limit;
+@override@JsonKey(fromJson: NumParser.parseInt) final  int total;
 @override@JsonKey() final  bool isEssential;
 
 /// Create a copy of TotalByCategoryEntityModel
@@ -261,7 +261,7 @@ abstract mixin class _$TotalByCategoryEntityModelCopyWith<$Res> implements $Tota
   factory _$TotalByCategoryEntityModelCopyWith(_TotalByCategoryEntityModel value, $Res Function(_TotalByCategoryEntityModel) _then) = __$TotalByCategoryEntityModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'category_id') int? categoryId, String categoryName, String categoryIcon, double percentage, double spendingPercentage, double limit, int total, bool isEssential
+@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? categoryId, String categoryName, String categoryIcon,@JsonKey(fromJson: NumParser.parseDouble) double percentage,@JsonKey(fromJson: NumParser.parseDouble) double spendingPercentage,@JsonKey(fromJson: NumParser.parseDouble) double limit,@JsonKey(fromJson: NumParser.parseInt) int total, bool isEssential
 });
 
 

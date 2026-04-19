@@ -21,3 +21,5 @@ abstract class ChatMessageModel with _$ChatMessageModel {
         text: text,
       );
 }
+
+

@@ -35,3 +35,5 @@ abstract class GamificationModel with _$GamificationModel {
         badges: badges.map((b) => b.toEntity()).toList(),
       );
 }
+
+

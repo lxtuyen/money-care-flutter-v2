@@ -44,3 +44,5 @@ abstract class FinanceModeModel with _$FinanceModeModel {
         suggestionCooldownUntil: suggestionCooldownUntil,
       );
 }
+
+

@@ -3,6 +3,7 @@ import 'package:money_care/features/transaction/data/models/transaction_model.da
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
 
+
 abstract class TransactionRepository {
   Future<TransactionByTypeEntity> findAllByFilter(
       int userId, TransactionFilterDto dto);
@@ -19,4 +20,5 @@ abstract class TransactionRepository {
   Future<ScanReceiptEntity> scanReceipt(XFile image);
   Future<StatisticsSummaryEntity> getStatisticsSummary(
       int userId, TransactionTotalsDto dto);
+
 }

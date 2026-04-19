@@ -10,16 +10,18 @@ _TransactionFilterDto _$TransactionFilterDtoFromJson(
   Map<String, dynamic> json,
 ) => _TransactionFilterDto(
   categoryId: (json['categoryId'] as num?)?.toInt(),
-  fundId: (json['fundId'] as num?)?.toInt(),
-  startDate: json['start_date'] as String?,
-  endDate: json['end_date'] as String?,
+  goalId: (json['savingGoalId'] as num?)?.toInt(),
+  startDate: json['startDate'] as String?,
+  endDate: json['endDate'] as String?,
+  limit: (json['limit'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$TransactionFilterDtoToJson(
   _TransactionFilterDto instance,
 ) => <String, dynamic>{
   'categoryId': instance.categoryId,
-  'fundId': instance.fundId,
-  'start_date': instance.startDate,
-  'end_date': instance.endDate,
+  'savingGoalId': instance.goalId,
+  'startDate': instance.startDate,
+  'endDate': instance.endDate,
+  'limit': instance.limit,
 };

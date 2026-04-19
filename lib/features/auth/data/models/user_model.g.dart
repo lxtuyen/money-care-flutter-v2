@@ -13,9 +13,9 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   isVip: json['isVip'] as bool?,
   accessToken: json['accessToken'] as String?,
   profile: UserProfileModel.fromJson(json['profile'] as Map<String, dynamic>),
-  fund: json['fund'] == null
+  savingGoal: json['savingGoal'] == null
       ? null
-      : FundModel.fromJson(json['fund'] as Map<String, dynamic>),
+      : SavingGoalModel.fromJson(json['savingGoal'] as Map<String, dynamic>),
   hasCategories: json['hasCategories'] as bool?,
 );
 
@@ -27,6 +27,6 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'isVip': instance.isVip,
       'accessToken': instance.accessToken,
       'profile': instance.profile,
-      'fund': instance.fund,
+      'savingGoal': instance.savingGoal,
       'hasCategories': instance.hasCategories,
     };

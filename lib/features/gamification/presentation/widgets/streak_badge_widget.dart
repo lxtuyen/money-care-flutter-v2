@@ -4,8 +4,6 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 
-/// Displays the user's current transaction streak with a flame icon.
-/// Redesigned for compact header integration.
 class StreakBadgeWidget extends StatelessWidget {
   const StreakBadgeWidget({super.key});
 

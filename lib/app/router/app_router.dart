@@ -12,15 +12,14 @@ import 'package:money_care/features/onboarding/presentation/screens/onboarding_w
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_category_select_screen.dart';
 
 import 'package:money_care/features/auth/presentation/screens/register.dart';
-import 'package:money_care/features/fund/presentation/screens/create_fund.dart';
-import 'package:money_care/features/fund/presentation/screens/select_fund.dart';
-import 'package:money_care/features/fund/presentation/screens/fund_report_screen.dart';
+import 'package:money_care/features/saving_goal/presentation/screens/create_saving_goal_screen.dart';
+import 'package:money_care/features/saving_goal/presentation/screens/select_saving_goal_screen.dart';
+import 'package:money_care/features/saving_goal/presentation/screens/expired_saving_goals_screen.dart';
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_photo_transaction_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/photo_transaction_history_screen.dart';
-import 'package:money_care/features/fund/presentation/screens/expired_funds_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
@@ -29,7 +28,7 @@ import 'package:money_care/features/splash/presentation/bindings/splash_binding.
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
 import 'package:money_care/features/onboarding/presentation/bindings/onboarding_binding.dart';
 import 'package:money_care/features/transaction/presentation/bindings/transaction_binding.dart';
-import 'package:money_care/features/fund/presentation/bindings/fund_binding.dart';
+import 'package:money_care/features/saving_goal/presentation/bindings/saving_goal_binding.dart';
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
@@ -88,20 +87,20 @@ final List<GetPage> appPages = [
     binding: OnboardingBinding(),
   ),
   GetPage(
-    name: '/select_fund',
-    page: () => const SelectFundScreen(),
-    binding: FundBinding(),
+    name: '/select_saving_goal',
+    page: () => const SelectSavingGoalScreen(),
+    binding: SavingGoalBinding(),
   ),
   GetPage(
-    name: '/create_fund',
-    page: () => const CreateFund(),
-    binding: FundBinding(),
+    name: '/create_saving_goal',
+    page: () => const CreateSavingGoalScreen(),
+    binding: SavingGoalBinding(),
   ),
   GetPage(
     name: '/onboarding_balance_setup',
-    page: () => const CreateFund(),
+    page: () => const CreateSavingGoalScreen(),
     transition: Transition.rightToLeft,
-    binding: FundBinding(),
+    binding: SavingGoalBinding(),
   ),
   GetPage(
     name: '/expense',
@@ -135,19 +134,14 @@ final List<GetPage> appPages = [
     binding: NotificationBinding(),
   ),
   GetPage(
-    name: '/fund_report',
-    page: () => const FundReportScreen(),
-    binding: FundBinding(),
-  ),
-  GetPage(
     name: '/photo_transaction_history',
     page: () => const PhotoTransactionHistoryScreen(),
     binding: TransactionBinding(),
   ),
   GetPage(
-    name: '/expired_funds',
-    page: () => const ExpiredFundsScreen(),
-    binding: FundBinding(),
+    name: '/expired_saving_goals',
+    page: () => const ExpiredSavingGoalsScreen(),
+    binding: SavingGoalBinding(),
   ),
   GetPage(
     name: '/onboarding_category_select',

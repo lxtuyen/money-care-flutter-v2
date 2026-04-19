@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:money_care/core/utils/helper/num_parser.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -26,9 +27,9 @@ class ColorConverter implements JsonConverter<Color?, dynamic> {
 @freezed
 abstract class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
-    int? id,
+    @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
     required String name,
-    @Default(0) int percentage,
+    @JsonKey(fromJson: NumParser.parseInt) @Default(0) int percentage,
     @Default('') String icon,
     @ColorConverter() Color? color,
     @Default(true) bool isEssential,
@@ -50,3 +51,5 @@ abstract class CategoryModel with _$CategoryModel {
         type: type,
       );
 }
+
+

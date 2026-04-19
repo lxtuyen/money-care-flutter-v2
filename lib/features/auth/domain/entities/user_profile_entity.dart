@@ -14,3 +14,5 @@ class UserProfileEntity {
   String get fullName =>
       '${firstName ?? ''} ${lastName ?? ''}'.trim();
 }
+
+

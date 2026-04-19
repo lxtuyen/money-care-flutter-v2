@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
@@ -14,11 +15,13 @@ class TransactionController extends GetxController {
   final UpdateTransactionUseCase updateTransactionUseCase;
   final DeleteTransactionUseCase deleteTransactionUseCase;
 
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
 
   var transactionByfilter = Rxn<TransactionByTypeEntity>();
+  var recentTransactions = Rxn<TransactionByTypeEntity>();
 
   var isLoading = false.obs;
+  var isRecentLoading = false.obs;
   var errorMessage = RxnString();
 
   final RxInt transactionChangedCount = 0.obs;
@@ -26,8 +29,6 @@ class TransactionController extends GetxController {
   final now = DateTime.now();
   late DateTime monthStartDate = DateTime(now.year, now.month, 1);
   late DateTime monthEndDate = DateTime(now.year, now.month + 1, 0);
-  DateTime get weekStartDate => now.subtract(const Duration(days: 6));
-  DateTime get weekEndDate => now;
 
   TransactionFilterDto? _lastFilter;
 
@@ -42,9 +43,22 @@ class TransactionController extends GetxController {
   void onInit() {
     super.onInit();
     
-    ever(fundController.fundId, (int id) {
+    ever(savingGoalController.goalId, (int id) {
       final userId = Get.find<AppController>().userId.value;
-      if (userId != null && id > 0) {
+      if (userId != null) {
+        recentTransactions.value = null;
+        transactionByfilter.value = null;
+
+        final goal = savingGoalController.currentGoal.value;
+        if (goal != null && goal.startDate != null && goal.endDate != null) {
+          Get.find<FilterController>().setGoalRange(
+            goal.startDate!,
+            goal.endDate!,
+            goal.name,
+          );
+        } else {
+          Get.find<FilterController>().clearAll();
+        }
         refreshAllData(userId);
       }
     });
@@ -126,42 +140,79 @@ class TransactionController extends GetxController {
   }
 
   Future<void> refreshAllData(int userId) async {
-    final filterDto = _lastFilter ?? TransactionFilterDto(
-      fundId: _currentFundIdOrNull,
-      startDate: weekStartDate.toIso8601String(),
-      endDate: weekEndDate.toIso8601String(),
+    final currentGoal = savingGoalController.currentGoal.value;
+    
+    final rawStart = currentGoal?.startDate;
+    final rawEnd = currentGoal?.endDate;
+    final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
+    final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
+
+    final recentFilterDto = TransactionFilterDto(
+      goalId: _currentGoalIdOrNull,
+      startDate: clampedStart?.toIso8601String(),
+      endDate: clampedEnd?.toIso8601String(),
+      limit: 5,
     );
-
-    await filterTransactions(userId, filterDto);
-
-    if (Get.isRegistered<StatisticsController>()) {
-      await Get.find<StatisticsController>().refreshStatisticsData(userId);
+    
+    isRecentLoading.value = true;
+    try {
+      final recentRes = await filterTransactionsUseCase(userId, recentFilterDto);
+      recentTransactions.value = recentRes;
+    } catch (e) {
+    } finally {
+      isRecentLoading.value = false;
     }
+
+    await applyFilters(userId);
+
 
     transactionChangedCount.value++;
   }
 
   Future<void> applyFilters(int userId) async {
     final filterController = Get.find<FilterController>();
-    
+
+    final rawStart = filterController.startDate.value;
+    final rawEnd = filterController.endDate.value;
+
+    final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
+    final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
+
     final dto = TransactionFilterDto(
       categoryId: filterController.categoryId.value,
-      fundId: _currentFundIdOrNull,
-      startDate: filterController.startDate.value?.toIso8601String(),
-      endDate: filterController.endDate.value?.toIso8601String(),
+      goalId: _currentGoalIdOrNull,
+      startDate: clampedStart?.toIso8601String(),
+      endDate: clampedEnd?.toIso8601String(),
     );
 
     await filterTransactions(userId, dto);
-    
-    if (Get.isRegistered<StatisticsController>()) {
-      await Get.find<StatisticsController>().getTotalByType(
-        userId,
-        startDate: filterController.startDate.value,
-        endDate: filterController.endDate.value,
-      );
-    }
   }
 
-  int? get _currentFundIdOrNull =>
-      fundController.currentFundId > 0 ? fundController.currentFundId : null;
+  DateTime _clampToGoalStart(DateTime date) {
+    final goal = savingGoalController.currentGoal.value;
+    if (goal == null || goal.startDate == null) return date;
+    if (date.isBefore(goal.startDate!)) return goal.startDate!;
+    return date;
+  }
+
+  DateTime _clampToGoalEnd(DateTime date) {
+    final goal = savingGoalController.currentGoal.value;
+    if (goal == null || goal.endDate == null) return date;
+    if (date.isAfter(goal.endDate!)) return goal.endDate!;
+    return date;
+  }
+
+  int? get _currentGoalIdOrNull => savingGoalController.goalId.value > 0
+      ? savingGoalController.goalId.value
+      : null;
+
+  DateTime _clampToGoalRange(DateTime date, DateTime? goalStart, DateTime? goalEnd, {required bool isStart}) {
+    if (goalStart == null || goalEnd == null) return date;
+    
+    if (isStart) {
+      return date.isBefore(goalStart) ? goalStart : date;
+    } else {
+      return date.isAfter(goalEnd) ? goalEnd : date;
+    }
+  }
 }

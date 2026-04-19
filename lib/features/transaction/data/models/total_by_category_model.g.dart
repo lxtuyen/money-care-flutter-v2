@@ -9,13 +9,17 @@ part of 'total_by_category_model.dart';
 _TotalByCategoryEntityModel _$TotalByCategoryEntityModelFromJson(
   Map<String, dynamic> json,
 ) => _TotalByCategoryEntityModel(
-  categoryId: (json['category_id'] as num?)?.toInt(),
+  categoryId: NumParser.parseIntNullable(json['category_id']),
   categoryName: json['categoryName'] as String? ?? '',
   categoryIcon: json['categoryIcon'] as String? ?? '',
-  percentage: (json['percentage'] as num?)?.toDouble() ?? 0.0,
-  spendingPercentage: (json['spendingPercentage'] as num?)?.toDouble() ?? 0.0,
-  limit: (json['limit'] as num?)?.toDouble() ?? 0.0,
-  total: (json['total'] as num?)?.toInt() ?? 0,
+  percentage: json['percentage'] == null
+      ? 0.0
+      : NumParser.parseDouble(json['percentage']),
+  spendingPercentage: json['spendingPercentage'] == null
+      ? 0.0
+      : NumParser.parseDouble(json['spendingPercentage']),
+  limit: json['limit'] == null ? 0.0 : NumParser.parseDouble(json['limit']),
+  total: json['total'] == null ? 0 : NumParser.parseInt(json['total']),
   isEssential: json['isEssential'] as bool? ?? true,
 );
 

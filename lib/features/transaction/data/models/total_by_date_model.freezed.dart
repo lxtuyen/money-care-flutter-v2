@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TotalByDateEntityModel {
 
- DateTime get date; int get total;
+ DateTime get date;@JsonKey(fromJson: NumParser.parseInt) int get total;
 /// Create a copy of TotalByDateEntityModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TotalByDateEntityModelCopyWith<$Res>  {
   factory $TotalByDateEntityModelCopyWith(TotalByDateEntityModel value, $Res Function(TotalByDateEntityModel) _then) = _$TotalByDateEntityModelCopyWithImpl;
 @useResult
 $Res call({
- DateTime date, int total
+ DateTime date,@JsonKey(fromJson: NumParser.parseInt) int total
 });
 
 
@@ -154,7 +154,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  int total)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date, @JsonKey(fromJson: NumParser.parseInt)  int total)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TotalByDateEntityModel() when $default != null:
 return $default(_that.date,_that.total);case _:
@@ -175,7 +175,7 @@ return $default(_that.date,_that.total);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  int total)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date, @JsonKey(fromJson: NumParser.parseInt)  int total)  $default,) {final _that = this;
 switch (_that) {
 case _TotalByDateEntityModel():
 return $default(_that.date,_that.total);case _:
@@ -195,7 +195,7 @@ return $default(_that.date,_that.total);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  int total)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date, @JsonKey(fromJson: NumParser.parseInt)  int total)?  $default,) {final _that = this;
 switch (_that) {
 case _TotalByDateEntityModel() when $default != null:
 return $default(_that.date,_that.total);case _:
@@ -210,11 +210,11 @@ return $default(_that.date,_that.total);case _:
 @JsonSerializable()
 
 class _TotalByDateEntityModel extends TotalByDateEntityModel {
-  const _TotalByDateEntityModel({required this.date, this.total = 0}): super._();
+  const _TotalByDateEntityModel({required this.date, @JsonKey(fromJson: NumParser.parseInt) this.total = 0}): super._();
   factory _TotalByDateEntityModel.fromJson(Map<String, dynamic> json) => _$TotalByDateEntityModelFromJson(json);
 
 @override final  DateTime date;
-@override@JsonKey() final  int total;
+@override@JsonKey(fromJson: NumParser.parseInt) final  int total;
 
 /// Create a copy of TotalByDateEntityModel
 /// with the given fields replaced by the non-null parameter values.
@@ -249,7 +249,7 @@ abstract mixin class _$TotalByDateEntityModelCopyWith<$Res> implements $TotalByD
   factory _$TotalByDateEntityModelCopyWith(_TotalByDateEntityModel value, $Res Function(_TotalByDateEntityModel) _then) = __$TotalByDateEntityModelCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime date, int total
+ DateTime date,@JsonKey(fromJson: NumParser.parseInt) int total
 });
 
 

@@ -12,3 +12,5 @@ class AppImages {
       AppAssets.imagePngPath('financial_freedom');
   static final String splash = AppAssets.imagePngPath('splash');
 }
+
+

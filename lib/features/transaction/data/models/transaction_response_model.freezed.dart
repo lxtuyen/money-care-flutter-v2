@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionModel {
 
- int? get id; int get amount; String get type;@JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? get pictureUrl;@JsonKey(name: 'transaction_date') DateTime? get transactionDate; String? get note;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt; CategoryModel? get category;
+@JsonKey(fromJson: NumParser.parseIntNullable) int? get id;@JsonKey(fromJson: NumParser.parseInt) int get amount; String get type;@JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? get pictureUrl;@JsonKey(name: 'transaction_date') DateTime? get transactionDate; String? get note;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt; CategoryModel? get category;
 /// Create a copy of TransactionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TransactionModelCopyWith<$Res>  {
   factory $TransactionModelCopyWith(TransactionModel value, $Res Function(TransactionModel) _then) = _$TransactionModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, int amount, String type,@JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,@JsonKey(name: 'transaction_date') DateTime? transactionDate, String? note,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt, CategoryModel? category
+@JsonKey(fromJson: NumParser.parseIntNullable) int? id,@JsonKey(fromJson: NumParser.parseInt) int amount, String type,@JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,@JsonKey(name: 'transaction_date') DateTime? transactionDate, String? note,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt, CategoryModel? category
 });
 
 
@@ -173,7 +173,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int amount,  String type, @JsonKey(readValue: _readPictureUrl, name: 'picture_url')  String? pictureUrl, @JsonKey(name: 'transaction_date')  DateTime? transactionDate,  String? note, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  CategoryModel? category)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseIntNullable)  int? id, @JsonKey(fromJson: NumParser.parseInt)  int amount,  String type, @JsonKey(readValue: _readPictureUrl, name: 'picture_url')  String? pictureUrl, @JsonKey(name: 'transaction_date')  DateTime? transactionDate,  String? note, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  CategoryModel? category)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionModel() when $default != null:
 return $default(_that.id,_that.amount,_that.type,_that.pictureUrl,_that.transactionDate,_that.note,_that.createdAt,_that.updatedAt,_that.category);case _:
@@ -194,7 +194,7 @@ return $default(_that.id,_that.amount,_that.type,_that.pictureUrl,_that.transact
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int amount,  String type, @JsonKey(readValue: _readPictureUrl, name: 'picture_url')  String? pictureUrl, @JsonKey(name: 'transaction_date')  DateTime? transactionDate,  String? note, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  CategoryModel? category)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseIntNullable)  int? id, @JsonKey(fromJson: NumParser.parseInt)  int amount,  String type, @JsonKey(readValue: _readPictureUrl, name: 'picture_url')  String? pictureUrl, @JsonKey(name: 'transaction_date')  DateTime? transactionDate,  String? note, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  CategoryModel? category)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionModel():
 return $default(_that.id,_that.amount,_that.type,_that.pictureUrl,_that.transactionDate,_that.note,_that.createdAt,_that.updatedAt,_that.category);case _:
@@ -214,7 +214,7 @@ return $default(_that.id,_that.amount,_that.type,_that.pictureUrl,_that.transact
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int amount,  String type, @JsonKey(readValue: _readPictureUrl, name: 'picture_url')  String? pictureUrl, @JsonKey(name: 'transaction_date')  DateTime? transactionDate,  String? note, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  CategoryModel? category)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseIntNullable)  int? id, @JsonKey(fromJson: NumParser.parseInt)  int amount,  String type, @JsonKey(readValue: _readPictureUrl, name: 'picture_url')  String? pictureUrl, @JsonKey(name: 'transaction_date')  DateTime? transactionDate,  String? note, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  CategoryModel? category)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionModel() when $default != null:
 return $default(_that.id,_that.amount,_that.type,_that.pictureUrl,_that.transactionDate,_that.note,_that.createdAt,_that.updatedAt,_that.category);case _:
@@ -229,11 +229,11 @@ return $default(_that.id,_that.amount,_that.type,_that.pictureUrl,_that.transact
 @JsonSerializable()
 
 class _TransactionModel extends TransactionModel {
-  const _TransactionModel({this.id, this.amount = 0, this.type = '', @JsonKey(readValue: _readPictureUrl, name: 'picture_url') this.pictureUrl, @JsonKey(name: 'transaction_date') this.transactionDate, this.note, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, this.category}): super._();
+  const _TransactionModel({@JsonKey(fromJson: NumParser.parseIntNullable) this.id, @JsonKey(fromJson: NumParser.parseInt) this.amount = 0, this.type = '', @JsonKey(readValue: _readPictureUrl, name: 'picture_url') this.pictureUrl, @JsonKey(name: 'transaction_date') this.transactionDate, this.note, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, this.category}): super._();
   factory _TransactionModel.fromJson(Map<String, dynamic> json) => _$TransactionModelFromJson(json);
 
-@override final  int? id;
-@override@JsonKey() final  int amount;
+@override@JsonKey(fromJson: NumParser.parseIntNullable) final  int? id;
+@override@JsonKey(fromJson: NumParser.parseInt) final  int amount;
 @override@JsonKey() final  String type;
 @override@JsonKey(readValue: _readPictureUrl, name: 'picture_url') final  String? pictureUrl;
 @override@JsonKey(name: 'transaction_date') final  DateTime? transactionDate;
@@ -275,7 +275,7 @@ abstract mixin class _$TransactionModelCopyWith<$Res> implements $TransactionMod
   factory _$TransactionModelCopyWith(_TransactionModel value, $Res Function(_TransactionModel) _then) = __$TransactionModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, int amount, String type,@JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,@JsonKey(name: 'transaction_date') DateTime? transactionDate, String? note,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt, CategoryModel? category
+@JsonKey(fromJson: NumParser.parseIntNullable) int? id,@JsonKey(fromJson: NumParser.parseInt) int amount, String type,@JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,@JsonKey(name: 'transaction_date') DateTime? transactionDate, String? note,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt, CategoryModel? category
 });
 
 

@@ -12,3 +12,5 @@ class GetFinanceModeUseCase {
     return repository.getFinanceMode(userId);
   }
 }
+
+

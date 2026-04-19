@@ -9,7 +9,7 @@ import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
-import 'package:money_care/app/controllers/fund_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
@@ -24,7 +24,7 @@ class ChatController extends GetxController {
   ChatController({required this.sendToChatbotUseCase});
 
   final AppController appController = Get.find<AppController>();
-  final FundController fundController = Get.find<FundController>();
+  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
 
   final TextEditingController textController = TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -127,11 +127,9 @@ class ChatController extends GetxController {
       isLoading.value = true;
       errorMessage.value = null;
 
-      final fundId = fundController.fundId.value;
       final dto = ChatDto(
         message: text,
         userId: userId,
-        fundId: fundId > 0 ? fundId : null,
       );
       final reply = await sendToChatbotUseCase(dto);
 
@@ -263,11 +261,9 @@ class ChatController extends GetxController {
       final userId = await appController.getCurrentUserId();
       if (userId == null) return;
 
-      final fundId = fundController.fundId.value;
       final dto = ChatDto(
         message: "Quét hóa đơn",
         userId: userId,
-        fundId: fundId > 0 ? fundId : null,
       );
       final reply = await sendToChatbotUseCase(dto, filePath: image.path);
 
@@ -294,11 +290,9 @@ class ChatController extends GetxController {
       isLoading.value = true;
       final apiClient = Get.find<ApiClient>();
       
-      final fundId = fundController.fundId.value;
       final response = await apiClient.post('/ai/chat/bulk-save', body: {
         'userId': userId,
         'items': items,
-        'fundId': fundId > 0 ? fundId : null,
       });
 
       if (response.success) {
@@ -346,3 +340,5 @@ class ChatController extends GetxController {
     super.onClose();
   }
 }
+
+

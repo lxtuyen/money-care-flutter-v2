@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionFilterDto {
 
-@JsonKey(name: 'categoryId') int? get categoryId;@JsonKey(name: 'fundId') int? get fundId;@JsonKey(name: 'start_date') String? get startDate;@JsonKey(name: 'end_date') String? get endDate;
+@JsonKey(name: 'categoryId') int? get categoryId;@JsonKey(name: 'savingGoalId') int? get goalId;@JsonKey(name: 'startDate') String? get startDate;@JsonKey(name: 'endDate') String? get endDate;@JsonKey(name: 'limit') int? get limit;
 /// Create a copy of TransactionFilterDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $TransactionFilterDtoCopyWith<TransactionFilterDto> get copyWith => _$Transactio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionFilterDto&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.fundId, fundId) || other.fundId == fundId)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionFilterDto&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.goalId, goalId) || other.goalId == goalId)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.limit, limit) || other.limit == limit));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,categoryId,fundId,startDate,endDate);
+int get hashCode => Object.hash(runtimeType,categoryId,goalId,startDate,endDate,limit);
 
 @override
 String toString() {
-  return 'TransactionFilterDto(categoryId: $categoryId, fundId: $fundId, startDate: $startDate, endDate: $endDate)';
+  return 'TransactionFilterDto(categoryId: $categoryId, goalId: $goalId, startDate: $startDate, endDate: $endDate, limit: $limit)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $TransactionFilterDtoCopyWith<$Res>  {
   factory $TransactionFilterDtoCopyWith(TransactionFilterDto value, $Res Function(TransactionFilterDto) _then) = _$TransactionFilterDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'fundId') int? fundId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate
+@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'startDate') String? startDate,@JsonKey(name: 'endDate') String? endDate,@JsonKey(name: 'limit') int? limit
 });
 
 
@@ -65,13 +65,14 @@ class _$TransactionFilterDtoCopyWithImpl<$Res>
 
 /// Create a copy of TransactionFilterDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? categoryId = freezed,Object? fundId = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? categoryId = freezed,Object? goalId = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? limit = freezed,}) {
   return _then(_self.copyWith(
 categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
-as int?,fundId: freezed == fundId ? _self.fundId : fundId // ignore: cast_nullable_to_non_nullable
+as int?,goalId: freezed == goalId ? _self.goalId : goalId // ignore: cast_nullable_to_non_nullable
 as int?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,limit: freezed == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'fundId')  int? fundId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate, @JsonKey(name: 'limit')  int? limit)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionFilterDto() when $default != null:
-return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);case _:
+return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_that.limit);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'fundId')  int? fundId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate, @JsonKey(name: 'limit')  int? limit)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionFilterDto():
-return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);case _:
+return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_that.limit);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'fundId')  int? fundId, @JsonKey(name: 'start_date')  String? startDate, @JsonKey(name: 'end_date')  String? endDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'categoryId')  int? categoryId, @JsonKey(name: 'savingGoalId')  int? goalId, @JsonKey(name: 'startDate')  String? startDate, @JsonKey(name: 'endDate')  String? endDate, @JsonKey(name: 'limit')  int? limit)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionFilterDto() when $default != null:
-return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);case _:
+return $default(_that.categoryId,_that.goalId,_that.startDate,_that.endDate,_that.limit);case _:
   return null;
 
 }
@@ -212,13 +213,14 @@ return $default(_that.categoryId,_that.fundId,_that.startDate,_that.endDate);cas
 @JsonSerializable()
 
 class _TransactionFilterDto extends TransactionFilterDto {
-  const _TransactionFilterDto({@JsonKey(name: 'categoryId') this.categoryId, @JsonKey(name: 'fundId') this.fundId, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate}): super._();
+  const _TransactionFilterDto({@JsonKey(name: 'categoryId') this.categoryId, @JsonKey(name: 'savingGoalId') this.goalId, @JsonKey(name: 'startDate') this.startDate, @JsonKey(name: 'endDate') this.endDate, @JsonKey(name: 'limit') this.limit}): super._();
   factory _TransactionFilterDto.fromJson(Map<String, dynamic> json) => _$TransactionFilterDtoFromJson(json);
 
 @override@JsonKey(name: 'categoryId') final  int? categoryId;
-@override@JsonKey(name: 'fundId') final  int? fundId;
-@override@JsonKey(name: 'start_date') final  String? startDate;
-@override@JsonKey(name: 'end_date') final  String? endDate;
+@override@JsonKey(name: 'savingGoalId') final  int? goalId;
+@override@JsonKey(name: 'startDate') final  String? startDate;
+@override@JsonKey(name: 'endDate') final  String? endDate;
+@override@JsonKey(name: 'limit') final  int? limit;
 
 /// Create a copy of TransactionFilterDto
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionFilterDto&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.fundId, fundId) || other.fundId == fundId)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionFilterDto&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.goalId, goalId) || other.goalId == goalId)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.limit, limit) || other.limit == limit));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,categoryId,fundId,startDate,endDate);
+int get hashCode => Object.hash(runtimeType,categoryId,goalId,startDate,endDate,limit);
 
 @override
 String toString() {
-  return 'TransactionFilterDto(categoryId: $categoryId, fundId: $fundId, startDate: $startDate, endDate: $endDate)';
+  return 'TransactionFilterDto(categoryId: $categoryId, goalId: $goalId, startDate: $startDate, endDate: $endDate, limit: $limit)';
 }
 
 
@@ -253,7 +255,7 @@ abstract mixin class _$TransactionFilterDtoCopyWith<$Res> implements $Transactio
   factory _$TransactionFilterDtoCopyWith(_TransactionFilterDto value, $Res Function(_TransactionFilterDto) _then) = __$TransactionFilterDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'fundId') int? fundId,@JsonKey(name: 'start_date') String? startDate,@JsonKey(name: 'end_date') String? endDate
+@JsonKey(name: 'categoryId') int? categoryId,@JsonKey(name: 'savingGoalId') int? goalId,@JsonKey(name: 'startDate') String? startDate,@JsonKey(name: 'endDate') String? endDate,@JsonKey(name: 'limit') int? limit
 });
 
 
@@ -270,13 +272,14 @@ class __$TransactionFilterDtoCopyWithImpl<$Res>
 
 /// Create a copy of TransactionFilterDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? categoryId = freezed,Object? fundId = freezed,Object? startDate = freezed,Object? endDate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? categoryId = freezed,Object? goalId = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? limit = freezed,}) {
   return _then(_TransactionFilterDto(
 categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
-as int?,fundId: freezed == fundId ? _self.fundId : fundId // ignore: cast_nullable_to_non_nullable
+as int?,goalId: freezed == goalId ? _self.goalId : goalId // ignore: cast_nullable_to_non_nullable
 as int?,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as String?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,limit: freezed == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

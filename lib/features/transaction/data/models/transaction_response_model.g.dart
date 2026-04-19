@@ -8,8 +8,8 @@ part of 'transaction_response_model.dart';
 
 _TransactionModel _$TransactionModelFromJson(Map<String, dynamic> json) =>
     _TransactionModel(
-      id: (json['id'] as num?)?.toInt(),
-      amount: (json['amount'] as num?)?.toInt() ?? 0,
+      id: NumParser.parseIntNullable(json['id']),
+      amount: json['amount'] == null ? 0 : NumParser.parseInt(json['amount']),
       type: json['type'] as String? ?? '',
       pictureUrl: _readPictureUrl(json, 'picture_url') as String?,
       transactionDate: json['transaction_date'] == null

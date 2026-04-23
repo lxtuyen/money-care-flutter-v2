@@ -13,14 +13,15 @@ class ExpiredGoalPopup extends StatelessWidget {
   const ExpiredGoalPopup({super.key, required this.goal});
 
   static void show(ExpiredGoalInfoModel goal) {
-    Get.dialog(
-      ExpiredGoalPopup(goal: goal),
-      barrierDismissible: false,
-    );
+    Get.dialog(ExpiredGoalPopup(goal: goal), barrierDismissible: false);
   }
 
   String _formatCurrency(double amount) {
-    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
+    final formatter = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: '₫',
+      decimalDigits: 0,
+    );
     return formatter.format(amount);
   }
 
@@ -48,9 +49,9 @@ class ExpiredGoalPopup extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              isSuccess 
-                ? 'Bạn đã hoàn thành xuất sắc mục tiêu "${goal.name}"!'
-                : 'Mục tiêu "${goal.name}" đã kết thúc. Hãy tiếp tục nỗ lực nhé!',
+              isSuccess
+                  ? 'Bạn đã hoàn thành xuất sắc mục tiêu "${goal.name}"!'
+                  : 'Mục tiêu "${goal.name}" đã kết thúc. Hãy tiếp tục nỗ lực nhé!',
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 14, color: AppColors.text3),
             ),
@@ -69,7 +70,9 @@ class ExpiredGoalPopup extends StatelessWidget {
                     icon: Icons.flag_rounded,
                     label: 'Tiến độ đạt được',
                     value: '${goal.completionPercentage.toStringAsFixed(1)}%',
-                    valueColor: isSuccess ? AppColors.success : AppColors.primary,
+                    valueColor: isSuccess
+                        ? AppColors.success
+                        : AppColors.primary,
                   ),
                   const Divider(height: 16),
                   _StatRow(
@@ -88,8 +91,8 @@ class ExpiredGoalPopup extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                   Get.back();
-                   Get.toNamed(RoutePath.createSavingGoal);
+                  Get.back();
+                  Get.toNamed(RoutePath.createSavingGoal);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.success,
@@ -100,13 +103,17 @@ class ExpiredGoalPopup extends StatelessWidget {
                 ),
                 child: const Text(
                   'Tạo mục tiêu mới',
-                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             if (!isSuccess) ...[
               SizedBox(
                 width: double.infinity,
@@ -119,7 +126,10 @@ class ExpiredGoalPopup extends StatelessWidget {
                       firstDate: baseDate.add(const Duration(days: 1)),
                     );
                     if (newDate != null) {
-                      final success = await controller.extendGoal(goal.id, newDate);
+                      final success = await controller.extendGoal(
+                        goal.id,
+                        newDate,
+                      );
                       if (success) {
                         Get.back();
                       }
@@ -134,13 +144,17 @@ class ExpiredGoalPopup extends StatelessWidget {
                   ),
                   child: const Text(
                     'Gia hạn mục tiêu',
-                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
             ],
-            
+
             Row(
               children: [
                 Expanded(
@@ -164,13 +178,11 @@ class ExpiredGoalPopup extends StatelessWidget {
                 ),
               ],
             ),
-            
           ],
         ),
       ),
     );
   }
-
 }
 
 class _StatRow extends StatelessWidget {

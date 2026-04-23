@@ -61,15 +61,16 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     }
 
     if (firebaseUser == null || idToken == null) {
-      throw const ServerException('Dang xuat hoac khong lay duoc token do loi cau hinh');
+      throw const ServerException(
+        'Dang xuat hoac khong lay duoc token do loi cau hinh',
+      );
     }
 
     final res = await api.post<UserModel>(
       ApiRoutes.googleLogin,
-      body: {
-        'idToken': idToken,
-      },
-      fromJsonT: (json) => UserModel.fromAuthJson(json['user'], json['accessToken']),
+      body: {'idToken': idToken},
+      fromJsonT: (json) =>
+          UserModel.fromAuthJson(json['user'], json['accessToken']),
     );
 
     if (!res.success || res.data == null) {
@@ -86,7 +87,8 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     final res = await api.post<UserModel>(
       ApiRoutes.login,
       body: {'email': email, 'password': password},
-      fromJsonT: (json) => UserModel.fromAuthJson(json['user'], json['accessToken']),
+      fromJsonT: (json) =>
+          UserModel.fromAuthJson(json['user'], json['accessToken']),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
@@ -162,7 +164,3 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     return res.message;
   }
 }
-
-
-
-

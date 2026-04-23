@@ -33,24 +33,26 @@ class RoundedImage extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-          width: width,
-          height: height,
-          padding: padding,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: border,
-              color: backgroundColor),
-          child: ClipRRect(
-              borderRadius: applyImageRadius
-                  ? BorderRadius.circular(borderRadius)
-                  : BorderRadius.zero,
-              child: Image(
-                  fit: fit,
-                  image: isNetworkImage
-                      ? NetworkImage(imageUrl)
-                      : AssetImage(imageUrl) as ImageProvider))),
+        width: width,
+        height: height,
+        padding: padding,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(borderRadius),
+          border: border,
+          color: backgroundColor,
+        ),
+        child: ClipRRect(
+          borderRadius: applyImageRadius
+              ? BorderRadius.circular(borderRadius)
+              : BorderRadius.zero,
+          child: Image(
+            fit: fit,
+            image: isNetworkImage
+                ? NetworkImage(imageUrl)
+                : AssetImage(imageUrl) as ImageProvider,
+          ),
+        ),
+      ),
     );
   }
 }
-
-

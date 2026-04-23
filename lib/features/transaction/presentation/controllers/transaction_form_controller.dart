@@ -19,7 +19,8 @@ import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
       Get.find<TransactionController>();
-  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
   final ScanReceiptController scanReceiptController =
       Get.find<ScanReceiptController>();
   final AppController appController = Get.find<AppController>();
@@ -111,7 +112,8 @@ class TransactionFormController extends GetxController {
     selectedDate.value = DateTime.parse(data.date);
 
     if (showCategory) {
-      final fundCategories = savingGoalController.currentGoal.value?.categories ?? [];
+      final fundCategories =
+          savingGoalController.currentGoal.value?.categories ?? [];
       final userCategoryController = Get.find<UserCategoryController>();
       final categories = fundCategories.isNotEmpty
           ? fundCategories

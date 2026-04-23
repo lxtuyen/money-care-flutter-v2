@@ -9,13 +9,17 @@ import 'package:money_care/features/transaction/presentation/controllers/scan_re
 import 'package:money_care/features/transaction/presentation/controllers/photo_transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 
+import 'package:money_care/core/services/ocr_service.dart';
+
 class TransactionBinding extends Bindings {
   @override
   void dependencies() {
     final apiClient = Get.find<ApiClient>();
+    final ocrService = OCRService();
     final remoteDatasource = TransactionRemoteDatasourceImpl(api: apiClient);
     final repository = TransactionRepositoryImpl(
       remoteDatasource: remoteDatasource,
+      ocrService: ocrService,
     );
 
     Get.lazyPut(() => FilterController(), fenix: true);

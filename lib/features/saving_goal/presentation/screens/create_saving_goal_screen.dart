@@ -18,7 +18,8 @@ class CreateSavingGoalScreen extends StatefulWidget {
 
 class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
   final _formKey = GlobalKey<FormState>();
-  final CreateSavingGoalController _controller = Get.find<CreateSavingGoalController>();
+  final CreateSavingGoalController _controller =
+      Get.find<CreateSavingGoalController>();
 
   @override
   void initState() {
@@ -54,7 +55,11 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                 children: [
                   const Text(
                     'Thông tin cơ bản',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   AppTextFormField(
@@ -70,12 +75,17 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                     icon: Icons.monetization_on,
                     hintText: 'VD: 10.000.000',
                     validator: (value) => AppValidator.validateAmount(value),
-                    onRawChanged: (value) => _controller.target.value = double.tryParse(value),
+                    onRawChanged: (value) =>
+                        _controller.target.value = double.tryParse(value),
                   ),
                   const SizedBox(height: 24),
                   const Text(
                     'Thời gian thực hiện',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -102,7 +112,9 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                   const SizedBox(height: 40),
                   Obx(() {
                     return PrimaryButton(
-                      label: _controller.isEditMode.value ? 'Cập nhật mục tiêu' : 'Bắt đầu tiết kiệm ngay',
+                      label: _controller.isEditMode.value
+                          ? 'Cập nhật mục tiêu'
+                          : 'Bắt đầu tiết kiệm ngay',
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _controller.submit();

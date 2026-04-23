@@ -72,7 +72,10 @@ class WelcomeOptions extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           o['desc'] ?? '',
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 13,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -81,7 +84,9 @@ class WelcomeOptions extends StatelessWidget {
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.blueAccent,
-                                  side: const BorderSide(color: Colors.blueAccent),
+                                  side: const BorderSide(
+                                    color: Colors.blueAccent,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -119,5 +124,3 @@ class WelcomeOptions extends StatelessWidget {
     );
   }
 }
-
-

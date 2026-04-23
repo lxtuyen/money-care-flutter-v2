@@ -46,7 +46,9 @@ abstract class SavingGoalReportModel with _$SavingGoalReportModel {
     @Default(0)
     int progressPercent,
     @JsonKey(name: 'is_completed') @Default(false) bool isCompleted,
-    @JsonKey(name: 'completion_notified') @Default(false) bool completionNotified,
+    @JsonKey(name: 'completion_notified')
+    @Default(false)
+    bool completionNotified,
     @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)
     @Default(-1)
     int currentMilestoneIndex,
@@ -60,7 +62,6 @@ abstract class SavingGoalReportModel with _$SavingGoalReportModel {
     @Default(0) int totalTransactions,
     @Default(0) double dailyAverageSpending,
     @Default(0) double remainingBudget,
-
   }) = _SavingGoalReportModel;
 
   factory SavingGoalReportModel.fromJson(Map<String, dynamic> json) =>

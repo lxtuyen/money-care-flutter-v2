@@ -52,8 +52,11 @@ class CategoryCreatedBubble extends StatelessWidget {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.check_circle_rounded,
-                        color: Colors.green, size: 24),
+                    child: const Icon(
+                      Icons.check_circle_rounded,
+                      color: Colors.green,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Expanded(

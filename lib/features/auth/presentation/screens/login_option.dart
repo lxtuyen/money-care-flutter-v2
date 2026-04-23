@@ -96,5 +96,3 @@ class LoginOptionScreen extends GetView<LoginOptionController> {
     );
   }
 }
-
-

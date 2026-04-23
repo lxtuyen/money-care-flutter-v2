@@ -22,9 +22,7 @@ class FinanceModeRemoteDatasourceImpl implements FinanceModeRemoteDatasource {
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải chế độ tài chính',
+        res.message.isNotEmpty ? res.message : 'Không thể tải chế độ tài chính',
       );
     }
     return res.data!;
@@ -40,13 +38,9 @@ class FinanceModeRemoteDatasourceImpl implements FinanceModeRemoteDatasource {
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể lưu chế độ tài chính',
+        res.message.isNotEmpty ? res.message : 'Không thể lưu chế độ tài chính',
       );
     }
     return res.data!;
   }
 }
-
-

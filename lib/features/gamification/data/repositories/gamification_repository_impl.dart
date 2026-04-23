@@ -16,7 +16,8 @@ class GamificationRepositoryImpl implements GamificationRepository {
 
   @override
   Future<Either<Failure, GamificationEntity>> getGamification(
-      int userId) async {
+    int userId,
+  ) async {
     try {
       final model = await remoteDatasource.getGamification(userId);
       return Right(model.toEntity());
@@ -33,7 +34,9 @@ class GamificationRepositoryImpl implements GamificationRepository {
 
   @override
   Future<Either<Failure, GamificationEntity>> recordDailyTransaction(
-      int userId, DateTime date) async {
+    int userId,
+    DateTime date,
+  ) async {
     try {
       final model = await remoteDatasource.recordDay(userId, date);
       return Right(model.toEntity());
@@ -50,7 +53,9 @@ class GamificationRepositoryImpl implements GamificationRepository {
 
   @override
   Future<Either<Failure, GamificationEntity>> awardBadge(
-      int userId, BadgeEntity badge) async {
+    int userId,
+    BadgeEntity badge,
+  ) async {
     try {
       // Lấy trạng thái hiện tại, cấp badge (idempotent), lưu lại — Requirement 8.9
       final model = await remoteDatasource.recordDay(userId, badge.awardedAt);
@@ -68,7 +73,8 @@ class GamificationRepositoryImpl implements GamificationRepository {
 
   @override
   Future<Either<Failure, GamificationEntity>> saveGamification(
-      GamificationEntity entity) async {
+    GamificationEntity entity,
+  ) async {
     try {
       // POST to record-day syncs the full state to backend — Requirement 10.5
       final res = await remoteDatasource.recordDay(
@@ -87,5 +93,3 @@ class GamificationRepositoryImpl implements GamificationRepository {
     }
   }
 }
-
-

@@ -27,8 +27,8 @@ class TransactionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final FinanceModeController? financeModeController =
         Get.isRegistered<FinanceModeController>()
-            ? Get.find<FinanceModeController>()
-            : null;
+        ? Get.find<FinanceModeController>()
+        : null;
 
     Widget content = _buildContent(isSavingMode: false);
 
@@ -110,10 +110,7 @@ class TransactionItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(
-                      item.amount.toDouble(),
-                      '',
-                    )} ₫',
+                    '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), '')} ₫',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -169,5 +166,3 @@ class _SkippableLabel extends StatelessWidget {
     );
   }
 }
-
-

@@ -15,7 +15,8 @@ class TransactionController extends GetxController {
   final UpdateTransactionUseCase updateTransactionUseCase;
   final DeleteTransactionUseCase deleteTransactionUseCase;
 
-  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
 
   var transactionByfilter = Rxn<TransactionByTypeEntity>();
   var recentTransactions = Rxn<TransactionByTypeEntity>();
@@ -42,7 +43,7 @@ class TransactionController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     ever(savingGoalController.goalId, (int id) {
       final userId = Get.find<AppController>().userId.value;
       if (userId != null) {
@@ -75,13 +76,13 @@ class TransactionController extends GetxController {
     try {
       await createTransactionUseCase(dto);
       await refreshAllData(dto.userId!);
-      
+
       if (Get.isRegistered<GamificationController>()) {
         Future.delayed(const Duration(milliseconds: 300), () {
           Get.find<GamificationController>().recordDailyTransaction();
         });
       }
-      
+
       errorMessage.value = null;
     } catch (e) {
       errorMessage.value = e.toString();
@@ -141,7 +142,7 @@ class TransactionController extends GetxController {
 
   Future<void> refreshAllData(int userId) async {
     final currentGoal = savingGoalController.currentGoal.value;
-    
+
     final rawStart = currentGoal?.startDate;
     final rawEnd = currentGoal?.endDate;
     final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
@@ -153,10 +154,13 @@ class TransactionController extends GetxController {
       endDate: clampedEnd?.toIso8601String(),
       limit: 5,
     );
-    
+
     isRecentLoading.value = true;
     try {
-      final recentRes = await filterTransactionsUseCase(userId, recentFilterDto);
+      final recentRes = await filterTransactionsUseCase(
+        userId,
+        recentFilterDto,
+      );
       recentTransactions.value = recentRes;
     } catch (e) {
     } finally {
@@ -164,7 +168,6 @@ class TransactionController extends GetxController {
     }
 
     await applyFilters(userId);
-
 
     transactionChangedCount.value++;
   }
@@ -206,9 +209,14 @@ class TransactionController extends GetxController {
       ? savingGoalController.goalId.value
       : null;
 
-  DateTime _clampToGoalRange(DateTime date, DateTime? goalStart, DateTime? goalEnd, {required bool isStart}) {
+  DateTime _clampToGoalRange(
+    DateTime date,
+    DateTime? goalStart,
+    DateTime? goalEnd, {
+    required bool isStart,
+  }) {
     if (goalStart == null || goalEnd == null) return date;
-    
+
     if (isStart) {
       return date.isBefore(goalStart) ? goalStart : date;
     } else {

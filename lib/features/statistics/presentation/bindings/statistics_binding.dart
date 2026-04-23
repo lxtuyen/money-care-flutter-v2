@@ -22,7 +22,9 @@ class StatisticsBinding extends Bindings {
         getTotalByTypeUseCase: GetTotalByTypeUseCase(repository),
         getTotalByCateUseCase: GetTotalByCateUseCase(repository),
         getTotalByDateEntityUseCase: GetTotalByDateEntityUseCase(repository),
-        getStatisticsSummaryUseCase: GetStatisticsSummaryUseCase(repository: repository),
+        getStatisticsSummaryUseCase: GetStatisticsSummaryUseCase(
+          repository: repository,
+        ),
       ),
       fenix: true,
     );

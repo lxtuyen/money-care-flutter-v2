@@ -7,7 +7,10 @@ class SelectSavingGoalUseCase {
   final SavingGoalRepository repository;
   SelectSavingGoalUseCase(this.repository);
 
-  Future<Either<Failure, SavingGoalEntity?>> call(int userId, int SavingGoalId) {
+  Future<Either<Failure, SavingGoalEntity?>> call(
+    int userId,
+    int SavingGoalId,
+  ) {
     return repository.selectSavingGoal(userId, SavingGoalId);
   }
 }

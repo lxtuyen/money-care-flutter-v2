@@ -9,7 +9,8 @@ class VerticalImageText extends StatelessWidget {
     required this.title,
     this.textColor = AppColors.text1,
     this.backgroundColor = AppColors.white,
-    this.onTap, this.isNetworkImage = false,
+    this.onTap,
+    this.isNetworkImage = false,
   });
 
   final String image, title;
@@ -31,33 +32,28 @@ class VerticalImageText extends StatelessWidget {
               height: 56,
               padding: EdgeInsets.all(AppSizes.sm),
               decoration: BoxDecoration(
-                  color: backgroundColor ?? AppColors.text1,
-                  borderRadius: BorderRadius.circular(100)),
+                color: backgroundColor ?? AppColors.text1,
+                borderRadius: BorderRadius.circular(100),
+              ),
               child: Center(
                 child: isNetworkImage
-                    ? Image.network(
-                        image,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        image,
-                        fit: BoxFit.cover,
-                      ),
+                    ? Image.network(image, fit: BoxFit.cover)
+                    : Image.asset(image, fit: BoxFit.cover),
               ),
             ),
 
             const SizedBox(height: AppSizes.spaceBtwItems / 2),
             SizedBox(
-                width: 55,
-                child: Text(
-                  title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium!
-                      .apply(color: textColor),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ))
+              width: 55,
+              child: Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelMedium!.apply(color: textColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),

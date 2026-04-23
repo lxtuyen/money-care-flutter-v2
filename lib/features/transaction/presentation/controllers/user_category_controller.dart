@@ -43,7 +43,7 @@ class UserCategoryController extends GetxController {
         '${ApiRoutes.userCategories}/$userId',
         fromJsonT: (json) => json as List<dynamic>,
       );
-      
+
       if (res.success && res.data != null) {
         final List<CategoryEntity> loaded = [];
         for (var e in res.data!) {
@@ -54,12 +54,13 @@ class UserCategoryController extends GetxController {
               print('UserCategoryController: Skipping non-map item: $e');
             }
           } catch (err) {
-            print('UserCategoryController: Error parsing category item: $err. Data: $e');
+            print(
+              'UserCategoryController: Error parsing category item: $err. Data: $e',
+            );
           }
         }
         categories.assignAll(loaded);
-      } else if (!res.success) {
-      }
+      } else if (!res.success) {}
     } catch (e, stack) {
       print('UserCategoryController: Catch error loading categories: $e');
     } finally {
@@ -103,7 +104,12 @@ class UserCategoryController extends GetxController {
     }
   }
 
-  Future<bool> addCategory(String name, String icon, String type, bool isEssential) async {
+  Future<bool> addCategory(
+    String name,
+    String icon,
+    String type,
+    bool isEssential,
+  ) async {
     final userId = appController.userId.value;
     if (userId == null) return false;
 
@@ -115,13 +121,13 @@ class UserCategoryController extends GetxController {
         'type': type,
         'isEssential': isEssential,
       };
-      
+
       final res = await apiClient.post<List<dynamic>>(
         '${ApiRoutes.userCategories}/$userId/single',
         body: body,
         fromJsonT: (json) => json as List<dynamic>,
       );
-      
+
       if (res.success) {
         await loadCategories(userId);
         _refreshStatistics(userId);
@@ -135,7 +141,13 @@ class UserCategoryController extends GetxController {
     }
   }
 
-  Future<bool> updateCategory(int id, String name, String icon, String? type, bool isEssential) async {
+  Future<bool> updateCategory(
+    int id,
+    String name,
+    String icon,
+    String? type,
+    bool isEssential,
+  ) async {
     final userId = appController.userId.value;
     if (userId == null) return false;
 
@@ -147,13 +159,13 @@ class UserCategoryController extends GetxController {
         'type': type,
         'isEssential': isEssential,
       };
-      
+
       final res = await apiClient.patch<Map<String, dynamic>>(
         '${ApiRoutes.categories}/$id',
         body: body,
         fromJsonT: (json) => json as Map<String, dynamic>,
       );
-      
+
       if (res.success) {
         await loadCategories(userId);
         _refreshStatistics(userId);
@@ -177,7 +189,7 @@ class UserCategoryController extends GetxController {
         '${ApiRoutes.categories}/$id',
         fromJsonT: (json) => json as Map<String, dynamic>,
       );
-      
+
       if (res.success) {
         await loadCategories(userId);
         _refreshStatistics(userId);
@@ -200,19 +212,19 @@ class UserCategoryController extends GetxController {
   bool get hasCategories => categories.isNotEmpty;
 
   Map<String, dynamic> _toJson(CategoryEntity c) => {
-        'name': c.name,
-        'icon': c.icon,
-        'percentage': c.percentage,
-        'isEssential': c.isEssential,
-        if (c.type != null) 'type': c.type,
-      };
+    'name': c.name,
+    'icon': c.icon,
+    'percentage': c.percentage,
+    'isEssential': c.isEssential,
+    if (c.type != null) 'type': c.type,
+  };
 
   CategoryEntity _fromJson(Map<String, dynamic> m) => CategoryEntity(
-        id: m['id'] as int?,
-        name: m['name'] as String,
-        percentage: (m['percentage'] as num?)?.toInt() ?? 0,
-        icon: m['icon'] as String? ?? 'search',
-        isEssential: m['isEssential'] as bool? ?? true,
-        type: m['type'] as String?,
-      );
+    id: m['id'] as int?,
+    name: m['name'] as String,
+    percentage: (m['percentage'] as num?)?.toInt() ?? 0,
+    icon: m['icon'] as String? ?? 'search',
+    isEssential: m['isEssential'] as bool? ?? true,
+    type: m['type'] as String?,
+  );
 }

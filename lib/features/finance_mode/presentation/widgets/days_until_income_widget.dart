@@ -27,11 +27,11 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
 
   Future<void> _loadIncomeDate() async {
     final userController = Get.find<UserController>();
-    
+
     // The userController already handles loading the profile and filling the incomeDate Rx.
     // We just need to wait if it's currently loading, or just use the current value.
     // However, since this is a StatefulWidget, we can just observe the controller.
-    
+
     if (mounted) {
       setState(() => _loaded = true);
     }
@@ -41,7 +41,9 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
     final incomeDay = incomeDate.day;
     final thisMonthIncome = DateTime(today.year, today.month, incomeDay);
 
-    if (!thisMonthIncome.isBefore(DateTime(today.year, today.month, today.day))) {
+    if (!thisMonthIncome.isBefore(
+      DateTime(today.year, today.month, today.day),
+    )) {
       return thisMonthIncome;
     }
 
@@ -61,16 +63,16 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
       if (mode != FinanceMode.survival) return const SizedBox.shrink();
 
       if (!_loaded) return const SizedBox.shrink();
-      
+
       final incomeDate = userController.incomeDate.value;
       if (incomeDate == null) return const SizedBox.shrink();
 
       final today = DateTime.now();
       final nextIncome = _nextIncomeDate(today, incomeDate);
-      final days = nextIncome.difference(
-        DateTime(today.year, today.month, today.day),
-      ).inDays;
-      
+      final days = nextIncome
+          .difference(DateTime(today.year, today.month, today.day))
+          .inDays;
+
       final daysUntilIncome = days > 0 ? days : 0;
 
       return Container(
@@ -105,5 +107,3 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
     });
   }
 }
-
-

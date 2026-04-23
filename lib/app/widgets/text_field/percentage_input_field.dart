@@ -27,9 +27,7 @@ class PercentageInputField extends StatelessWidget {
             horizontal: 8,
             vertical: 6,
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(color: Colors.grey[300]!),
@@ -50,5 +48,3 @@ class PercentageInputField extends StatelessWidget {
     );
   }
 }
-
-

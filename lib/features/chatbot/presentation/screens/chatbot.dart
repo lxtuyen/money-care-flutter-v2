@@ -140,7 +140,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 filled: true,
                 fillColor: Colors.grey.shade100,
                 prefixIcon: IconButton(
-                  icon: const Icon(Icons.image_outlined, color: Colors.blueAccent),
+                  icon: const Icon(
+                    Icons.image_outlined,
+                    color: Colors.blueAccent,
+                  ),
                   onPressed: controller.pickAndSendImage,
                 ),
                 border: OutlineInputBorder(
@@ -161,32 +164,41 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   Widget _buildMicButton() {
-    return Obx(() => IconButton(
-      onPressed: controller.toggleListening,
-      icon: Icon(
-        controller.isListening.value ? Icons.mic : Icons.mic_none_rounded,
-        color: controller.isListening.value ? Colors.redAccent : Colors.blueAccent,
+    return Obx(
+      () => IconButton(
+        onPressed: controller.toggleListening,
+        icon: Icon(
+          controller.isListening.value ? Icons.mic : Icons.mic_none_rounded,
+          color: controller.isListening.value
+              ? Colors.redAccent
+              : Colors.blueAccent,
+        ),
+        style: IconButton.styleFrom(
+          backgroundColor: controller.isListening.value
+              ? Colors.red.withValues(alpha: 0.1)
+              : Colors.blue.withValues(alpha: 0.05),
+        ),
       ),
-      style: IconButton.styleFrom(
-        backgroundColor: controller.isListening.value 
-          ? Colors.red.withValues(alpha: 0.1) 
-          : Colors.blue.withValues(alpha: 0.05),
-      ),
-    ));
+    );
   }
 
   Widget _buildSendButton() {
-    return Obx(() => IconButton(
-      onPressed: controller.isLoading.value ? null : () => controller.send(userId ?? 0),
-      icon: controller.isLoading.value
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
-            )
-          : const Icon(Icons.send_rounded, color: Colors.blueAccent),
-    ));
+    return Obx(
+      () => IconButton(
+        onPressed: controller.isLoading.value
+            ? null
+            : () => controller.send(userId ?? 0),
+        icon: controller.isLoading.value
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.blueAccent,
+                ),
+              )
+            : const Icon(Icons.send_rounded, color: Colors.blueAccent),
+      ),
+    );
   }
 }
-
-

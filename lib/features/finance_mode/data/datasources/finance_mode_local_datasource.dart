@@ -59,5 +59,3 @@ class FinanceModeLocalDatasourceImpl implements FinanceModeLocalDatasource {
     await storage.remove(_pendingKey(userId));
   }
 }
-
-

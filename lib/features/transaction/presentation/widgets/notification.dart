@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 
 class SuccessNotification extends StatelessWidget {
-   final String message;
+  final String message;
   final VoidCallback onBack;
   final VoidCallback onCreateNew;
-
 
   const SuccessNotification({
     super.key,
@@ -13,7 +12,7 @@ class SuccessNotification extends StatelessWidget {
     required this.onBack,
     required this.onCreateNew,
   });
-@override
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -29,10 +28,7 @@ class SuccessNotification extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 20),

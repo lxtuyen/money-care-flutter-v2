@@ -85,10 +85,14 @@ Future<int?> pickDayOfMonth(BuildContext context, {int? initialDay}) async {
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : AppColors.backgroundSecondary,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.backgroundSecondary,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isSelected ? AppColors.primary : AppColors.borderSecondary,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.borderSecondary,
                           width: 1,
                         ),
                       ),
@@ -98,7 +102,9 @@ Future<int?> pickDayOfMonth(BuildContext context, {int? initialDay}) async {
                         style: TextStyle(
                           color: isSelected ? Colors.white : AppColors.text1,
                           fontSize: 15,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                         ),
                       ),
                     ),
@@ -112,5 +118,3 @@ Future<int?> pickDayOfMonth(BuildContext context, {int? initialDay}) async {
     },
   );
 }
-
-

@@ -54,7 +54,7 @@ class _TransactionSearchAnchorState extends State<TransactionSearchAnchor> {
 
           return [
             Material(
-              color: Colors.white, 
+              color: Colors.white,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,

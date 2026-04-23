@@ -46,7 +46,9 @@ class AppSvgIcon extends StatelessWidget {
       );
     }
 
-    final resolvedPath = assetPath ?? (iconName != null ? AppAssets.iconSvgPath(iconName!) : null);
+    final resolvedPath =
+        assetPath ??
+        (iconName != null ? AppAssets.iconSvgPath(iconName!) : null);
 
     if (resolvedPath == null) return const SizedBox.shrink();
 
@@ -71,6 +73,6 @@ class AppSvgIcon extends StatelessWidget {
     final alphanumeric = RegExp(r'^[a-zA-Z0-9_\-]+$');
     if (alphanumeric.hasMatch(text)) return false;
 
-    return true; 
+    return true;
   }
 }

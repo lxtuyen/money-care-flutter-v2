@@ -21,22 +21,19 @@ class SpendingLimitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     String limitText = AppHelperFunction.formatAmount(limit, 'VND');
     String spentText = AppHelperFunction.formatAmount(spent.toDouble(), 'VND');
     bool isOverLimit = spent >= limit;
     return GestureDetector(
-      onTap:
-          () => showDialog(
-            context: context,
-            builder:
-                (context) => BudgetDetailDialog(
-                  title: title,
-                  limit: limitText,
-                  spent: spentText,
-                  isOverLimit: isOverLimit,
-                ),
-          ),
+      onTap: () => showDialog(
+        context: context,
+        builder: (context) => BudgetDetailDialog(
+          title: title,
+          limit: limitText,
+          spent: spentText,
+          isOverLimit: isOverLimit,
+        ),
+      ),
 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,10 +116,9 @@ class SpendingLimitCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: AppSizes.fontSizeSm,
                               fontWeight: FontWeight.w400,
-                              color:
-                                  isOverLimit
-                                      ? AppColors.error
-                                      : AppColors.success,
+                              color: isOverLimit
+                                  ? AppColors.error
+                                  : AppColors.success,
                             ),
                           ),
                         ],

@@ -19,14 +19,18 @@ class TransactionSavedBubble extends StatelessWidget {
     final String type = metadata['type'] ?? 'expense';
     final bool isIncome = type == 'income';
 
-    final currencyFormat =
-        NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: '₫',
+      decimalDigits: 0,
+    );
 
     String formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
     if (dateStr != null) {
       try {
-        formattedDate =
-            DateFormat('dd/MM/yyyy').format(DateTime.parse(dateStr));
+        formattedDate = DateFormat(
+          'dd/MM/yyyy',
+        ).format(DateTime.parse(dateStr));
       } catch (_) {}
     }
 
@@ -59,8 +63,10 @@ class TransactionSavedBubble extends StatelessWidget {
               children: [
                 // Header
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isIncome
@@ -74,8 +80,11 @@ class TransactionSavedBubble extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle_rounded,
-                          color: Colors.white, size: 18),
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         isIncome
@@ -109,10 +118,11 @@ class TransactionSavedBubble extends StatelessWidget {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: (isIncome
-                                  ? const Color(0xFF00b09b)
-                                  : const Color(0xFF11998e))
-                              .withValues(alpha: 0.1),
+                          color:
+                              (isIncome
+                                      ? const Color(0xFF00b09b)
+                                      : const Color(0xFF11998e))
+                                  .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
@@ -174,5 +184,3 @@ class TransactionSavedBubble extends StatelessWidget {
     );
   }
 }
-
-

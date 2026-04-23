@@ -48,17 +48,16 @@ class RoundedIcon extends StatelessWidget {
           border: border,
           color: backgroundColor,
         ),
-        child:
-            (iconPath != null || iconName != null)
-                ? AppSvgIcon(
-                  assetPath: iconPath,
-                  iconName: iconName,
-                  width: width,
-                  height: height,
-                  size: size,
-                  color: color,
-                )
-                : Icon(icon, color: color, size: size),
+        child: (iconPath != null || iconName != null)
+            ? AppSvgIcon(
+                assetPath: iconPath,
+                iconName: iconName,
+                width: width,
+                height: height,
+                size: size,
+                color: color,
+              )
+            : Icon(icon, color: color, size: size),
       ),
     );
   }

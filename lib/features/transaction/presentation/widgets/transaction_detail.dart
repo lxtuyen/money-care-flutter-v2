@@ -20,7 +20,8 @@ class TransactionDetail extends StatelessWidget {
     required this.userId,
   });
 
-  static Future<void> show(BuildContext context, {
+  static Future<void> show(
+    BuildContext context, {
     required TransactionEntity item,
     required int userId,
     bool? isExpense,
@@ -142,7 +143,9 @@ class TransactionDetail extends StatelessWidget {
                         icon: Icons.calendar_today_outlined,
                         label: 'Thời gian',
                         value: item.transactionDate != null
-                            ? AppHelperFunction.formatDateTime(item.transactionDate!)
+                            ? AppHelperFunction.formatDateTime(
+                                item.transactionDate!,
+                              )
                             : 'Không có',
                       ),
                       const Divider(height: 24),
@@ -154,9 +157,10 @@ class TransactionDetail extends StatelessWidget {
                             : 'Không có ghi chú',
                         isMultiLine: true,
                       ),
-                      
+
                       // Picture Section
-                      if (item.pictureUrl != null && item.pictureUrl!.isNotEmpty) ...[
+                      if (item.pictureUrl != null &&
+                          item.pictureUrl!.isNotEmpty) ...[
                         const SizedBox(height: 24),
                         const Align(
                           alignment: Alignment.centerLeft,
@@ -175,8 +179,16 @@ class TransactionDetail extends StatelessWidget {
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxHeight: 250),
                             child: item.pictureUrl!.startsWith('http')
-                                ? Image.network(item.pictureUrl!, fit: BoxFit.cover, width: double.infinity)
-                                : Image.file(File(item.pictureUrl!), fit: BoxFit.cover, width: double.infinity),
+                                ? Image.network(
+                                    item.pictureUrl!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  )
+                                : Image.file(
+                                    File(item.pictureUrl!),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
                           ),
                         ),
                       ],
@@ -196,9 +208,13 @@ class TransactionDetail extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => TransactionForm(
-                                      title: isExpense ? 'Chỉnh sửa chi' : 'Chỉnh sửa thu',
+                                      title: isExpense
+                                          ? 'Chỉnh sửa chi'
+                                          : 'Chỉnh sửa thu',
                                       item: item,
-                                      transactionType: isExpense ? 'expense' : 'income',
+                                      transactionType: isExpense
+                                          ? 'expense'
+                                          : 'income',
                                       showCategory: true,
                                     ),
                                   ),
@@ -212,7 +228,8 @@ class TransactionDetail extends StatelessWidget {
                             child: _buildActionButton(
                               icon: Icons.delete_outline_rounded,
                               label: 'Xóa',
-                              onPressed: () => _handleDelete(context, transactionController),
+                              onPressed: () =>
+                                  _handleDelete(context, transactionController),
                               color: const Color(0xFFE53935),
                               isOutlined: true,
                             ),
@@ -237,7 +254,9 @@ class TransactionDetail extends StatelessWidget {
     bool isMultiLine = false,
   }) {
     return Row(
-      crossAxisAlignment: isMultiLine ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      crossAxisAlignment: isMultiLine
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
@@ -303,7 +322,9 @@ class TransactionDetail extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side: isOutlined ? BorderSide(color: color, width: 1.5) : BorderSide.none,
+          side: isOutlined
+              ? BorderSide(color: color, width: 1.5)
+              : BorderSide.none,
         ),
         shadowColor: color.withOpacity(0.3),
       ),
@@ -314,7 +335,8 @@ class TransactionDetail extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => WarningDialog(
-        message: 'Bạn có chắc chắn muốn xóa giao dịch này? Hành động này không thể hoàn tác.',
+        message:
+            'Bạn có chắc chắn muốn xóa giao dịch này? Hành động này không thể hoàn tác.',
         onCancel: () => Get.back(),
         onConfirm: () {
           Get.back();

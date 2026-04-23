@@ -48,8 +48,6 @@ class AppCurrencyFormField extends StatefulWidget {
     this.hintStyle,
   });
 
-
-
   @override
   State<AppCurrencyFormField> createState() => _AppCurrencyFormFieldState();
 }
@@ -129,9 +127,7 @@ class _AppCurrencyFormFieldState extends State<AppCurrencyFormField> {
     if (controller == null || _isSyncingController) return;
 
     final rawValue = AppHelperFunction.unformatCurrency(controller.text);
-    final formattedValue = AppHelperFunction.formatCurrency(
-      rawValue,
-    );
+    final formattedValue = AppHelperFunction.formatCurrency(rawValue);
 
     if (controller.text == formattedValue) return;
 
@@ -179,7 +175,9 @@ class _AppCurrencyFormFieldState extends State<AppCurrencyFormField> {
 }
 
 class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
-  static final NumberFormat _numberFormat = NumberFormat.decimalPattern('vi_VN');
+  static final NumberFormat _numberFormat = NumberFormat.decimalPattern(
+    'vi_VN',
+  );
 
   static String formatRaw(String value) {
     return AppHelperFunction.formatCurrency(value);
@@ -200,7 +198,3 @@ class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
     );
   }
 }
-
-
-
-

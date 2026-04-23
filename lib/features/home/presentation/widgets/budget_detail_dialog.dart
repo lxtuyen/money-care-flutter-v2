@@ -27,8 +27,9 @@ class BudgetDetailDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final double limitValue = _parseNumber(limit);
     final double spentValue = _parseNumber(spent);
-    final double percent =
-        (limitValue > 0) ? (spentValue / limitValue).clamp(0.0, 1.0) : 0.0;
+    final double percent = (limitValue > 0)
+        ? (spentValue / limitValue).clamp(0.0, 1.0)
+        : 0.0;
     final int percentInt = (percent * 100).round();
 
     return Dialog(
@@ -46,7 +47,10 @@ class BudgetDetailDialog extends StatelessWidget {
               children: [
                 Text(
                   isIncome ? 'Tổng quan thu nhập' : 'Hạn mức chi tiêu',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () => Get.back(),
@@ -79,8 +83,9 @@ class BudgetDetailDialog extends StatelessWidget {
                   progressColor: isIncome
                       ? AppColors.success
                       : (isOverLimit ? AppColors.error : AppColors.error),
-                  backgroundColor: (isIncome ? AppColors.success : AppColors.error)
-                      .withOpacity(0.15),
+                  backgroundColor:
+                      (isIncome ? AppColors.success : AppColors.error)
+                          .withOpacity(0.15),
                   circularStrokeCap: CircularStrokeCap.round,
                 ),
                 const SizedBox(width: 24),
@@ -97,7 +102,9 @@ class BudgetDetailDialog extends StatelessWidget {
                           limitValue > 0 ? limit : "Chưa thiết lập",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: limitValue > 0 ? AppColors.text1 : AppColors.text3,
+                            color: limitValue > 0
+                                ? AppColors.text1
+                                : AppColors.text3,
                           ),
                         ),
                       ],
@@ -115,8 +122,8 @@ class BudgetDetailDialog extends StatelessWidget {
                             color: isIncome
                                 ? AppColors.success
                                 : (isOverLimit
-                                    ? AppColors.error
-                                    : AppColors.success),
+                                      ? AppColors.error
+                                      : AppColors.success),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -134,5 +141,3 @@ class BudgetDetailDialog extends StatelessWidget {
     );
   }
 }
-
-

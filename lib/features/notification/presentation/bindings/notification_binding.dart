@@ -6,6 +6,8 @@ class NotificationBinding extends Bindings {
   @override
   void dependencies() {
     final apiClient = Get.find<ApiClient>();
-    Get.lazyPut<NotificationController>(() => NotificationController(apiClient: apiClient));
+    Get.lazyPut<NotificationController>(
+      () => NotificationController(apiClient: apiClient),
+    );
   }
 }

@@ -31,5 +31,3 @@ class RoutePath {
   static const selectFund = selectSavingGoal;
   static const createFund = createSavingGoal;
 }
-
-

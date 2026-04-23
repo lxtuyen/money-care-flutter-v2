@@ -14,8 +14,12 @@ class SavingGoalBinding extends Bindings {
       remoteDatasource: remoteDatasource,
     );
 
-    Get.lazyPut<CreateSavingGoalUseCase>(() => CreateSavingGoalUseCase(repository));
-    Get.lazyPut<UpdateSavingGoalUseCase>(() => UpdateSavingGoalUseCase(repository));
+    Get.lazyPut<CreateSavingGoalUseCase>(
+      () => CreateSavingGoalUseCase(repository),
+    );
+    Get.lazyPut<UpdateSavingGoalUseCase>(
+      () => UpdateSavingGoalUseCase(repository),
+    );
 
     Get.lazyPut<CreateSavingGoalController>(
       () => CreateSavingGoalController(),

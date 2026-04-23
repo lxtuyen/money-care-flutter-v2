@@ -27,16 +27,14 @@ abstract class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
       _$TotalByCategoryEntityModelFromJson(json);
 
   TotalByCategoryEntity toEntity() => TotalByCategoryEntity(
-        categoryId: categoryId,
-        categoryName: categoryName,
-        total: total,
-        categoryIcon: categoryIcon,
-        percentage: percentage,
-        spendingPercentage: spendingPercentage,
-        limit: limit,
-        isEssential: isEssential,
-        color: null,
-      );
+    categoryId: categoryId,
+    categoryName: categoryName,
+    total: total,
+    categoryIcon: categoryIcon,
+    percentage: percentage,
+    spendingPercentage: spendingPercentage,
+    limit: limit,
+    isEssential: isEssential,
+    color: null,
+  );
 }
-
-

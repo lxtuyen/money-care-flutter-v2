@@ -13,7 +13,8 @@ class ExpiredSavingGoalsScreen extends StatefulWidget {
   const ExpiredSavingGoalsScreen({super.key});
 
   @override
-  State<ExpiredSavingGoalsScreen> createState() => _ExpiredSavingGoalsScreenState();
+  State<ExpiredSavingGoalsScreen> createState() =>
+      _ExpiredSavingGoalsScreenState();
 }
 
 class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
@@ -53,7 +54,7 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
               }
 
               final expired = controller.finishedSavingGoals;
-              
+
               if (expired.isEmpty) {
                 return _buildEmpty();
               }
@@ -127,10 +128,7 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
 }
 
 class _ExpiredGoalCard extends StatelessWidget {
-  const _ExpiredGoalCard({
-    required this.goal,
-    required this.onExtend,
-  });
+  const _ExpiredGoalCard({required this.goal, required this.onExtend});
 
   final SavingGoalEntity goal;
   final VoidCallback onExtend;
@@ -167,7 +165,9 @@ class _ExpiredGoalCard extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  goal.isCompleted ? Icons.workspace_premium_rounded : Icons.timer_off_rounded,
+                  goal.isCompleted
+                      ? Icons.workspace_premium_rounded
+                      : Icons.timer_off_rounded,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -193,8 +193,8 @@ class _ExpiredGoalCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    goal.isCompleted 
-                        ? 'Đã hoàn thành' 
+                    goal.isCompleted
+                        ? 'Đã hoàn thành'
                         : 'Hết hạn ${goal.daysSinceExpired} ngày trước',
                     style: const TextStyle(
                       color: Colors.white,
@@ -229,14 +229,20 @@ class _ExpiredGoalCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _DateChip(
-                      icon: goal.isCompleted ? Icons.check_circle_rounded : Icons.stop_circle_outlined,
+                      icon: goal.isCompleted
+                          ? Icons.check_circle_rounded
+                          : Icons.stop_circle_outlined,
                       label: goal.isCompleted ? 'Hoàn thành' : 'Dự kiến',
                       value: (goal.isCompleted && goal.updatedAt != null)
                           ? AppHelperFunction.getFormattedDate(goal.updatedAt!)
                           : (goal.endDate != null
-                              ? AppHelperFunction.getFormattedDate(goal.endDate!)
-                              : '—'),
-                      color: goal.isCompleted ? AppColors.success : AppColors.secondaryOrange,
+                                ? AppHelperFunction.getFormattedDate(
+                                    goal.endDate!,
+                                  )
+                                : '—'),
+                      color: goal.isCompleted
+                          ? AppColors.success
+                          : AppColors.secondaryOrange,
                     ),
                   ],
                 ),
@@ -259,7 +265,10 @@ class _ExpiredGoalCard extends StatelessWidget {
                     _StatItem(
                       icon: Icons.savings_outlined,
                       label: 'Đã tiết kiệm',
-                      value: AppHelperFunction.formatAmount(goal.savedAmount, 'VND'),
+                      value: AppHelperFunction.formatAmount(
+                        goal.savedAmount,
+                        'VND',
+                      ),
                       color: AppColors.success,
                     ),
                   ],

@@ -30,5 +30,3 @@ class LoginOptionController extends GetxController {
     );
   }
 }
-
-

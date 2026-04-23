@@ -15,13 +15,16 @@ class StatisticsController extends GetxController {
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
 
-  SavingGoalController get savingGoalController => Get.find<SavingGoalController>();
+  SavingGoalController get savingGoalController =>
+      Get.find<SavingGoalController>();
 
   var totalByType = Rxn<TotalByTypeEntity>();
   var globalTotalByType = Rxn<TotalByTypeEntity>();
   RxList<TotalByCategoryEntity> totalByCate = <TotalByCategoryEntity>[].obs;
-  RxList<TotalByCategoryEntity> expenseCategories = <TotalByCategoryEntity>[].obs;
-  RxList<TotalByCategoryEntity> incomeCategories = <TotalByCategoryEntity>[].obs;
+  RxList<TotalByCategoryEntity> expenseCategories =
+      <TotalByCategoryEntity>[].obs;
+  RxList<TotalByCategoryEntity> incomeCategories =
+      <TotalByCategoryEntity>[].obs;
 
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
@@ -31,7 +34,8 @@ class StatisticsController extends GetxController {
   RxList<String> chartLabels = <String>[].obs;
   var isSilentLoading = false.obs;
 
-  double get totalBudget => expenseCategories.fold(0.0, (sum, cat) => sum + cat.limit);
+  double get totalBudget =>
+      expenseCategories.fold(0.0, (sum, cat) => sum + cat.limit);
 
   double get utilizationPercentage {
     if (totalBudget <= 0) return 0.0;
@@ -42,21 +46,47 @@ class StatisticsController extends GetxController {
   final RxString selectedType = 'chi'.obs;
 
   final RxString periodType = 'hàng tháng'.obs;
-  final Rx<DateTime> selectedMonth = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
-  final Rx<DateTime> selectedDay = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).obs;
+  final Rx<DateTime> selectedMonth = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    1,
+  ).obs;
+  final Rx<DateTime> selectedDay = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  ).obs;
 
-  DateTime get monthStartDate => DateTime(selectedMonth.value.year, selectedMonth.value.month, 1);
-  DateTime get monthEndDate => DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 0);
+  DateTime get monthStartDate =>
+      DateTime(selectedMonth.value.year, selectedMonth.value.month, 1);
+  DateTime get monthEndDate =>
+      DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 0);
 
   DateTime get currentStartDate {
-    final baseDate = periodType.value == 'hàng tháng' ? monthStartDate : selectedDay.value;
+    final baseDate = periodType.value == 'hàng tháng'
+        ? monthStartDate
+        : selectedDay.value;
     return _clampToGoalStart(baseDate);
   }
 
   DateTime get currentEndDate {
     final baseDate = periodType.value == 'hàng tháng'
-        ? DateTime(monthEndDate.year, monthEndDate.month, monthEndDate.day, 23, 59, 59)
-        : DateTime(selectedDay.value.year, selectedDay.value.month, selectedDay.value.day, 23, 59, 59);
+        ? DateTime(
+            monthEndDate.year,
+            monthEndDate.month,
+            monthEndDate.day,
+            23,
+            59,
+            59,
+          )
+        : DateTime(
+            selectedDay.value.year,
+            selectedDay.value.month,
+            selectedDay.value.day,
+            23,
+            59,
+            59,
+          );
     return _clampToGoalEnd(baseDate);
   }
 
@@ -86,14 +116,13 @@ class StatisticsController extends GetxController {
     required this.getTotalByCateUseCase,
     required this.getTotalByDateEntityUseCase,
     required this.getStatisticsSummaryUseCase,
-
   });
 
   @override
   void onInit() {
     super.onInit();
     final appController = Get.find<AppController>();
-    
+
     ever(appController.userId, (int? id) {
       if (id != null) {
         refreshStatisticsData(id);
@@ -107,16 +136,19 @@ class StatisticsController extends GetxController {
       refreshStatisticsData(currentId);
     }
 
-    everAll([
-      selectedMonth,
-      selectedDay,
-      periodType,
-      selectedType,
-      savingGoalController.goalId
-    ], (_) {
-      final id = appController.userId.value;
-      if (id != null) refreshStatisticsData(id);
-    });
+    everAll(
+      [
+        selectedMonth,
+        selectedDay,
+        periodType,
+        selectedType,
+        savingGoalController.goalId,
+      ],
+      (_) {
+        final id = appController.userId.value;
+        if (id != null) refreshStatisticsData(id);
+      },
+    );
   }
 
   void _clearData() {
@@ -137,19 +169,24 @@ class StatisticsController extends GetxController {
         startDate: currentStartDate.toIso8601String(),
         endDate: currentEndDate.toIso8601String(),
       );
-      
+
       globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
       debugPrint('Error loading global totals: $e');
     }
   }
 
-  Future<void> getTotalByType(int userId,
-      {DateTime? startDate, DateTime? endDate}) async {
+  Future<void> getTotalByType(
+    int userId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     isLoading.value = true;
     try {
-      final dto =
-          _createTotalsDto(startDate ?? currentStartDate, endDate ?? currentEndDate);
+      final dto = _createTotalsDto(
+        startDate ?? currentStartDate,
+        endDate ?? currentEndDate,
+      );
       totalByType.value = await getTotalByTypeUseCase(userId, dto);
       errorMessage.value = null;
     } catch (e) {
@@ -230,11 +267,16 @@ class StatisticsController extends GetxController {
     }
   }
 
-  Future<void> _loadTotalByType(int userId,
-      {DateTime? startDate, DateTime? endDate}) async {
+  Future<void> _loadTotalByType(
+    int userId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
       final dto = _createTotalsDto(
-          startDate ?? currentStartDate, endDate ?? currentEndDate);
+        startDate ?? currentStartDate,
+        endDate ?? currentEndDate,
+      );
       totalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
       totalByType.value = null;
@@ -242,12 +284,16 @@ class StatisticsController extends GetxController {
     }
   }
 
-  Future<void> _loadTotalByCate(int userId,
-      {DateTime? startDate, DateTime? endDate}) async {
+  Future<void> _loadTotalByCate(
+    int userId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
       final dto = _createTotalsDto(
-          startDate ?? currentStartDate, 
-          endDate ?? currentEndDate);
+        startDate ?? currentStartDate,
+        endDate ?? currentEndDate,
+      );
       final list = await getTotalByCateUseCase(userId, dto);
       totalByCate.assignAll(list);
     } catch (e) {
@@ -294,7 +340,7 @@ class StatisticsController extends GetxController {
 
   Future<void> refreshStatisticsData(int userId) async {
     final int currentRefresh = ++_refreshCounter;
-    
+
     if (totalByDate.value == null) {
       isLoading.value = true;
     } else {
@@ -306,16 +352,26 @@ class StatisticsController extends GetxController {
 
       if (periodType.value == 'hàng tháng') {
         final List<Future> futures = [
-          _loadTotalByType(userId, startDate: currentStartDate, endDate: currentEndDate),
+          _loadTotalByType(
+            userId,
+            startDate: currentStartDate,
+            endDate: currentEndDate,
+          ),
           _loadGlobalTotalByType(userId),
-          _loadTotalByCate(userId, startDate: currentStartDate, endDate: currentEndDate),
+          _loadTotalByCate(
+            userId,
+            startDate: currentStartDate,
+            endDate: currentEndDate,
+          ),
           _loadMonthlyCategories(userId),
           _loadTotalByDate(userId, dtoRange),
           _loadStatisticsSummary(userId),
         ];
 
         if (_currentGoalIdOrNull != null) {
-          futures.add(savingGoalController.loadGoalReport(_currentGoalIdOrNull!));
+          futures.add(
+            savingGoalController.loadGoalReport(_currentGoalIdOrNull!),
+          );
         }
 
         await Future.wait(futures);
@@ -324,20 +380,30 @@ class StatisticsController extends GetxController {
         }
       } else {
         final List<Future> futures = [
-          _loadTotalByType(userId, startDate: currentStartDate, endDate: currentEndDate),
+          _loadTotalByType(
+            userId,
+            startDate: currentStartDate,
+            endDate: currentEndDate,
+          ),
           _loadGlobalTotalByType(userId),
-          _loadTotalByCate(userId, startDate: currentStartDate, endDate: currentEndDate),
+          _loadTotalByCate(
+            userId,
+            startDate: currentStartDate,
+            endDate: currentEndDate,
+          ),
           _loadDailyHourlyData(userId),
           _loadStatisticsSummary(userId),
         ];
 
         if (_currentGoalIdOrNull != null) {
-          futures.add(savingGoalController.loadGoalReport(_currentGoalIdOrNull!));
+          futures.add(
+            savingGoalController.loadGoalReport(_currentGoalIdOrNull!),
+          );
         }
 
         await Future.wait(futures);
       }
-      
+
       if (currentRefresh == _refreshCounter) {
         errorMessage.value = null;
       }
@@ -361,10 +427,13 @@ class StatisticsController extends GetxController {
         goalId: _currentGoalIdOrNull,
       );
 
-      final result = await Get.find<TransactionController>().filterTransactionsUseCase(userId, filterDto);
-      
-      final transactions = selectedType.value == 'chi' ? result.expenseTransactions : result.incomeTransactions;
-      
+      final result = await Get.find<TransactionController>()
+          .filterTransactionsUseCase(userId, filterDto);
+
+      final transactions = selectedType.value == 'chi'
+          ? result.expenseTransactions
+          : result.incomeTransactions;
+
       final List<double> hourlyTotals = List.filled(24, 0.0);
       for (var t in transactions) {
         final hour = t.transactionDate?.toLocal().hour ?? 0;
@@ -372,11 +441,18 @@ class StatisticsController extends GetxController {
       }
 
       chartSpots.assignAll(
-        hourlyTotals.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList()
+        hourlyTotals
+            .asMap()
+            .entries
+            .map((e) => FlSpot(e.key.toDouble(), e.value))
+            .toList(),
       );
-      
+
       chartLabels.assignAll(
-        List.generate(24, (i) => i % 4 == 0 ? "${i.toString().padLeft(2, '0')}:00" : "")
+        List.generate(
+          24,
+          (i) => i % 4 == 0 ? "${i.toString().padLeft(2, '0')}:00" : "",
+        ),
       );
     } catch (e) {
       print("Error loading hourly data: $e");
@@ -411,7 +487,11 @@ class StatisticsController extends GetxController {
 
   void nextPeriod() {
     if (periodType.value == 'hàng tháng') {
-      selectedMonth.value = DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 1);
+      selectedMonth.value = DateTime(
+        selectedMonth.value.year,
+        selectedMonth.value.month + 1,
+        1,
+      );
     } else {
       selectedDay.value = selectedDay.value.add(const Duration(days: 1));
     }
@@ -419,7 +499,11 @@ class StatisticsController extends GetxController {
 
   void previousPeriod() {
     if (periodType.value == 'hàng tháng') {
-      selectedMonth.value = DateTime(selectedMonth.value.year, selectedMonth.value.month - 1, 1);
+      selectedMonth.value = DateTime(
+        selectedMonth.value.year,
+        selectedMonth.value.month - 1,
+        1,
+      );
     } else {
       selectedDay.value = selectedDay.value.subtract(const Duration(days: 1));
     }
@@ -451,8 +535,9 @@ class StatisticsController extends GetxController {
     }
   }
 
-  int? get _currentGoalIdOrNull =>
-      savingGoalController.currentGoalId > 0 ? savingGoalController.currentGoalId : null;
+  int? get _currentGoalIdOrNull => savingGoalController.currentGoalId > 0
+      ? savingGoalController.currentGoalId
+      : null;
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
     final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
@@ -469,8 +554,9 @@ class StatisticsController extends GetxController {
     int year = month == 0 ? now.year - 1 : now.year;
     month = month == 0 ? 12 : month;
     final lastDayOfPreviousMonth = DateTime(year, month + 1, 0).day;
-    final day =
-        now.day > lastDayOfPreviousMonth ? lastDayOfPreviousMonth : now.day;
+    final day = now.day > lastDayOfPreviousMonth
+        ? lastDayOfPreviousMonth
+        : now.day;
     return DateTime(year, month, day);
   }
 
@@ -512,7 +598,10 @@ class StatisticsController extends GetxController {
     }
   }
 
-  List<FlSpot> convertToSpots7Days(List<TotalByDateEntity> data, DateTime endDate) {
+  List<FlSpot> convertToSpots7Days(
+    List<TotalByDateEntity> data,
+    DateTime endDate,
+  ) {
     final Map<String, double> map = {
       for (var d in data)
         "${d.date.year}-${d.date.month}-${d.date.day}": d.total.toDouble(),

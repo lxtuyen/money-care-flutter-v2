@@ -14,9 +14,8 @@ class OnboardingCategorySelectScreen
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => OnboardingAddCategorySheet(
-        onAdd: controller.addCustomCategory,
-      ),
+      builder: (ctx) =>
+          OnboardingAddCategorySheet(onAdd: controller.addCustomCategory),
     );
   }
 
@@ -29,15 +28,20 @@ class OnboardingCategorySelectScreen
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 20, color: AppColors.text2),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 20,
+                        color: AppColors.text2,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -68,7 +72,8 @@ class OnboardingCategorySelectScreen
                     }),
                     const SizedBox(height: 16),
                     OnboardingAddNewButton(
-                        onTap: () => _showAddCategoryDialog(context)),
+                      onTap: () => _showAddCategoryDialog(context),
+                    ),
                     const SizedBox(height: 24),
                     const OnboardingSectionLabel(label: 'Đề xuất thu nhập'),
                     const SizedBox(height: 12),
@@ -104,5 +109,3 @@ class OnboardingCategorySelectScreen
     );
   }
 }
-
-

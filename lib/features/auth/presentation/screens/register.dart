@@ -40,7 +40,8 @@ class RegisterScreen extends GetView<RegisterController> {
                         children: [
                           Expanded(
                             child: AppTextFormField(
-                              controller: controller.registerFirstNameController,
+                              controller:
+                                  controller.registerFirstNameController,
                               label: AppTexts.firstName,
                               icon: Icons.person_outline_rounded,
                               keyboardType: TextInputType.name,
@@ -88,10 +89,12 @@ class RegisterScreen extends GetView<RegisterController> {
                                   : Icons.visibility,
                               color: AppColors.text4,
                             ),
-                            onPressed: controller.toggleRegisterPasswordVisibility,
+                            onPressed:
+                                controller.toggleRegisterPasswordVisibility,
                           ),
                           keyboardType: TextInputType.visiblePassword,
-                          obscureText: controller.isRegisterPasswordObscure.value,
+                          obscureText:
+                              controller.isRegisterPasswordObscure.value,
                           textInputAction: TextInputAction.next,
                           validator: controller.validateRegisterPassword,
                         );
@@ -101,7 +104,8 @@ class RegisterScreen extends GetView<RegisterController> {
 
                       Obx(() {
                         return AppTextFormField(
-                          controller: controller.registerConfirmPasswordController,
+                          controller:
+                              controller.registerConfirmPasswordController,
                           label: AppTexts.confirmPasswordLabel,
                           icon: Icons.lock_outline_rounded,
                           suffixIcon: IconButton(
@@ -111,9 +115,11 @@ class RegisterScreen extends GetView<RegisterController> {
                                   : Icons.visibility,
                               color: AppColors.text4,
                             ),
-                            onPressed: controller.toggleRegisterPasswordVisibility,
+                            onPressed:
+                                controller.toggleRegisterPasswordVisibility,
                           ),
-                          obscureText: controller.isRegisterPasswordObscure.value,
+                          obscureText:
+                              controller.isRegisterPasswordObscure.value,
                           keyboardType: TextInputType.visiblePassword,
                           textInputAction: TextInputAction.done,
                           validator: controller.validateRegisterConfirmPassword,
@@ -147,5 +153,3 @@ class RegisterScreen extends GetView<RegisterController> {
     );
   }
 }
-
-

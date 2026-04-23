@@ -35,19 +35,18 @@ class SpendingOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spendingData =
-        dateRange.map((date) {
-          final dayData = totals.firstWhere(
-            (t) =>
-                t.date.year == date.year &&
-                t.date.month == date.month &&
-                t.date.day == date.day,
-            orElse: () => TotalByDateEntity(date: date, total: 0),
-          );
+    final spendingData = dateRange.map((date) {
+      final dayData = totals.firstWhere(
+        (t) =>
+            t.date.year == date.year &&
+            t.date.month == date.month &&
+            t.date.day == date.day,
+        orElse: () => TotalByDateEntity(date: date, total: 0),
+      );
 
-          final value = dayData.total;
-          return value < 0 ? 0.0 : value;
-        }).toList();
+      final value = dayData.total;
+      return value < 0 ? 0.0 : value;
+    }).toList();
 
     return Card(
       elevation: 0,
@@ -97,18 +96,18 @@ class SpendingOverviewCard extends StatelessWidget {
                     x: i,
                     barRods: [
                       BarChartRodData(
-  toY: spendingData[i].toDouble(),
-  gradient: LinearGradient(
-    colors: [
-      AppColors.primary,
-      AppColors.primary.withOpacity(0.6),
-    ],
-    begin: Alignment.bottomCenter,
-    end: Alignment.topCenter,
-  ),
-  width: 16,
-  borderRadius: BorderRadius.circular(8),
-),
+                        toY: spendingData[i].toDouble(),
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary,
+                            AppColors.primary.withOpacity(0.6),
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                        width: 16,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ],
                   ),
                 ),
@@ -135,5 +134,3 @@ class SpendingOverviewCard extends StatelessWidget {
     );
   }
 }
-
-

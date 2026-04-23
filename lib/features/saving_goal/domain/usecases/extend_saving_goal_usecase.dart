@@ -11,6 +11,10 @@ class ExtendSavingGoalUseCase {
     DateTime newEndDate, {
     DateTime? newStartDate,
   }) {
-    return repository.extendSavingGoal(savingGoalId, newEndDate, newStartDate: newStartDate);
+    return repository.extendSavingGoal(
+      savingGoalId,
+      newEndDate,
+      newStartDate: newStartDate,
+    );
   }
 }

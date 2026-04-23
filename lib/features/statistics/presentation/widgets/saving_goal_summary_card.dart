@@ -30,7 +30,11 @@ class SavingGoalSummaryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: AppColors.text5, blurRadius: 6, offset: Offset(0, 2)),
+          BoxShadow(
+            color: AppColors.text5,
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -41,11 +45,17 @@ class SavingGoalSummaryCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
             decoration: BoxDecoration(
               gradient: AppColors.linearGradient,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.savings_rounded, color: Colors.white, size: 20),
+                const Icon(
+                  Icons.savings_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -85,7 +95,9 @@ class SavingGoalSummaryCard extends StatelessWidget {
             _BudgetRow(
               label: 'Đã tiết kiệm',
               value: AppHelperFunction.formatAmount(fund.savedAmount, 'VND'),
-              progress: fund.target != null && fund.target! > 0 ? (fund.savedAmount / fund.target!).clamp(0, 1) : 0,
+              progress: fund.target != null && fund.target! > 0
+                  ? (fund.savedAmount / fund.target!).clamp(0, 1)
+                  : 0,
               color: AppColors.primary,
             ),
           if (fund.target != null && fund.target! > 0) ...[
@@ -115,7 +127,9 @@ class SavingGoalSummaryCard extends StatelessWidget {
                   label: 'Mục tiêu',
                   percent: (r.targetCompletionPercentage / 100).clamp(0.0, 1.0),
                   centerText: '${r.targetCompletionPercentage}%',
-                  color: r.isTargetAchieved ? AppColors.success : AppColors.secondaryOrange,
+                  color: r.isTargetAchieved
+                      ? AppColors.success
+                      : AppColors.secondaryOrange,
                   subtitle: AppHelperFunction.formatAmount(r.target, 'VND'),
                   subtitleLabel: 'mục tiêu',
                 ),
@@ -138,15 +152,23 @@ class SavingGoalSummaryCard extends StatelessWidget {
                 child: _QuickStat(
                   icon: Icons.today_rounded,
                   label: 'TB/ngày',
-                  value: AppHelperFunction.formatAmount(r.dailyAverageSpending, 'VND'),
+                  value: AppHelperFunction.formatAmount(
+                    r.dailyAverageSpending,
+                    'VND',
+                  ),
                 ),
               ),
               Expanded(
                 child: _QuickStat(
                   icon: Icons.calendar_month_rounded,
                   label: 'Còn lại',
-                  value: AppHelperFunction.formatAmount(r.remainingBudget, 'VND'),
-                  valueColor: r.remainingBudget < 0 ? AppColors.error : AppColors.success,
+                  value: AppHelperFunction.formatAmount(
+                    r.remainingBudget,
+                    'VND',
+                  ),
+                  valueColor: r.remainingBudget < 0
+                      ? AppColors.error
+                      : AppColors.success,
                 ),
               ),
             ],
@@ -159,7 +181,10 @@ class SavingGoalSummaryCard extends StatelessWidget {
             MilestoneMap(milestones: r.milestones),
           ],
 
-          if (!r.isCompleted && r.currentBalance >= r.target && r.currentMilestoneIndex >= 0 && r.currentMilestoneIndex < r.milestones.length - 1) ...[
+          if (!r.isCompleted &&
+              r.currentBalance >= r.target &&
+              r.currentMilestoneIndex >= 0 &&
+              r.currentMilestoneIndex < r.milestones.length - 1) ...[
             const SizedBox(height: 20),
             Center(
               child: Container(
@@ -179,7 +204,10 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     final controller = Get.find<SavingGoalController>();
                     controller.completeGoalEarly(r.id);
                   },
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
+                  icon: const Icon(
+                    Icons.check_circle_outline_rounded,
+                    size: 20,
+                  ),
                   label: const Text(
                     'Hoàn thành sớm mục tiêu',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
@@ -230,7 +258,14 @@ class _CircleMetric extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.text3, fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.text3,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 10),
           SizedBox(
             width: 72,
@@ -244,22 +279,46 @@ class _CircleMetric extends StatelessWidget {
                     centerSpaceRadius: 26,
                     sectionsSpace: 0,
                     sections: [
-                      PieChartSectionData(color: color, value: percent, title: '', radius: 10),
-                      PieChartSectionData(color: color.withOpacity(0.12), value: 1 - percent, title: '', radius: 10),
+                      PieChartSectionData(
+                        color: color,
+                        value: percent,
+                        title: '',
+                        radius: 10,
+                      ),
+                      PieChartSectionData(
+                        color: color.withOpacity(0.12),
+                        value: 1 - percent,
+                        title: '',
+                        radius: 10,
+                      ),
                     ],
                   ),
                 ),
-                Text(centerText, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color)),
+                Text(
+                  centerText,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text1),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.text1,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
-          Text(subtitleLabel, style: const TextStyle(fontSize: 11, color: AppColors.text4)),
+          Text(
+            subtitleLabel,
+            style: const TextStyle(fontSize: 11, color: AppColors.text4),
+          ),
         ],
       ),
     );
@@ -316,18 +375,32 @@ class _CategoryPieRow extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 5),
                 child: Row(
                   children: [
-                    Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         cat.categoryName,
-                        style: const TextStyle(fontSize: 12, color: AppColors.text2),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.text2,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Text(
                       '${cat.percentage}%',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.text1),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text1,
+                      ),
                     ),
                   ],
                 ),
@@ -346,7 +419,12 @@ class _QuickStat extends StatelessWidget {
   final String value;
   final Color? valueColor;
 
-  const _QuickStat({required this.icon, required this.label, required this.value, this.valueColor});
+  const _QuickStat({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -356,11 +434,18 @@ class _QuickStat extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: valueColor ?? AppColors.text1),
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: valueColor ?? AppColors.text1,
+          ),
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
         ),
-        Text(label, style: const TextStyle(fontSize: 10, color: AppColors.text4)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: AppColors.text4),
+        ),
       ],
     );
   }
@@ -372,7 +457,12 @@ class _BudgetRow extends StatelessWidget {
   final double progress;
   final Color color;
 
-  const _BudgetRow({required this.label, required this.value, required this.progress, required this.color});
+  const _BudgetRow({
+    required this.label,
+    required this.value,
+    required this.progress,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -382,8 +472,18 @@ class _BudgetRow extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 13, color: AppColors.text3)),
-            Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text1)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 13, color: AppColors.text3),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.text1,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 6),

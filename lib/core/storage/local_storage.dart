@@ -92,5 +92,3 @@ class LocalStorage {
     return readBool(_onboardingDoneKey(userId)) ?? false;
   }
 }
-
-

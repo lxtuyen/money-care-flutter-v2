@@ -34,13 +34,12 @@ class GamificationRemoteDatasourceImpl implements GamificationRemoteDatasource {
 
   @override
   Future<GamificationModel> recordDay(int userId, DateTime date) async {
-    final dateOnly = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    
+    final dateOnly =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
     final res = await api.post<GamificationModel>(
       '${ApiRoutes.gamification}/record-day',
-      body: {
-        'date': dateOnly,
-      },
+      body: {'date': dateOnly},
       fromJsonT: (json) =>
           GamificationModel.fromJson(json as Map<String, dynamic>),
     );
@@ -54,5 +53,3 @@ class GamificationRemoteDatasourceImpl implements GamificationRemoteDatasource {
     return res.data!;
   }
 }
-
-

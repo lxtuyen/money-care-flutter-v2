@@ -32,48 +32,40 @@ class CustomChoiceChip extends StatelessWidget {
         ),
         selected: isSelected,
         onSelected: onSelected,
-        avatar:
-            isColor
-                ? Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color:
-                          isSelected
-                              ? AppColors.primary.withOpacity(0.22)
-                              : AppColors.borderSecondary,
-                    ),
+        avatar: isColor
+            ? Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.primary.withOpacity(0.22)
+                        : AppColors.borderSecondary,
                   ),
-                  child: Center(
-                    child: AppCircularContainer(
-                      height: 12,
-                      width: 12,
-                      backgroundColor: color,
-                    ),
+                ),
+                child: Center(
+                  child: AppCircularContainer(
+                    height: 12,
+                    width: 12,
+                    backgroundColor: color,
                   ),
-                )
-                : null,
+                ),
+              )
+            : null,
         backgroundColor: Colors.white,
         selectedColor: AppColors.primary.withOpacity(0.12),
         surfaceTintColor: Colors.transparent,
         side: BorderSide(
-          color:
-              isSelected
-                  ? AppColors.primary.withOpacity(0.35)
-                  : AppColors.borderSecondary,
+          color: isSelected
+              ? AppColors.primary.withOpacity(0.35)
+              : AppColors.borderSecondary,
           width: isSelected ? 1.4 : 1,
         ),
-        labelPadding: EdgeInsets.only(
-          left: isColor ? 6 : 2,
-          right: 10,
-        ),
+        labelPadding: EdgeInsets.only(left: isColor ? 6 : 2, right: 10),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         showCheckmark: false,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),

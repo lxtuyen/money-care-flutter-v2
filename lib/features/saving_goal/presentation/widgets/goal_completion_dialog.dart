@@ -11,10 +11,7 @@ class GoalCompletionDialog extends StatelessWidget {
   const GoalCompletionDialog({super.key, required this.report});
 
   static void show(SavingGoalReportModel report) {
-    Get.dialog(
-      GoalCompletionDialog(report: report),
-      barrierDismissible: true,
-    );
+    Get.dialog(GoalCompletionDialog(report: report), barrierDismissible: true);
   }
 
   @override

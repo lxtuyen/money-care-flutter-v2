@@ -99,5 +99,3 @@ class ResetPasswordScreen extends GetView<ResetPasswordController> {
     );
   }
 }
-
-

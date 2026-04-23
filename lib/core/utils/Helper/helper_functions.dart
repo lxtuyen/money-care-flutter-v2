@@ -397,48 +397,48 @@ class _SnackBarScheme {
     required this.icon,
   });
 
-factory _SnackBarScheme.from(AppSnackBarType type) {
-  switch (type) {
-    case AppSnackBarType.success:
-      return _SnackBarScheme(
-        background: const Color(0xFFECFDF5),
-        backgroundAccent: const Color(0xFFD1FAE5),
-        border: const Color(0xFF10B981).withValues(alpha: 0.35),
-        iconBackground: const Color(0xFFD1FAE5),
-        foreground: const Color(0xFF064E3B),
-        shadow: const Color(0xFF10B981).withValues(alpha: 0.15),
-        icon: Icons.check_rounded,
-      );
-    case AppSnackBarType.error:
-      return _SnackBarScheme(
-        background: const Color(0xFFFFF1F2),
-        backgroundAccent: const Color(0xFFFFE4E6),
-        border: const Color(0xFFF43F5E).withValues(alpha: 0.30),
-        iconBackground: const Color(0xFFFFE4E6),
-        foreground: const Color(0xFF881337),
-        shadow: const Color(0xFFF43F5E).withValues(alpha: 0.13),
-        icon: Icons.close_rounded,
-      );
-    case AppSnackBarType.warning:
-      return _SnackBarScheme(
-        background: const Color(0xFFFFFBEB),
-        backgroundAccent: const Color(0xFFFEF3C7),
-        border: const Color(0xFFF59E0B).withValues(alpha: 0.35),
-        iconBackground: const Color(0xFFFEF3C7),
-        foreground: const Color(0xFF78350F),
-        shadow: const Color(0xFFF59E0B).withValues(alpha: 0.15),
-        icon: Icons.priority_high_rounded,
-      );
-    case AppSnackBarType.info:
-      return _SnackBarScheme(
-        background: const Color(0xFFEFF6FF),
-        backgroundAccent: const Color(0xFFDBEAFE),
-        border: const Color(0xFF3B82F6).withValues(alpha: 0.30),
-        iconBackground: const Color(0xFFDBEAFE),
-        foreground: const Color(0xFF1E3A8A),
-        shadow: const Color(0xFF3B82F6).withValues(alpha: 0.13),
-        icon: Icons.info_outline_rounded,
-      );
+  factory _SnackBarScheme.from(AppSnackBarType type) {
+    switch (type) {
+      case AppSnackBarType.success:
+        return _SnackBarScheme(
+          background: const Color(0xFFECFDF5),
+          backgroundAccent: const Color(0xFFD1FAE5),
+          border: const Color(0xFF10B981).withValues(alpha: 0.35),
+          iconBackground: const Color(0xFFD1FAE5),
+          foreground: const Color(0xFF064E3B),
+          shadow: const Color(0xFF10B981).withValues(alpha: 0.15),
+          icon: Icons.check_rounded,
+        );
+      case AppSnackBarType.error:
+        return _SnackBarScheme(
+          background: const Color(0xFFFFF1F2),
+          backgroundAccent: const Color(0xFFFFE4E6),
+          border: const Color(0xFFF43F5E).withValues(alpha: 0.30),
+          iconBackground: const Color(0xFFFFE4E6),
+          foreground: const Color(0xFF881337),
+          shadow: const Color(0xFFF43F5E).withValues(alpha: 0.13),
+          icon: Icons.close_rounded,
+        );
+      case AppSnackBarType.warning:
+        return _SnackBarScheme(
+          background: const Color(0xFFFFFBEB),
+          backgroundAccent: const Color(0xFFFEF3C7),
+          border: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+          iconBackground: const Color(0xFFFEF3C7),
+          foreground: const Color(0xFF78350F),
+          shadow: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+          icon: Icons.priority_high_rounded,
+        );
+      case AppSnackBarType.info:
+        return _SnackBarScheme(
+          background: const Color(0xFFEFF6FF),
+          backgroundAccent: const Color(0xFFDBEAFE),
+          border: const Color(0xFF3B82F6).withValues(alpha: 0.30),
+          iconBackground: const Color(0xFFDBEAFE),
+          foreground: const Color(0xFF1E3A8A),
+          shadow: const Color(0xFF3B82F6).withValues(alpha: 0.13),
+          icon: Icons.info_outline_rounded,
+        );
+    }
   }
-}
 }

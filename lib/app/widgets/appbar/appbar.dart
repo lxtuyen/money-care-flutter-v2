@@ -3,13 +3,14 @@ import 'package:get/get.dart';
 import 'package:money_care/core/utils/device/device_utils.dart';
 
 class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
-  const AppbarCustom(
-      {super.key,
-      this.title,
-      this.showBackArrow = false,
-      this.leadingIcon,
-      this.actions,
-      this.leadingOnPressed});
+  const AppbarCustom({
+    super.key,
+    this.title,
+    this.showBackArrow = false,
+    this.leadingIcon,
+    this.actions,
+    this.leadingOnPressed,
+  });
 
   final Widget? title;
   final bool showBackArrow;
@@ -26,11 +27,14 @@ class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () {
                 Get.back();
               },
-              icon: const Icon(Icons.arrow_back))
+              icon: const Icon(Icons.arrow_back),
+            )
           : leadingIcon != null
-              ? IconButton(
-                  onPressed: () => leadingOnPressed, icon: Icon(leadingIcon))
-              : null,
+          ? IconButton(
+              onPressed: () => leadingOnPressed,
+              icon: Icon(leadingIcon),
+            )
+          : null,
       title: title,
       actions: actions,
     );

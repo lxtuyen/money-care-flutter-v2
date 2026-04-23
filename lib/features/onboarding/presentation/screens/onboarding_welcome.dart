@@ -70,9 +70,9 @@ class OnboardingWelcomeScreen extends StatelessWidget {
                           width: double.infinity,
                           child: PrimaryButton(
                             label: AppTexts.buttonText,
-                            onPressed:
-                                () =>
-                                    Get.toNamed(RoutePath.onboardingExpenseManagement),
+                            onPressed: () => Get.toNamed(
+                              RoutePath.onboardingExpenseManagement,
+                            ),
                           ),
                         ),
                       ],

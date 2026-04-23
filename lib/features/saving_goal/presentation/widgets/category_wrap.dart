@@ -40,17 +40,11 @@ class CategoryWrap extends StatelessWidget {
               cat.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
             ),
             Text(
               '${cat.percentage}%',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
             ),
           ],
         );

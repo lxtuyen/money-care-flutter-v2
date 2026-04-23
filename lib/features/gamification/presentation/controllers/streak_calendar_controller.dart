@@ -28,8 +28,19 @@ class StreakCalendarController extends GetxController {
       return;
     }
 
-    final firstDay = DateTime(focusedMonth.value.year, focusedMonth.value.month, 1);
-    final lastDay = DateTime(focusedMonth.value.year, focusedMonth.value.month + 1, 0, 23, 59, 59);
+    final firstDay = DateTime(
+      focusedMonth.value.year,
+      focusedMonth.value.month,
+      1,
+    );
+    final lastDay = DateTime(
+      focusedMonth.value.year,
+      focusedMonth.value.month + 1,
+      0,
+      23,
+      59,
+      59,
+    );
 
     try {
       final data = await _txController.filterTransactionsUseCase(
@@ -47,7 +58,8 @@ class StreakCalendarController extends GetxController {
         for (final tx in txs) {
           final d = tx.transactionDate;
           if (d == null) continue;
-          if (d.year != focusedMonth.value.year || d.month != focusedMonth.value.month) {
+          if (d.year != focusedMonth.value.year ||
+              d.month != focusedMonth.value.month) {
             continue;
           }
           days.add(d.day);
@@ -68,12 +80,20 @@ class StreakCalendarController extends GetxController {
   }
 
   void prevMonth() {
-    focusedMonth.value = DateTime(focusedMonth.value.year, focusedMonth.value.month - 1, 1);
+    focusedMonth.value = DateTime(
+      focusedMonth.value.year,
+      focusedMonth.value.month - 1,
+      1,
+    );
     loadMonthData();
   }
 
   void nextMonth() {
-    focusedMonth.value = DateTime(focusedMonth.value.year, focusedMonth.value.month + 1, 1);
+    focusedMonth.value = DateTime(
+      focusedMonth.value.year,
+      focusedMonth.value.month + 1,
+      1,
+    );
     loadMonthData();
   }
 

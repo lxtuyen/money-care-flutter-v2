@@ -29,11 +29,9 @@ abstract class GamificationModel with _$GamificationModel {
   }
 
   GamificationEntity toEntity() => GamificationEntity(
-        userId: userId,
-        currentStreak: currentStreak,
-        lastTransactionDate: lastTransactionDate,
-        badges: badges.map((b) => b.toEntity()).toList(),
-      );
+    userId: userId,
+    currentStreak: currentStreak,
+    lastTransactionDate: lastTransactionDate,
+    badges: badges.map((b) => b.toEntity()).toList(),
+  );
 }
-
-

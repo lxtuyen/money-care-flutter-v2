@@ -88,5 +88,3 @@ class LoginController extends GetxController {
     super.onClose();
   }
 }
-
-

@@ -20,12 +20,8 @@ class AppColors {
   static const Color text5 = Color(0xFFB0B0B0);
   static const Color white = Colors.white;
 
-  static const Color backgroundPrimary = Color(
-    0xFFEEF1F5,
-  );
-  static const Color backgroundSecondary = Color(
-    0xFFFBFBFB,
-  );
+  static const Color backgroundPrimary = Color(0xFFEEF1F5);
+  static const Color backgroundSecondary = Color(0xFFFBFBFB);
 
   static const Color buttonPrimary = Color(0xFF4b68ff);
   static const Color buttonSecondary = Color(0xFF6C867D);
@@ -40,5 +36,3 @@ class AppColors {
   static const Color info = Color(0xFF0D8BFF);
   static const Color disabled = Color(0xFFD5D5D6);
 }
-
-

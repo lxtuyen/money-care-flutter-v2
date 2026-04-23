@@ -25,10 +25,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const AppHeader(
-                title: AppTexts.profileTitle,
-                height: 140,
-              ),
+              const AppHeader(title: AppTexts.profileTitle, height: 140),
 
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -58,7 +55,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       title: "Quản lý danh mục",
                       onTap: () => Get.toNamed(RoutePath.categoryManagement),
                     ),
-                    
+
                     UserMenuItem(
                       icon: Icons.exit_to_app,
                       title: AppTexts.logout,

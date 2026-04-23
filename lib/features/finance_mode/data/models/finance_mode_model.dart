@@ -21,9 +21,9 @@ abstract class FinanceModeModel with _$FinanceModeModel {
       _$FinanceModeModelFromJson(json);
 
   Map<String, dynamic> toUpdateDto() => {
-        'mode': mode.toUpperCase(),
-        'suggestionCooldownUntil': suggestionCooldownUntil?.toIso8601String(),
-      };
+    'mode': mode.toUpperCase(),
+    'suggestionCooldownUntil': suggestionCooldownUntil?.toIso8601String(),
+  };
 
   factory FinanceModeModel.fromEntity(FinanceModeEntity entity) {
     return FinanceModeModel(
@@ -35,14 +35,12 @@ abstract class FinanceModeModel with _$FinanceModeModel {
   }
 
   FinanceModeEntity toEntity() => FinanceModeEntity(
-        userId: userId,
-        mode: FinanceMode.values.firstWhere(
-          (e) => e.name.toUpperCase() == mode.toUpperCase(),
-          orElse: () => FinanceMode.normal,
-        ),
-        updatedAt: updatedAt,
-        suggestionCooldownUntil: suggestionCooldownUntil,
-      );
+    userId: userId,
+    mode: FinanceMode.values.firstWhere(
+      (e) => e.name.toUpperCase() == mode.toUpperCase(),
+      orElse: () => FinanceMode.normal,
+    ),
+    updatedAt: updatedAt,
+    suggestionCooldownUntil: suggestionCooldownUntil,
+  );
 }
-
-

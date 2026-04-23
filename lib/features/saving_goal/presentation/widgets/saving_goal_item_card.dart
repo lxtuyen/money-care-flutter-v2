@@ -65,7 +65,10 @@ class SavingGoalItemCard extends StatelessWidget {
                       ),
                       Text(
                         'Cần: ${AppHelperFunction.formatAmount(fund.target ?? 0, 'VND')}',
-                        style: const TextStyle(fontSize: 12, color: AppColors.text3),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.text3,
+                        ),
                       ),
                     ],
                   ),
@@ -78,8 +81,14 @@ class SavingGoalItemCard extends StatelessWidget {
                     if (value == 'delete') onDelete();
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem(value: 'edit', child: Text('Chỉnh sửa')),
-                    const PopupMenuItem(value: 'delete', child: Text('Xóa', style: TextStyle(color: Colors.red))),
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Text('Chỉnh sửa'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Text('Xóa', style: TextStyle(color: Colors.red)),
+                    ),
                   ],
                 ),
               ],

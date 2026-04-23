@@ -7,10 +7,7 @@ class SwitchFinanceModeParams {
   final int userId;
   final FinanceMode mode;
 
-  const SwitchFinanceModeParams({
-    required this.userId,
-    required this.mode,
-  });
+  const SwitchFinanceModeParams({required this.userId, required this.mode});
 }
 
 class SwitchFinanceModeUseCase {
@@ -19,22 +16,18 @@ class SwitchFinanceModeUseCase {
   SwitchFinanceModeUseCase(this.repository);
 
   Future<Either<Failure, FinanceModeEntity>> call(
-      SwitchFinanceModeParams params) async {
+    SwitchFinanceModeParams params,
+  ) async {
     final currentResult = await repository.getFinanceMode(params.userId);
 
-    return currentResult.fold(
-      (failure) => Left(failure),
-      (current) {
-        final updated = FinanceModeEntity(
-          userId: params.userId,
-          mode: params.mode,
-          updatedAt: DateTime.now(),
-          suggestionCooldownUntil: current.suggestionCooldownUntil,
-        );
-        return repository.saveFinanceMode(updated);
-      },
-    );
+    return currentResult.fold((failure) => Left(failure), (current) {
+      final updated = FinanceModeEntity(
+        userId: params.userId,
+        mode: params.mode,
+        updatedAt: DateTime.now(),
+        suggestionCooldownUntil: current.suggestionCooldownUntil,
+      );
+      return repository.saveFinanceMode(updated);
+    });
   }
 }
-
-

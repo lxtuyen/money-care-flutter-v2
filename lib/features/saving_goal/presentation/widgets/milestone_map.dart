@@ -37,15 +37,13 @@ class MilestoneMap extends StatelessWidget {
           itemBuilder: (context, index) {
             final milestone = milestones[index];
             final isLast = index == milestones.length - 1;
-            
+
             return IntrinsicHeight(
               child: Row(
                 children: [
                   _buildMilestoneNode(milestone, isLast),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildMilestoneCard(milestone),
-                  ),
+                  Expanded(child: _buildMilestoneCard(milestone)),
                 ],
               ),
             );
@@ -56,8 +54,10 @@ class MilestoneMap extends StatelessWidget {
   }
 
   Widget _buildMilestoneNode(MilestoneModel milestone, bool isLast) {
-    final color = milestone.isCompleted ? AppColors.success : AppColors.borderPrimary;
-    
+    final color = milestone.isCompleted
+        ? AppColors.success
+        : AppColors.borderPrimary;
+
     return Column(
       children: [
         Container(
@@ -73,12 +73,7 @@ class MilestoneMap extends StatelessWidget {
               : null,
         ),
         if (!isLast)
-          Expanded(
-            child: Container(
-              width: 2,
-              color: color.withOpacity(0.5),
-            ),
-          ),
+          Expanded(child: Container(width: 2, color: color.withOpacity(0.5))),
       ],
     );
   }
@@ -91,7 +86,9 @@ class MilestoneMap extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: milestone.isCompleted ? AppColors.success.withOpacity(0.3) : AppColors.borderSecondary,
+          color: milestone.isCompleted
+              ? AppColors.success.withOpacity(0.3)
+              : AppColors.borderSecondary,
         ),
         boxShadow: [
           if (milestone.isCompleted)
@@ -112,7 +109,9 @@ class MilestoneMap extends StatelessWidget {
                 milestone.label,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: milestone.isCompleted ? AppColors.success : AppColors.text1,
+                  color: milestone.isCompleted
+                      ? AppColors.success
+                      : AppColors.text1,
                 ),
               ),
               Text(
@@ -126,9 +125,14 @@ class MilestoneMap extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildAmountValue('Mục tiêu', milestone.target),
-              _buildAmountValue('Thực tế', milestone.actual, 
-                  isBold: true, 
-                  color: milestone.actual >= milestone.target ? AppColors.success : AppColors.text1),
+              _buildAmountValue(
+                'Thực tế',
+                milestone.actual,
+                isBold: true,
+                color: milestone.actual >= milestone.target
+                    ? AppColors.success
+                    : AppColors.text1,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -147,11 +151,19 @@ class MilestoneMap extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountValue(String label, double amount, {bool isBold = false, Color? color}) {
+  Widget _buildAmountValue(
+    String label,
+    double amount, {
+    bool isBold = false,
+    Color? color,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: AppColors.text4)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: AppColors.text4),
+        ),
         Text(
           AppHelperFunction.formatAmount(amount, 'VND'),
           style: TextStyle(

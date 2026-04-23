@@ -3,11 +3,7 @@ class ApiResponse<T> {
   final String message;
   final T? data;
 
-  ApiResponse({
-    required this.success,
-    required this.message,
-    this.data,
-  });
+  ApiResponse({required this.success, required this.message, this.data});
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
@@ -30,5 +26,3 @@ class ApiResponse<T> {
     );
   }
 }
-
-

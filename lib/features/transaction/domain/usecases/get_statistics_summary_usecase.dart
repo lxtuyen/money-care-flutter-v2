@@ -7,7 +7,10 @@ class GetStatisticsSummaryUseCase {
 
   GetStatisticsSummaryUseCase({required this.repository});
 
-  Future<StatisticsSummaryEntity> call(int userId, TransactionTotalsDto dto) async {
+  Future<StatisticsSummaryEntity> call(
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     return await repository.getStatisticsSummary(userId, dto);
   }
 }

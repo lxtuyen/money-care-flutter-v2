@@ -24,8 +24,9 @@ class AppHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCustomBackground = backgroundColor != null;
-    final iconAndTextColor =
-        hasCustomBackground ? _foregroundColorFor(backgroundColor!) : Colors.white;
+    final iconAndTextColor = hasCustomBackground
+        ? _foregroundColorFor(backgroundColor!)
+        : Colors.white;
 
     return Container(
       height: height,
@@ -34,15 +35,15 @@ class AppHeader extends StatelessWidget {
         gradient: hasCustomBackground
             ? null
             : const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF79CBFF),
-                AppColors.primary,
-                AppColors.secondaryNavyBlue,
-              ],
-              stops: [0.0, 0.52, 1.0],
-            ),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF79CBFF),
+                  AppColors.primary,
+                  AppColors.secondaryNavyBlue,
+                ],
+                stops: [0.0, 0.52, 1.0],
+              ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(40),
           bottomRight: Radius.circular(40),
@@ -93,12 +94,16 @@ class AppHeader extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
                     child: Row(
                       children: [
                         if (showBackButton)
                           GestureDetector(
-                            onTap: onBackTap ?? () => Navigator.of(context).pop(),
+                            onTap:
+                                onBackTap ?? () => Navigator.of(context).pop(),
                             child: Container(
                               width: 36,
                               height: 36,

@@ -13,10 +13,7 @@ class NotificationScreen extends StatelessWidget {
     final controller = Get.find<NotificationController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thông báo'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Thông báo'), centerTitle: true),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -51,11 +48,15 @@ class NotificationScreen extends StatelessWidget {
                 children: [
                   Text(
                     notification.body,
-                    style: TextStyle(color: isRead ? Colors.grey : Colors.black87),
+                    style: TextStyle(
+                      color: isRead ? Colors.grey : Colors.black87,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppHelperFunction.formatDateTime(notification.createdAt.toLocal()),
+                    AppHelperFunction.formatDateTime(
+                      notification.createdAt.toLocal(),
+                    ),
                     style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ],
@@ -99,5 +100,3 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 }
-
-

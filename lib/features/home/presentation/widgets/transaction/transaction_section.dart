@@ -25,8 +25,9 @@ class _TransactionSectionState extends State<TransactionSection> {
 
   @override
   Widget build(BuildContext context) {
-    final currentList =
-        isExpense ? widget.expenseTransactions : widget.incomeTransactions;
+    final currentList = isExpense
+        ? widget.expenseTransactions
+        : widget.incomeTransactions;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSizes.spaceBtwItems),
@@ -49,16 +50,21 @@ class _TransactionSectionState extends State<TransactionSection> {
           if (currentList.isEmpty)
             const AppEmptyState(message: 'Không có giao dịch nào gần đây.')
           else
-            ...currentList.take(5).toList().asMap().entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: TransactionItem(
-                  item: entry.value,
-                  onTap: () {},
-                  color: AppHelperFunction.getChartColorByIndex(entry.key),
+            ...currentList
+                .take(5)
+                .toList()
+                .asMap()
+                .entries
+                .map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: TransactionItem(
+                      item: entry.value,
+                      onTap: () {},
+                      color: AppHelperFunction.getChartColorByIndex(entry.key),
+                    ),
+                  ),
                 ),
-              ),
-            ),
         ],
       ),
     );

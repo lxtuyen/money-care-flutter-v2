@@ -9,12 +9,15 @@ import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 
 class CreateSavingGoalController extends GetxController {
-  late final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
+  late final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
   late final AppController appController = Get.find<AppController>();
-  
-  CreateSavingGoalUseCase get _createUseCase => Get.find<CreateSavingGoalUseCase>();
-  UpdateSavingGoalUseCase get _updateUseCase => Get.find<UpdateSavingGoalUseCase>();
-  
+
+  CreateSavingGoalUseCase get _createUseCase =>
+      Get.find<CreateSavingGoalUseCase>();
+  UpdateSavingGoalUseCase get _updateUseCase =>
+      Get.find<UpdateSavingGoalUseCase>();
+
   Rxn<int> userId = Rxn<int>();
   RxBool isLoading = false.obs;
   RxBool isEditMode = false.obs;
@@ -22,11 +25,10 @@ class CreateSavingGoalController extends GetxController {
 
   final nameController = TextEditingController();
   final targetController = TextEditingController();
-  
+
   Rxn<double> target = Rxn<double>();
   Rxn<DateTime> startDate = Rxn<DateTime>();
   Rxn<DateTime> endDate = Rxn<DateTime>();
-
 
   @override
   void onClose() {
@@ -71,7 +73,8 @@ class CreateSavingGoalController extends GetxController {
   Future<void> selectEndDate(BuildContext context) async {
     final DateTime? picked = await showStyledDatePicker(
       context: context,
-      initialDate: endDate.value ?? DateTime.now().add(const Duration(days: 30)),
+      initialDate:
+          endDate.value ?? DateTime.now().add(const Duration(days: 30)),
       firstDate: startDate.value ?? DateTime.now(),
     );
     if (picked != null) endDate.value = picked;

@@ -35,5 +35,3 @@ class ApiRoutes {
   static const paymentconfirm = 'vip-payments/confirm';
   static const getMonthlyRevenue = 'vip-payments/monthly-revenue';
 }
-
-

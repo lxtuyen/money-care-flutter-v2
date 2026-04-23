@@ -10,6 +10,3 @@ class SendToChatbotUseCase {
     return repository.sendToChatbot(dto, filePath: filePath);
   }
 }
-
-
-

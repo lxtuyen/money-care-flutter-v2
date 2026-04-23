@@ -22,11 +22,9 @@ abstract class UserProfileModel with _$UserProfileModel {
       _$UserProfileModelFromJson(json);
 
   UserProfileEntity toEntity() => UserProfileEntity(
-        id: id ?? 0,
-        firstName: firstName,
-        lastName: lastName,
-        avatar: avatar,
-      );
+    id: id ?? 0,
+    firstName: firstName,
+    lastName: lastName,
+    avatar: avatar,
+  );
 }
-
-

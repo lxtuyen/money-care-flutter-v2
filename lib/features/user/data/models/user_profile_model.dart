@@ -20,10 +20,10 @@ abstract class UserProfileModel with _$UserProfileModel {
       _$UserProfileModelFromJson(json);
 
   UserProfileEntity toEntity() => UserProfileEntity(
-        id: id,
-        firstName: firstName,
-        lastName: lastName,
-        monthlyIncome: monthlyIncome,
-        incomeDate: incomeDate,
-      );
+    id: id,
+    firstName: firstName,
+    lastName: lastName,
+    monthlyIncome: monthlyIncome,
+    incomeDate: incomeDate,
+  );
 }

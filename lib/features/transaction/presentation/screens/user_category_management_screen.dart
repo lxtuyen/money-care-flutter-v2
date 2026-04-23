@@ -10,10 +10,13 @@ class UserCategoryManagementScreen extends StatefulWidget {
   const UserCategoryManagementScreen({super.key});
 
   @override
-  State<UserCategoryManagementScreen> createState() => _UserCategoryManagementScreenState();
+  State<UserCategoryManagementScreen> createState() =>
+      _UserCategoryManagementScreenState();
 }
 
-class _UserCategoryManagementScreenState extends State<UserCategoryManagementScreen> with SingleTickerProviderStateMixin {
+class _UserCategoryManagementScreenState
+    extends State<UserCategoryManagementScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _controller = Get.find<UserCategoryController>();
 
@@ -34,7 +37,10 @@ class _UserCategoryManagementScreenState extends State<UserCategoryManagementScr
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Quản lý danh mục', style: TextStyle(fontWeight: FontWeight.w700)),
+        title: const Text(
+          'Quản lý danh mục',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -69,11 +75,11 @@ class _UserCategoryManagementScreenState extends State<UserCategoryManagementScr
   Widget _buildCategoryList(String type) {
     return Obx(() {
       final list = _controller.categories.where((c) => c.type == type).toList();
-      
+
       if (_controller.isLoading.value && list.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
-      
+
       if (list.isEmpty) {
         return Center(
           child: Column(
@@ -82,9 +88,9 @@ class _UserCategoryManagementScreenState extends State<UserCategoryManagementScr
               Text('😞', style: const TextStyle(fontSize: 48)),
               const SizedBox(height: 16),
               Text(
-                type == 'others' 
-                  ? 'Chưa có danh mục chưa phân loại'
-                  : 'Chưa có danh mục ${type == 'expense' ? 'chi tiêu' : 'thu nhập'} nào',
+                type == 'others'
+                    ? 'Chưa có danh mục chưa phân loại'
+                    : 'Chưa có danh mục ${type == 'expense' ? 'chi tiêu' : 'thu nhập'} nào',
                 style: const TextStyle(color: AppColors.text4),
               ),
             ],
@@ -115,8 +121,8 @@ class _UserCategoryManagementScreenState extends State<UserCategoryManagementScr
       backgroundColor: Colors.transparent,
       builder: (_) => CategoryFormDialog(
         category: category,
-        initialType: _tabController.index == 0 
-            ? 'expense' 
+        initialType: _tabController.index == 0
+            ? 'expense'
             : (_tabController.index == 1 ? 'income' : 'others'),
       ),
     );
@@ -127,7 +133,9 @@ class _UserCategoryManagementScreenState extends State<UserCategoryManagementScr
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Xóa danh mục?'),
-        content: Text('Bạn có chắc chắn muốn xóa danh mục "${category.name}"? Hành động này không thể hoàn tác.'),
+        content: Text(
+          'Bạn có chắc chắn muốn xóa danh mục "${category.name}"? Hành động này không thể hoàn tác.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -145,7 +153,9 @@ class _UserCategoryManagementScreenState extends State<UserCategoryManagementScr
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text('Xóa', style: TextStyle(color: Colors.white)),
           ),
@@ -194,7 +204,7 @@ class _CategoryItem extends StatelessWidget {
             child: Text(category.icon, style: const TextStyle(fontSize: 24)),
           ),
           const SizedBox(width: 16),
-          
+
           // Info
           Expanded(
             child: Column(
@@ -202,33 +212,50 @@ class _CategoryItem extends StatelessWidget {
               children: [
                 Text(
                   category.name,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     if (category.isEssential)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
                           'Thiết yếu',
-                          style: TextStyle(fontSize: 10, color: AppColors.primary, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       )
                     else
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.text4.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
                           'Không thiết yếu',
-                          style: TextStyle(fontSize: 10, color: AppColors.text4, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.text4,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                   ],
@@ -240,11 +267,19 @@ class _CategoryItem extends StatelessWidget {
           // Actions
           IconButton(
             onPressed: onEdit,
-            icon: const Icon(Icons.edit_outlined, color: AppColors.primary, size: 20),
+            icon: const Icon(
+              Icons.edit_outlined,
+              color: AppColors.primary,
+              size: 20,
+            ),
           ),
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+            icon: const Icon(
+              Icons.delete_outline,
+              color: AppColors.error,
+              size: 20,
+            ),
           ),
         ],
       ),

@@ -52,7 +52,6 @@ class AppValidator {
     return null;
   }
 
-
   static String? validateFirstName(String? value) {
     if (value == null || value.isEmpty) return "First name is required.";
     final nameRegExp = RegExp(r"^[a-zA-ZÀ-ỹ\s]+$");
@@ -98,8 +97,9 @@ class AppValidator {
       return 'Vui lòng nhập số tiền';
     }
 
-    final numVal =
-        double.tryParse(value.replaceAll(',', '').replaceAll('.', ''));
+    final numVal = double.tryParse(
+      value.replaceAll(',', '').replaceAll('.', ''),
+    );
 
     if (numVal == null) return 'Số tiền không hợp lệ';
     if (numVal <= 0) return 'Số tiền phải lớn hơn 0';
@@ -144,5 +144,3 @@ class AppValidator {
     return null;
   }
 }
-
-

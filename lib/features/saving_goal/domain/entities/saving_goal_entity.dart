@@ -47,7 +47,8 @@ class SavingGoalEntity {
     if (endDate!.isBefore(now) || isCompleted) return 0;
     final remaining = (target ?? 0) - savedAmount;
     if (remaining <= 0) return 0;
-    final months = (endDate!.year - now.year) * 12 + (endDate!.month - now.month);
+    final months =
+        (endDate!.year - now.year) * 12 + (endDate!.month - now.month);
     if (months <= 0) return remaining.ceil();
     return (remaining / months).ceil();
   }

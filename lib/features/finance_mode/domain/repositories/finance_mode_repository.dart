@@ -5,7 +5,6 @@ import 'package:money_care/features/finance_mode/domain/entities/finance_mode_en
 abstract class FinanceModeRepository {
   Future<Either<Failure, FinanceModeEntity>> getFinanceMode(int userId);
   Future<Either<Failure, FinanceModeEntity>> saveFinanceMode(
-      FinanceModeEntity financeMode);
+    FinanceModeEntity financeMode,
+  );
 }
-
-

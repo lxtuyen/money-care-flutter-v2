@@ -20,16 +20,16 @@ class GamificationController extends GetxController {
     required CheckAndAwardBadgesUseCase checkAndAwardBadgesUseCase,
     required NotificationService notificationService,
     required AppController appController,
-  })  : _getGamificationUseCase = getGamificationUseCase,
-        _recordDailyTransactionUseCase = recordDailyTransactionUseCase,
-        _checkAndAwardBadgesUseCase = checkAndAwardBadgesUseCase,
-        _notificationService = notificationService,
-        _appController = appController;
+  }) : _getGamificationUseCase = getGamificationUseCase,
+       _recordDailyTransactionUseCase = recordDailyTransactionUseCase,
+       _checkAndAwardBadgesUseCase = checkAndAwardBadgesUseCase,
+       _notificationService = notificationService,
+       _appController = appController;
 
   final RxInt currentStreak = 0.obs;
 
   final RxList<BadgeEntity> badges = <BadgeEntity>[].obs;
-  
+
   final RxList<bool> weeklyProgress = RxList.generate(7, (_) => false);
 
   final RxBool showStreakDialogTrigger = false.obs;
@@ -41,7 +41,7 @@ class GamificationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     ever(_appController.userId, (id) {
       if (id != null) {
         checkStreakReset();
@@ -56,7 +56,9 @@ class GamificationController extends GetxController {
       print('[STREAK] showStreakDialogTrigger changed to: $val');
       if (val) {
         Future.delayed(const Duration(milliseconds: 500), () {
-          print('[STREAK] EXECUTING StreakDialog.show(). Streak: ${currentStreak.value}');
+          print(
+            '[STREAK] EXECUTING StreakDialog.show(). Streak: ${currentStreak.value}',
+          );
           StreakDialog.show();
           showStreakDialogTrigger.value = false;
         });
@@ -69,29 +71,36 @@ class GamificationController extends GetxController {
 
   void updateWeeklyProgress() {
     if (!Get.isRegistered<TransactionController>()) return;
-    
+
     final txController = Get.find<TransactionController>();
     final txData = txController.recentTransactions.value;
     if (txData == null) return;
 
-    final allTxs = [...txData.expenseTransactions, ...txData.incomeTransactions];
-    
+    final allTxs = [
+      ...txData.expenseTransactions,
+      ...txData.incomeTransactions,
+    ];
+
     final now = DateTime.now();
     final monday = now.subtract(Duration(days: now.weekday - 1));
     final mondayDate = DateTime(monday.year, monday.month, monday.day);
-    
+
     final List<bool> progress = List.generate(7, (_) => false);
-    
+
     for (final tx in allTxs) {
       if (tx.transactionDate == null) continue;
-      final txDate = DateTime(tx.transactionDate!.year, tx.transactionDate!.month, tx.transactionDate!.day);
+      final txDate = DateTime(
+        tx.transactionDate!.year,
+        tx.transactionDate!.month,
+        tx.transactionDate!.day,
+      );
       final diff = txDate.difference(mondayDate).inDays;
-      
+
       if (diff >= 0 && diff < 7) {
         progress[diff] = true;
       }
     }
-    
+
     weeklyProgress.assignAll(progress);
   }
 
@@ -105,14 +114,16 @@ class GamificationController extends GetxController {
     final result = await _getGamificationUseCase(userId);
     result.fold(
       (failure) {
-         print('[STREAK] checkStreakReset FETCH ERROR: $failure');
+        print('[STREAK] checkStreakReset FETCH ERROR: $failure');
       },
       (entity) {
-        print('[STREAK] checkStreakReset fetched: Streak=${entity.currentStreak}, LastDate=${entity.lastTransactionDate}');
+        print(
+          '[STREAK] checkStreakReset fetched: Streak=${entity.currentStreak}, LastDate=${entity.lastTransactionDate}',
+        );
         _cachedEntity = entity;
         currentStreak.value = _computeEffectiveStreak(entity);
         badges.value = entity.badges;
-        
+
         updateWeeklyProgress();
       },
     );
@@ -158,7 +169,11 @@ class GamificationController extends GetxController {
         if (oldLastDate == null && newDate != null) {
           isNewDay = true;
         } else if (oldLastDate != null && newDate != null) {
-          final oldD = DateTime(oldLastDate.year, oldLastDate.month, oldLastDate.day);
+          final oldD = DateTime(
+            oldLastDate.year,
+            oldLastDate.month,
+            oldLastDate.day,
+          );
           final newD = DateTime(newDate.year, newDate.month, newDate.day);
           isNewDay = newD.isAfter(oldD);
         }
@@ -190,24 +205,21 @@ class GamificationController extends GetxController {
       goalCompleted: goalCompleted,
     );
 
-    await result.fold(
-      (_) async {},
-      (updated) async {
-        _cachedEntity = updated;
-        badges.value = updated.badges;
+    await result.fold((_) async {}, (updated) async {
+      _cachedEntity = updated;
+      badges.value = updated.badges;
 
-        final newBadges = updated.badges
-            .where((b) => !badgesBefore.any((old) => old.key == b.key))
-            .toList();
+      final newBadges = updated.badges
+          .where((b) => !badgesBefore.any((old) => old.key == b.key))
+          .toList();
 
-        for (final badge in newBadges) {
-          await _notificationService.showLocalNotification(
-            id: badge.key.hashCode,
-            title: 'Huy hiệu mới!',
-            body: 'Chúc mừng! Bạn đã đạt được huy hiệu "${badge.name}"',
-          );
-        }
-      },
-    );
+      for (final badge in newBadges) {
+        await _notificationService.showLocalNotification(
+          id: badge.key.hashCode,
+          title: 'Huy hiệu mới!',
+          body: 'Chúc mừng! Bạn đã đạt được huy hiệu "${badge.name}"',
+        );
+      }
+    });
   }
 }

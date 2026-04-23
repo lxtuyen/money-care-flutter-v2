@@ -10,5 +10,3 @@ class AppIcons {
 
   static final String filter = AppAssets.iconSvgPath('filter');
 }
-
-

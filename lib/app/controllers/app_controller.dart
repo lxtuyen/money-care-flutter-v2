@@ -54,4 +54,3 @@ class AppController extends GetxController {
     return userId.value;
   }
 }
-

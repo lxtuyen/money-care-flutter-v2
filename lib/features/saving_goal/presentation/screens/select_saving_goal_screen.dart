@@ -59,13 +59,15 @@ class _SelectSavingGoalScreenState extends State<SelectSavingGoalScreen> {
                       itemBuilder: (context, index) {
                         final goal = controller.goals[index];
                         return Obx(() {
-                          final isSelected = controller.selectedGoalIndex.value == index;
+                          final isSelected =
+                              controller.selectedGoalIndex.value == index;
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: SavingGoalItemCard(
                               fund: goal,
                               isSelected: isSelected,
-                              onTap: () => controller.updateSelectedGoalIndex(index),
+                              onTap: () =>
+                                  controller.updateSelectedGoalIndex(index),
                               onDelete: () => _confirmDelete(context, goal),
                               onUpdate: () => _handleUpdate(goal),
                             ),
@@ -111,7 +113,9 @@ class _SelectSavingGoalScreenState extends State<SelectSavingGoalScreen> {
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Xác nhận xóa'),
-        content: Text('Bạn có chắc chắn muốn xóa mục tiêu "${goal.name}"?\nDữ liệu tiết kiệm của các danh mục liên kết vẫn sẽ được giữ lại.'),
+        content: Text(
+          'Bạn có chắc chắn muốn xóa mục tiêu "${goal.name}"?\nDữ liệu tiết kiệm của các danh mục liên kết vẫn sẽ được giữ lại.',
+        ),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Hủy')),
           TextButton(
@@ -119,7 +123,10 @@ class _SelectSavingGoalScreenState extends State<SelectSavingGoalScreen> {
               controller.deleteGoal(goal.id);
               Get.back();
             },
-            child: const Text('Xóa mục tiêu', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Xóa mục tiêu',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),

@@ -44,8 +44,11 @@ class CategoryListBubble extends StatelessWidget {
                       color: Colors.blue.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.category_rounded,
-                        color: Colors.blueAccent, size: 20),
+                    child: const Icon(
+                      Icons.category_rounded,
+                      color: Colors.blueAccent,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   const Text(
@@ -58,8 +61,10 @@ class CategoryListBubble extends StatelessWidget {
                   ),
                   const Spacer(),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(12),
@@ -115,8 +120,10 @@ class CategoryListBubble extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              Text(cat['icon'] ?? '📁',
-                                  style: const TextStyle(fontSize: 16)),
+                              Text(
+                                cat['icon'] ?? '📁',
+                                style: const TextStyle(fontSize: 16),
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(

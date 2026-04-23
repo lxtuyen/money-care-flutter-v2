@@ -15,11 +15,15 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 
 class HomeController extends GetxController {
   final AppController appController = Get.find<AppController>();
-  final TransactionController transactionController = Get.find<TransactionController>();
-  final StatisticsController statisticsController = Get.find<StatisticsController>();
-  final FinanceModeController financeModeController = Get.find<FinanceModeController>();
+  final TransactionController transactionController =
+      Get.find<TransactionController>();
+  final StatisticsController statisticsController =
+      Get.find<StatisticsController>();
+  final FinanceModeController financeModeController =
+      Get.find<FinanceModeController>();
   final UserController userController = Get.find<UserController>();
-  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
 
   final now = DateTime.now();
   late DateTime startDate = now.subtract(const Duration(days: 6));
@@ -38,7 +42,9 @@ class HomeController extends GetxController {
   void checkModeSuggestion() async {
     final utilization = statisticsController.utilizationPercentage;
     if (utilization >= 0.8) {
-      final suggestedMode = await financeModeController.checkAndSuggestMode(utilization);
+      final suggestedMode = await financeModeController.checkAndSuggestMode(
+        utilization,
+      );
       if (suggestedMode != null) {
         showSuggestionDialog(suggestedMode);
       }
@@ -70,11 +76,13 @@ class HomeController extends GetxController {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-            Obx(() => Text(
-              'Bạn đã tiêu quá ${(statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: AppColors.text4),
-            )),
+            Obx(
+              () => Text(
+                'Bạn đã tiêu quá ${(statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, color: AppColors.text4),
+              ),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -122,5 +130,3 @@ class HomeController extends GetxController {
     );
   }
 }
-
-

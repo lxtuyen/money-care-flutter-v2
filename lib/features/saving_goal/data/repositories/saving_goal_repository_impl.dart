@@ -12,7 +12,9 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
   SavingGoalRepositoryImpl({required this.remoteDatasource});
 
   @override
-  Future<Either<Failure, SavingGoalEntity>> createSavingGoal(SavingGoalDto dto) async {
+  Future<Either<Failure, SavingGoalEntity>> createSavingGoal(
+    SavingGoalDto dto,
+  ) async {
     try {
       final model = await remoteDatasource.createSavingGoal(dto);
       return Right(model.toEntity());
@@ -24,7 +26,9 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
   }
 
   @override
-  Future<Either<Failure, List<SavingGoalEntity>>> getSavingGoalsByUser(int userId) async {
+  Future<Either<Failure, List<SavingGoalEntity>>> getSavingGoalsByUser(
+    int userId,
+  ) async {
     try {
       final models = await remoteDatasource.getSavingGoalsByUser(userId);
       return Right(models.map((e) => e.toEntity()).toList());
@@ -48,7 +52,9 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
   }
 
   @override
-  Future<Either<Failure, SavingGoalEntity>> updateSavingGoal(SavingGoalDto dto) async {
+  Future<Either<Failure, SavingGoalEntity>> updateSavingGoal(
+    SavingGoalDto dto,
+  ) async {
     try {
       final model = await remoteDatasource.updateSavingGoal(dto);
       return Right(model.toEntity());
@@ -72,7 +78,10 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
   }
 
   @override
-  Future<Either<Failure, SavingGoalEntity?>> selectSavingGoal(int userId, int id) async {
+  Future<Either<Failure, SavingGoalEntity?>> selectSavingGoal(
+    int userId,
+    int id,
+  ) async {
     try {
       final model = await remoteDatasource.selectSavingGoal(userId, id);
       return Right(model?.toEntity());
@@ -84,7 +93,9 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
   }
 
   @override
-  Future<Either<Failure, ExpiredGoalCheckModel>> checkExpiredSavingGoal(int userId) async {
+  Future<Either<Failure, ExpiredGoalCheckModel>> checkExpiredSavingGoal(
+    int userId,
+  ) async {
     try {
       final model = await remoteDatasource.checkExpiredSavingGoal(userId);
       return Right(model);
@@ -114,7 +125,11 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
     DateTime? newStartDate,
   }) async {
     try {
-      final model = await remoteDatasource.extendSavingGoal(id, newEndDate, newStartDate: newStartDate);
+      final model = await remoteDatasource.extendSavingGoal(
+        id,
+        newEndDate,
+        newStartDate: newStartDate,
+      );
       return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -124,7 +139,9 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
   }
 
   @override
-  Future<Either<Failure, SavingGoalReportModel>> getSavingGoalReport(int id) async {
+  Future<Either<Failure, SavingGoalReportModel>> getSavingGoalReport(
+    int id,
+  ) async {
     try {
       final model = await remoteDatasource.getSavingGoalReport(id);
       return Right(model);

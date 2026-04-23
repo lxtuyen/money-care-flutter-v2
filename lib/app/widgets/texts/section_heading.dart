@@ -48,5 +48,3 @@ class AppSectionHeading extends StatelessWidget {
     );
   }
 }
-
-

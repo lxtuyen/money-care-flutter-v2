@@ -25,7 +25,9 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkExpiredSavingGoal());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _checkExpiredSavingGoal(),
+    );
   }
 
   Future<void> _checkExpiredSavingGoal() async {
@@ -41,9 +43,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
           savingGoalController.expiredGoal.value != null) {
         ExpiredGoalPopup.show(savingGoalController.expiredGoal.value!);
       }
-    } catch (_) {
-      
-    }
+    } catch (_) {}
   }
 
   static const _screens = [
@@ -60,11 +60,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
       activeIcon: 'transaction-active',
       label: 'Thu - chi',
     ),
-    _NavItem(
-      icon: 'chart',
-      activeIcon: 'chart-active',
-      label: 'Thống kê',
-    ),
+    _NavItem(icon: 'chart', activeIcon: 'chart-active', label: 'Thống kê'),
     _NavItem(icon: 'user', activeIcon: 'user-active', label: 'Cá nhân'),
   ];
 
@@ -79,33 +75,33 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
 
       return Scaffold(
         resizeToAvoidBottomInset: true,
-        floatingActionButton:
-            isWeb
-                ? null
-                : IgnorePointer(
-                  ignoring: isKeyboardVisible,
-                  child: AnimatedSlide(
-                    duration: const Duration(milliseconds: 120),
-                    curve: Curves.easeOut,
-                    offset:
-                        isKeyboardVisible ? const Offset(0, 1.2) : Offset.zero,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 90),
-                      opacity: isKeyboardVisible ? 0 : 1,
-                      child: FloatingActionButton(
-                        onPressed: () => _showTransactionOptions(context),
-                        elevation: 8,
-                        shape: const CircleBorder(),
-                        backgroundColor: AppColors.primary,
-                        child: const Icon(
-                          Icons.add,
-                          size: 30,
-                          color: Colors.white,
-                        ),
+        floatingActionButton: isWeb
+            ? null
+            : IgnorePointer(
+                ignoring: isKeyboardVisible,
+                child: AnimatedSlide(
+                  duration: const Duration(milliseconds: 120),
+                  curve: Curves.easeOut,
+                  offset: isKeyboardVisible
+                      ? const Offset(0, 1.2)
+                      : Offset.zero,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 90),
+                    opacity: isKeyboardVisible ? 0 : 1,
+                    child: FloatingActionButton(
+                      onPressed: () => _showTransactionOptions(context),
+                      elevation: 8,
+                      shape: const CircleBorder(),
+                      backgroundColor: AppColors.primary,
+                      child: const Icon(
+                        Icons.add,
+                        size: 30,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
+              ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: SafeArea(
           child: Row(
@@ -117,10 +113,9 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
             ],
           ),
         ),
-        bottomNavigationBar:
-            isWeb
-                ? null
-                : _buildMobileBottomBar(controller, currentIndex, context),
+        bottomNavigationBar: isWeb
+            ? null
+            : _buildMobileBottomBar(controller, currentIndex, context),
       );
     });
   }
@@ -182,28 +177,26 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    tileColor:
-                        isActive ? AppColors.primary.withOpacity(0.08) : null,
+                    tileColor: isActive
+                        ? AppColors.primary.withOpacity(0.08)
+                        : null,
                     leading: AppSvgIcon(
                       iconName: isActive ? item.activeIcon : item.icon,
                       width: 24,
                     ),
-                    title:
-                        _isSidebarExpanded
-                            ? Text(
-                              item.label,
-                              style: TextStyle(
-                                color:
-                                    isActive
-                                        ? AppColors.primary
-                                        : AppColors.text4,
-                                fontWeight:
-                                    isActive
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                              ),
-                            )
-                            : null,
+                    title: _isSidebarExpanded
+                        ? Text(
+                            item.label,
+                            style: TextStyle(
+                              color: isActive
+                                  ? AppColors.primary
+                                  : AppColors.text4,
+                              fontWeight: isActive
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                            ),
+                          )
+                        : null,
                     onTap: () => controller.changeTab(index),
                   ),
                 );
@@ -217,13 +210,12 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
               child: ElevatedButton.icon(
                 onPressed: () => _showTransactionOptions(context),
                 icon: const Icon(Icons.add, color: Colors.white),
-                label:
-                    _isSidebarExpanded
-                        ? const Text(
-                          'Thêm giao dịch',
-                          style: TextStyle(color: Colors.white),
-                        )
-                        : const SizedBox.shrink(),
+                label: _isSidebarExpanded
+                    ? const Text(
+                        'Thêm giao dịch',
+                        style: TextStyle(color: Colors.white),
+                      )
+                    : const SizedBox.shrink(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -312,10 +304,9 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
               duration: const Duration(milliseconds: 180),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color:
-                    isActive
-                        ? AppColors.primary.withOpacity(0.12)
-                        : Colors.transparent,
+                color: isActive
+                    ? AppColors.primary.withOpacity(0.12)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: AppSvgIcon(

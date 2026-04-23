@@ -25,11 +25,6 @@ abstract class BadgeModel with _$BadgeModel {
     );
   }
 
-  BadgeEntity toEntity() => BadgeEntity(
-        key: key,
-        name: name,
-        awardedAt: awardedAt,
-      );
+  BadgeEntity toEntity() =>
+      BadgeEntity(key: key, name: name, awardedAt: awardedAt);
 }
-
-

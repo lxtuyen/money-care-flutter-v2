@@ -39,7 +39,11 @@ class AnalysisBubble extends StatelessWidget {
                   color: Colors.blueAccent.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Iconsax.chart_2_copy, size: 20, color: Colors.blueAccent),
+                child: const Icon(
+                  Iconsax.chart_2_copy,
+                  size: 20,
+                  color: Colors.blueAccent,
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -149,7 +153,11 @@ class AnalysisBubble extends StatelessWidget {
           Expanded(
             child: Text(
               'Gợi ý này dựa trên thói quen chi tiêu của bạn. Hãy điều chỉnh cụ thể trong mục Ngân sách.',
-              style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
         ],
@@ -157,5 +165,3 @@ class AnalysisBubble extends StatelessWidget {
     );
   }
 }
-
-

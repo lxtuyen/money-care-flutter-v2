@@ -42,14 +42,12 @@ abstract class CategoryModel with _$CategoryModel {
       _$CategoryModelFromJson(json);
 
   CategoryEntity toEntity() => CategoryEntity(
-        id: id,
-        name: name,
-        percentage: percentage,
-        icon: icon,
-        color: color,
-        isEssential: isEssential,
-        type: type,
-      );
+    id: id,
+    name: name,
+    percentage: percentage,
+    icon: icon,
+    color: color,
+    isEssential: isEssential,
+    type: type,
+  );
 }
-
-

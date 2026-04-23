@@ -31,10 +31,7 @@ class FinanceModeBanner extends StatelessWidget {
               Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
               const SizedBox(width: 8),
               Text(
@@ -46,11 +43,7 @@ class FinanceModeBanner extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: color,
-                size: 16,
-              ),
+              Icon(Icons.keyboard_arrow_down_rounded, color: color, size: 16),
             ],
           ),
         ),
@@ -81,10 +74,8 @@ class FinanceModeBanner extends StatelessWidget {
           top: Radius.circular(AppSizes.cardRadiusLg),
         ),
       ),
-      builder: (_) => _ModeSwitchSheet(
-        currentMode: currentMode,
-        controller: controller,
-      ),
+      builder: (_) =>
+          _ModeSwitchSheet(currentMode: currentMode, controller: controller),
     );
   }
 }
@@ -93,10 +84,7 @@ class _ModeSwitchSheet extends StatelessWidget {
   final FinanceMode currentMode;
   final FinanceModeController controller;
 
-  const _ModeSwitchSheet({
-    required this.currentMode,
-    required this.controller,
-  });
+  const _ModeSwitchSheet({required this.currentMode, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -213,10 +201,7 @@ class _ModeOption extends StatelessWidget {
             Container(
               width: 14,
               height: 14,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: AppSizes.md),
             Expanded(
@@ -242,12 +227,14 @@ class _ModeOption extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle_rounded, color: color, size: AppSizes.iconMd),
+              Icon(
+                Icons.check_circle_rounded,
+                color: color,
+                size: AppSizes.iconMd,
+              ),
           ],
         ),
       ),
     );
   }
 }
-
-

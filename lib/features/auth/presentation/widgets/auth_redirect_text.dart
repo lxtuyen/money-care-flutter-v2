@@ -26,10 +26,7 @@ class AuthRedirectText extends StatelessWidget {
       child: RichText(
         text: TextSpan(
           text: leadingText,
-          style: TextStyle(
-            color: leadingColor,
-            fontSize: fontSize,
-          ),
+          style: TextStyle(color: leadingColor, fontSize: fontSize),
           children: [
             TextSpan(
               text: actionText,

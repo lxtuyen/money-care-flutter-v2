@@ -52,7 +52,8 @@ class AppTexts {
   // --- Onboarding Income ---
   static const String done = 'Hoàn tất';
   static const String next = 'Bỏ qua';
-  static const String incomeTitle = 'Số tiền thu nhập hàng tháng của bạn là bao nhiêu?';
+  static const String incomeTitle =
+      'Số tiền thu nhập hàng tháng của bạn là bao nhiêu?';
 
   // --- Onboarding Welcome ---
   static const String welcomeTitle = 'Chào mừng bạn đến với ';
@@ -84,4 +85,30 @@ class AppTexts {
   static const String monthlyAverage = 'Trung bình chi tiêu theo tháng';
   static const String limitOverview = 'Tổng quan chi tiêu';
   static const String balance = 'Số dư';
+
+  // --- Transaction & Scan Receipt ---
+  static const String photoTransactionTitle = 'Bản ghi kèm ảnh';
+  static const String transactionTypeExpense = 'Chi';
+  static const String transactionTypeIncome = 'Thu';
+  static const String scanAiButton = 'Phân tích AI';
+  static const String scanningStatus = 'Đang phân tích...';
+  static const String scanSuccess = 'Đã trích xuất thông tin thành công!';
+  static const String scanError = 'Lỗi quét hóa đơn: ';
+  static const String scanInvalid =
+      'Không thể nhận diện thông tin. Ảnh có thể bị mờ hoặc không phải hóa đơn. Bạn vui lòng chụp lại rõ nét nhé!';
+  static const String unknownMerchant = 'Cửa hàng không xác định';
+  static const String selectCategory = 'Chọn category';
+  static const String noCategoryAvailable = 'Không có category để lựa chọn';
+  static const String recordPhotoRequired =
+      'Vui lòng chụp hoặc chọn ảnh cho bản ghi.';
+  static const String userNotFound =
+      'Không thể xác định người dùng. Vui lòng đăng nhập lại.';
+  static const String createTransactionSuccess =
+      'Tạo bản ghi kèm ảnh thành công';
+  static const String photoPreviewTitle = 'Ảnh giao dịch';
+  static const String retakePhoto = 'Chụp lại';
+  static const String transactionInfoSection = 'Thông tin bản ghi';
+  static const String classificationSection = 'Phân loại';
+  static const String incomeNoCategoryMessage =
+      'Bản ghi thu hiện không yêu cầu category.';
 }

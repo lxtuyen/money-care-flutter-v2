@@ -13,5 +13,3 @@ class OnboardingBinding extends Bindings {
     Get.lazyPut(() => OnboardingCategorySelectController());
   }
 }
-
-

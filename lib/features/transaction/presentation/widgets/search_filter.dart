@@ -35,10 +35,9 @@ class SearchWithFilter extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color:
-                      hasActiveFilters
-                          ? AppColors.primary.withOpacity(0.35)
-                          : AppColors.borderSecondary,
+                  color: hasActiveFilters
+                      ? AppColors.primary.withOpacity(0.35)
+                      : AppColors.borderSecondary,
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -59,16 +58,15 @@ class SearchWithFilter extends StatelessWidget {
                       size: 18,
                     ),
                   ),
-                  suffixIcon:
-                      controller != null && controller!.text.isNotEmpty
-                          ? IconButton(
-                            onPressed: onClearSearch,
-                            icon: const Icon(
-                              Icons.close_rounded,
-                              color: AppColors.text4,
-                            ),
-                          )
-                          : null,
+                  suffixIcon: controller != null && controller!.text.isNotEmpty
+                      ? IconButton(
+                          onPressed: onClearSearch,
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: AppColors.text4,
+                          ),
+                        )
+                      : null,
                   hintText: hintText,
                   hintStyle: const TextStyle(
                     color: AppColors.text4,
@@ -93,15 +91,13 @@ class SearchWithFilter extends StatelessWidget {
                 height: 44,
                 width: 44,
                 padding: const EdgeInsets.all(8),
-                backgroundColor:
-                    hasActiveFilters
-                        ? AppColors.primary
-                        : AppColors.backgroundPrimary,
+                backgroundColor: hasActiveFilters
+                    ? AppColors.primary
+                    : AppColors.backgroundPrimary,
                 border: Border.all(
-                  color:
-                      hasActiveFilters
-                          ? AppColors.primary
-                          : AppColors.borderSecondary,
+                  color: hasActiveFilters
+                      ? AppColors.primary
+                      : AppColors.borderSecondary,
                 ),
                 borderRadius: 14,
                 color: hasActiveFilters ? Colors.white : AppColors.text2,

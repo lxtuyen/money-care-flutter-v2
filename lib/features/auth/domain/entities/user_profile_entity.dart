@@ -11,8 +11,5 @@ class UserProfileEntity {
     this.avatar,
   });
 
-  String get fullName =>
-      '${firstName ?? ''} ${lastName ?? ''}'.trim();
+  String get fullName => '${firstName ?? ''} ${lastName ?? ''}'.trim();
 }
-
-

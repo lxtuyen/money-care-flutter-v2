@@ -30,8 +30,10 @@ class ReceiptItemsBubble extends StatelessWidget {
         if (items.isEmpty)
           const Text('Không tìm thấy mục nào trên hóa đơn.')
         else ...[
-          ...items.map((item) =>
-              _buildItemCard(item, merchant, formattedDate, currencyFormat)),
+          ...items.map(
+            (item) =>
+                _buildItemCard(item, merchant, formattedDate, currencyFormat),
+          ),
           const SizedBox(height: 8),
           _buildSaveAllButton(context, items),
         ],
@@ -61,7 +63,9 @@ class ReceiptItemsBubble extends StatelessWidget {
           ],
         ),
         child: ElevatedButton(
-          onPressed: isLoading ? null : () => chatController.saveReceiptItems(items),
+          onPressed: isLoading
+              ? null
+              : () => chatController.saveReceiptItems(items),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
@@ -99,7 +103,11 @@ class ReceiptItemsBubble extends StatelessWidget {
   }
 
   Widget _buildItemCard(
-      dynamic item, String merchant, String date, NumberFormat format) {
+    dynamic item,
+    String merchant,
+    String date,
+    NumberFormat format,
+  ) {
     final String itemName = item['name'] ?? 'Sản phẩm';
     final double amount = (item['amount'] as num?)?.toDouble() ?? 0;
     final String category = item['category'] ?? 'Khác';
@@ -143,7 +151,11 @@ class ReceiptItemsBubble extends StatelessWidget {
                   color: Colors.orangeAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Iconsax.shop_copy, color: Colors.orangeAccent, size: 24),
+                child: const Icon(
+                  Iconsax.shop_copy,
+                  color: Colors.orangeAccent,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -152,12 +164,18 @@ class ReceiptItemsBubble extends StatelessWidget {
                   children: [
                     Text(
                       merchant,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       itemName,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -166,7 +184,10 @@ class ReceiptItemsBubble extends StatelessWidget {
               ),
               Text(
                 format.format(amount),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
               ),
             ],
           ),
@@ -175,6 +196,3 @@ class ReceiptItemsBubble extends StatelessWidget {
     );
   }
 }
-
-
-

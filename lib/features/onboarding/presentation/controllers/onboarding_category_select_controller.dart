@@ -49,37 +49,47 @@ class OnboardingCategorySelectController extends GetxController {
     final selected = [
       ...expenseCategories
           .where((c) => selectedExpenseNames.contains(c.name))
-          .map((c) => CategoryEntity(
+          .map(
+            (c) => CategoryEntity(
               name: c.name,
               icon: c.emoji,
               percentage: 0,
               type: 'expense',
-              isEssential: c.isEssential)),
+              isEssential: c.isEssential,
+            ),
+          ),
       ...incomeCategories
           .where((c) => selectedIncomeNames.contains(c.name))
-          .map((c) => CategoryEntity(
+          .map(
+            (c) => CategoryEntity(
               name: c.name,
               icon: c.emoji,
               percentage: 0,
               type: 'income',
-              isEssential: c.isEssential)),
+              isEssential: c.isEssential,
+            ),
+          ),
     ];
 
     const uncategorizedName = 'Chưa phân loại';
     if (!selected.any((c) => c.name == uncategorizedName)) {
-      selected.add(const CategoryEntity(
-        name: uncategorizedName,
-        icon: '❓',
-        percentage: 0,
-        type: 'others',
-        isEssential: true,
-      ));
+      selected.add(
+        const CategoryEntity(
+          name: uncategorizedName,
+          icon: '❓',
+          percentage: 0,
+          type: 'others',
+          isEssential: true,
+        ),
+      );
     }
 
     // Chờ quá trình lưu danh mục hoàn tất thành công
     userCategoryController.saveCategories(selected).then((success) {
       if (!success) {
-        AppHelperFunction.showErrorSnackBar('Lưu danh mục thất bại. Vui lòng thử lại.');
+        AppHelperFunction.showErrorSnackBar(
+          'Lưu danh mục thất bại. Vui lòng thử lại.',
+        );
         return;
       }
 
@@ -94,7 +104,9 @@ class OnboardingCategorySelectController extends GetxController {
           userId = authController.user.value?.id;
           if (userId != null) {
             appController.setUserId(userId);
-            print('OnboardingController: Sync userId to AppController: $userId');
+            print(
+              'OnboardingController: Sync userId to AppController: $userId',
+            );
           }
         } catch (_) {}
       }
@@ -105,7 +117,9 @@ class OnboardingCategorySelectController extends GetxController {
           Get.offAllNamed(RoutePath.main);
         });
       } else {
-        print('OnboardingController Error: userId is still null, cannot save onboarding status!');
+        print(
+          'OnboardingController Error: userId is still null, cannot save onboarding status!',
+        );
         Get.offAllNamed(RoutePath.main);
       }
     });

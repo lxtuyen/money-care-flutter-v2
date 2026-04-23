@@ -18,26 +18,21 @@ class CheckSuggestModeUseCase {
   }) async {
     final result = await repository.getFinanceMode(userId);
 
-    return result.fold(
-      (failure) => Left(failure),
-      (entity) {
-        if (entity.suggestionCooldownUntil != null &&
-            DateTime.now().isBefore(entity.suggestionCooldownUntil!)) {
-          return const Right(null);
-        }
-
-        if (spentPercent > kSurvivalThreshold) {
-          return const Right(FinanceMode.survival);
-        }
-
-        if (spentPercent > kSavingThreshold) {
-          return const Right(FinanceMode.saving);
-        }
-
+    return result.fold((failure) => Left(failure), (entity) {
+      if (entity.suggestionCooldownUntil != null &&
+          DateTime.now().isBefore(entity.suggestionCooldownUntil!)) {
         return const Right(null);
-      },
-    );
+      }
+
+      if (spentPercent > kSurvivalThreshold) {
+        return const Right(FinanceMode.survival);
+      }
+
+      if (spentPercent > kSavingThreshold) {
+        return const Right(FinanceMode.saving);
+      }
+
+      return const Right(null);
+    });
   }
 }
-
-

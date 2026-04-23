@@ -34,13 +34,13 @@ abstract class UserModel with _$UserModel {
       UserModel.fromJson(json);
 
   UserEntity toEntity() => UserEntity(
-        id: id,
-        email: email,
-        role: role,
-        isVip: isVip ?? false,
-        accessToken: accessToken,
-        profile: profile.toEntity(),
-        savingGoal: savingGoal?.toEntity(),
-        hasCategories: hasCategories ?? false,
-      );
+    id: id,
+    email: email,
+    role: role,
+    isVip: isVip ?? false,
+    accessToken: accessToken,
+    profile: profile.toEntity(),
+    savingGoal: savingGoal?.toEntity(),
+    hasCategories: hasCategories ?? false,
+  );
 }

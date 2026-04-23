@@ -12,7 +12,11 @@ abstract class SavingGoalRemoteDatasource {
   Future<SavingGoalModel?> selectSavingGoal(int userId, int id);
   Future<ExpiredGoalCheckModel> checkExpiredSavingGoal(int userId);
   Future<bool> markAsNotified(int id);
-  Future<SavingGoalModel> extendSavingGoal(int id, DateTime newEndDate, {DateTime? newStartDate});
+  Future<SavingGoalModel> extendSavingGoal(
+    int id,
+    DateTime newEndDate, {
+    DateTime? newStartDate,
+  });
   Future<SavingGoalReportModel> getSavingGoalReport(int id);
 }
 
@@ -30,7 +34,9 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể tạo mục tiêu tiết kiệm',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể tạo mục tiêu tiết kiệm',
       );
     }
     return res.data!;
@@ -63,7 +69,9 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể tải mục tiêu tiết kiệm',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể tải mục tiêu tiết kiệm',
       );
     }
     return res.data!;
@@ -91,7 +99,9 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     final res = await api.delete<void>('${ApiRoutes.savingGoal}/$id');
     if (!res.success) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể xóa mục tiêu tiết kiệm',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể xóa mục tiêu tiết kiệm',
       );
     }
     return res.success;
@@ -106,7 +116,9 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     );
     if (!res.success) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể chọn mục tiêu tiết kiệm',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể chọn mục tiêu tiết kiệm',
       );
     }
     return res.data;
@@ -120,7 +132,9 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể kiểm tra mục tiêu hết hạn',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể kiểm tra mục tiêu hết hạn',
       );
     }
     return res.data!;
@@ -147,7 +161,8 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
   }) async {
     final body = <String, dynamic>{
       'new_end_date': newEndDate.toIso8601String(),
-      if (newStartDate != null) 'new_start_date': newStartDate.toIso8601String(),
+      if (newStartDate != null)
+        'new_start_date': newStartDate.toIso8601String(),
     };
     final res = await api.patch<SavingGoalModel>(
       '${ApiRoutes.savingGoal}/$id/extend',
@@ -176,5 +191,3 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     return res.data!;
   }
 }
-
-

@@ -19,18 +19,12 @@ class SplashScreen extends StatelessWidget {
             const Positioned(
               top: -90,
               right: -50,
-              child: _GlowCircle(
-                size: 240,
-                color: Color(0x26FFFFFF),
-              ),
+              child: _GlowCircle(size: 240, color: Color(0x26FFFFFF)),
             ),
             const Positioned(
               bottom: 110,
               left: -70,
-              child: _GlowCircle(
-                size: 220,
-                color: Color(0x14FFFFFF),
-              ),
+              child: _GlowCircle(size: 220, color: Color(0x14FFFFFF)),
             ),
             SafeArea(
               child: Padding(

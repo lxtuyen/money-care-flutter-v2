@@ -49,10 +49,7 @@ class AppLineChart extends StatelessWidget {
               getTitlesWidget: (value, meta) {
                 return Text(
                   chartHelper.formatCurrencyShort(value.toInt()),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: AppColors.text4,
-                  ),
+                  style: const TextStyle(fontSize: 10, color: AppColors.text4),
                 );
               },
             ),
@@ -61,16 +58,16 @@ class AppLineChart extends StatelessWidget {
         lineBarsData: lineBarsData,
         lineTouchData: LineTouchData(
           enabled: true,
-          touchTooltipData: tooltipData ?? LineTouchTooltipData(
-            getTooltipColor: (_) => AppColors.primary,
-            tooltipBorderRadius: BorderRadius.circular(8.0),
-            fitInsideHorizontally: true,
-            fitInsideVertically: true,
-          ),
+          touchTooltipData:
+              tooltipData ??
+              LineTouchTooltipData(
+                getTooltipColor: (_) => AppColors.primary,
+                tooltipBorderRadius: BorderRadius.circular(8.0),
+                fitInsideHorizontally: true,
+                fitInsideVertically: true,
+              ),
         ),
       ),
     );
   }
 }
-
-

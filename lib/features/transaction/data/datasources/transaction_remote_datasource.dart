@@ -5,24 +5,28 @@ import 'package:money_care/features/transaction/data/models/scan_receipt_model.d
 import 'package:money_care/features/transaction/data/models/statistics_summary_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 
-
 abstract class TransactionRemoteDatasource {
   Future<TransactionByTypeModel> findAllByFilter(
-      int userId, TransactionFilterDto dto);
-  Future<TotalByTypeModel> getTotalByType(
-      int userId, TransactionTotalsDto dto);
+    int userId,
+    TransactionFilterDto dto,
+  );
+  Future<TotalByTypeModel> getTotalByType(int userId, TransactionTotalsDto dto);
   Future<List<TotalByCategoryEntityModel>> getTotalByCate(
-      int userId, TransactionTotalsDto dto);
+    int userId,
+    TransactionTotalsDto dto,
+  );
   Future<TotalsByDateEntityModel> getTotalByDateEntity(
-      int userId, TransactionTotalsDto dto);
+    int userId,
+    TransactionTotalsDto dto,
+  );
   Future<TransactionModel> createTransaction(TransactionCreateDto dto);
-  Future<TransactionModel> updateTransaction(
-      TransactionCreateDto dto, int id);
+  Future<TransactionModel> updateTransaction(TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
   Future<ScanReceiptModel> scanReceipt(XFile image);
   Future<StatisticsSummaryModel> getStatisticsSummary(
-      int userId, TransactionTotalsDto dto);
-
+    int userId,
+    TransactionTotalsDto dto,
+  );
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
@@ -32,7 +36,9 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<TransactionByTypeModel> findAllByFilter(
-      int userId, TransactionFilterDto dto) async {
+    int userId,
+    TransactionFilterDto dto,
+  ) async {
     final res = await api.get<TransactionByTypeModel>(
       '${ApiRoutes.getTransactionsFilter}/$userId',
       queryParameters: dto.toQueryParams(),
@@ -44,7 +50,9 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<TotalByTypeModel> getTotalByType(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final res = await api.get<TotalByTypeModel>(
       '${ApiRoutes.transaction}/$userId/total-by-type',
       queryParameters: dto.toJson(),
@@ -56,7 +64,9 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<List<TotalByCategoryEntityModel>> getTotalByCate(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final res = await api.get<List<TotalByCategoryEntityModel>>(
       '${ApiRoutes.transaction}/$userId/total-by-category',
       queryParameters: dto.toJson(),
@@ -71,7 +81,9 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<TotalsByDateEntityModel> getTotalByDateEntity(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final res = await api.get<TotalsByDateEntityModel>(
       '${ApiRoutes.transaction}/$userId/total-by-day',
       queryParameters: dto.toJson(),
@@ -94,7 +106,9 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<TransactionModel> updateTransaction(
-      TransactionCreateDto dto, int id) async {
+    TransactionCreateDto dto,
+    int id,
+  ) async {
     final res = await api.put<TransactionModel>(
       '${ApiRoutes.transaction}/$id',
       body: dto.toJson(),
@@ -106,8 +120,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<bool> deleteTransaction(int id) async {
-    final res =
-        await api.delete<void>('${ApiRoutes.transaction}/$id');
+    final res = await api.delete<void>('${ApiRoutes.transaction}/$id');
     return res.success;
   }
 
@@ -129,11 +142,11 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     }
   }
 
-
-
   @override
   Future<StatisticsSummaryModel> getStatisticsSummary(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final res = await api.get<StatisticsSummaryModel>(
       '${ApiRoutes.transaction}/$userId/statistics-summary',
       queryParameters: dto.toJson(),

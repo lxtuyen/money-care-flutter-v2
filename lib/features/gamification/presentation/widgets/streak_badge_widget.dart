@@ -9,7 +9,8 @@ class StreakBadgeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GamificationController controller = Get.find<GamificationController>();
+    final GamificationController controller =
+        Get.find<GamificationController>();
 
     return Obx(() {
       final streak = controller.currentStreak.value;
@@ -27,10 +28,7 @@ class StreakBadgeWidget extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                '🔥',
-                style: TextStyle(fontSize: 14),
-              ),
+              const Text('🔥', style: TextStyle(fontSize: 14)),
               const SizedBox(width: 4),
               Text(
                 '$streak',

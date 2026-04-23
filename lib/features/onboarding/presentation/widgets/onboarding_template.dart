@@ -57,26 +57,26 @@ class _OnboardingTemplateState extends State<OnboardingTemplate>
       parent: _pageController,
       curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     );
-    _imageSlide = Tween<Offset>(
-      begin: const Offset(0, 0.12),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _pageController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
-    ));
+    _imageSlide = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _pageController,
+            curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
+          ),
+        );
 
     // Text: fade + slide up, slightly delayed
     _textFade = CurvedAnimation(
       parent: _pageController,
       curve: const Interval(0.3, 0.9, curve: Curves.easeOut),
     );
-    _textSlide = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _pageController,
-      curve: const Interval(0.3, 0.9, curve: Curves.easeOutCubic),
-    ));
+    _textSlide = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _pageController,
+            curve: const Interval(0.3, 0.9, curve: Curves.easeOutCubic),
+          ),
+        );
 
     // Button press scale
     _buttonScale = Tween<double>(begin: 1.0, end: 0.92).animate(

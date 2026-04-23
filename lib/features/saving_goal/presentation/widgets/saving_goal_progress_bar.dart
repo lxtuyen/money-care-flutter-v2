@@ -15,7 +15,9 @@ class SavingGoalProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double percentage = targetValue > 0 ? (currentValue / targetValue).clamp(0.0, 1.0) : 0.0;
+    final double percentage = targetValue > 0
+        ? (currentValue / targetValue).clamp(0.0, 1.0)
+        : 0.0;
     final int displayPercentage = (percentage * 100).toInt();
 
     return Column(

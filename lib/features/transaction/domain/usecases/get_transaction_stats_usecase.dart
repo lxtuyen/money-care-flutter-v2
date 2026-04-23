@@ -15,7 +15,10 @@ class GetTotalByCateUseCase {
   final TransactionRepository repository;
   GetTotalByCateUseCase(this.repository);
 
-  Future<List<TotalByCategoryEntity>> call(int userId, TransactionTotalsDto dto) {
+  Future<List<TotalByCategoryEntity>> call(
+    int userId,
+    TransactionTotalsDto dto,
+  ) {
     return repository.getTotalByCate(userId, dto);
   }
 }

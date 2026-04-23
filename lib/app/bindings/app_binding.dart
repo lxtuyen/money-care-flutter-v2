@@ -7,6 +7,7 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/services/notification_service.dart';
 
 import 'package:money_care/app/bindings/app_state_binding.dart';
+import 'package:money_care/core/services/ocr_service.dart';
 
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
@@ -70,7 +71,9 @@ class AppBinding extends Bindings {
     Get.put<AppController>(appController);
 
     final financeModeLocalDs = FinanceModeLocalDatasourceImpl(storage: storage);
-    final financeModeRemoteDs = FinanceModeRemoteDatasourceImpl(api: apiService);
+    final financeModeRemoteDs = FinanceModeRemoteDatasourceImpl(
+      api: apiService,
+    );
     final financeModeRepo = FinanceModeRepositoryImpl(
       remoteDatasource: financeModeRemoteDs,
       localDatasource: financeModeLocalDs,
@@ -86,15 +89,21 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final gamificationRemoteDs = GamificationRemoteDatasourceImpl(api: apiService);
+    final gamificationRemoteDs = GamificationRemoteDatasourceImpl(
+      api: apiService,
+    );
     final gamificationRepo = GamificationRepositoryImpl(
       remoteDatasource: gamificationRemoteDs,
     );
     Get.lazyPut<GamificationController>(
       () => GamificationController(
         getGamificationUseCase: GetGamificationUseCase(gamificationRepo),
-        recordDailyTransactionUseCase: RecordDailyTransactionUseCase(gamificationRepo),
-        checkAndAwardBadgesUseCase: CheckAndAwardBadgesUseCase(gamificationRepo),
+        recordDailyTransactionUseCase: RecordDailyTransactionUseCase(
+          gamificationRepo,
+        ),
+        checkAndAwardBadgesUseCase: CheckAndAwardBadgesUseCase(
+          gamificationRepo,
+        ),
         notificationService: notificationService,
         appController: appController,
       ),
@@ -106,20 +115,29 @@ class AppBinding extends Bindings {
     OnboardingBinding().dependencies();
 
     Get.put<UserCategoryController>(
-      UserCategoryController(apiClient: apiService, appController: appController),
+      UserCategoryController(
+        apiClient: apiService,
+        appController: appController,
+      ),
       permanent: true,
     );
 
     final savingGoalRemoteDs = SavingGoalRemoteDatasourceImpl(api: apiService);
-    final savingGoalRepo = SavingGoalRepositoryImpl(remoteDatasource: savingGoalRemoteDs);
+    final savingGoalRepo = SavingGoalRepositoryImpl(
+      remoteDatasource: savingGoalRemoteDs,
+    );
     Get.put<SavingGoalController>(
       SavingGoalController(
-        getSavingGoalsByUserUseCase: GetSavingGoalsByUserUseCase(savingGoalRepo),
+        getSavingGoalsByUserUseCase: GetSavingGoalsByUserUseCase(
+          savingGoalRepo,
+        ),
         getSavingGoalUseCase: GetSavingGoalUseCase(savingGoalRepo),
         updateSavingGoalUseCase: UpdateSavingGoalUseCase(savingGoalRepo),
         deleteSavingGoalUseCase: DeleteSavingGoalUseCase(savingGoalRepo),
         selectSavingGoalUseCase: SelectSavingGoalUseCase(savingGoalRepo),
-        checkExpiredSavingGoalUseCase: CheckExpiredSavingGoalUseCase(savingGoalRepo),
+        checkExpiredSavingGoalUseCase: CheckExpiredSavingGoalUseCase(
+          savingGoalRepo,
+        ),
         markAsNotifiedUseCase: MarkAsNotifiedUseCase(savingGoalRepo),
         extendSavingGoalUseCase: ExtendSavingGoalUseCase(savingGoalRepo),
         getSavingGoalReportUseCase: GetSavingGoalReportUseCase(savingGoalRepo),
@@ -127,9 +145,13 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final transactionRemoteDs = TransactionRemoteDatasourceImpl(api: apiService);
+    final transactionRemoteDs = TransactionRemoteDatasourceImpl(
+      api: apiService,
+    );
+    final ocrService = OCRService();
     final transactionRepo = TransactionRepositoryImpl(
       remoteDatasource: transactionRemoteDs,
+      ocrService: ocrService,
     );
     Get.put<TransactionController>(
       TransactionController(
@@ -144,9 +166,7 @@ class AppBinding extends Bindings {
     final userRemoteDs = UserRemoteDatasourceImpl(api: apiService);
     final userRepo = UserRepositoryImpl(remoteDatasource: userRemoteDs);
     Get.put<UserController>(
-      UserController(
-        updateMyProfileUseCase: UpdateMyProfileUseCase(userRepo),
-      ),
+      UserController(updateMyProfileUseCase: UpdateMyProfileUseCase(userRepo)),
       permanent: true,
     );
 

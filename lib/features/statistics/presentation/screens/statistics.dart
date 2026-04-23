@@ -31,10 +31,14 @@ class StatisticsScreen extends StatefulWidget {
 
 class _StatisticsScreenState extends State<StatisticsScreen> {
   final AppController appController = Get.find<AppController>();
-  final TransactionController transactionController = Get.find<TransactionController>();
-  final StatisticsController statisticsController = Get.find<StatisticsController>();
-  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
-  final UserCategoryController userCategoryController = Get.find<UserCategoryController>();
+  final TransactionController transactionController =
+      Get.find<TransactionController>();
+  final StatisticsController statisticsController =
+      Get.find<StatisticsController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
+  final UserCategoryController userCategoryController =
+      Get.find<UserCategoryController>();
   final FilterController filterController = Get.find<FilterController>();
   final UserController userController = Get.find<UserController>();
 
@@ -70,11 +74,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     children: [
                       TransactionTypeSummaryToggle(
                         selected: selectedType,
-                        onSelected: (value) => statisticsController.changeType(value),
+                        onSelected: (value) =>
+                            statisticsController.changeType(value),
                         spendText: data?.expenseTotal ?? 0,
                         incomeText: data?.incomeTotal ?? 0,
                       ),
-                      if (statisticsController.isSilentLoading.value || statisticsController.isLoading.value)
+                      if (statisticsController.isSilentLoading.value ||
+                          statisticsController.isLoading.value)
                         Positioned(
                           top: 0,
                           left: 0,
@@ -93,42 +99,51 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ),
 
               const SizedBox(height: 12),
-              
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Obx(() => GestureDetector(
-                      onTap: () => statisticsController.togglePeriodType(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.menu, size: 14, color: AppColors.primary),
-                            const SizedBox(width: 6),
-                            Text(
-                              statisticsController.periodType.value,
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                    Obx(
+                      () => GestureDetector(
+                        onTap: () => statisticsController.togglePeriodType(),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.menu,
+                                size: 14,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                statisticsController.periodType.value,
+                                style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
               ),
@@ -159,7 +174,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 );
               }),
 
-               Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Obx(() {
                   final spots = statisticsController.chartSpots;
@@ -173,25 +188,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   }
 
                   return SavingsBarChart(
-                      key: ValueKey("${statisticsController.periodType.value}_${statisticsController.currentStartDate}"),
-                      thisMonthSpots: spots,
-                      xLabels: labels,
-                    );
+                    key: ValueKey(
+                      "${statisticsController.periodType.value}_${statisticsController.currentStartDate}",
+                    ),
+                    thisMonthSpots: spots,
+                    xLabels: labels,
+                  );
                 }),
               ),
 
               const SizedBox(height: 25),
 
-              Obx(() => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: AppSectionHeading(
-                  title: statisticsController.selectedType.value == 'chi'
-                      ? AppTexts.limitOverview
-                      : "Tổng quan thu nhập",
-                  showActionButton: false,
+              Obx(
+                () => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: AppSectionHeading(
+                    title: statisticsController.selectedType.value == 'chi'
+                        ? AppTexts.limitOverview
+                        : "Tổng quan thu nhập",
+                    showActionButton: false,
+                  ),
                 ),
-              )),
-               Obx(() {
+              ),
+              Obx(() {
                 final data = statisticsController.totalByType.value;
                 final categories = statisticsController.totalByCate;
 
@@ -214,19 +233,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     .toList();
 
                 return StatisticsOverviewCard(
-                    key: ValueKey(statisticsController.currentStartDate),
-                    startDate: AppHelperFunction.getFormattedDate(statisticsController.currentStartDate),
-                    endDate: AppHelperFunction.getFormattedDate(statisticsController.currentEndDate),
-                    totalAmount: AppHelperFunction.formatAmount(
-                      (data?.expenseTotal ?? 0).toDouble(),
-                      'VND',
-                    ),
-                    incomeAmount: AppHelperFunction.formatAmount(
-                      (data?.incomeTotal ?? 0).toDouble(),
-                      'VND',
-                    ),
-                    categories: updatedCategories,
-                  );
+                  key: ValueKey(statisticsController.currentStartDate),
+                  startDate: AppHelperFunction.getFormattedDate(
+                    statisticsController.currentStartDate,
+                  ),
+                  endDate: AppHelperFunction.getFormattedDate(
+                    statisticsController.currentEndDate,
+                  ),
+                  totalAmount: AppHelperFunction.formatAmount(
+                    (data?.expenseTotal ?? 0).toDouble(),
+                    'VND',
+                  ),
+                  incomeAmount: AppHelperFunction.formatAmount(
+                    (data?.incomeTotal ?? 0).toDouble(),
+                    'VND',
+                  ),
+                  categories: updatedCategories,
+                );
               }),
 
               const SizedBox(height: 25),
@@ -265,9 +288,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget _buildTimeNavigator() {
     String label = "";
     if (statisticsController.periodType.value == 'hàng tháng') {
-      label = DateFormat('yyyy/MM').format(statisticsController.selectedMonth.value);
+      label = DateFormat(
+        'yyyy/MM',
+      ).format(statisticsController.selectedMonth.value);
     } else {
-      label = DateFormat('yyyy/MM/dd').format(statisticsController.selectedDay.value);
+      label = DateFormat(
+        'yyyy/MM/dd',
+      ).format(statisticsController.selectedDay.value);
     }
 
     return Padding(
@@ -330,7 +357,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildNavButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildNavButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(

@@ -72,7 +72,10 @@ class LoginScreen extends GetView<LoginController> {
                           },
                           child: const Text(
                             AppTexts.forgotPassword,
-                            style: TextStyle(color: AppColors.text3, fontSize: 14),
+                            style: TextStyle(
+                              color: AppColors.text3,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
@@ -103,5 +106,3 @@ class LoginScreen extends GetView<LoginController> {
     );
   }
 }
-
-

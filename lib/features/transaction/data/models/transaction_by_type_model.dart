@@ -18,7 +18,7 @@ abstract class TransactionByTypeModel with _$TransactionByTypeModel {
       _$TransactionByTypeModelFromJson(json);
 
   TransactionByTypeEntity toEntity() => TransactionByTypeEntity(
-        incomeTransactions: income.map((e) => e.toEntity()).toList(),
-        expenseTransactions: expense.map((e) => e.toEntity()).toList(),
-      );
+    incomeTransactions: income.map((e) => e.toEntity()).toList(),
+    expenseTransactions: expense.map((e) => e.toEntity()).toList(),
+  );
 }

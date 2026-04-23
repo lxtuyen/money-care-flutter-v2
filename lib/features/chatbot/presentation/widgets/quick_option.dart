@@ -9,5 +9,3 @@ class QuickOption {
     required this.template,
   });
 }
-
-

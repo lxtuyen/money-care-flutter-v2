@@ -5,11 +5,11 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 /// Các bước trong luồng onboarding người dùng
 enum OnboardingStep {
-  welcome,        // Bước 1: Chào mừng
-  incomeInfo,     // Bước 2: Thông tin thu nhập
-  balanceSetup,    // Bước 3: Thiết lập ngân sách
+  welcome, // Bước 1: Chào mừng
+  incomeInfo, // Bước 2: Thông tin thu nhập
+  balanceSetup, // Bước 3: Thiết lập ngân sách
   categorySelect, // Bước 4: Chọn danh mục
-  complete,       // Bước 5: Hoàn thành
+  complete, // Bước 5: Hoàn thành
 }
 
 class OnboardingController extends GetxController {
@@ -94,10 +94,7 @@ class OnboardingController extends GetxController {
     // Lưu trạng thái đã bỏ qua
     skippedSteps[stepIndex] = true;
     if (userId != null) {
-      await storage.writeBool(
-        '$_skippedKeyPrefix${userId}_$stepIndex',
-        true,
-      );
+      await storage.writeBool('$_skippedKeyPrefix${userId}_$stepIndex', true);
     }
 
     await goToNextStep();
@@ -110,10 +107,7 @@ class OnboardingController extends GetxController {
 
     skippedSteps.remove(stepIndex);
     if (userId != null) {
-      await storage.writeBool(
-        '$_skippedKeyPrefix${userId}_$stepIndex',
-        false,
-      );
+      await storage.writeBool('$_skippedKeyPrefix${userId}_$stepIndex', false);
     }
   }
 

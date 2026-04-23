@@ -24,15 +24,13 @@ abstract class ScanReceiptModel with _$ScanReceiptModel {
       _$ScanReceiptModelFromJson(json);
 
   ScanReceiptEntity toEntity() => ScanReceiptEntity(
-        rawText: rawText,
-        merchantName: merchantName,
-        address: address,
-        date: date,
-        totalAmount: totalAmount,
-        currency: currency,
-        categoryKey: categoryKey,
-        categoryName: categoryName,
-      );
+    rawText: rawText,
+    merchantName: merchantName,
+    address: address,
+    date: date,
+    totalAmount: totalAmount,
+    currency: currency,
+    categoryKey: categoryKey,
+    categoryName: categoryName,
+  );
 }
-
-

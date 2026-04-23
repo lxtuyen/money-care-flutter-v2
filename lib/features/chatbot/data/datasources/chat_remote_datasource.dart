@@ -24,15 +24,8 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
       return res.message;
     }
 
-    final res = await api.post<String>(
-      ApiRoutes.chatbot,
-      body: dto.toJson(),
-    );
+    final res = await api.post<String>(ApiRoutes.chatbot, body: dto.toJson());
     if (!res.success) throw Exception(res.message);
     return res.message;
   }
 }
-
-
-
-

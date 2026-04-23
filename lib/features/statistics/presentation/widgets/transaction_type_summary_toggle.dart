@@ -63,27 +63,24 @@ class TransactionTypeSummaryToggle extends StatelessWidget {
           height: 92,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color:
-                isActive
-                    ? Colors.white.withOpacity(0.24)
-                    : Colors.white.withOpacity(0.12),
+            color: isActive
+                ? Colors.white.withOpacity(0.24)
+                : Colors.white.withOpacity(0.12),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color:
-                  isActive
-                      ? Colors.white.withOpacity(0.34)
-                      : Colors.white.withOpacity(0.18),
+              color: isActive
+                  ? Colors.white.withOpacity(0.34)
+                  : Colors.white.withOpacity(0.18),
             ),
-            boxShadow:
-                isActive
-                    ? [
-                      BoxShadow(
-                        color: AppColors.secondaryNavyBlue.withOpacity(0.14),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
-                      ),
-                    ]
-                    : null,
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColors.secondaryNavyBlue.withOpacity(0.14),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

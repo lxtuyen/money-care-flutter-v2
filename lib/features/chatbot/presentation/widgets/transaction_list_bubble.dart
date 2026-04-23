@@ -19,8 +19,11 @@ class TransactionListBubble extends StatelessWidget {
     final String? startDate = query['startDate'] as String?;
     final String? endDate = query['endDate'] as String?;
 
-    final currencyFormat =
-        NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: '₫',
+      decimalDigits: 0,
+    );
 
     String periodLabel = _buildPeriodLabel(startDate, endDate);
     String typeLabel = _buildTypeLabel(type);
@@ -49,8 +52,7 @@ class TransactionListBubble extends StatelessWidget {
           children: [
             // Header
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xFF667eea), Color(0xFF764ba2)],
@@ -62,8 +64,11 @@ class TransactionListBubble extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.receipt_long_rounded,
-                      color: Colors.white, size: 18),
+                  const Icon(
+                    Icons.receipt_long_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -77,8 +82,10 @@ class TransactionListBubble extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(12),
@@ -101,14 +108,19 @@ class TransactionListBubble extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    Icon(Icons.inbox_outlined,
-                        color: Colors.grey.shade400, size: 20),
+                    Icon(
+                      Icons.inbox_outlined,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Không có giao dịch nào trong khoảng thời gian này.',
                         style: TextStyle(
-                            color: Colors.grey.shade500, fontSize: 13),
+                          color: Colors.grey.shade500,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -127,8 +139,7 @@ class TransactionListBubble extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   final t = transactions[index] as Map<String, dynamic>;
-                  final double amount =
-                      (t['amount'] as num?)?.toDouble() ?? 0;
+                  final double amount = (t['amount'] as num?)?.toDouble() ?? 0;
                   final String txType = t['type'] as String? ?? 'expense';
                   final bool isIncome = txType == 'income';
                   final String category =
@@ -140,8 +151,9 @@ class TransactionListBubble extends StatelessWidget {
                   String formattedDate = '';
                   if (dateStr != null) {
                     try {
-                      formattedDate = DateFormat('dd/MM')
-                          .format(DateTime.parse(dateStr).toLocal());
+                      formattedDate = DateFormat(
+                        'dd/MM',
+                      ).format(DateTime.parse(dateStr).toLocal());
                     } catch (_) {}
                   }
 
@@ -152,7 +164,9 @@ class TransactionListBubble extends StatelessWidget {
                           Get.find<ChatController>().onTransactionTap(t),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                         child: Row(
                           children: [
                             // Icon
@@ -160,15 +174,18 @@ class TransactionListBubble extends StatelessWidget {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: (isIncome
-                                        ? const Color(0xFF43A047)
-                                        : const Color(0xFFE53935))
-                                    .withValues(alpha: 0.1),
+                                color:
+                                    (isIncome
+                                            ? const Color(0xFF43A047)
+                                            : const Color(0xFFE53935))
+                                        .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
-                                child: Text(icon,
-                                    style: const TextStyle(fontSize: 18)),
+                                child: Text(
+                                  icon,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -230,15 +247,15 @@ class TransactionListBubble extends StatelessWidget {
               ),
 
             // Summary footer
-            if (transactions.isNotEmpty) _buildSummaryFooter(transactions, currencyFormat),
+            if (transactions.isNotEmpty)
+              _buildSummaryFooter(transactions, currencyFormat),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryFooter(
-      List transactions, NumberFormat currencyFormat) {
+  Widget _buildSummaryFooter(List transactions, NumberFormat currencyFormat) {
     double totalIncome = 0;
     double totalExpense = 0;
     for (final t in transactions) {
@@ -277,7 +294,12 @@ class TransactionListBubble extends StatelessWidget {
               ),
             ),
           if (hasIncome && hasExpense)
-            Container(width: 1, height: 24, color: Colors.grey.shade200, margin: const EdgeInsets.symmetric(horizontal: 8)),
+            Container(
+              width: 1,
+              height: 24,
+              color: Colors.grey.shade200,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+            ),
           if (hasExpense)
             Flexible(
               child: _SummaryChip(

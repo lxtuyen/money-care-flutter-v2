@@ -72,7 +72,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               final data = statisticsController.totalByType.value;
               final selectedType = statisticsController.selectedType.value;
 
-              if (transactionController.isLoading.value || 
+              if (transactionController.isLoading.value ||
                   statisticsController.isLoading.value) {
                 return const SizedBox(
                   height: 120,
@@ -102,12 +102,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             ),
           ),
           Expanded(
-            child: Obx(() => AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: statisticsController.selectedType.value == 'chi'
-                      ? _buildExpenseList()
-                      : _buildIncomeList(),
-                )),
+            child: Obx(
+              () => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: statisticsController.selectedType.value == 'chi'
+                    ? _buildExpenseList()
+                    : _buildIncomeList(),
+              ),
+            ),
           ),
         ],
       ),
@@ -131,11 +133,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       }
 
       final keyword = filterController.keyword.value.toLowerCase().trim();
-      final filtered =
-          data.expenseTransactions.where((t) {
-            final note = t.note?.toLowerCase() ?? '';
-            return note.contains(keyword);
-          }).toList();
+      final filtered = data.expenseTransactions.where((t) {
+        final note = t.note?.toLowerCase() ?? '';
+        return note.contains(keyword);
+      }).toList();
 
       if (filtered.isEmpty) {
         return _buildEmptyView();
@@ -144,14 +145,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       return ListView(
         key: const ValueKey('chi'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        children:
-            filtered.asMap().entries.map((entry) {
-              return TransactionItem(
-                item: entry.value,
-                isShowDate: true,
-                onTap: () => _showTransactionDetail(context, entry.value),
-              );
-            }).toList(),
+        children: filtered.asMap().entries.map((entry) {
+          return TransactionItem(
+            item: entry.value,
+            isShowDate: true,
+            onTap: () => _showTransactionDetail(context, entry.value),
+          );
+        }).toList(),
       );
     });
   }
@@ -173,11 +173,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       }
 
       final keyword = filterController.keyword.value.toLowerCase().trim();
-      final filtered =
-          data.incomeTransactions.where((t) {
-            final note = t.note?.toLowerCase() ?? '';
-            return note.contains(keyword);
-          }).toList();
+      final filtered = data.incomeTransactions.where((t) {
+        final note = t.note?.toLowerCase() ?? '';
+        return note.contains(keyword);
+      }).toList();
 
       if (filtered.isEmpty) {
         return _buildEmptyView();
@@ -186,14 +185,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       return ListView(
         key: const ValueKey('thu'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        children:
-            filtered.asMap().entries.map((entry) {
-              return TransactionItem(
-                item: entry.value,
-                isShowDate: true,
-                onTap: () => _showTransactionDetail(context, entry.value),
-              );
-            }).toList(),
+        children: filtered.asMap().entries.map((entry) {
+          return TransactionItem(
+            item: entry.value,
+            isShowDate: true,
+            onTap: () => _showTransactionDetail(context, entry.value),
+          );
+        }).toList(),
       );
     });
   }
@@ -201,13 +199,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   Widget _buildEmptyView() {
     return AppEmptyState(
       message: 'Không có giao dịch phù hợp',
-      action:
-          filterController.hasActiveFilters
-              ? TextButton(
-                onPressed: _clearFilters,
-                child: const Text('Xóa tất cả bộ lọc'),
-              )
-              : null,
+      action: filterController.hasActiveFilters
+          ? TextButton(
+              onPressed: _clearFilters,
+              child: const Text('Xóa tất cả bộ lọc'),
+            )
+          : null,
     );
   }
 
@@ -227,60 +224,60 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   void _showCategoryFilterDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder:
-          (context) => Obx(() {
-            final isExpenseTab = statisticsController.selectedType.value == 'chi';
+      builder: (context) => Obx(() {
+        final isExpenseTab = statisticsController.selectedType.value == 'chi';
 
-            final categoriesFromStats = isExpenseTab
-                ? statisticsController.expenseCategories
-                : statisticsController.incomeCategories;
+        final categoriesFromStats = isExpenseTab
+            ? statisticsController.expenseCategories
+            : statisticsController.incomeCategories;
 
-            List<CategoryEntity> filteredCategories = categoriesFromStats
-                .map<CategoryEntity>((e) => CategoryEntity(
-                      id: e.categoryId,
-                      name: e.categoryName,
-                      icon: e.categoryIcon,
-                      type: isExpenseTab ? 'expense' : 'income',
-                    ))
-                .toList();
+        List<CategoryEntity> filteredCategories = categoriesFromStats
+            .map<CategoryEntity>(
+              (e) => CategoryEntity(
+                id: e.categoryId,
+                name: e.categoryName,
+                icon: e.categoryIcon,
+                type: isExpenseTab ? 'expense' : 'income',
+              ),
+            )
+            .toList();
 
-            if (filteredCategories.isEmpty) {
-              final data = savingGoalController.currentGoal.value;
-              final fundCategories = data?.categories ?? [];
-              filteredCategories = fundCategories.where((c) {
-                final catType = c.type?.toLowerCase() ?? '';
-                return isExpenseTab ? catType != 'income' : catType == 'income';
-              }).toList();
-            }
+        if (filteredCategories.isEmpty) {
+          final data = savingGoalController.currentGoal.value;
+          final fundCategories = data?.categories ?? [];
+          filteredCategories = fundCategories.where((c) {
+            final catType = c.type?.toLowerCase() ?? '';
+            return isExpenseTab ? catType != 'income' : catType == 'income';
+          }).toList();
+        }
 
-            if (savingGoalController.isLoadingCurrent.value &&
-                filteredCategories.isEmpty) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 50),
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
+        if (savingGoalController.isLoadingCurrent.value &&
+            filteredCategories.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 50),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
 
-            return FilterDialog(
-              title: 'Lọc theo phân loại',
-              categories: filteredCategories,
-              onApply: (_) => _applyFilter(),
-            );
-          }),
+        return FilterDialog(
+          title: 'Lọc theo phân loại',
+          categories: filteredCategories,
+          onApply: (_) => _applyFilter(),
+        );
+      }),
     );
   }
 
   void _showTimeFilterDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder:
-          (_) => FilterDialog(
-            title: 'Lọc theo thời gian',
-            items: const ['Hôm nay', 'Tuần này', 'Tháng này', 'Tùy chỉnh'],
-            onApply: (_) => _applyFilter(),
-          ),
+      builder: (_) => FilterDialog(
+        title: 'Lọc theo thời gian',
+        items: const ['Hôm nay', 'Tuần này', 'Tháng này', 'Tùy chỉnh'],
+        onApply: (_) => _applyFilter(),
+      ),
     );
   }
 
@@ -307,137 +304,137 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       ),
       builder: (context) {
         return SafeArea(
-          child: Obx(
-            () {
-              String categorySubtitle = 'Chọn loại chi tiêu hoặc thu nhập cụ thể';
-              if (filterController.categoryId.value != null) {
-                final categoryId = filterController.categoryId.value;
-                final cats = savingGoalController.currentGoal.value?.categories ?? [];
-                final cat = cats.cast<CategoryEntity?>().firstWhere(
-                      (c) => c?.id == categoryId,
-                      orElse: () => null,
-                    );
-                if (cat != null) {
-                  categorySubtitle = 'Đã chọn: ${cat.name}';
-                } else {
-                  categorySubtitle = 'Đã chọn 1 phân loại';
-                }
+          child: Obx(() {
+            String categorySubtitle = 'Chọn loại chi tiêu hoặc thu nhập cụ thể';
+            if (filterController.categoryId.value != null) {
+              final categoryId = filterController.categoryId.value;
+              final cats =
+                  savingGoalController.currentGoal.value?.categories ?? [];
+              final cat = cats.cast<CategoryEntity?>().firstWhere(
+                (c) => c?.id == categoryId,
+                orElse: () => null,
+              );
+              if (cat != null) {
+                categorySubtitle = 'Đã chọn: ${cat.name}';
+              } else {
+                categorySubtitle = 'Đã chọn 1 phân loại';
               }
+            }
 
-              return Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                ),
-                padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 44,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: AppColors.borderPrimary,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: AppColors.borderPrimary,
+                        borderRadius: BorderRadius.circular(999),
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppColors.backgroundPrimary,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: const Icon(
-                            Icons.tune_rounded,
-                            color: AppColors.primary,
-                          ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundPrimary,
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Bộ lọc giao dịch',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                        child: const Icon(
+                          Icons.tune_rounded,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Bộ lọc giao dịch',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
                               ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Chọn cách bạn muốn thu hẹp danh sách giao dịch.',
-                                style: TextStyle(
-                                  color: AppColors.text4,
-                                  fontSize: 13,
-                                ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Chọn cách bạn muốn thu hẹp danh sách giao dịch.',
+                              style: TextStyle(
+                                color: AppColors.text4,
+                                fontSize: 13,
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primary.withOpacity(0.12),
+                          AppColors.secondaryOrange.withOpacity(0.1),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome_rounded,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            filterController.hasActiveFilters
+                                ? 'Đang áp dụng ${filterController.activeFilterCount} tiêu chí lọc.'
+                                : 'Chưa có bộ lọc nào được áp dụng.',
+                            style: const TextStyle(
+                              color: AppColors.text2,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.primary.withOpacity(0.12),
-                            AppColors.secondaryOrange.withOpacity(0.1),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.auto_awesome_rounded,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              filterController.hasActiveFilters
-                                  ? 'Đang áp dụng ${filterController.activeFilterCount} tiêu chí lọc.'
-                                  : 'Chưa có bộ lọc nào được áp dụng.',
-                              style: const TextStyle(
-                                color: AppColors.text2,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildFilterSheetTile(
-                      icon: Icons.category_outlined,
-                      title: 'Lọc theo phân loại',
-                      subtitle: categorySubtitle,
-                      onTap: () {
-                        Get.back();
-                        _showCategoryFilterDialog(context);
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _buildFilterSheetTile(
-                      icon: Icons.calendar_today_rounded,
-                      title: 'Lọc theo thời gian',
-                      subtitle: filterController.dateLabel.value,
-                      onTap: () {
-                        Get.back();
-                        _showTimeFilterDialog(context);
-                      },
-                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildFilterSheetTile(
+                    icon: Icons.category_outlined,
+                    title: 'Lọc theo phân loại',
+                    subtitle: categorySubtitle,
+                    onTap: () {
+                      Get.back();
+                      _showCategoryFilterDialog(context);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildFilterSheetTile(
+                    icon: Icons.calendar_today_rounded,
+                    title: 'Lọc theo thời gian',
+                    subtitle: filterController.dateLabel.value,
+                    onTap: () {
+                      Get.back();
+                      _showTimeFilterDialog(context);
+                    },
+                  ),
                   if (filterController.hasActiveFilters) ...[
                     const SizedBox(height: 16),
                     SizedBox(
@@ -465,12 +462,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 ],
               ),
             );
-          },
-        ),
-      );
-    },
-  );
-}
+          }),
+        );
+      },
+    );
+  }
 
   Widget _buildFilterSheetTile({
     required IconData icon,

@@ -50,16 +50,16 @@ class NotificationService extends GetxService {
 
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
-    );
+          requestSoundPermission: false,
+          requestBadgePermission: false,
+          requestAlertPermission: false,
+        );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-    );
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+        );
 
     await _localNotificationsPlugin.initialize(
       settings: initializationSettings,
@@ -81,15 +81,16 @@ class NotificationService extends GetxService {
   Future<void> _showLocalNotification(RemoteMessage message) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'money_care_channel',
-      'Money Care Notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+          'money_care_channel',
+          'Money Care Notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+          largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+        );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await _localNotificationsPlugin.show(
       id: message.hashCode,
@@ -102,7 +103,10 @@ class NotificationService extends GetxService {
   Future<void> _sendTokenToServer(String token) async {
     try {
       final apiClient = Get.find<ApiClient>();
-      final response = await apiClient.post('users/device-tokens', body: {'token': token});
+      final response = await apiClient.post(
+        'users/device-tokens',
+        body: {'token': token},
+      );
       if (response.success) {
         print('DEBUG: Đã gửi FCM token lên server thành công');
       } else {
@@ -114,11 +118,11 @@ class NotificationService extends GetxService {
   }
 
   Future<void> syncToken() async {
-     fcmToken ??= await _firebaseMessaging.getToken();
-     print('syncToken gọi: $fcmToken');
-     if (fcmToken != null) {
-       await _sendTokenToServer(fcmToken!);
-     }
+    fcmToken ??= await _firebaseMessaging.getToken();
+    print('syncToken gọi: $fcmToken');
+    if (fcmToken != null) {
+      await _sendTokenToServer(fcmToken!);
+    }
   }
 
   /// Hiển thị thông báo local ngay lập tức (dùng cho balance threshold, badge, v.v.)
@@ -129,17 +133,23 @@ class NotificationService extends GetxService {
   }) async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-      'money_care_channel',
-      'Money Care Notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+          'money_care_channel',
+          'Money Care Notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+          largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+        );
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
     );
-    const NotificationDetails details =
-        NotificationDetails(android: androidDetails);
 
-    await _localNotificationsPlugin.show(id: id, title: title, body: body, notificationDetails: details);
+    await _localNotificationsPlugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
   }
 
   Future<void> removeTokenFromServer() async {
@@ -147,7 +157,10 @@ class NotificationService extends GetxService {
     if (fcmToken != null) {
       try {
         final apiClient = Get.find<ApiClient>();
-        await apiClient.delete('users/device-tokens', body: {'token': fcmToken});
+        await apiClient.delete(
+          'users/device-tokens',
+          body: {'token': fcmToken},
+        );
       } catch (e) {
         print('Error removing FCM token: $e');
       }

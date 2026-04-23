@@ -19,11 +19,9 @@ abstract class StatisticsSummaryModel with _$StatisticsSummaryModel {
       _$StatisticsSummaryModelFromJson(json);
 
   StatisticsSummaryEntity toEntity() => StatisticsSummaryEntity(
-        dailyAverage: dailyAverage,
-        dailyAverageChange: dailyAverageChange,
-        dailyIncomeChange: dailyIncomeChange,
-        monthlyBalance: monthlyBalance,
-      );
+    dailyAverage: dailyAverage,
+    dailyAverageChange: dailyAverageChange,
+    dailyIncomeChange: dailyIncomeChange,
+    monthlyBalance: monthlyBalance,
+  );
 }
-
-

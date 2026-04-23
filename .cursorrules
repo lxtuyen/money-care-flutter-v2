@@ -1,0 +1,72 @@
+# Money Care Project Rules
+
+You are an expert Flutter/Dart developer working on the **Money Care** application, a personal financial management tool. Follow these rules strictly to ensure consistency and quality.
+
+## Project Context
+- **Name**: Money Care
+- **Stack**: Flutter (Stable), Dart, Firebase (Auth, Firestore, Messaging, Storage), GetX (State Management), Freezed (Data Models).
+- **Primary Language**: Vietnamese (UI Strings).
+
+## 1. Architecture: Feature-based Clean Architecture
+The project is organized into `app`, `core`, and `features`. Each feature MUST follow this structure:
+
+```
+lib/features/<feature_name>/
+├── data/
+│   ├── datasources/    # Remote & Local data sources
+│   ├── models/         # Data models (using Freezed, for serialization)
+│   └── repositories/   # Repository implementations
+├── domain/
+│   ├── entities/       # Plain Dart classes (Business objects)
+│   ├── repositories/   # Abstract repository interfaces
+│   └── usecases/       # Single-purpose business logic classes
+└── presentation/
+    ├── bindings/       # GetX Bindings
+    ├── controllers/    # GetX Controllers
+    ├── screens/        # UI Screens/Pages
+    └── widgets/        # Feature-specific reusable widgets
+```
+
+### Guidelines for Layers:
+- **Domain**: NO dependencies on other layers. Contains the "what" of the application.
+- **Data**: Implements domain repositories. Handles data conversion (Model <-> Entity).
+- **Presentation**: UI and State Management. Controllers handle logic, Screens handle layout.
+
+## 2. State Management (GetX)
+- Use `GetxController` for all business logic in the presentation layer.
+- Use `Bindings` to inject dependencies.
+- Navigation: Use named routes via `Get.toNamed()` or `Get.offAllNamed()`. Defined in `lib/app/router/`.
+- Reactivity: Use `.obs` for observable variables and `Obx(() => ...)` in UI.
+
+## 3. Data Modeling (Freezed)
+- All Data Models and complex states MUST use the `freezed` package.
+- Always include `fromJson` and `toJson` if the model interacts with APIs/Firebase.
+- Run `flutter pub run build_runner build --delete-conflicting-outputs` after changes.
+
+## 4. UI & Design System
+- **Font**: Use `BeVietnamPro`.
+- **Icons**: Use `Iconsax` library (`iconsax_flutter`).
+- **Colors**: Use predefined colors in `lib/core/constants/colors.dart` (e.g., `AppColors.primary`).
+- **Strings**: DO NOT hardcode strings. Use `lib/core/constants/text_string.dart` (e.g., `AppTexts.login`).
+- **Responsive**: Use `AppSizes` in `lib/core/constants/sizes.dart` for margins, padding, and font sizes.
+- **Widgets**: Prefer using `lib/core/widgets` for common components.
+
+## 5. Coding Standards
+- **Naming**: 
+    - Classes: `PascalCase`
+    - Variables/Functions: `camelCase`
+    - Files: `snake_case`
+- **Error Handling**: Use `try-catch` in repositories/datasources. Use generic error classes from `lib/core/errors/`.
+- **Asynchronous**: Use `async/await` instead of `.then()`.
+- **Formatting**: ALWAYS run `dart format` for all generated or modified code.
+- **Cleanup**: 
+    - Remove redundant `print()` or `debugPrint()` statements used for debugging.
+    - Remove placeholder comments (e.g., `// TODO: implement`, `// test`) and unnecessary boilerplate comments.
+- **Commits**: Use conventional commits (e.g., `feat:`, `fix:`, `refactor:`).
+
+## 6. Specific AI Instructions
+- When creating a new feature, always ask if you should generate all layers (Domain, Data, Presentation).
+- Before suggesting a package, check `pubspec.yaml` to see if a similar one is already used.
+- Always preserve useful documentation, but remove redundant or obsolete comments.
+- If a task involves strings, always check `AppTexts` first.
+- After any code modification, ensure the file is formatted and clean of debug artifacts.

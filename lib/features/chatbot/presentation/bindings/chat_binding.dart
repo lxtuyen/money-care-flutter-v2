@@ -20,5 +20,3 @@ class ChatBinding extends Bindings {
     );
   }
 }
-
-

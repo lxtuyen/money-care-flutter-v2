@@ -42,7 +42,8 @@ class FinanceModeRepositoryImpl implements FinanceModeRepository {
   /// If offline, the pending sync entry is kept for retry when connectivity is restored.
   @override
   Future<Either<Failure, FinanceModeEntity>> saveFinanceMode(
-      FinanceModeEntity financeMode) async {
+    FinanceModeEntity financeMode,
+  ) async {
     final model = FinanceModeModel.fromEntity(financeMode);
 
     // Step 1: Save locally first (offline-first)
@@ -88,5 +89,3 @@ class FinanceModeRepositoryImpl implements FinanceModeRepository {
     }
   }
 }
-
-

@@ -63,40 +63,29 @@ class AuthBinding extends Bindings {
     );
 
     Get.lazyPut<RegisterController>(
-      () => RegisterController(
-        registerUseCase: RegisterUseCase(repository),
-      ),
+      () => RegisterController(registerUseCase: RegisterUseCase(repository)),
       fenix: true,
     );
 
     Get.lazyPut<ForgotPasswordController>(
-      () => ForgotPasswordController(
-        authController: Get.find<AuthController>(),
-      ),
+      () =>
+          ForgotPasswordController(authController: Get.find<AuthController>()),
       fenix: true,
     );
 
     Get.lazyPut<ResetPasswordController>(
-      () => ResetPasswordController(
-        authController: Get.find<AuthController>(),
-      ),
+      () => ResetPasswordController(authController: Get.find<AuthController>()),
       fenix: true,
     );
 
     Get.lazyPut<OtpController>(
-      () => OtpController(
-        authController: Get.find<AuthController>(),
-      ),
+      () => OtpController(authController: Get.find<AuthController>()),
       fenix: true,
     );
 
     Get.lazyPut<LoginOptionController>(
-      () => LoginOptionController(
-        authController: Get.find<AuthController>(),
-      ),
+      () => LoginOptionController(authController: Get.find<AuthController>()),
       fenix: true,
     );
   }
 }
-
-

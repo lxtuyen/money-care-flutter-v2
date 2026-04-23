@@ -81,14 +81,10 @@ Future<DateTime?> showStyledDatePicker({
             shadowColor: Colors.black26,
             dividerColor: const Color(0xFFE1E5E9),
             cancelButtonStyle: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all(
-                const Color(0xFF7A7777),
-              ),
+              foregroundColor: WidgetStateProperty.all(const Color(0xFF7A7777)),
             ),
             confirmButtonStyle: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all(
-                const Color(0xFF1379C1),
-              ),
+              foregroundColor: WidgetStateProperty.all(const Color(0xFF1379C1)),
             ),
           ),
         ),
@@ -97,5 +93,3 @@ Future<DateTime?> showStyledDatePicker({
     },
   );
 }
-
-

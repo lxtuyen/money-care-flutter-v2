@@ -16,7 +16,8 @@ abstract class TransactionModel with _$TransactionModel {
     @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
     @JsonKey(fromJson: NumParser.parseInt) @Default(0) int amount,
     @Default('') String type,
-    @JsonKey(readValue: _readPictureUrl, name: 'picture_url') String? pictureUrl,
+    @JsonKey(readValue: _readPictureUrl, name: 'picture_url')
+    String? pictureUrl,
     @JsonKey(name: 'transaction_date') DateTime? transactionDate,
     String? note,
     @JsonKey(name: 'created_at') DateTime? createdAt,
@@ -30,14 +31,14 @@ abstract class TransactionModel with _$TransactionModel {
       _$TransactionModelFromJson(json);
 
   TransactionEntity toEntity() => TransactionEntity(
-        id: id,
-        amount: amount,
-        type: type,
-        pictureUrl: pictureUrl,
-        transactionDate: transactionDate,
-        note: note,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-        category: category?.toEntity(),
-      );
+    id: id,
+    amount: amount,
+    type: type,
+    pictureUrl: pictureUrl,
+    transactionDate: transactionDate,
+    note: note,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+    category: category?.toEntity(),
+  );
 }

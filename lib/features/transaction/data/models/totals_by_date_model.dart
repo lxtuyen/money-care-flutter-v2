@@ -18,7 +18,7 @@ abstract class TotalsByDateEntityModel with _$TotalsByDateEntityModel {
       _$TotalsByDateEntityModelFromJson(json);
 
   TotalsByDateEntity toEntity() => TotalsByDateEntity(
-        income: income.map((e) => e.toEntity()).toList(),
-        expense: expense.map((e) => e.toEntity()).toList(),
-      );
+    income: income.map((e) => e.toEntity()).toList(),
+    expense: expense.map((e) => e.toEntity()).toList(),
+  );
 }

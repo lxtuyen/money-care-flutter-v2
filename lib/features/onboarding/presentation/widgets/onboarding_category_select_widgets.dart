@@ -12,11 +12,14 @@ class OnboardingSectionLabel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.text1)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppColors.text1,
+          ),
+        ),
         if (hint != null) ...[
           const SizedBox(height: 4),
           Row(
@@ -24,9 +27,14 @@ class OnboardingSectionLabel extends StatelessWidget {
             children: [
               const Text('💡 ', style: TextStyle(fontSize: 12)),
               Expanded(
-                child: Text(hint!,
-                    style: const TextStyle(
-                        fontSize: 12, color: AppColors.text4, height: 1.4)),
+                child: Text(
+                  hint!,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.text4,
+                    height: 1.4,
+                  ),
+                ),
               ),
             ],
           ),
@@ -111,11 +119,14 @@ class OnboardingAddNewButton extends StatelessWidget {
           children: [
             Icon(Icons.add, color: Colors.white, size: 18),
             SizedBox(width: 6),
-            Text('Thêm mới',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600)),
+            Text(
+              'Thêm mới',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),
@@ -208,10 +219,7 @@ class OnboardingCategoryBottomBar extends StatelessWidget {
           if (hint != null) ...[
             Text(
               hint,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.text4,
-              ),
+              style: const TextStyle(fontSize: 12, color: AppColors.text4),
             ),
             const SizedBox(height: 8),
           ],
@@ -226,7 +234,8 @@ class OnboardingCategoryBottomBar extends StatelessWidget {
                 foregroundColor: Colors.white,
                 disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 0,
               ),
               child: const Text(

@@ -9,6 +9,7 @@ import 'package:money_care/features/transaction/presentation/widgets/category_it
 class CategorySheet extends StatefulWidget {
   final List<CategoryEntity> categories;
   final CategoryEntity? selectedCategoryInit;
+
   /// 'income' hoặc 'expense' — chỉ hiển thị category khớp type hoặc type null.
   final String? transactionType;
 
@@ -39,7 +40,7 @@ class _CategorySheetState extends State<CategorySheet> {
     var list = widget.categories.where((c) {
       // Nếu là 'others' thì luôn cho phép hiển thị bất kể transactionType là gì.
       if (c.type == 'others') return true;
-      
+
       if (widget.transactionType != null && c.type != null) {
         return c.type == widget.transactionType;
       }
@@ -175,11 +176,11 @@ class _CategorySheetState extends State<CategorySheet> {
                           padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 1.28,
-                          ),
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 1.28,
+                              ),
                           itemCount: displayCategories.length,
                           itemBuilder: (context, index) {
                             final item = displayCategories[index];

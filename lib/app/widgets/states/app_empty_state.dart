@@ -27,10 +27,7 @@ class AppEmptyState extends StatelessWidget {
             style: const TextStyle(fontSize: 16, color: AppColors.text5),
             textAlign: TextAlign.center,
           ),
-          if (action != null) ...[
-            const SizedBox(height: 8),
-            action!,
-          ],
+          if (action != null) ...[const SizedBox(height: 8), action!],
         ],
       ),
     );

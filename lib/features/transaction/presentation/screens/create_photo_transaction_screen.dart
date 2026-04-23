@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:image/image.dart' as img;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,10 @@ import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
+import 'package:money_care/core/constants/sizes.dart';
+import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/photo_transaction_controller.dart';
-import 'package:money_care/features/transaction/presentation/screens/photo_transaction_history_screen.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
 
 class CreatePhotoTransactionScreen extends StatefulWidget {
@@ -26,10 +28,10 @@ class CreatePhotoTransactionScreen extends StatefulWidget {
 }
 
 class _CreatePhotoTransactionScreenState
-    extends State<CreatePhotoTransactionScreen> with WidgetsBindingObserver {
+    extends State<CreatePhotoTransactionScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late final PhotoTransactionController controller;
 
-  // Camera
   List<CameraDescription> _cameras = [];
   CameraController? _cameraController;
   int _selectedCameraIndex = 0;
@@ -37,8 +39,9 @@ class _CreatePhotoTransactionScreenState
   bool _isFlashOn = false;
   bool _isTakingPhoto = false;
 
-  // View mode: camera or form
   bool _showForm = false;
+
+  late AnimationController _scanController;
 
   @override
   void initState() {
@@ -47,6 +50,11 @@ class _CreatePhotoTransactionScreenState
     controller = Get.find<PhotoTransactionController>();
     controller.reset();
     _initCamera();
+
+    _scanController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
   }
 
   Future<void> _initCamera() async {
@@ -60,7 +68,9 @@ class _CreatePhotoTransactionScreenState
   Future<void> _startCamera(int index) async {
     final prev = _cameraController;
     if (prev != null) {
+      _isCameraInitialized = false;
       await prev.dispose();
+      _cameraController = null;
     }
     final cam = CameraController(
       _cameras[index],
@@ -93,15 +103,18 @@ class _CreatePhotoTransactionScreenState
   }
 
   Future<void> _takePhoto() async {
-    if (_cameraController == null ||
-        !_isCameraInitialized ||
-        _isTakingPhoto) {
+    if (_cameraController == null || !_isCameraInitialized || _isTakingPhoto) {
       return;
     }
     setState(() => _isTakingPhoto = true);
     try {
       final file = await _cameraController!.takePicture();
-      controller.selectedImagePath.value = file.path;
+
+      // Hiển thị loading khi đang xử lý ảnh
+      setState(() => _isTakingPhoto = true);
+
+      final croppedPath = await _cropImage(file.path);
+      controller.selectedImagePath.value = croppedPath;
       setState(() => _showForm = true);
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Không thể chụp ảnh: $e');
@@ -117,19 +130,93 @@ class _CreatePhotoTransactionScreenState
       imageQuality: 85,
     );
     if (image != null) {
+      // Đối với ảnh từ gallery, có thể chúng ta không cần crop tự động
+      // vì người dùng đã tự chọn ảnh ưng ý, nhưng nếu muốn đồng bộ có thể thêm ở đây.
       controller.selectedImagePath.value = image.path;
       setState(() => _showForm = true);
     }
   }
 
+  Future<String> _cropImage(String path) async {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    final bytes = await File(path).readAsBytes();
+    img.Image? image = img.decodeImage(bytes);
+
+    if (image == null) return path;
+
+    // Fix orientation if needed
+    image = img.bakeOrientation(image);
+
+    final int width = image.width;
+    final int height = image.height;
+
+    // 1. Xác định tỉ lệ của Preview Area trên màn hình
+    // Top 60, Bottom 180 => Preview height = ScreenHeight - 240
+    // Preview width = ScreenWidth
+    final double previewHeight = screenHeight - 240;
+    final double previewWidth = screenWidth;
+    final double previewAspectRatio = previewWidth / previewHeight;
+
+    // 2. Xác định tỉ lệ ảnh gốc
+    final double imageAspectRatio = width / height;
+
+    double scale;
+    double offsetX = 0;
+    double offsetY = 0;
+
+    // Tính toán xem camera preview đang được "cover" như thế nào
+    if (imageAspectRatio > previewAspectRatio) {
+      // Ảnh rộng hơn màn hình -> Bị cắt hai bên
+      scale = previewHeight / height;
+      offsetX = (width - previewWidth / scale) / 2;
+    } else {
+      // Ảnh dài hơn màn hình -> Bị cắt trên dưới
+      scale = previewWidth / width;
+      offsetY = (height - previewHeight / scale) / 2;
+    }
+
+    // 3. Tính toán vùng crop (85% width, 60% height của vùng nhìn thấy)
+    final int cropWidth = (previewWidth * 0.85 / scale).toInt();
+    final int cropHeight = (previewHeight * 0.60 / scale).toInt();
+
+    final int x = (offsetX + (previewWidth * 0.075 / scale))
+        .toInt(); // 0.075 = (1 - 0.85) / 2
+    final int y = (offsetY + (previewHeight * 0.20 / scale))
+        .toInt(); // 0.20 = (1 - 0.60) / 2
+
+    final croppedImage = img.copyCrop(
+      image,
+      x: x,
+      y: y,
+      width: cropWidth,
+      height: cropHeight,
+    );
+
+    // Lưu đè lên file cũ hoặc tạo file mới
+    final croppedBytes = img.encodeJpg(croppedImage, quality: 85);
+    final croppedFile = File(path.replaceAll('.jpg', '_cropped.jpg'));
+    await croppedFile.writeAsBytes(croppedBytes);
+
+    return croppedFile.path;
+  }
+
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      _initCamera();
+      return;
+    }
+
     final cam = _cameraController;
     if (cam == null || !cam.value.isInitialized) return;
-    if (state == AppLifecycleState.inactive) {
-      cam.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      _startCamera(_selectedCameraIndex);
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      _isCameraInitialized = false;
+      await cam.dispose();
+      _cameraController = null;
     }
   }
 
@@ -137,6 +224,7 @@ class _CreatePhotoTransactionScreenState
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _cameraController?.dispose();
+    _scanController.dispose();
     super.dispose();
   }
 
@@ -145,14 +233,11 @@ class _CreatePhotoTransactionScreenState
     return _showForm ? _buildFormView() : _buildCameraView();
   }
 
-  // ─── Camera View ────────────────────────────────────────────────────────────
-
   Widget _buildCameraView() {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Camera preview
           Positioned.fill(
             bottom: 180,
             child: Padding(
@@ -160,7 +245,12 @@ class _CreatePhotoTransactionScreenState
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(28),
                 child: _isCameraInitialized && _cameraController != null
-                    ? CameraPreview(_cameraController!)
+                    ? Stack(
+                        children: [
+                          CameraPreview(_cameraController!),
+                          _ScannerOverlay(animation: _scanController),
+                        ],
+                      )
                     : Container(
                         color: Colors.black87,
                         child: const Center(
@@ -173,17 +263,12 @@ class _CreatePhotoTransactionScreenState
             ),
           ),
 
-          // Flash button on preview
           Positioned(
             top: 76,
             left: 24,
-            child: _FlashButton(
-              isOn: _isFlashOn,
-              onTap: _toggleFlash,
-            ),
+            child: _FlashButton(isOn: _isFlashOn, onTap: _toggleFlash),
           ),
 
-          // Back button
           Positioned(
             top: 60,
             right: 16,
@@ -196,12 +281,15 @@ class _CreatePhotoTransactionScreenState
                     Get.toNamed(RoutePath.main);
                   }
                 },
-                icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
             ),
           ),
 
-          // Bottom controls
           Positioned(
             left: 0,
             right: 0,
@@ -211,16 +299,12 @@ class _CreatePhotoTransactionScreenState
               onGallery: _pickFromGallery,
               onCapture: _takePhoto,
               onFlip: _flipCamera,
-              onHistory:
-                  () => Get.to(() => const PhotoTransactionHistoryScreen()),
             ),
           ),
         ],
       ),
     );
   }
-
-  // ─── Form View ──────────────────────────────────────────────────────────────
 
   Widget _buildFormView() {
     return Scaffold(
@@ -236,8 +320,11 @@ class _CreatePhotoTransactionScreenState
           }),
         ),
         title: const Text(
-          'Bản ghi kèm ảnh',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+          AppTexts.photoTransactionTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: AppSizes.fontSizeLg,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -246,7 +333,6 @@ class _CreatePhotoTransactionScreenState
           key: controller.formKey,
           child: Column(
             children: [
-              // Photo preview
               Obx(() {
                 final path = controller.selectedImagePath.value;
                 return _PhotoPreviewCard(
@@ -260,15 +346,14 @@ class _CreatePhotoTransactionScreenState
               }),
               const SizedBox(height: 16),
 
-              // Type
               _SectionCard(
-                title: 'Phân loại',
+                title: AppTexts.classificationSection,
                 child: Obx(
                   () => Row(
                     children: [
                       Expanded(
                         child: _TypeChip(
-                          label: 'Chi',
+                          label: AppTexts.transactionTypeExpense,
                           icon: Icons.arrow_upward_rounded,
                           activeColor: AppColors.secondaryOrange,
                           isSelected: controller.isExpense,
@@ -278,7 +363,7 @@ class _CreatePhotoTransactionScreenState
                       const SizedBox(width: 12),
                       Expanded(
                         child: _TypeChip(
-                          label: 'Thu',
+                          label: AppTexts.transactionTypeIncome,
                           icon: Icons.arrow_downward_rounded,
                           activeColor: AppColors.success,
                           isSelected: !controller.isExpense,
@@ -291,14 +376,13 @@ class _CreatePhotoTransactionScreenState
               ),
               const SizedBox(height: 16),
 
-              // Info
               _SectionCard(
-                title: 'Thông tin bản ghi',
+                title: AppTexts.transactionInfoSection,
                 child: Column(
                   children: [
                     AppCurrencyFormField(
                       controller: controller.amountController,
-                      label: 'Số tiền',
+                      label: 'Số tiền', // TODO: Add to AppTexts
                       icon: Icons.payments_outlined,
                       hintText: 'Nhập số tiền',
                       validator: AppValidator.validateAmount,
@@ -310,7 +394,7 @@ class _CreatePhotoTransactionScreenState
                               controller: controller.categoryController,
                               label: 'Category',
                               icon: Icons.category_outlined,
-                              hintText: 'Chọn category',
+                              hintText: AppTexts.selectCategory,
                               validator: AppValidator.validateCategory,
                               readOnly: true,
                               onTap: () => _showCategorySheet(context),
@@ -326,10 +410,10 @@ class _CreatePhotoTransactionScreenState
                                 ),
                               ),
                               child: const Text(
-                                'Bản ghi thu hiện không yêu cầu category.',
+                                AppTexts.incomeNoCategoryMessage,
                                 style: TextStyle(
                                   color: AppColors.text3,
-                                  fontSize: 14,
+                                  fontSize: AppSizes.fontSizeSm,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -364,7 +448,7 @@ class _CreatePhotoTransactionScreenState
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -375,7 +459,7 @@ class _CreatePhotoTransactionScreenState
           ),
           child: Obx(
             () => PrimaryButton(
-              label: 'Lưu bản ghi',
+              label: 'Lưu bản ghi', // TODO: Add to AppTexts
               onPressed: controller.submit,
               isLoading: controller.transactionController.isLoading.value,
               isEnabled: !controller.transactionController.isLoading.value,
@@ -402,14 +486,11 @@ class _CreatePhotoTransactionScreenState
               child: Center(child: CircularProgressIndicator()),
             );
           }
-          final currentGoal =
-              controller.savingGoalController.currentGoal.value;
+          final currentGoal = controller.savingGoalController.currentGoal.value;
           if (currentGoal == null) {
             return const SizedBox(
               height: 220,
-              child: Center(
-                child: Text('Không có category để lựa chọn'),
-              ),
+              child: Center(child: Text(AppTexts.noCategoryAvailable)),
             );
           }
           final categories = currentGoal.categories;
@@ -438,14 +519,12 @@ class _CameraBottomBar extends StatelessWidget {
     required this.onGallery,
     required this.onCapture,
     required this.onFlip,
-    required this.onHistory,
   });
 
   final bool isTakingPhoto;
   final VoidCallback onGallery;
   final VoidCallback onCapture;
   final VoidCallback onFlip;
-  final VoidCallback onHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -459,7 +538,6 @@ class _CameraBottomBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Gallery
               GestureDetector(
                 onTap: onGallery,
                 child: Container(
@@ -477,8 +555,6 @@ class _CameraBottomBar extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Capture button
               GestureDetector(
                 onTap: isTakingPhoto ? null : onCapture,
                 child: Container(
@@ -512,8 +588,6 @@ class _CameraBottomBar extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Flip camera
               GestureDetector(
                 onTap: onFlip,
                 child: Container(
@@ -534,38 +608,11 @@ class _CameraBottomBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: onHistory,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'Lịch sử',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(Icons.keyboard_arrow_down_rounded,
-                        color: Colors.white, size: 20),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
         ],
       ),
     );
   }
 }
-
-// ─── Flash Button ─────────────────────────────────────────────────────────────
 
 class _FlashButton extends StatelessWidget {
   const _FlashButton({required this.isOn, required this.onTap});
@@ -593,8 +640,6 @@ class _FlashButton extends StatelessWidget {
     );
   }
 }
-
-// ─── Photo Preview Card ───────────────────────────────────────────────────────
 
 class _PhotoPreviewCard extends StatelessWidget {
   const _PhotoPreviewCard({
@@ -632,7 +677,7 @@ class _PhotoPreviewCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Ảnh giao dịch',
+                  AppTexts.photoPreviewTitle,
                   style: TextStyle(
                     color: AppColors.text1,
                     fontSize: 17,
@@ -640,7 +685,9 @@ class _PhotoPreviewCard extends StatelessWidget {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: controller.isScanning.value ? null : controller.scanWithAI,
+                  onPressed: controller.isScanning.value
+                      ? null
+                      : controller.scanWithAI,
                   icon: controller.isScanning.value
                       ? const SizedBox(
                           width: 16,
@@ -651,52 +698,81 @@ class _PhotoPreviewCard extends StatelessWidget {
                           ),
                         )
                       : const Icon(Icons.auto_awesome_outlined, size: 18),
-                  label: Text(controller.isScanning.value ? 'Đang phân tích...' : 'Phân tích AI'),
+                  label: Text(
+                    controller.isScanning.value
+                        ? AppTexts.scanningStatus
+                        : AppTexts.scanAiButton,
+                  ),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.secondaryNavyBlue,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: onRetake,
-                  icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                  label: const Text('Chụp lại'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.text3,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           if (imagePath != null)
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(24),
+            GestureDetector(
+              onTap: () => _showFullScreenImage(context, imagePath!),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(24),
+                ),
+                child: imagePath!.startsWith('http')
+                    ? Image.network(
+                        imagePath!,
+                        width: double.infinity,
+                        height: 220,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.file(
+                        File(imagePath!),
+                        width: double.infinity,
+                        height: 220,
+                        fit: BoxFit.cover,
+                      ),
               ),
-              child: imagePath!.startsWith('http')
-                  ? Image.network(
-                      imagePath!,
-                      width: double.infinity,
-                      height: 220,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.file(
-                      File(imagePath!),
-                      width: double.infinity,
-                      height: 220,
-                      fit: BoxFit.cover,
-                    ),
             ),
         ],
       ),
     );
   }
-}
 
-// ─── Section Card ─────────────────────────────────────────────────────────────
+  void _showFullScreenImage(BuildContext context, String path) {
+    Get.dialog(
+      Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: path.startsWith('http')
+                    ? Image.network(path)
+                    : Image.file(File(path)),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: CircleAvatar(
+                backgroundColor: Colors.black54,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Get.back(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _SectionCard extends StatelessWidget {
   const _SectionCard({required this.title, required this.child});
@@ -738,8 +814,6 @@ class _SectionCard extends StatelessWidget {
     );
   }
 }
-
-// ─── Type Chip ────────────────────────────────────────────────────────────────
 
 class _TypeChip extends StatelessWidget {
   const _TypeChip({
@@ -790,4 +864,205 @@ class _TypeChip extends StatelessWidget {
       ),
     );
   }
+}
+
+// ─── Scanner Overlay ──────────────────────────────────────────────────────────
+
+class _ScannerOverlay extends StatelessWidget {
+  const _ScannerOverlay({required this.animation});
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double parentWidth = constraints.maxWidth;
+        final double parentHeight = constraints.maxHeight;
+
+        final double holeWidth = parentWidth * 0.85;
+        final double holeHeight = parentHeight * 0.60;
+
+        return Stack(
+          children: [
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withValues(alpha: 0.5),
+                BlendMode.srcOut,
+              ),
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      backgroundBlendMode: BlendMode.dstOut,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: holeHeight,
+                      width: holeWidth,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Corners and Scan Line
+            Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                height: holeHeight,
+                width: holeWidth,
+                child: Stack(
+                  children: [
+                    // Stylized Corners
+                    CustomPaint(
+                      painter: _ScannerPainter(),
+                      size: Size.infinite,
+                    ),
+
+                    // Moving Scan Line
+                    AnimatedBuilder(
+                      animation: animation,
+                      builder: (context, child) {
+                        return Positioned(
+                          top: animation.value * holeHeight,
+                          left: 0,
+                          right: 0,
+                          child: child!,
+                        );
+                      },
+                      child: Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.5),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary.withValues(alpha: 0.01),
+                              AppColors.primary,
+                              AppColors.primary.withValues(alpha: 0.01),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Instructions
+            Positioned(
+              top: 40,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.document_scanner_outlined,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Căn chỉnh hóa đơn vào khung',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ScannerPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0
+      ..strokeCap = StrokeCap.round;
+
+    const cornerSize = 30.0;
+    const radius = 20.0;
+
+    // Top Left
+    final path1 = Path()
+      ..moveTo(0, cornerSize)
+      ..lineTo(0, radius)
+      ..arcToPoint(
+        const Offset(radius, 0),
+        radius: const Radius.circular(radius),
+      )
+      ..lineTo(cornerSize, 0);
+    canvas.drawPath(path1, paint);
+
+    // Top Right
+    final path2 = Path()
+      ..moveTo(size.width - cornerSize, 0)
+      ..lineTo(size.width - radius, 0)
+      ..arcToPoint(
+        Offset(size.width, radius),
+        radius: const Radius.circular(radius),
+      )
+      ..lineTo(size.width, cornerSize);
+    canvas.drawPath(path2, paint);
+
+    // Bottom Left
+    final path3 = Path()
+      ..moveTo(0, size.height - cornerSize)
+      ..lineTo(0, size.height - radius)
+      ..arcToPoint(
+        Offset(radius, size.height),
+        radius: const Radius.circular(radius),
+      )
+      ..lineTo(cornerSize, size.height);
+    canvas.drawPath(path3, paint);
+
+    // Bottom Right
+    final path4 = Path()
+      ..moveTo(size.width - cornerSize, size.height)
+      ..lineTo(size.width - radius, size.height)
+      ..arcToPoint(
+        Offset(size.width, size.height - radius),
+        radius: const Radius.circular(radius),
+      )
+      ..lineTo(size.width, size.height - cornerSize);
+    canvas.drawPath(path4, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

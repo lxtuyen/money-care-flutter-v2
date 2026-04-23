@@ -97,7 +97,9 @@ class AuthController extends GetxController {
       isLoading.value = true;
       final email = storage.readString('user_email');
       if (email == null || email.isEmpty) {
-        return const Left(ServerFailure('Khong tim thay email de xac thuc OTP'));
+        return const Left(
+          ServerFailure('Khong tim thay email de xac thuc OTP'),
+        );
       }
       return await verifyOtpUseCase(email, otp);
     } finally {
@@ -164,5 +166,3 @@ class AuthController extends GetxController {
 
   UserEntity? getUserInfo() => user.value;
 }
-
-

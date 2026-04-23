@@ -19,7 +19,6 @@ import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_photo_transaction_screen.dart';
-import 'package:money_care/features/transaction/presentation/screens/photo_transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
@@ -61,11 +60,7 @@ final List<GetPage> appPages = [
     page: () => const ForgotPasswordScreen(),
     binding: AuthBinding(),
   ),
-  GetPage(
-    name: '/otp',
-    page: () => const OtpScreen(),
-    binding: AuthBinding(),
-  ),
+  GetPage(name: '/otp', page: () => const OtpScreen(), binding: AuthBinding()),
   GetPage(
     name: '/reset_password',
     page: () => const ResetPasswordScreen(),
@@ -132,11 +127,6 @@ final List<GetPage> appPages = [
     name: '/notification',
     page: () => const NotificationScreen(),
     binding: NotificationBinding(),
-  ),
-  GetPage(
-    name: '/photo_transaction_history',
-    page: () => const PhotoTransactionHistoryScreen(),
-    binding: TransactionBinding(),
   ),
   GetPage(
     name: '/expired_saving_goals',

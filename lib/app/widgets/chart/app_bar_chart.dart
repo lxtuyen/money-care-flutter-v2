@@ -41,7 +41,7 @@ class AppBarChart extends StatelessWidget {
 
     double interval = chartHelper.calculateInterval(effectiveMaxY);
     final roundedMaxY = (effectiveMaxY / interval).ceil() * interval;
-final chartMaxY = roundedMaxY + interval * 2;
+    final chartMaxY = roundedMaxY + interval * 2;
 
     return BarChart(
       BarChartData(
@@ -53,9 +53,9 @@ final chartMaxY = roundedMaxY + interval * 2;
           show: true,
           drawVerticalLine: false,
           horizontalInterval: interval,
-checkToShowHorizontalLine: (value) {
-  return value >= minY && value <= chartMaxY;
-},
+          checkToShowHorizontalLine: (value) {
+            return value >= minY && value <= chartMaxY;
+          },
           getDrawingHorizontalLine: (value) {
             final isZeroLine = value.abs() < epsilon;
             final isMaxLine = (value - roundedMaxY).abs() < epsilon;
@@ -70,20 +70,20 @@ checkToShowHorizontalLine: (value) {
           },
         ),
         borderData: FlBorderData(
-  show: true,
-  border: Border(
-    bottom: BorderSide(
-      color: AppColors.text4.withOpacity(0.6),
-      width: 1.8,
-    ),
-    left: BorderSide(
-      color: AppColors.text4.withOpacity(0.6),
-      width: 1.8,
-    ),
-    top: BorderSide.none,
-    right: BorderSide.none,
-  ),
-),
+          show: true,
+          border: Border(
+            bottom: BorderSide(
+              color: AppColors.text4.withOpacity(0.6),
+              width: 1.8,
+            ),
+            left: BorderSide(
+              color: AppColors.text4.withOpacity(0.6),
+              width: 1.8,
+            ),
+            top: BorderSide.none,
+            right: BorderSide.none,
+          ),
+        ),
         titlesData: FlTitlesData(
           topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
@@ -113,8 +113,12 @@ checkToShowHorizontalLine: (value) {
                     chartHelper.formatCurrencyShort(value.toInt()),
                     style: TextStyle(
                       fontSize: 8,
-                      color: value.abs() < epsilon ? AppColors.text1 : AppColors.text4,
-                      fontWeight: value.abs() < epsilon ? FontWeight.w600 : FontWeight.w400,
+                      color: value.abs() < epsilon
+                          ? AppColors.text1
+                          : AppColors.text4,
+                      fontWeight: value.abs() < epsilon
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                     textAlign: TextAlign.right,
                   ),
@@ -126,21 +130,23 @@ checkToShowHorizontalLine: (value) {
         barGroups: barGroups,
         barTouchData: BarTouchData(
           enabled: true,
-          touchTooltipData: tooltipData ?? BarTouchTooltipData(
-            getTooltipColor: (_) => AppColors.primary,
-            tooltipBorderRadius: BorderRadius.circular(8.0),
-            fitInsideHorizontally: true,
-            fitInsideVertically: true,
-            getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              return BarTooltipItem(
-                chartHelper.formatCurrencyShort(rod.toY.toInt()),
-                const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            },
-          ),
+          touchTooltipData:
+              tooltipData ??
+              BarTouchTooltipData(
+                getTooltipColor: (_) => AppColors.primary,
+                tooltipBorderRadius: BorderRadius.circular(8.0),
+                fitInsideHorizontally: true,
+                fitInsideVertically: true,
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  return BarTooltipItem(
+                    chartHelper.formatCurrencyShort(rod.toY.toInt()),
+                    const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
+              ),
         ),
       ),
     );

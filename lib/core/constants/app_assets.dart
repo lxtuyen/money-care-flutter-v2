@@ -30,5 +30,3 @@ class AppAssets {
     return '$_imagePrefix$imageName$_typePng';
   }
 }
-
-

@@ -42,10 +42,10 @@ class ChartHelper {
   double _pow10(double value) {
     if (value <= 0) return 1;
     final digits = value.toInt().toString().length - 1;
-    return digits <= 0 ? 1 : List.filled(digits, 10).fold(1, (a, b) => a * b).toDouble();
+    return digits <= 0
+        ? 1
+        : List.filled(digits, 10).fold(1, (a, b) => a * b).toDouble();
   }
 }
 
 final chartHelper = ChartHelper();
-
-

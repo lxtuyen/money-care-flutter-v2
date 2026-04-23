@@ -8,16 +8,39 @@ class OnboardingAddCategorySheet extends StatefulWidget {
   const OnboardingAddCategorySheet({super.key, required this.onAdd});
 
   @override
-  State<OnboardingAddCategorySheet> createState() => _OnboardingAddCategorySheetState();
+  State<OnboardingAddCategorySheet> createState() =>
+      _OnboardingAddCategorySheetState();
 }
 
-class _OnboardingAddCategorySheetState extends State<OnboardingAddCategorySheet> {
+class _OnboardingAddCategorySheetState
+    extends State<OnboardingAddCategorySheet> {
   final nameController = TextEditingController();
   String selectedEmoji = '📦';
   String selectedType = 'expense';
 
   final emojiOptions = [
-    '🍔', '🏠', '🛍️', '🚕', '✈️', '🎮', '💊', '🛒', '🐾', '🎓', '📱', '💄', '⚽', '💵', '📈', '🎁', '💼', '📦', '🎵', '🍕', '☕', '🚀'
+    '🍔',
+    '🏠',
+    '🛍️',
+    '🚕',
+    '✈️',
+    '🎮',
+    '💊',
+    '🛒',
+    '🐾',
+    '🎓',
+    '📱',
+    '💄',
+    '⚽',
+    '💵',
+    '📈',
+    '🎁',
+    '💼',
+    '📦',
+    '🎵',
+    '🍕',
+    '☕',
+    '🚀',
   ];
 
   @override
@@ -72,17 +95,20 @@ class _OnboardingAddCategorySheetState extends State<OnboardingAddCategorySheet>
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               const Text(
                 'Loại',
                 style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.text3),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text3,
+                ),
               ),
               const SizedBox(height: 8),
               Row(
@@ -104,9 +130,10 @@ class _OnboardingAddCategorySheetState extends State<OnboardingAddCategorySheet>
               const Text(
                 'Biểu tượng',
                 style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.text3),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text3,
+                ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -127,12 +154,17 @@ class _OnboardingAddCategorySheetState extends State<OnboardingAddCategorySheet>
                             : AppColors.backgroundPrimary,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isSelected ? AppColors.primary : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.primary
+                              : Colors.transparent,
                           width: 1.5,
                         ),
                       ),
                       child: Center(
-                        child: Text(emoji, style: const TextStyle(fontSize: 22)),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 22),
+                        ),
                       ),
                     ),
                   );
@@ -148,10 +180,13 @@ class _OnboardingAddCategorySheetState extends State<OnboardingAddCategorySheet>
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: const BorderSide(color: AppColors.borderPrimary),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text('Huỷ',
-                          style: TextStyle(color: AppColors.text3)),
+                      child: const Text(
+                        'Huỷ',
+                        style: TextStyle(color: AppColors.text3),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -169,10 +204,13 @@ class _OnboardingAddCategorySheetState extends State<OnboardingAddCategorySheet>
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text('Thêm',
-                          style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: const Text(
+                        'Thêm',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
                     ),
                   ),
                 ],

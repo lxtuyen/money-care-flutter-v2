@@ -71,7 +71,9 @@ class AppTextFormField extends StatelessWidget {
         fontSize: 15,
         fontWeight: FontWeight.w500,
       ),
-      prefixIcon: icon != null ? Icon(icon, color: AppColors.secondaryNavyBlue, size: 22) : null,
+      prefixIcon: icon != null
+          ? Icon(icon, color: AppColors.secondaryNavyBlue, size: 22)
+          : null,
       suffixIcon: suffixIcon,
       isDense: true,
       filled: true,

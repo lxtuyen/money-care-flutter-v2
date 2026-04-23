@@ -20,9 +20,9 @@ abstract class TotalByTypeModel with _$TotalByTypeModel {
       _$TotalByTypeModelFromJson(json);
 
   TotalByTypeEntity toEntity() => TotalByTypeEntity(
-        incomeTotal: income,
-        expenseTotal: expense,
-        currentSaving: currentSaving,
-        targetSaving: targetSaving,
-      );
+    incomeTotal: income,
+    expenseTotal: expense,
+    currentSaving: currentSaving,
+    targetSaving: targetSaving,
+  );
 }

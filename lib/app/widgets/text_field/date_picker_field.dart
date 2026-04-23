@@ -23,10 +23,9 @@ class DatePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final dateDisplay =
-          selectedDate.value != null
-              ? '$label: ${_formatDate(selectedDate.value!)}'
-              : placeholder;
+      final dateDisplay = selectedDate.value != null
+          ? '$label: ${_formatDate(selectedDate.value!)}'
+          : placeholder;
       return GestureDetector(
         onTap: onTap,
         child: Container(
@@ -38,17 +37,16 @@ class DatePickerField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.date_range, color: AppColors.secondaryNavyBlue,),
+              const Icon(Icons.date_range, color: AppColors.secondaryNavyBlue),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   dateDisplay,
                   style: TextStyle(
                     fontSize: 14,
-                    color:
-                        selectedDate.value != null
-                            ? Colors.black
-                            : Colors.grey[600],
+                    color: selectedDate.value != null
+                        ? Colors.black
+                        : Colors.grey[600],
                   ),
                 ),
               ),

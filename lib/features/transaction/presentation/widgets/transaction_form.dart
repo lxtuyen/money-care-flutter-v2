@@ -16,6 +16,7 @@ import 'package:money_care/features/transaction/presentation/widgets/category_sh
 class TransactionForm extends StatefulWidget {
   final String title;
   final bool showCategory;
+
   /// 'income' hoặc 'expense' — dùng để filter category đúng loại.
   final String transactionType;
   final TransactionEntity? item;
@@ -87,8 +88,8 @@ class _TransactionFormState extends State<TransactionForm> {
                                   label: 'Số tiền',
                                   icon: Icons.attach_money,
                                   hintText: 'Nhập số tiền',
-                                  validator:
-                                      (v) => AppValidator.validateAmount(v),
+                                  validator: (v) =>
+                                      AppValidator.validateAmount(v),
                                 ),
                                 if (widget.showCategory) ...[
                                   const SizedBox(height: 20),
@@ -97,79 +98,89 @@ class _TransactionFormState extends State<TransactionForm> {
                                     label: 'Phân loại',
                                     icon: Icons.category,
                                     hintText: 'Chọn phân loại',
-                                    validator:
-                                        (v) => AppValidator.validateCategory(v),
+                                    validator: (v) =>
+                                        AppValidator.validateCategory(v),
                                     onTap: () async {
-                                      final selected = await showModalBottomSheet<
-                                        CategoryEntity
-                                      >(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        backgroundColor: Colors.white,
-                                        shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.vertical(
-                                            top: Radius.circular(20),
-                                          ),
-                                        ),
-                                        builder: (context) {
-                                          return Obx(() {
-                                            final fundCategories = controller
-                                                .savingGoalController
-                                                .currentGoal
-                                                .value
-                                                ?.categories;
-
-                                            final userCategoryController =
-                                                Get.find<UserCategoryController>();
-
-                                            final categories = (fundCategories != null &&
-                                                    fundCategories.isNotEmpty)
-                                                ? fundCategories
-                                                : userCategoryController.categories;
-
-                                            if (controller
-                                                .savingGoalController
-                                                .isLoadingCurrent
-                                                .value) {
-                                              return const SizedBox(
-                                                height: 200,
-                                                child: Center(
-                                                  child: CircularProgressIndicator(),
-                                                ),
-                                              );
-                                            }
-
-                                            if (categories.isEmpty) {
-                                              return const SizedBox(
-                                                height: 200,
-                                                child: Center(
-                                                  child: Text(
-                                                    'Chưa có danh mục nào',
+                                      final selected =
+                                          await showModalBottomSheet<
+                                            CategoryEntity
+                                          >(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor: Colors.white,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                    top: Radius.circular(20),
                                                   ),
-                                                ),
-                                              );
-                                            }
+                                            ),
+                                            builder: (context) {
+                                              return Obx(() {
+                                                final fundCategories =
+                                                    controller
+                                                        .savingGoalController
+                                                        .currentGoal
+                                                        .value
+                                                        ?.categories;
 
-                                            return CategorySheet(
-                                              categories: categories,
-                                              transactionType: widget.transactionType,
-                                              selectedCategoryInit:
-                                                  controller
+                                                final userCategoryController =
+                                                    Get.find<
+                                                      UserCategoryController
+                                                    >();
+
+                                                final categories =
+                                                    (fundCategories != null &&
+                                                        fundCategories
+                                                            .isNotEmpty)
+                                                    ? fundCategories
+                                                    : userCategoryController
+                                                          .categories;
+
+                                                if (controller
+                                                    .savingGoalController
+                                                    .isLoadingCurrent
+                                                    .value) {
+                                                  return const SizedBox(
+                                                    height: 200,
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                                  );
+                                                }
+
+                                                if (categories.isEmpty) {
+                                                  return const SizedBox(
+                                                    height: 200,
+                                                    child: Center(
+                                                      child: Text(
+                                                        'Chưa có danh mục nào',
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+
+                                                return CategorySheet(
+                                                  categories: categories,
+                                                  transactionType:
+                                                      widget.transactionType,
+                                                  selectedCategoryInit:
+                                                      controller
                                                               .selectedCategoryId
                                                               .value !=
                                                           null
                                                       ? categories.firstWhereOrNull(
-                                                        (c) =>
-                                                            c.id ==
-                                                            controller
-                                                                .selectedCategoryId
-                                                                .value,
-                                                      )
+                                                          (c) =>
+                                                              c.id ==
+                                                              controller
+                                                                  .selectedCategoryId
+                                                                  .value,
+                                                        )
                                                       : null,
-                                            );
-                                          });
-                                        },
-                                      );
+                                                );
+                                              });
+                                            },
+                                          );
 
                                       if (selected != null) {
                                         controller.setCategory(selected);
@@ -183,8 +194,8 @@ class _TransactionFormState extends State<TransactionForm> {
                                   controller: controller.noteController,
                                   label: 'Ghi chú',
                                   hintText: 'Nhập ghi chú',
-                                  validator:
-                                      (v) => AppValidator.validateNote(v),
+                                  validator: (v) =>
+                                      AppValidator.validateNote(v),
                                   minLines: 3,
                                   maxLines: 3,
                                   keyboardType: TextInputType.multiline,
@@ -210,8 +221,8 @@ class _TransactionFormState extends State<TransactionForm> {
                         () => GestureDetector(
                           onTap:
                               controller.scanReceiptController.isScanning.value
-                                  ? null
-                                  : () => controller.openScanOptions(context),
+                              ? null
+                              : () => controller.openScanOptions(context),
                           child: Container(
                             height: 55,
                             width: 55,
@@ -223,19 +234,19 @@ class _TransactionFormState extends State<TransactionForm> {
                             ),
                             child:
                                 controller
-                                        .scanReceiptController
-                                        .isScanning
-                                        .value
-                                    ? const Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                    : const Icon(
-                                      Icons.document_scanner_outlined,
-                                      color: Colors.grey,
+                                    .scanReceiptController
+                                    .isScanning
+                                    .value
+                                ? const Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
                                     ),
+                                  )
+                                : const Icon(
+                                    Icons.document_scanner_outlined,
+                                    color: Colors.grey,
+                                  ),
                           ),
                         ),
                       ),

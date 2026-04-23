@@ -103,7 +103,10 @@ class _FilterDialogState extends State<FilterDialog> {
                       const Spacer(),
                       IconButton(
                         onPressed: () => Get.back(),
-                        icon: const Icon(Icons.close_rounded, color: Colors.white),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -170,7 +173,9 @@ class _FilterDialogState extends State<FilterDialog> {
                       onPressed: _clearFilter,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: const BorderSide(color: AppColors.borderSecondary),
+                        side: const BorderSide(
+                          color: AppColors.borderSecondary,
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -209,88 +214,95 @@ class _FilterDialogState extends State<FilterDialog> {
 
   List<Widget> _buildChoiceWidgets() {
     if (isDateDialog) {
-      return widget.items!.map((item) {
-        final isCustom = item.toLowerCase().contains('tùy chỉnh');
-        final isSelected = selectedId == item;
+      return widget.items!
+          .map((item) {
+            final isCustom = item.toLowerCase().contains('tùy chỉnh');
+            final isSelected = selectedId == item;
 
-        return CustomChoiceChip(
-          text: item,
-          isSelected: isSelected,
-          onSelected: (selected) async {
-            if (!selected) {
-              setState(() => selectedId = null);
-              return;
-            }
+            return CustomChoiceChip(
+              text: item,
+              isSelected: isSelected,
+              onSelected: (selected) async {
+                if (!selected) {
+                  setState(() => selectedId = null);
+                  return;
+                }
 
-            if (isCustom) {
-              final picked = await showDateRangePicker(
-                context: context,
-                firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                lastDate: DateTime.now().add(const Duration(days: 365)),
-                initialDateRange:
-                    startDate != null && endDate != null
+                if (isCustom) {
+                  final picked = await showDateRangePicker(
+                    context: context,
+                    firstDate: DateTime.now().subtract(
+                      const Duration(days: 365),
+                    ),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                    initialDateRange: startDate != null && endDate != null
                         ? DateTimeRange(start: startDate!, end: endDate!)
                         : null,
-              );
+                  );
 
-              if (picked == null) return;
+                  if (picked == null) return;
 
-              setState(() {
-                startDate = picked.start;
-                endDate = picked.end;
-                selectedId = item;
-                selectedDateLabel = item;
-              });
-              return;
-            }
+                  setState(() {
+                    startDate = picked.start;
+                    endDate = picked.end;
+                    selectedId = item;
+                    selectedDateLabel = item;
+                  });
+                  return;
+                }
 
-            final now = DateTime.now();
-            if (item == 'Hôm nay') {
-              startDate = DateTime(now.year, now.month, now.day);
-              endDate = startDate!
-                  .add(const Duration(days: 1))
-                  .subtract(const Duration(seconds: 1));
-            } else if (item == 'Tuần này') {
-              final weekday = now.weekday;
-              startDate = DateTime(
-                now.year,
-                now.month,
-                now.day,
-              ).subtract(Duration(days: weekday - 1));
-              endDate = startDate!
-                  .add(const Duration(days: 7))
-                  .subtract(const Duration(seconds: 1));
-            } else if (item == 'Tháng này') {
-              startDate = DateTime(now.year, now.month, 1);
-              endDate = DateTime(
-                now.year,
-                now.month + 1,
-                1,
-              ).subtract(const Duration(seconds: 1));
-            }
+                final now = DateTime.now();
+                if (item == 'Hôm nay') {
+                  startDate = DateTime(now.year, now.month, now.day);
+                  endDate = startDate!
+                      .add(const Duration(days: 1))
+                      .subtract(const Duration(seconds: 1));
+                } else if (item == 'Tuần này') {
+                  final weekday = now.weekday;
+                  startDate = DateTime(
+                    now.year,
+                    now.month,
+                    now.day,
+                  ).subtract(Duration(days: weekday - 1));
+                  endDate = startDate!
+                      .add(const Duration(days: 7))
+                      .subtract(const Duration(seconds: 1));
+                } else if (item == 'Tháng này') {
+                  startDate = DateTime(now.year, now.month, 1);
+                  endDate = DateTime(
+                    now.year,
+                    now.month + 1,
+                    1,
+                  ).subtract(const Duration(seconds: 1));
+                }
 
-            setState(() {
-              selectedId = item;
-              selectedDateLabel = item;
-            });
-          },
-        );
-      }).toList().cast<Widget>();
+                setState(() {
+                  selectedId = item;
+                  selectedDateLabel = item;
+                });
+              },
+            );
+          })
+          .toList()
+          .cast<Widget>();
     }
 
-    return widget.categories!.map((cat) {
-      final isSelected = cat.id != null && selectedId == cat.id.toString();
-      return CustomChoiceChip(
-        text: cat.name,
-        isSelected: isSelected,
-        onSelected: (selected) {
-          if (cat.id == null) return;
-          setState(() {
-            selectedId = selected ? cat.id.toString() : null;
-          });
-        },
-      );
-    }).toList().cast<Widget>();
+    return widget.categories!
+        .map((cat) {
+          final isSelected = cat.id != null && selectedId == cat.id.toString();
+          return CustomChoiceChip(
+            text: cat.name,
+            isSelected: isSelected,
+            onSelected: (selected) {
+              if (cat.id == null) return;
+              setState(() {
+                selectedId = selected ? cat.id.toString() : null;
+              });
+            },
+          );
+        })
+        .toList()
+        .cast<Widget>();
   }
 
   String _buildSummaryText() {
@@ -302,13 +314,15 @@ class _FilterDialogState extends State<FilterDialog> {
 
     if (selectedId != null && widget.categories != null) {
       try {
-        final cat = widget.categories!.firstWhere((c) => c.id.toString() == selectedId);
+        final cat = widget.categories!.firstWhere(
+          (c) => c.id.toString() == selectedId,
+        );
         return 'Đã chọn: ${cat.name}';
       } catch (_) {
         return 'Đã chọn 1 phân loại giao dịch';
       }
     }
-    
+
     return 'Chưa chọn phân loại nào';
   }
 

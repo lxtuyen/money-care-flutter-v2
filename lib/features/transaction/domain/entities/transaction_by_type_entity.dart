@@ -4,5 +4,8 @@ class TransactionByTypeEntity {
   final List<TransactionEntity> incomeTransactions;
   final List<TransactionEntity> expenseTransactions;
 
-  const TransactionByTypeEntity({required this.incomeTransactions, required this.expenseTransactions});
+  const TransactionByTypeEntity({
+    required this.incomeTransactions,
+    required this.expenseTransactions,
+  });
 }

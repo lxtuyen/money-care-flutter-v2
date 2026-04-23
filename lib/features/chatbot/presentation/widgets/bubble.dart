@@ -30,5 +30,3 @@ class Bubble extends StatelessWidget {
     );
   }
 }
-
-

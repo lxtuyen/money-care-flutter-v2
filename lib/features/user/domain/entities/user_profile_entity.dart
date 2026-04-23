@@ -15,6 +15,5 @@ class UserProfileEntity {
     this.incomeDate,
   });
 
-  String get fullName =>
-      '${firstName ?? ''} ${lastName ?? ''}'.trim();
+  String get fullName => '${firstName ?? ''} ${lastName ?? ''}'.trim();
 }

@@ -12,9 +12,7 @@ import 'package:money_care/core/utils/date_picker_util.dart';
 class UserController extends GetxController {
   final UpdateMyProfileUseCase updateMyProfileUseCase;
 
-  UserController({
-    required this.updateMyProfileUseCase,
-  });
+  UserController({required this.updateMyProfileUseCase});
 
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -47,8 +45,9 @@ class UserController extends GetxController {
     if (profile == null || isClosed) return;
     firstNameController.text = profile.firstName ?? '';
     lastNameController.text = profile.lastName ?? '';
-    monthlyIncomeController.text =
-        profile.monthlyIncome != null ? profile.monthlyIncome.toString() : '';
+    monthlyIncomeController.text = profile.monthlyIncome != null
+        ? profile.monthlyIncome.toString()
+        : '';
     incomeDate.value = profile.incomeDate;
     avatarController.text = profile.avatar ?? '';
   }
@@ -73,7 +72,9 @@ class UserController extends GetxController {
       final dto = ProfileUpdateDto(
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
-        monthlyIncome: int.tryParse(AppHelperFunction.unformatCurrency(monthlyIncomeController.text)),
+        monthlyIncome: int.tryParse(
+          AppHelperFunction.unformatCurrency(monthlyIncomeController.text),
+        ),
         incomeDate: incomeDate.value,
         avatar: avatarController.text.trim(),
       );
@@ -109,5 +110,3 @@ class UserController extends GetxController {
     super.onClose();
   }
 }
-
-

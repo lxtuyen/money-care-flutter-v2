@@ -96,11 +96,10 @@ class EditCategorySheet extends StatelessWidget {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
-                                builder:
-                                    (context) => EditCategory(
-                                      namecategory: item.name,
-                                      percent: item.percentage.toString(),
-                                    ),
+                                builder: (context) => EditCategory(
+                                  namecategory: item.name,
+                                  percent: item.percentage.toString(),
+                                ),
                               );
                             },
                             icon: const Icon(

@@ -19,11 +19,11 @@ class FinanceModeController extends GetxController {
     required CheckSuggestModeUseCase checkSuggestModeUseCase,
     required FinanceModeRepository repository,
     required AppController appController,
-  })  : _getFinanceModeUseCase = getFinanceModeUseCase,
-        _switchFinanceModeUseCase = switchFinanceModeUseCase,
-        _checkSuggestModeUseCase = checkSuggestModeUseCase,
-        _repository = repository,
-        _appController = appController;
+  }) : _getFinanceModeUseCase = getFinanceModeUseCase,
+       _switchFinanceModeUseCase = switchFinanceModeUseCase,
+       _checkSuggestModeUseCase = checkSuggestModeUseCase,
+       _repository = repository,
+       _appController = appController;
 
   final Rx<FinanceMode> currentMode = FinanceMode.normal.obs;
 
@@ -42,14 +42,11 @@ class FinanceModeController extends GetxController {
     if (userId == null) return;
 
     final result = await _getFinanceModeUseCase(userId);
-    result.fold(
-      (_) {},
-      (entity) {
-        currentMode.value = entity.mode;
-        themeColor.value = colorForMode(entity.mode);
-        _cooldownUntil = entity.suggestionCooldownUntil;
-      },
-    );
+    result.fold((_) {}, (entity) {
+      currentMode.value = entity.mode;
+      themeColor.value = colorForMode(entity.mode);
+      _cooldownUntil = entity.suggestionCooldownUntil;
+    });
   }
 
   Future<void> switchMode(FinanceMode mode) async {
@@ -58,7 +55,7 @@ class FinanceModeController extends GetxController {
 
     final oldMode = currentMode.value;
     final oldColor = themeColor.value;
-    
+
     currentMode.value = mode;
     themeColor.value = colorForMode(mode);
 
@@ -115,18 +112,15 @@ class FinanceModeController extends GetxController {
 
     // Persist the cooldown by saving an updated entity with the new cooldown.
     final currentResult = await _getFinanceModeUseCase(userId);
-    await currentResult.fold(
-      (_) async {},
-      (entity) async {
-        final updated = FinanceModeEntity(
-          userId: entity.userId,
-          mode: entity.mode,
-          updatedAt: entity.updatedAt,
-          suggestionCooldownUntil: cooldownEnd,
-        );
-        await _repository.saveFinanceMode(updated);
-      },
-    );
+    await currentResult.fold((_) async {}, (entity) async {
+      final updated = FinanceModeEntity(
+        userId: entity.userId,
+        mode: entity.mode,
+        updatedAt: entity.updatedAt,
+        suggestionCooldownUntil: cooldownEnd,
+      );
+      await _repository.saveFinanceMode(updated);
+    });
   }
 
   /// Returns `false` if a 24-hour cooldown is currently active (Req 5.5).
@@ -147,5 +141,3 @@ class FinanceModeController extends GetxController {
     }
   }
 }
-
-

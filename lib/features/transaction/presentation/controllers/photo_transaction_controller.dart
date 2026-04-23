@@ -10,6 +10,7 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/transaction/domain/usecases/scan_receipt_usecases.dart';
 
 class PhotoTransactionController extends GetxController {
@@ -32,7 +33,8 @@ class PhotoTransactionController extends GetxController {
   final Rxn<DateTime> selectedDate = Rxn<DateTime>(DateTime.now());
   final RxnInt selectedCategoryId = RxnInt();
   final RxnString selectedImagePath = RxnString();
-  final RxString transactionType = 'expense'.obs;
+  final RxString transactionType =
+      'expense'.obs; // We can keep internal logic keys as is or use constants
   final RxBool isPickingImage = false.obs;
   final RxBool isScanning = false.obs;
 
@@ -70,11 +72,19 @@ class PhotoTransactionController extends GetxController {
     isScanning.value = true;
     try {
       final result = await scanReceiptUseCase!(XFile(path));
-      
-      amountController.text = AppHelperFunction.formatCurrency(result.totalAmount.toString());
-      
-      if (result.merchantName != null && result.merchantName!.isNotEmpty) {
-        noteController.text = result.merchantName!;
+
+      // Validation: If no amount and no merchant, it's likely a bad scan
+      if (result.totalAmount == 0 && result.merchantName.isEmpty) {
+        AppHelperFunction.showErrorSnackBar(AppTexts.scanInvalid);
+        return;
+      }
+
+      amountController.text = AppHelperFunction.formatCurrency(
+        result.totalAmount.toString(),
+      );
+
+      if (result.merchantName.isNotEmpty) {
+        noteController.text = result.merchantName;
       }
 
       final parsedDate = DateTime.tryParse(result.date);
@@ -82,22 +92,27 @@ class PhotoTransactionController extends GetxController {
         selectedDate.value = parsedDate;
       }
 
-      if (result.categoryName != null) {
+      if (result.categoryName.isNotEmpty) {
         final currentGoal = savingGoalController.currentGoal.value;
         if (currentGoal != null) {
           final cat = currentGoal.categories.firstWhereOrNull(
-            (c) => c.name.toLowerCase().contains(result.categoryName!.toLowerCase()) ||
-                   result.categoryName!.toLowerCase().contains(c.name.toLowerCase())
+            (c) =>
+                c.name.toLowerCase().contains(
+                  result.categoryName.toLowerCase(),
+                ) ||
+                result.categoryName.toLowerCase().contains(
+                  c.name.toLowerCase(),
+                ),
           );
           if (cat != null) {
             setCategory(cat);
           }
         }
       }
-      
-      AppHelperFunction.showSuccessSnackBar('Ã„ÂÃƒÂ£ trÃƒÂ­ch xuÃ¡ÂºÂ¥t thÃƒÂ´ng tin tÃ¡Â»Â« hÃƒÂ³a Ã„â€˜Ã†Â¡n!');
+
+      AppHelperFunction.showSuccessSnackBar(AppTexts.scanSuccess);
     } catch (e) {
-      AppHelperFunction.showErrorSnackBar('LÃ¡Â»â€”i quÃƒÂ©t hÃƒÂ³a Ã„â€˜Ã†Â¡n: $e');
+      AppHelperFunction.showErrorSnackBar('${AppTexts.scanError}$e');
     } finally {
       isScanning.value = false;
     }
@@ -181,7 +196,9 @@ class PhotoTransactionController extends GetxController {
         selectedImagePath.value = image.path;
       }
     } catch (e) {
-      AppHelperFunction.showErrorSnackBar('KhÃƒÂ´ng thÃ¡Â»Æ’ chÃ¡Â»Ân Ã¡ÂºÂ£nh: $e');
+      AppHelperFunction.showErrorSnackBar(
+        'KhÃƒÂ´ng thÃ¡Â»Æ’ chÃ¡Â»Ân Ã¡ÂºÂ£nh: $e',
+      );
     } finally {
       isPickingImage.value = false;
     }
@@ -219,17 +236,13 @@ class PhotoTransactionController extends GetxController {
     }
 
     if (selectedImagePath.value == null || selectedImagePath.value!.isEmpty) {
-      AppHelperFunction.showErrorSnackBar(
-        'Vui lÃƒÂ²ng chÃ¡Â»Â¥p hoÃ¡ÂºÂ·c chÃ¡Â»Ân Ã¡ÂºÂ£nh cho bÃ¡ÂºÂ£n ghi.',
-      );
+      AppHelperFunction.showErrorSnackBar(AppTexts.recordPhotoRequired);
       return;
     }
 
     final userId = await appController.getCurrentUserId();
     if (userId == null) {
-      AppHelperFunction.showErrorSnackBar(
-        'KhÃƒÂ´ng thÃ¡Â»Æ’ xÃƒÂ¡c Ã„â€˜Ã¡Â»â€¹nh ngÃ†Â°Ã¡Â»Âi dÃƒÂ¹ng. Vui lÃƒÂ²ng Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p lÃ¡ÂºÂ¡i.',
-      );
+      AppHelperFunction.showErrorSnackBar(AppTexts.userNotFound);
       return;
     }
 
@@ -237,7 +250,7 @@ class PhotoTransactionController extends GetxController {
       final dto = buildTransactionDto();
       await transactionController.createTransaction(dto);
       Get.back();
-      AppHelperFunction.showSuccessSnackBar('TÃ¡ÂºÂ¡o bÃ¡ÂºÂ£n ghi kÃƒÂ¨m Ã¡ÂºÂ£nh thÃƒÂ nh cÃƒÂ´ng');
+      AppHelperFunction.showSuccessSnackBar(AppTexts.createTransactionSuccess);
       reset();
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
@@ -252,6 +265,3 @@ class PhotoTransactionController extends GetxController {
     super.onClose();
   }
 }
-
-
-

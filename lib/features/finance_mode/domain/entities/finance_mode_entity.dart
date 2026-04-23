@@ -13,5 +13,3 @@ class FinanceModeEntity {
     this.suggestionCooldownUntil,
   });
 }
-
-

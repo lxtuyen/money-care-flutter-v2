@@ -58,7 +58,9 @@ class WarningDialog extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onCancel,
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColors.borderSecondary),
+                        side: const BorderSide(
+                          color: AppColors.borderSecondary,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -92,8 +94,7 @@ class WarningDialog extends StatelessWidget {
                           alignment: Alignment.center,
                           child: const Text(
                             'Xóa',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 15),
+                            style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
                       ),
@@ -108,5 +109,3 @@ class WarningDialog extends StatelessWidget {
     );
   }
 }
-
-

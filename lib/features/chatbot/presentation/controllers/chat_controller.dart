@@ -24,7 +24,8 @@ class ChatController extends GetxController {
   ChatController({required this.sendToChatbotUseCase});
 
   final AppController appController = Get.find<AppController>();
-  final SavingGoalController savingGoalController = Get.find<SavingGoalController>();
+  final SavingGoalController savingGoalController =
+      Get.find<SavingGoalController>();
 
   final TextEditingController textController = TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -36,13 +37,16 @@ class ChatController extends GetxController {
   final List<Map<String, dynamic>> options = const [
     {
       'title': '📊 Phân tích chi tiêu',
-      'desc': 'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',
-      'template': 'Phân tích chi tiêu gần đây của tôi và cho tôi lời khuyên tiết kiệm.',
+      'desc':
+          'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',
+      'template':
+          'Phân tích chi tiêu gần đây của tôi và cho tôi lời khuyên tiết kiệm.',
     },
     {
       'title': '🎯 Gợi ý ngân sách',
       'desc': 'AI sẽ giúp bạn lên kế hoạch ngân sách thông minh cho tháng tới.',
-      'template': 'Hãy gợi ý cho tôi một kế hoạch ngân sách dựa trên thói quen chi tiêu của tôi.',
+      'template':
+          'Hãy gợi ý cho tôi một kế hoạch ngân sách dựa trên thói quen chi tiêu của tôi.',
     },
     {
       'title': '📝 Ghi nhanh chi tiêu',
@@ -127,10 +131,7 @@ class ChatController extends GetxController {
       isLoading.value = true;
       errorMessage.value = null;
 
-      final dto = ChatDto(
-        message: text,
-        userId: userId,
-      );
+      final dto = ChatDto(message: text, userId: userId);
       final reply = await sendToChatbotUseCase(dto);
 
       if (reply.startsWith('__STRUCTURED_ANALYSIS__')) {
@@ -140,15 +141,22 @@ class ChatController extends GetxController {
           final summary = data['summary'] ?? 'Phân tích tài chính';
           replaceLastBotMessageWithMetadata(summary, data);
         } catch (e) {
-          replaceLastBotMessage(reply.replaceFirst('__STRUCTURED_ANALYSIS__', ''));
+          replaceLastBotMessage(
+            reply.replaceFirst('__STRUCTURED_ANALYSIS__', ''),
+          );
         }
       } else if (reply.startsWith('__STRUCTURED_RECEIPT__')) {
         final jsonStr = reply.replaceFirst('__STRUCTURED_RECEIPT__', '');
         try {
           final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          replaceLastBotMessageWithMetadata('Tôi đã nhận diện được các mục sau từ hóa đơn:', data);
+          replaceLastBotMessageWithMetadata(
+            'Tôi đã nhận diện được các mục sau từ hóa đơn:',
+            data,
+          );
         } catch (e) {
-          replaceLastBotMessage('Tôi đã nhận diện được hóa đơn nhưng gặp lỗi khi hiển thị chi tiết.');
+          replaceLastBotMessage(
+            'Tôi đã nhận diện được hóa đơn nhưng gặp lỗi khi hiển thị chi tiết.',
+          );
         }
       } else if (reply.startsWith('__TRANSACTION_SAVED__')) {
         final jsonStr = reply.replaceFirst('__TRANSACTION_SAVED__', '');
@@ -236,15 +244,23 @@ class ChatController extends GetxController {
 
   void replaceLastBotMessage(String text) {
     if (messages.isNotEmpty) {
-      messages[messages.length - 1] =
-          ChatMessageEntity(isUser: false, text: text);
+      messages[messages.length - 1] = ChatMessageEntity(
+        isUser: false,
+        text: text,
+      );
     }
   }
 
-  void replaceLastBotMessageWithMetadata(String text, Map<String, dynamic> metadata) {
+  void replaceLastBotMessageWithMetadata(
+    String text,
+    Map<String, dynamic> metadata,
+  ) {
     if (messages.isNotEmpty) {
-      messages[messages.length - 1] =
-          ChatMessageEntity(isUser: false, text: text, metadata: metadata);
+      messages[messages.length - 1] = ChatMessageEntity(
+        isUser: false,
+        text: text,
+        metadata: metadata,
+      );
     }
   }
 
@@ -254,23 +270,25 @@ class ChatController extends GetxController {
     if (image == null) return;
 
     messages.add(ChatMessageEntity(isUser: true, text: "[Hình ảnh hóa đơn]"));
-    messages.add(ChatMessageEntity(isUser: false, text: "Đang quét hóa đơn..."));
+    messages.add(
+      ChatMessageEntity(isUser: false, text: "Đang quét hóa đơn..."),
+    );
     scrollToBottom();
 
     try {
       final userId = await appController.getCurrentUserId();
       if (userId == null) return;
 
-      final dto = ChatDto(
-        message: "Quét hóa đơn",
-        userId: userId,
-      );
+      final dto = ChatDto(message: "Quét hóa đơn", userId: userId);
       final reply = await sendToChatbotUseCase(dto, filePath: image.path);
 
       if (reply.startsWith('__STRUCTURED_RECEIPT__')) {
         final jsonStr = reply.replaceFirst('__STRUCTURED_RECEIPT__', '');
         final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-        replaceLastBotMessageWithMetadata('Tôi đã nhận diện được các mục sau từ hóa đơn:', data);
+        replaceLastBotMessageWithMetadata(
+          'Tôi đã nhận diện được các mục sau từ hóa đơn:',
+          data,
+        );
       } else {
         replaceLastBotMessage(reply);
       }
@@ -282,18 +300,18 @@ class ChatController extends GetxController {
 
   Future<void> saveReceiptItems(List items) async {
     if (isLoading.value || items.isEmpty) return;
-    
+
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
     try {
       isLoading.value = true;
       final apiClient = Get.find<ApiClient>();
-      
-      final response = await apiClient.post('/ai/chat/bulk-save', body: {
-        'userId': userId,
-        'items': items,
-      });
+
+      final response = await apiClient.post(
+        '/ai/chat/bulk-save',
+        body: {'userId': userId, 'items': items},
+      );
 
       if (response.success) {
         addBotMessage('✅ Đã lưu tất cả các mục vào lịch sử chi tiêu của bạn!');
@@ -340,5 +358,3 @@ class ChatController extends GetxController {
     super.onClose();
   }
 }
-
-

@@ -9,10 +9,7 @@ class StreakDialog extends StatelessWidget {
   const StreakDialog({super.key});
 
   static void show() {
-    Get.dialog(
-      const StreakDialog(),
-      barrierDismissible: false,
-    );
+    Get.dialog(const StreakDialog(), barrierDismissible: false);
   }
 
   @override
@@ -32,10 +29,7 @@ class StreakDialog extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
             // Large Flame Icon
-            const Text(
-              '🔥',
-              style: TextStyle(fontSize: 80),
-            ),
+            const Text('🔥', style: TextStyle(fontSize: 80)),
             const SizedBox(height: 10),
             // Streak Number
             Text(
@@ -56,12 +50,20 @@ class StreakDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // Weekly Progress Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(7, (index) {
-                final days = ['Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'CN'];
+                final days = [
+                  'Th 2',
+                  'Th 3',
+                  'Th 4',
+                  'Th 5',
+                  'Th 6',
+                  'Th 7',
+                  'CN',
+                ];
                 final hasTx = progress[index];
                 final isToday = DateTime.now().weekday == (index + 1);
 
@@ -71,16 +73,21 @@ class StreakDialog extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: hasTx ? const Color(0xFFFFC107) : Colors.transparent,
+                        color: hasTx
+                            ? const Color(0xFFFFC107)
+                            : Colors.transparent,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: hasTx ? const Color(0xFFFFC107) : Colors.grey.shade300,
+                          color: hasTx
+                              ? const Color(0xFFFFC107)
+                              : Colors.grey.shade300,
                           width: 2,
                         ),
                       ),
                       child: hasTx
                           ? const Center(
-                              child: Text('💰', style: TextStyle(fontSize: 12)))
+                              child: Text('💰', style: TextStyle(fontSize: 12)),
+                            )
                           : null,
                     ),
                     const SizedBox(height: 6),
@@ -97,7 +104,7 @@ class StreakDialog extends StatelessWidget {
               }),
             ),
             const SizedBox(height: 40),
-            
+
             SizedBox(
               width: double.infinity,
               height: 56,
@@ -106,17 +113,23 @@ class StreakDialog extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00CED1),
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   elevation: 0,
                 ),
                 child: const Text(
                   'Tiếp tục',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 1.2),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             TextButton(
               onPressed: () {
                 Get.back();
@@ -137,5 +150,3 @@ class StreakDialog extends StatelessWidget {
     );
   }
 }
-
-

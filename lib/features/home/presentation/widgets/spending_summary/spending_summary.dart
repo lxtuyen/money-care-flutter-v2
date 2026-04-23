@@ -88,7 +88,9 @@ class SpendingSummary extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       AppHelperFunction.formatAmount(
-                          expenseTotal.toDouble(), ''),
+                        expenseTotal.toDouble(),
+                        '',
+                      ),
                       style: const TextStyle(
                         color: AppColors.secondaryOrange,
                         fontWeight: FontWeight.bold,

@@ -6,49 +6,65 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 
 import 'package:money_care/features/transaction/domain/repositories/transaction_repository.dart';
 
+import 'package:money_care/core/services/ocr_service.dart';
+import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
+
 class TransactionRepositoryImpl implements TransactionRepository {
   final TransactionRemoteDatasource remoteDatasource;
+  final OCRService ocrService;
 
-  TransactionRepositoryImpl({required this.remoteDatasource});
+  TransactionRepositoryImpl({
+    required this.remoteDatasource,
+    required this.ocrService,
+  });
 
   @override
   Future<TransactionByTypeEntity> findAllByFilter(
-      int userId, TransactionFilterDto dto) async {
+    int userId,
+    TransactionFilterDto dto,
+  ) async {
     final model = await remoteDatasource.findAllByFilter(userId, dto);
     return model.toEntity();
   }
 
   @override
   Future<TotalByTypeEntity> getTotalByType(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final model = await remoteDatasource.getTotalByType(userId, dto);
     return model.toEntity();
   }
 
   @override
   Future<List<TotalByCategoryEntity>> getTotalByCate(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final models = await remoteDatasource.getTotalByCate(userId, dto);
     return models.map((e) => e.toEntity()).toList();
   }
 
   @override
   Future<TotalsByDateEntity> getTotalByDateEntity(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final model = await remoteDatasource.getTotalByDateEntity(userId, dto);
     return model.toEntity();
   }
 
   @override
-  Future<TransactionEntity> createTransaction(
-      TransactionCreateDto dto) async {
+  Future<TransactionEntity> createTransaction(TransactionCreateDto dto) async {
     final model = await remoteDatasource.createTransaction(dto);
     return model.toEntity();
   }
 
   @override
   Future<TransactionEntity> updateTransaction(
-      TransactionCreateDto dto, int id) async {
+    TransactionCreateDto dto,
+    int id,
+  ) async {
     final model = await remoteDatasource.updateTransaction(dto, id);
     return model.toEntity();
   }
@@ -60,16 +76,22 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Future<ScanReceiptEntity> scanReceipt(XFile image) async {
-    final model = await remoteDatasource.scanReceipt(image);
-    return model.toEntity();
+    try {
+      final recognizedText = await ocrService.processImage(image.path);
+      return ReceiptParser.parse(recognizedText);
+    } catch (e) {
+      // Fallback to remote if local fails (optional, but good for reliability)
+      final model = await remoteDatasource.scanReceipt(image);
+      return model.toEntity();
+    }
   }
 
   @override
   Future<StatisticsSummaryEntity> getStatisticsSummary(
-      int userId, TransactionTotalsDto dto) async {
+    int userId,
+    TransactionTotalsDto dto,
+  ) async {
     final model = await remoteDatasource.getStatisticsSummary(userId, dto);
     return model.toEntity();
   }
-
-
 }

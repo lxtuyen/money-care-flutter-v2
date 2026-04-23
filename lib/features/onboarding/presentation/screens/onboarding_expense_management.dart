@@ -22,5 +22,3 @@ class OnboardingExpenseManagementScreen extends StatelessWidget {
     );
   }
 }
-
-

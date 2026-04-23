@@ -24,7 +24,6 @@ class CircularImages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       width: width,
       height: height,
@@ -35,11 +34,9 @@ class CircularImages extends StatelessWidget {
       ),
       child: Image(
         fit: fit,
-        image: isNetworkImage? NetworkImage(image) :AssetImage(image),
+        image: isNetworkImage ? NetworkImage(image) : AssetImage(image),
         color: overlayColor,
       ),
     );
   }
 }
-
-

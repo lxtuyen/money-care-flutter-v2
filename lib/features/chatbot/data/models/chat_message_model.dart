@@ -16,10 +16,5 @@ abstract class ChatMessageModel with _$ChatMessageModel {
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) =>
       _$ChatMessageModelFromJson(json);
 
-  ChatMessageEntity toEntity() => ChatMessageEntity(
-        isUser: isUser,
-        text: text,
-      );
+  ChatMessageEntity toEntity() => ChatMessageEntity(isUser: isUser, text: text);
 }
-
-

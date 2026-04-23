@@ -27,27 +27,53 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
   static const List<Map<String, dynamic>> _iconCategories = [
     {
       'name': 'Nhà & Bill',
-      'icons': ['🏠', '⚡', '💧', '📶', '🔌', '🧹', '🧼', '🧺', '🧴', '🛒', '🛋️', '🌱']
+      'icons': [
+        '🏠',
+        '⚡',
+        '💧',
+        '📶',
+        '🔌',
+        '🧹',
+        '🧼',
+        '🧺',
+        '🧴',
+        '🛒',
+        '🛋️',
+        '🌱',
+      ],
     },
     {
       'name': 'Ăn uống',
-      'icons': ['🍔', '🍕', '🍜', '☕', '🍱', '🍰', '🍺', '🍹', '🥯', '🍣', '🥗', '🥪']
+      'icons': [
+        '🍔',
+        '🍕',
+        '🍜',
+        '☕',
+        '🍱',
+        '🍰',
+        '🍺',
+        '🍹',
+        '🥯',
+        '🍣',
+        '🥗',
+        '🥪',
+      ],
     },
     {
       'name': 'Di chuyển',
-      'icons': ['🚗', '🛵', '🚲', '🚌', '🚕', '⛽', '🛠️', '🅿️', '🚂', '✈️']
+      'icons': ['🚗', '🛵', '🚲', '🚌', '🚕', '⛽', '🛠️', '🅿️', '🚂', '✈️'],
     },
     {
       'name': 'Giải trí',
-      'icons': ['🎮', '🎬', '🎤', '🎪', '🎨', '🎭', '🎸', '🎡', '🧩', '🎳']
+      'icons': ['🎮', '🎬', '🎤', '🎪', '🎨', '🎭', '🎸', '🎡', '🧩', '🎳'],
     },
     {
       'name': 'Sức khỏe',
-      'icons': ['💊', '🏥', '🩺', '🦷', '👟', '💆', '🧴', '🚿']
+      'icons': ['💊', '🏥', '🩺', '🦷', '👟', '💆', '🧴', '🚿'],
     },
     {
       'name': 'Khác',
-      'icons': ['🎁', '💰', '🎓', '🐾', '🧸', '📦', '🛍️', '🧺']
+      'icons': ['🎁', '💰', '🎓', '🐾', '🧸', '📦', '🛍️', '🧺'],
     },
   ];
 
@@ -105,13 +131,15 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 20),
-            
+
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Tên danh mục',
                 hintText: 'Ví dụ: Ăn uống, Di chuyển...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -119,29 +147,52 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Loại danh mục', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text(
+                  'Loại danh mục',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
                       child: ChoiceChip(
-                        label: const Center(child: Text('Chi tiêu', style: TextStyle(fontSize: 12))),
+                        label: const Center(
+                          child: Text(
+                            'Chi tiêu',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
                         selected: _selectedType == 'expense',
-                        onSelected: (val) => setState(() => _selectedType = 'expense'),
+                        onSelected: (val) =>
+                            setState(() => _selectedType = 'expense'),
                         showCheckmark: false,
                         selectedColor: AppColors.primary,
-                        labelStyle: TextStyle(color: _selectedType == 'expense' ? Colors.white : AppColors.text2),
+                        labelStyle: TextStyle(
+                          color: _selectedType == 'expense'
+                              ? Colors.white
+                              : AppColors.text2,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: ChoiceChip(
-                        label: const Center(child: Text('Thu nhập', style: TextStyle(fontSize: 12))),
+                        label: const Center(
+                          child: Text(
+                            'Thu nhập',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
                         selected: _selectedType == 'income',
-                        onSelected: (val) => setState(() => _selectedType = 'income'),
+                        onSelected: (val) =>
+                            setState(() => _selectedType = 'income'),
                         showCheckmark: false,
                         selectedColor: AppColors.primary,
-                        labelStyle: TextStyle(color: _selectedType == 'income' ? Colors.white : AppColors.text2),
+                        labelStyle: TextStyle(
+                          color: _selectedType == 'income'
+                              ? Colors.white
+                              : AppColors.text2,
+                        ),
                       ),
                     ),
                   ],
@@ -150,7 +201,10 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
               ],
             ),
 
-            const Text('Biểu tượng', style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text(
+              'Biểu tượng',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -160,7 +214,10 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 2),
+                    border: Border.all(
+                      color: AppColors.primary.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -195,7 +252,9 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                       style: TextStyle(
                         fontSize: 12,
                         color: isSelected ? Colors.white : AppColors.text3,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w400,
                       ),
                     ),
                     selected: isSelected,
@@ -227,9 +286,12 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                 ),
-                itemCount: (_iconCategories[_selectedCategoryIndex]['icons'] as List).length,
+                itemCount:
+                    (_iconCategories[_selectedCategoryIndex]['icons'] as List)
+                        .length,
                 itemBuilder: (context, index) {
-                  final icon = _iconCategories[_selectedCategoryIndex]['icons'][index];
+                  final icon =
+                      _iconCategories[_selectedCategoryIndex]['icons'][index];
                   final isSelected = _iconController.text == icon;
                   return GestureDetector(
                     onTap: () => setState(() => _iconController.text = icon),
@@ -239,9 +301,17 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                         color: isSelected ? Colors.white : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: isSelected
-                            ? [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))]
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
                             : [],
-                        border: isSelected ? Border.all(color: AppColors.primary, width: 1.5) : null,
+                        border: isSelected
+                            ? Border.all(color: AppColors.primary, width: 1.5)
+                            : null,
                       ),
                       child: Center(
                         child: Text(icon, style: const TextStyle(fontSize: 24)),
@@ -268,11 +338,17 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                       children: [
                         Text(
                           'Danh mục thiết yếu',
-                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                         ),
                         Text(
                           'Sẽ luôn hiển thị trong Chế độ Sinh tồn',
-                          style: TextStyle(color: AppColors.text4, fontSize: 12),
+                          style: TextStyle(
+                            color: AppColors.text4,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -295,11 +371,28 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                child: Obx(() => _controller.isLoading.value
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(isEditing ? 'Cập nhật' : 'Thêm mới', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700))),
+                child: Obx(
+                  () => _controller.isLoading.value
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          isEditing ? 'Cập nhật' : 'Thêm mới',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                ),
               ),
             ),
           ],
@@ -334,7 +427,12 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
 
     if (success) {
       Get.back();
-      Get.snackbar('Thành công', widget.category != null ? 'Đã cập nhật danh mục' : 'Đã thêm danh mục mới');
+      Get.snackbar(
+        'Thành công',
+        widget.category != null
+            ? 'Đã cập nhật danh mục'
+            : 'Đã thêm danh mục mới',
+      );
     } else {
       Get.snackbar('Lỗi', 'Không thể lưu danh mục. Vui lòng thử lại.');
     }

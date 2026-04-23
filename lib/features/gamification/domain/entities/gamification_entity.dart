@@ -11,11 +11,7 @@ class BadgeEntity {
     required this.awardedAt,
   });
 
-  BadgeEntity copyWith({
-    String? key,
-    String? name,
-    DateTime? awardedAt,
-  }) {
+  BadgeEntity copyWith({String? key, String? name, DateTime? awardedAt}) {
     return BadgeEntity(
       key: key ?? this.key,
       name: name ?? this.name,
@@ -56,10 +52,7 @@ class GamificationEntity {
 
     if (lastTransactionDate == null) {
       // Giao dịch đầu tiên
-      return copyWith(
-        currentStreak: 1,
-        lastTransactionDate: todayDate,
-      );
+      return copyWith(currentStreak: 1, lastTransactionDate: todayDate);
     }
 
     final lastDate = DateTime(
@@ -83,10 +76,7 @@ class GamificationEntity {
     }
 
     // Bỏ ngày — reset streak về 1
-    return copyWith(
-      currentStreak: 1,
-      lastTransactionDate: todayDate,
-    );
+    return copyWith(currentStreak: 1, lastTransactionDate: todayDate);
   }
 
   /// Cấp badge nếu chưa có (idempotent) — Requirement 8.9
@@ -123,5 +113,3 @@ class BadgeNames {
   static const String streak30 = 'Tiết kiệm 30 ngày';
   static const String goalCompleted = 'Mục tiêu hoàn thành';
 }
-
-

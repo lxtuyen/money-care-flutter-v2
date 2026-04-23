@@ -44,13 +44,16 @@ class HomeScreen extends GetView<HomeController> {
                   children: [
                     Expanded(
                       child: Obx(() {
-                        final profile = controller.userController.userProfile.value;
+                        final profile =
+                            controller.userController.userProfile.value;
                         final String greeting = AppHelperFunction.getGreeting();
-                        
+
                         if (controller.userController.isLoading.value) {
                           return const SizedBox(
                             height: 48,
-                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            child: Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
                           );
                         }
 
@@ -62,7 +65,10 @@ class HomeScreen extends GetView<HomeController> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
-                                  colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+                                  colors: [
+                                    AppColors.primary,
+                                    AppColors.primary.withOpacity(0.7),
+                                  ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
@@ -75,15 +81,27 @@ class HomeScreen extends GetView<HomeController> {
                                 ],
                               ),
                               child: Center(
-                                child: profile?.avatar != null 
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(22),
-                                      child: Image.network(profile!.avatar!, width: 44, height: 44, fit: BoxFit.cover),
-                                    )
-                                  : Text(
-                                      (profile?.firstName?.isNotEmpty == true) ? profile!.firstName![0].toUpperCase() : "U",
-                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                                    ),
+                                child: profile?.avatar != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(22),
+                                        child: Image.network(
+                                          profile!.avatar!,
+                                          width: 44,
+                                          height: 44,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Text(
+                                        (profile?.firstName?.isNotEmpty == true)
+                                            ? profile!.firstName![0]
+                                                  .toUpperCase()
+                                            : "U",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -129,7 +147,9 @@ class HomeScreen extends GetView<HomeController> {
                               context: context,
                               barrierDismissible: true,
                               barrierLabel: '',
-                              transitionDuration: const Duration(milliseconds: 200),
+                              transitionDuration: const Duration(
+                                milliseconds: 200,
+                              ),
                               pageBuilder: (context, anim1, anim2) {
                                 return Align(
                                   alignment: Alignment.topCenter,
@@ -137,19 +157,27 @@ class HomeScreen extends GetView<HomeController> {
                                     color: Colors.transparent,
                                     child: Container(
                                       margin: const EdgeInsets.only(top: 80),
-                                      width: MediaQuery.of(context).size.width * 0.9,
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          0.9,
                                       child: Obx(() {
-                                        final transactions = controller.transactionController
+                                        final transactions =
+                                            controller
+                                                .transactionController
                                                 .recentTransactions
                                                 .value
                                                 ?.expenseTransactions ??
                                             [];
 
-                                        if (controller.transactionController.isRecentLoading.value) {
+                                        if (controller
+                                            .transactionController
+                                            .isRecentLoading
+                                            .value) {
                                           return const SizedBox(
                                             height: 120,
                                             child: Center(
-                                              child: CircularProgressIndicator(),
+                                              child:
+                                                  CircularProgressIndicator(),
                                             ),
                                           );
                                         }
@@ -198,9 +226,9 @@ class HomeScreen extends GetView<HomeController> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
@@ -219,7 +247,8 @@ class HomeScreen extends GetView<HomeController> {
 
             const SizedBox(height: AppSizes.defaultSpace),
             Obx(() {
-              final totals = controller.statisticsController.globalTotalByType.value;
+              final totals =
+                  controller.statisticsController.globalTotalByType.value;
 
               if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
@@ -229,10 +258,7 @@ class HomeScreen extends GetView<HomeController> {
               }
 
               if (totals == null) {
-                return SpendingSummary(
-                  incomeTotal: 0,
-                  expenseTotal: 0,
-                );
+                return SpendingSummary(incomeTotal: 0, expenseTotal: 0);
               }
 
               return SpendingSummary(
@@ -243,7 +269,10 @@ class HomeScreen extends GetView<HomeController> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Giao dịch gần đây", showActionButton: false),
+            AppSectionHeading(
+              title: "Giao dịch gần đây",
+              showActionButton: false,
+            ),
             Obx(() {
               final transactions =
                   controller.transactionController.recentTransactions.value;
@@ -256,9 +285,9 @@ class HomeScreen extends GetView<HomeController> {
 
               if (transactions == null) {
                 return const TransactionSection(
-                incomeTransactions: [],
-                expenseTransactions: [],
-              );
+                  incomeTransactions: [],
+                  expenseTransactions: [],
+                );
               }
 
               return TransactionSection(
@@ -272,7 +301,8 @@ class HomeScreen extends GetView<HomeController> {
             AppSectionHeading(title: "Tổng quan", showActionButton: false),
             const SizedBox(height: AppSizes.spaceBtwItems),
             Obx(() {
-              final totalsData = controller.statisticsController.totalByDate.value;
+              final totalsData =
+                  controller.statisticsController.totalByDate.value;
 
               if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
@@ -309,14 +339,20 @@ class HomeScreen extends GetView<HomeController> {
 
               final filtered = categories.where((TotalByCategoryEntity cat) {
                 if (cat.limit > 0) return true;
-                if (mode == FinanceMode.survival && !cat.isEssential && cat.total > 0) {
+                if (mode == FinanceMode.survival &&
+                    !cat.isEssential &&
+                    cat.total > 0) {
                   return true;
                 }
                 return false;
               }).toList();
               filtered.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
-                double percentA = a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
-                double percentB = b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
+                double percentA = a.limit > 0
+                    ? a.total / a.limit
+                    : (a.total > 0 ? 10.0 : 0.0);
+                double percentB = b.limit > 0
+                    ? b.total / b.limit
+                    : (b.total > 0 ? 10.0 : 0.0);
                 return percentB.compareTo(percentA);
               });
 
@@ -324,12 +360,11 @@ class HomeScreen extends GetView<HomeController> {
 
               return Column(
                 children: [
-                   AppSectionHeading(
-                    title: "Hạn mức chi tiêu", 
+                  AppSectionHeading(
+                    title: "Hạn mức chi tiêu",
                     showActionButton: filtered.length > 3,
                     buttonTitle: "Tất cả",
-                    onPressed: () {
-                    },
+                    onPressed: () {},
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
                   ...filtered.take(3).map((TotalByCategoryEntity category) {
@@ -352,19 +387,25 @@ class HomeScreen extends GetView<HomeController> {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              
+
               final mode = controller.financeModeController.currentMode.value;
-              final categories = controller.statisticsController.expenseCategories;
-              
+              final categories =
+                  controller.statisticsController.expenseCategories;
+
               List<TotalByCategoryEntity> filteredCategories;
               if (mode == FinanceMode.survival) {
-                filteredCategories = categories.where((TotalByCategoryEntity c) => c.isEssential).toList();
+                filteredCategories = categories
+                    .where((TotalByCategoryEntity c) => c.isEssential)
+                    .toList();
               } else {
                 filteredCategories = categories.toList();
               }
 
               if (mode == FinanceMode.saving) {
-                filteredCategories.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
+                filteredCategories.sort((
+                  TotalByCategoryEntity a,
+                  TotalByCategoryEntity b,
+                ) {
                   if (a.limit <= 0 && b.limit <= 0) return 0;
                   if (a.limit <= 0) return 1;
                   if (b.limit <= 0) return -1;
@@ -375,17 +416,17 @@ class HomeScreen extends GetView<HomeController> {
               }
 
               if (filteredCategories.isEmpty) {
-                return mode == FinanceMode.survival 
-                  ? AppSectionHeading(
-                      title: "Chi tiêu tháng này (Cắt giảm tối đa!)", 
-                      showActionButton: false,
-                    )
-                  : const SizedBox.shrink();
+                return mode == FinanceMode.survival
+                    ? AppSectionHeading(
+                        title: "Chi tiêu tháng này (Cắt giảm tối đa!)",
+                        showActionButton: false,
+                      )
+                    : const SizedBox.shrink();
               }
 
               String sectionTitle = "Chi tiêu tháng này";
               String? sectionSubtitle;
-              
+
               if (mode == FinanceMode.survival) {
                 sectionTitle = "Chi tiêu thiết yếu (Sinh tồn)";
               } else if (mode == FinanceMode.saving) {
@@ -396,7 +437,7 @@ class HomeScreen extends GetView<HomeController> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   AppSectionHeading(
+                  AppSectionHeading(
                     title: sectionTitle,
                     showActionButton: false,
                   ),
@@ -405,10 +446,18 @@ class HomeScreen extends GetView<HomeController> {
                       padding: const EdgeInsets.only(left: 4, bottom: 12),
                       child: Text(
                         sectionSubtitle,
-                        style: const TextStyle(fontSize: 12, color: AppColors.text4, fontStyle: FontStyle.italic),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.text4,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
-                  SizedBox(height: sectionSubtitle != null ? 0 : AppSizes.spaceBtwItems),
+                  SizedBox(
+                    height: sectionSubtitle != null
+                        ? 0
+                        : AppSizes.spaceBtwItems,
+                  ),
                   ...filteredCategories.map((TotalByCategoryEntity category) {
                     return CategoryOverviewCard(
                       title: category.categoryName,
@@ -418,12 +467,20 @@ class HomeScreen extends GetView<HomeController> {
                       isIncome: false,
                     );
                   }).toList(),
-                  if (mode == FinanceMode.survival && categories.any((TotalByCategoryEntity c) => !c.isEssential && c.total > 0))
+                  if (mode == FinanceMode.survival &&
+                      categories.any(
+                        (TotalByCategoryEntity c) =>
+                            !c.isEssential && c.total > 0,
+                      ))
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         "Đã ẩn ${categories.where((TotalByCategoryEntity c) => !c.isEssential).length} mục không thiết yếu",
-                        style: const TextStyle(fontSize: 11, color: AppColors.error, fontStyle: FontStyle.italic),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.error,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
                 ],
@@ -444,12 +501,14 @@ class HomeScreen extends GetView<HomeController> {
               }
               return Column(
                 children: [
-                   AppSectionHeading(
-                    title: "Thu nhập tháng này", 
+                  AppSectionHeading(
+                    title: "Thu nhập tháng này",
                     showActionButton: false,
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
-                  ...controller.statisticsController.incomeCategories.map((TotalByCategoryEntity category) {
+                  ...controller.statisticsController.incomeCategories.map((
+                    TotalByCategoryEntity category,
+                  ) {
                     return CategoryOverviewCard(
                       title: category.categoryName,
                       limit: category.limit,

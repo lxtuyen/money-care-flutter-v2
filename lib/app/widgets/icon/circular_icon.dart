@@ -25,7 +25,6 @@ class CircularIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -38,19 +37,14 @@ class CircularIcon extends StatelessWidget {
               : AppColors.white.withOpacity(0.9),
         ),
         child: iconPath != null
-                ? SvgPicture.asset(
-                    iconPath!,
-                    width: width,
-                    height: height,
-                    color: color,
-                  )
-                : Icon(
-                    icon,
-                    color: color,
-                    size: size,
-                  )),
+            ? SvgPicture.asset(
+                iconPath!,
+                width: width,
+                height: height,
+                color: color,
+              )
+            : Icon(icon, color: color, size: size),
+      ),
     );
   }
 }
-
-

@@ -11,8 +11,8 @@ class BadgesSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final GamificationController? controller =
         Get.isRegistered<GamificationController>()
-            ? Get.find<GamificationController>()
-            : null;
+        ? Get.find<GamificationController>()
+        : null;
 
     if (controller == null) return const SizedBox.shrink();
 

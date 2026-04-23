@@ -24,16 +24,22 @@ class CategoryOverviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String limitText = AppHelperFunction.formatAmount(limit, 'VND');
-    final String spentText = AppHelperFunction.formatAmount(spent.toDouble(), 'VND');
+    final String spentText = AppHelperFunction.formatAmount(
+      spent.toDouble(),
+      'VND',
+    );
     final bool isOverLimit = limit > 0 && spent >= limit;
-    final bool isNearLimit = limit > 0 && spent >= (limit * 0.8) && !isOverLimit;
-    
+    final bool isNearLimit =
+        limit > 0 && spent >= (limit * 0.8) && !isOverLimit;
+
     Color themeColor = isIncome ? AppColors.success : AppColors.error;
     if (!isIncome) {
-      if (isNearLimit) themeColor = AppColors.warning;
-      else if (isOverLimit) themeColor = AppColors.error;
+      if (isNearLimit)
+        themeColor = AppColors.warning;
+      else if (isOverLimit)
+        themeColor = AppColors.error;
     }
-    
+
     final String spentLabel = isIncome ? "Đã nhận:" : "Đã tiêu:";
     final bool showLimit = limit > 0;
 
@@ -147,6 +153,3 @@ class CategoryOverviewCard extends StatelessWidget {
     );
   }
 }
-
-
-

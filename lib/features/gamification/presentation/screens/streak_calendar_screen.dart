@@ -67,7 +67,10 @@ class StreakCalendarScreen extends StatelessWidget {
 
   Widget _buildMonthHeader(StreakCalendarController controller) {
     return Obx(() {
-      final monthName = DateFormat('MMMM yyyy', 'vi_VN').format(controller.focusedMonth.value);
+      final monthName = DateFormat(
+        'MMMM yyyy',
+        'vi_VN',
+      ).format(controller.focusedMonth.value);
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -254,7 +257,9 @@ class _DayCell extends StatelessWidget {
       children: [
         SizedBox(
           height: 18,
-          child: hasTx ? const Text('🔥', style: TextStyle(fontSize: 12)) : null,
+          child: hasTx
+              ? const Text('🔥', style: TextStyle(fontSize: 12))
+              : null,
         ),
         const SizedBox(height: 1),
         Container(
@@ -264,26 +269,28 @@ class _DayCell extends StatelessWidget {
             color: isToday
                 ? AppColors.primary
                 : hasTx
-                    ? const Color(0xFFFFF3E0)
-                    : Colors.transparent,
+                ? const Color(0xFFFFF3E0)
+                : Colors.transparent,
             shape: BoxShape.circle,
             border: isToday
                 ? null
                 : hasTx
-                    ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
-                    : null,
+                ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
+                : null,
           ),
           child: Center(
             child: Text(
               '$day',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: isToday || hasTx ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isToday || hasTx
+                    ? FontWeight.w700
+                    : FontWeight.w500,
                 color: isToday
                     ? Colors.white
                     : hasTx
-                        ? const Color(0xFFE65100)
-                        : AppColors.text3,
+                    ? const Color(0xFFE65100)
+                    : AppColors.text3,
               ),
             ),
           ),
@@ -293,11 +300,15 @@ class _DayCell extends StatelessWidget {
           height: 13,
           child: hasTx
               ? Text(
-                  net >= 0 ? '+${formatter.format(net)}' : formatter.format(net),
+                  net >= 0
+                      ? '+${formatter.format(net)}'
+                      : formatter.format(net),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
-                    color: net >= 0 ? const Color(0xFF27AE60) : const Color(0xFFE53935),
+                    color: net >= 0
+                        ? const Color(0xFF27AE60)
+                        : const Color(0xFFE53935),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.clip,
@@ -334,7 +345,9 @@ class _LegendItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
-            border: borderColor != null ? Border.all(color: borderColor!, width: 1.5) : null,
+            border: borderColor != null
+                ? Border.all(color: borderColor!, width: 1.5)
+                : null,
           ),
           child: icon != null
               ? Center(child: Text(icon!, style: const TextStyle(fontSize: 11)))

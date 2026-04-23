@@ -37,8 +37,9 @@ class TransactionEntity {
       amount: map['amount'] ?? 0,
       type: map['type'] ?? 'expense',
       note: map['note'],
-      transactionDate:
-          map['date'] != null ? DateTime.tryParse(map['date'].toString()) : null,
+      transactionDate: map['date'] != null
+          ? DateTime.tryParse(map['date'].toString())
+          : null,
       category: CategoryEntity(
         name: map['category'] ?? 'Khác',
         icon: map['categoryIcon'] ?? '💰',

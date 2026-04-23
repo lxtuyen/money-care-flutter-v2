@@ -21,20 +21,22 @@ class SavingsBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double leftTitlesReservedSize = 28.0;
-    final double chartWidth = screenWidth - leftTitlesReservedSize - 16; 
-    final double barWidth = (chartWidth / (xLabels.length * 1.5)).clamp(4.0, 16.0);
+    final double chartWidth = screenWidth - leftTitlesReservedSize - 16;
+    final double barWidth = (chartWidth / (xLabels.length * 1.5)).clamp(
+      4.0,
+      16.0,
+    );
 
-    final List<BarChartGroupData> barGroups = List.generate(xLabels.length, (index) {
+    final List<BarChartGroupData> barGroups = List.generate(xLabels.length, (
+      index,
+    ) {
       final List<BarChartRodData> rods = [];
-      
+
       rods.add(
         BarChartRodData(
           toY: index < thisMonthSpots.length ? thisMonthSpots[index].y : 0,
           gradient: LinearGradient(
-            colors: [
-              AppColors.primary,
-              AppColors.primary.withOpacity(0.7),
-            ],
+            colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -43,10 +45,7 @@ class SavingsBarChart extends StatelessWidget {
         ),
       );
 
-      return BarChartGroupData(
-        x: index,
-        barRods: rods,
-      );
+      return BarChartGroupData(x: index, barRods: rods);
     });
 
     return Container(
@@ -56,17 +55,17 @@ class SavingsBarChart extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
         ],
       ),
       child: AppBarChart(
         minY: 0,
         alignment: BarChartAlignment.start,
-        groupsSpace: (xLabels.length <= 1) ? 0 : ((chartWidth - (xLabels.length * barWidth)) / (xLabels.length - 1)).clamp(0.0, 30.0),
+        groupsSpace: (xLabels.length <= 1)
+            ? 0
+            : ((chartWidth - (xLabels.length * barWidth)) /
+                      (xLabels.length - 1))
+                  .clamp(0.0, 30.0),
         getBottomTitles: (value, meta) {
           int index = value.round();
           if (index < 0 || index >= xLabels.length || xLabels[index].isEmpty) {
@@ -86,11 +85,14 @@ class SavingsBarChart extends StatelessWidget {
         },
         tooltipData: BarTouchTooltipData(
           getTooltipColor: (group) => AppColors.primary.withOpacity(0.9),
-          tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          tooltipPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             final controller = Get.find<StatisticsController>();
             String dateStr = "";
-            
+
             if (controller.periodType.value == 'hàng tháng') {
               final date = DateTime(
                 controller.selectedMonth.value.year,
@@ -127,5 +129,3 @@ class SavingsBarChart extends StatelessWidget {
     );
   }
 }
-
-

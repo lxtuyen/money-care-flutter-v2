@@ -16,7 +16,6 @@ abstract class SavingGoalDto with _$SavingGoalDto {
     @JsonKey(name: 'is_completed') bool? isCompleted,
   }) = _SavingGoalDto;
 
-
   const SavingGoalDto._();
 
   Map<String, dynamic> toJsonCreate() {
@@ -46,6 +45,4 @@ abstract class SavingGoalDto with _$SavingGoalDto {
     map.removeWhere((key, value) => value == null);
     return map;
   }
-
 }
-

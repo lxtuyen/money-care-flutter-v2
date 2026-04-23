@@ -23,6 +23,9 @@ dependencies:
   percent_indicator: ^4.2.3
   speech_to_text: ^7.3.0
 
+  # On-device ML
+  tflite_flutter: ^0.11.0
+
   # icons
   iconsax_flutter: ^1.0.0
 
@@ -62,6 +65,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/ml/
     - .env
 
   #------------------- Local Fonts ------------------- #

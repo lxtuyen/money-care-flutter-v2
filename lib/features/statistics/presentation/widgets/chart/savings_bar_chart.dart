@@ -89,10 +89,10 @@ class SavingsBarChart extends StatelessWidget {
         Container(
           height: 220,
           padding: const EdgeInsets.only(top: 12, right: 0, bottom: 12, left: 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 6,

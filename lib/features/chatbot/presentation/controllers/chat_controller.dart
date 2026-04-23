@@ -7,6 +7,8 @@ import 'package:money_care/features/chatbot/data/models/models.dart';
 import 'package:money_care/features/chatbot/domain/entities/chat_entity.dart';
 import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
 import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/core/ml/nlu_service.dart';
+import 'package:money_care/core/ml/nlu_dispatcher.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/fund_controller.dart';
@@ -15,6 +17,12 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatController extends GetxController {
   final SendToChatbotUseCase sendToChatbotUseCase;
+
+  /// On-device NLU service (MobileBERT + entity extraction)
+  late final NluService _nluService;
+
+  /// Routes NLU results to NestJS API endpoints
+  late final NluDispatcher _nluDispatcher;
 
   ChatController({required this.sendToChatbotUseCase});
 
@@ -57,6 +65,17 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     initSpeech();
+    _initNlu();
+  }
+
+  void _initNlu() {
+    final apiClient = Get.find<ApiClient>();
+    _nluService   = NluService();
+    _nluDispatcher = NluDispatcher(api: apiClient);
+    // Initialize model in background — first classify() call will await if not ready
+    _nluService.initialize().catchError((_) {
+      // Silently fail — will fallback to Gemini on every message
+    });
   }
 
   Future<void> initSpeech() async {
@@ -123,6 +142,43 @@ class ChatController extends GetxController {
       errorMessage.value = null;
 
       final fundId = fundController.fundId.value;
+
+      // ── NLU-first routing ──────────────────────────────────────────────────
+      // 1. Run on-device MobileBERT to classify intent
+      final nluResult = await _nluService.process(text);
+
+      // 2. If confident + basic CRUD → handle locally without hitting Gemini
+      if (nluResult.isConfident && nluResult.isBasicCrud) {
+        final reply = await _nluDispatcher.dispatch(
+          nluResult,
+          userId,
+          fundId: fundId > 0 ? fundId : null,
+        );
+        replaceLastBotMessage(reply);
+
+        // Refresh transaction list if data was mutated
+        final mutating = const {'add_expense', 'add_income', 'add_category'};
+        if (mutating.contains(nluResult.intent.value)) {
+          try {
+            await transactionController.refreshAllData(userId);
+            if (Get.isRegistered<GamificationController>()) {
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Get.find<GamificationController>().recordDailyTransaction();
+              });
+            }
+          } catch (_) {}
+        }
+
+        scrollToBottom();
+        return;
+      }
+
+      // ── Fallback: send to Gemini backend (TEMPORARILY DISABLED FOR NLU TESTING) ──
+      replaceLastBotMessage("NLU chưa đủ tin cậy và Fallback đang được tắt để test mô hình...");
+      isLoading.value = false;
+      scrollToBottom();
+      return;
+
       final dto = ChatDto(
         message: text,
         userId: userId,
@@ -287,6 +343,7 @@ class ChatController extends GetxController {
     textController.dispose();
     scrollController.dispose();
     _speech.stop();
+    _nluService.dispose();
     super.onClose();
   }
 }

@@ -28,10 +28,8 @@ class StreakDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 10),
-            // Large Flame Icon
             const Text('🔥', style: TextStyle(fontSize: 80)),
             const SizedBox(height: 10),
-            // Streak Number
             Text(
               '$streak',
               style: const TextStyle(
@@ -50,8 +48,6 @@ class StreakDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-
-            // Weekly Progress Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(7, (index) {

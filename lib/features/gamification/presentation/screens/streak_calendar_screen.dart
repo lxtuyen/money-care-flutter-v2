@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/gamification/presentation/controllers/streak_calendar_controller.dart';
 
@@ -67,10 +67,11 @@ class StreakCalendarScreen extends StatelessWidget {
 
   Widget _buildMonthHeader(StreakCalendarController controller) {
     return Obx(() {
-      final monthName = DateFormat(
-        'MMMM yyyy',
-        'vi_VN',
-      ).format(controller.focusedMonth.value);
+      final monthName = AppHelperFunction.getFormattedDate(
+        controller.focusedMonth.value,
+        format: 'MMMM yyyy',
+        locale: 'vi_VN',
+      );
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -250,7 +251,7 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatter = NumberFormat.compact(locale: 'vi');
+    final formattedNet = AppHelperFunction.formatCompactNumber(net);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -301,8 +302,8 @@ class _DayCell extends StatelessWidget {
           child: hasTx
               ? Text(
                   net >= 0
-                      ? '+${formatter.format(net)}'
-                      : formatter.format(net),
+                      ? '+$formattedNet'
+                      : formattedNet,
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w600,

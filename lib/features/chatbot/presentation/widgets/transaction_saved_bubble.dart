@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class TransactionSavedBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -10,28 +11,14 @@ class TransactionSavedBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double amount = (metadata['amount'] as num?)?.toDouble() ?? 0;
-    final String category = metadata['category'] ?? 'Chi tiêu';
-    final String categoryIcon = metadata['categoryIcon'] ?? '💰';
-    final String note = metadata['note'] ?? '';
-    final String? dateStr = metadata['date'] as String?;
+    final transaction = TransactionEntity.fromMap(metadata);
+    final isIncome = transaction.type == 'income';
 
-    final String type = metadata['type'] ?? 'expense';
-    final bool isIncome = type == 'income';
-
-    final currencyFormat = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-      decimalDigits: 0,
-    );
-
-    String formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    if (dateStr != null) {
-      try {
-        formattedDate = DateFormat(
-          'dd/MM/yyyy',
-        ).format(DateTime.parse(dateStr));
-      } catch (_) {}
+    String formattedDate = AppHelperFunction.getFormattedDate(DateTime.now());
+    if (transaction.transactionDate != null) {
+      formattedDate = AppHelperFunction.getFormattedDate(
+        transaction.transactionDate!,
+      );
     }
 
     return Align(
@@ -61,7 +48,6 @@ class TransactionSavedBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -108,12 +94,10 @@ class TransactionSavedBubble extends StatelessWidget {
                   ),
                 ),
 
-                // Body
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      // Icon category
                       Container(
                         width: 52,
                         height: 52,
@@ -127,29 +111,28 @@ class TransactionSavedBubble extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            categoryIcon,
+                            transaction.category?.icon ?? '💰',
                             style: const TextStyle(fontSize: 24),
                           ),
                         ),
                       ),
                       const SizedBox(width: 14),
 
-                      // Info
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              category,
+                              transaction.category?.name ?? 'Chi tiêu',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                               ),
                             ),
-                            if (note.isNotEmpty) ...[
+                            if (transaction.note?.isNotEmpty ?? false) ...[
                               const SizedBox(height: 3),
                               Text(
-                                note,
+                                transaction.note!,
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
                                   fontSize: 13,
@@ -161,10 +144,8 @@ class TransactionSavedBubble extends StatelessWidget {
                           ],
                         ),
                       ),
-
-                      // Amount
                       Text(
-                        '${isIncome ? '+' : '-'} ${currencyFormat.format(amount)}',
+                        '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(transaction.amount.toDouble())}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,

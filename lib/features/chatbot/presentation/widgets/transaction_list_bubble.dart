@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class TransactionListBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -10,7 +11,10 @@ class TransactionListBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List transactions = metadata['transactions'] as List? ?? [];
+    final List transactionMaps = metadata['transactions'] as List? ?? [];
+    final transactions = transactionMaps
+        .map((m) => TransactionEntity.fromMap(m as Map<String, dynamic>))
+        .toList();
     final int total = metadata['total'] as int? ?? transactions.length;
     final Map<String, dynamic> query =
         metadata['query'] as Map<String, dynamic>? ?? {};
@@ -19,11 +23,7 @@ class TransactionListBubble extends StatelessWidget {
     final String? startDate = query['startDate'] as String?;
     final String? endDate = query['endDate'] as String?;
 
-    final currencyFormat = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-      decimalDigits: 0,
-    );
+
 
     String periodLabel = _buildPeriodLabel(startDate, endDate);
     String typeLabel = _buildTypeLabel(type);
@@ -138,30 +138,21 @@ class TransactionListBubble extends StatelessWidget {
                   endIndent: 16,
                 ),
                 itemBuilder: (context, index) {
-                  final t = transactions[index] as Map<String, dynamic>;
-                  final double amount = (t['amount'] as num?)?.toDouble() ?? 0;
-                  final String txType = t['type'] as String? ?? 'expense';
-                  final bool isIncome = txType == 'income';
-                  final String category =
-                      t['category'] as String? ?? 'Chưa phân loại';
-                  final String icon = t['categoryIcon'] as String? ?? '💰';
-                  final String note = t['note'] as String? ?? '';
-                  final String? dateStr = t['date'] as String?;
+                  final transaction = transactions[index];
+                  final bool isIncome = transaction.type == 'income';
 
                   String formattedDate = '';
-                  if (dateStr != null) {
-                    try {
-                      formattedDate = DateFormat(
-                        'dd/MM',
-                      ).format(DateTime.parse(dateStr).toLocal());
-                    } catch (_) {}
+                  if (transaction.transactionDate != null) {
+                    formattedDate = AppHelperFunction.formatDayMonth(
+                      transaction.transactionDate!.toLocal(),
+                    );
                   }
 
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () =>
-                          Get.find<ChatController>().onTransactionTap(t),
+                          Get.find<ChatController>().onTransactionTap(transactionMaps[index] as Map<String, dynamic>),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -183,7 +174,7 @@ class TransactionListBubble extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Text(
-                                  icon,
+                                  transaction.category?.icon ?? '💰',
                                   style: const TextStyle(fontSize: 18),
                                 ),
                               ),
@@ -195,15 +186,15 @@ class TransactionListBubble extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    category,
+                                    transaction.category?.name ?? 'Chưa phân loại',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13,
                                     ),
                                   ),
-                                  if (note.isNotEmpty)
+                                  if (transaction.note?.isNotEmpty ?? false)
                                     Text(
-                                      note,
+                                      transaction.note!,
                                       style: TextStyle(
                                         color: Colors.grey.shade500,
                                         fontSize: 12,
@@ -219,7 +210,7 @@ class TransactionListBubble extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  '${isIncome ? '+' : '-'}${currencyFormat.format(amount)}',
+                                  '${isIncome ? '+' : '-'}${AppHelperFunction.formatAmount(transaction.amount.toDouble())}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
@@ -248,20 +239,19 @@ class TransactionListBubble extends StatelessWidget {
 
             // Summary footer
             if (transactions.isNotEmpty)
-              _buildSummaryFooter(transactions, currencyFormat),
+              _buildSummaryFooter(transactions),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryFooter(List transactions, NumberFormat currencyFormat) {
+  Widget _buildSummaryFooter(List<TransactionEntity> transactions) {
     double totalIncome = 0;
     double totalExpense = 0;
     for (final t in transactions) {
-      final tx = t as Map<String, dynamic>;
-      final amount = (tx['amount'] as num?)?.toDouble() ?? 0;
-      if (tx['type'] == 'income') {
+      final amount = t.amount.toDouble();
+      if (t.type == 'income') {
         totalIncome += amount;
       } else {
         totalExpense += amount;
@@ -288,7 +278,7 @@ class TransactionListBubble extends StatelessWidget {
             Flexible(
               child: _SummaryChip(
                 label: 'Thu',
-                amount: currencyFormat.format(totalIncome),
+                amount: AppHelperFunction.formatAmount(totalIncome),
                 color: const Color(0xFF43A047),
                 icon: Icons.arrow_downward_rounded,
               ),
@@ -304,7 +294,7 @@ class TransactionListBubble extends StatelessWidget {
             Flexible(
               child: _SummaryChip(
                 label: 'Chi',
-                amount: currencyFormat.format(totalExpense),
+                amount: AppHelperFunction.formatAmount(totalExpense),
                 color: const Color(0xFFE53935),
                 icon: Icons.arrow_upward_rounded,
               ),
@@ -317,17 +307,17 @@ class TransactionListBubble extends StatelessWidget {
   String _buildPeriodLabel(String? startDate, String? endDate) {
     if (startDate == null && endDate == null) return '';
     try {
-      final fmt = DateFormat('dd/MM');
+
       final start = startDate != null ? DateTime.parse(startDate) : null;
       final end = endDate != null ? DateTime.parse(endDate) : null;
       if (start != null && end != null) {
-        final startStr = fmt.format(start.toLocal());
-        final endStr = fmt.format(end.toLocal());
+        final startStr = AppHelperFunction.formatDayMonth(start.toLocal());
+        final endStr = AppHelperFunction.formatDayMonth(end.toLocal());
         if (startStr == endStr) return startStr;
         return '$startStr - $endStr';
       }
-      if (start != null) return 'từ ${fmt.format(start.toLocal())}';
-      if (end != null) return 'đến ${fmt.format(end.toLocal())}';
+      if (start != null) return 'từ ${AppHelperFunction.formatDayMonth(start.toLocal())}';
+      if (end != null) return 'đến ${AppHelperFunction.formatDayMonth(end.toLocal())}';
     } catch (_) {}
     return '';
   }

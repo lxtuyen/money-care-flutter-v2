@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:money_care/features/chatbot/data/models/financial_analysis_model.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class AnalysisBubble extends StatelessWidget {
@@ -9,9 +10,7 @@ class AnalysisBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final summary = metadata['summary'] ?? '';
-    final budgetPlan = metadata['budget_plan'] as List? ?? [];
-    final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
+    final analysis = FinancialAnalysisModel.fromJson(metadata);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -54,11 +53,11 @@ class AnalysisBubble extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            summary,
+            analysis.summary,
             style: const TextStyle(fontSize: 15, color: Colors.black87),
           ),
           const Divider(height: 32),
-          ...budgetPlan.map((group) => _buildGroup(group, currencyFormat)),
+          ...analysis.budgetPlan.map((group) => _buildGroup(group)),
           const SizedBox(height: 8),
           _buildDecorativeFooter(),
         ],
@@ -66,9 +65,9 @@ class AnalysisBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildGroup(dynamic group, NumberFormat format) {
-    final String groupName = group['group_name'] ?? 'Khác';
-    final List items = group['items'] as List? ?? [];
+  Widget _buildGroup(BudgetGroupModel group) {
+    final String groupName = group.groupName;
+    final List<BudgetItemModel> items = group.items;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,16 +81,16 @@ class AnalysisBubble extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        ...items.map((item) => _buildItem(item, format)),
+        ...items.map((item) => _buildItem(item)),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildItem(dynamic item, NumberFormat format) {
-    final String name = item['name'] ?? '';
-    final double amount = (item['amount'] as num?)?.toDouble() ?? 0;
-    final String description = item['description'] ?? '';
+  Widget _buildItem(BudgetItemModel item) {
+    final String name = item.name;
+    final double amount = item.amount;
+    final String description = item.description;
 
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, bottom: 12.0),
@@ -120,11 +119,14 @@ class AnalysisBubble extends StatelessWidget {
                         text: '$name: ',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      TextSpan(
-                        text: format.format(amount),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orangeAccent,
+                      WidgetSpan(
+                        child: Text(
+                          AppHelperFunction.formatAmount(amount),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       ),
                       TextSpan(text: ' ($description)'),

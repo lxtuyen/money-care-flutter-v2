@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
@@ -288,13 +288,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget _buildTimeNavigator() {
     String label = "";
     if (statisticsController.periodType.value == 'hàng tháng') {
-      label = DateFormat(
-        'yyyy/MM',
-      ).format(statisticsController.selectedMonth.value);
+      label = AppHelperFunction.getFormattedDate(
+        statisticsController.selectedMonth.value,
+        format: 'yyyy/MM',
+      );
     } else {
-      label = DateFormat(
-        'yyyy/MM/dd',
-      ).format(statisticsController.selectedDay.value);
+      label = AppHelperFunction.getFormattedDate(
+        statisticsController.selectedDay.value,
+        format: 'yyyy/MM/dd',
+      );
     }
 
     return Padding(

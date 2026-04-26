@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:money_care/features/chatbot/domain/entities/chat_message_entity.dart';
 import 'package:money_care/features/chatbot/data/models/models.dart';
 import 'package:money_care/features/chatbot/domain/entities/chat_entity.dart';
@@ -145,19 +145,7 @@ class ChatController extends GetxController {
             reply.replaceFirst('__STRUCTURED_ANALYSIS__', ''),
           );
         }
-      } else if (reply.startsWith('__STRUCTURED_RECEIPT__')) {
-        final jsonStr = reply.replaceFirst('__STRUCTURED_RECEIPT__', '');
-        try {
-          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          replaceLastBotMessageWithMetadata(
-            'Tôi đã nhận diện được các mục sau từ hóa đơn:',
-            data,
-          );
-        } catch (e) {
-          replaceLastBotMessage(
-            'Tôi đã nhận diện được hóa đơn nhưng gặp lỗi khi hiển thị chi tiết.',
-          );
-        }
+
       } else if (reply.startsWith('__TRANSACTION_SAVED__')) {
         final jsonStr = reply.replaceFirst('__TRANSACTION_SAVED__', '');
         try {
@@ -261,74 +249,6 @@ class ChatController extends GetxController {
         text: text,
         metadata: metadata,
       );
-    }
-  }
-
-  Future<void> pickAndSendImage() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-
-    messages.add(ChatMessageEntity(isUser: true, text: "[Hình ảnh hóa đơn]"));
-    messages.add(
-      ChatMessageEntity(isUser: false, text: "Đang quét hóa đơn..."),
-    );
-    scrollToBottom();
-
-    try {
-      final userId = await appController.getCurrentUserId();
-      if (userId == null) return;
-
-      final dto = ChatDto(message: "Quét hóa đơn", userId: userId);
-      final reply = await sendToChatbotUseCase(dto, filePath: image.path);
-
-      if (reply.startsWith('__STRUCTURED_RECEIPT__')) {
-        final jsonStr = reply.replaceFirst('__STRUCTURED_RECEIPT__', '');
-        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-        replaceLastBotMessageWithMetadata(
-          'Tôi đã nhận diện được các mục sau từ hóa đơn:',
-          data,
-        );
-      } else {
-        replaceLastBotMessage(reply);
-      }
-    } catch (e) {
-      replaceLastBotMessage("Lỗi khi quét hóa đơn: ${e.toString()}");
-    }
-    scrollToBottom();
-  }
-
-  Future<void> saveReceiptItems(List items) async {
-    if (isLoading.value || items.isEmpty) return;
-
-    final userId = await appController.getCurrentUserId();
-    if (userId == null) return;
-
-    try {
-      isLoading.value = true;
-      final apiClient = Get.find<ApiClient>();
-
-      final response = await apiClient.post(
-        '/ai/chat/bulk-save',
-        body: {'userId': userId, 'items': items},
-      );
-
-      if (response.success) {
-        addBotMessage('✅ Đã lưu tất cả các mục vào lịch sử chi tiêu của bạn!');
-        await transactionController.refreshAllData(userId);
-        if (Get.isRegistered<GamificationController>()) {
-          Future.delayed(const Duration(milliseconds: 300), () {
-            Get.find<GamificationController>().recordDailyTransaction();
-          });
-        }
-      } else {
-        addBotMessage('❌ Không thể lưu một số mục. Vui lòng thử lại.');
-      }
-    } catch (e) {
-      addBotMessage('❌ Lỗi khi lưu: ${e.toString()}');
-    } finally {
-      isLoading.value = false;
-      scrollToBottom();
     }
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -115,7 +115,7 @@ class MilestoneMap extends StatelessWidget {
                 ),
               ),
               Text(
-                '${DateFormat('dd/MM').format(milestone.startDate)} - ${DateFormat('dd/MM').format(milestone.endDate)}',
+                '${AppHelperFunction.formatDayMonth(milestone.startDate)} - ${AppHelperFunction.formatDayMonth(milestone.endDate)}',
                 style: const TextStyle(fontSize: 11, color: AppColors.text3),
               ),
             ],

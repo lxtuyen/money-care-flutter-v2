@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
+import 'package:money_care/features/transaction/data/models/category_model.dart';
+import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class CategoryCreatedBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -9,12 +11,8 @@ class CategoryCreatedBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cat = metadata['category'] ?? {};
-    final name = cat['name'] ?? 'Hạng mục mới';
-    final icon = cat['icon'] ?? '📁';
-    final type = cat['type'] ?? 'expense';
-
-    final isIncome = type == 'income';
+    final category = CategoryModel.fromJson(metadata['category'] ?? {}).toEntity();
+    final isIncome = category.type == 'income';
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -96,7 +94,7 @@ class CategoryCreatedBubble extends StatelessWidget {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            icon,
+                            category.icon.isEmpty ? '📁' : category.icon,
                             style: const TextStyle(fontSize: 24),
                           ),
                         ),
@@ -106,7 +104,7 @@ class CategoryCreatedBubble extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                name,
+                                category.name.isEmpty ? 'Hạng mục mới' : category.name,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,

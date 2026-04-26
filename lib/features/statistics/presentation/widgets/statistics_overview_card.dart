@@ -77,7 +77,6 @@ class StatisticsOverviewCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Pie chart + summary
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

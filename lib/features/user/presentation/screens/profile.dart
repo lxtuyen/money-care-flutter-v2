@@ -186,8 +186,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     }),
                     const SizedBox(height: 32),
-                    const BadgesSectionWidget(),
-                    const SizedBox(height: 24),
                   ],
                 ),
               ),

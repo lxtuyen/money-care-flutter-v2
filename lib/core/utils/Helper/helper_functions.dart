@@ -243,8 +243,9 @@ class AppHelperFunction {
   static String getFormattedDate(
     DateTime date, {
     String format = 'dd/MM/yyyy',
+    String? locale,
   }) {
-    return DateFormat(format).format(date);
+    return DateFormat(format, locale).format(date);
   }
 
   static String formatDateTime(DateTime dateTime) {
@@ -264,9 +265,16 @@ class AppHelperFunction {
     return DateFormat('dd/MM').format(date);
   }
 
-  static String formatAmount(double amount, String currency) {
+  static String formatAmount(double amount, {String currency = 'VND', String symbol = '₫'}) {
     final formatter = NumberFormat('#,###', 'vi_VN');
+    if (currency == 'VND' && symbol == '₫') {
+      return '${formatter.format(amount)} $symbol';
+    }
     return '${formatter.format(amount)} $currency';
+  }
+
+  static String formatCompactNumber(num number) {
+    return NumberFormat.compact(locale: 'vi').format(number);
   }
 
   static int clampZero(int value) => value < 0 ? 0 : value;

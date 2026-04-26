@@ -5,7 +5,7 @@ import 'package:money_care/features/chatbot/presentation/controllers/chat_contro
 import 'package:money_care/features/chatbot/presentation/widgets/bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/welcome_option.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/analysis_bubble.dart';
-import 'package:money_care/features/chatbot/presentation/widgets/receipt_items_bubble.dart';
+
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_saved_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_list_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/category_list_bubble.dart';
@@ -108,9 +108,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             if (m.metadata!['__type'] == 'category_created') {
               return CategoryCreatedBubble(metadata: m.metadata!);
             }
-            if (m.metadata!.containsKey('items')) {
-              return ReceiptItemsBubble(metadata: m.metadata!);
-            }
+
             return AnalysisBubble(metadata: m.metadata!);
           }
           return Bubble(isUser: m.isUser, text: m.text);
@@ -139,13 +137,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 ),
                 filled: true,
                 fillColor: Colors.grey.shade100,
-                prefixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.image_outlined,
-                    color: Colors.blueAccent,
-                  ),
-                  onPressed: controller.pickAndSendImage,
-                ),
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,

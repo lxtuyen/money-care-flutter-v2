@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -99,7 +99,7 @@ class SavingsBarChart extends StatelessWidget {
                 controller.selectedMonth.value.month,
                 groupIndex + 1,
               );
-              dateStr = DateFormat('dd/MM').format(date);
+              dateStr = AppHelperFunction.formatDayMonth(date);
             } else {
               dateStr = "${groupIndex.toString().padLeft(2, '0')}:00";
             }

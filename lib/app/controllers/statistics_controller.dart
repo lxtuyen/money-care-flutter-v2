@@ -7,6 +7,8 @@ import 'package:money_care/app/controllers/app_controller.dart';
 
 import 'package:money_care/features/transaction/domain/entities/entities.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/services/widget_service.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 
 class StatisticsController extends GetxController {
@@ -445,6 +447,7 @@ class StatisticsController extends GetxController {
         await Future.wait(futures);
         if (currentRefresh == _refreshCounter) {
           _processMonthlyData();
+          _updateWidgetData();
         }
       } else {
         final List<Future> futures = [
@@ -686,5 +689,26 @@ class StatisticsController extends GetxController {
       spots.add(FlSpot(i.toDouble(), val));
     }
     return spots;
+  }
+
+  void _updateWidgetData() {
+    final totals = globalTotalByType.value;
+    if (totals == null) return;
+
+    final income = totals.incomeTotal;
+    final expense = totals.expenseTotal;
+    final balance = income - expense;
+
+    // Remaining budget: If there is a budget summary, use it
+    double remaining = 0;
+    if (statisticsSummary.value != null) {
+      remaining = statisticsSummary.value!.remainingBudget;
+    }
+
+    WidgetService.updateHomeWidget(
+      balance: balance,
+      monthlyExpense: expense,
+      remainingBudget: remaining,
+    );
   }
 }

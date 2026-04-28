@@ -5,22 +5,26 @@ class WidgetService {
   static const String _androidWidgetName = 'HomeWidgetProvider';
 
   static Future<void> updateHomeWidget({
-    required double balance,
-    required double monthlyExpense,
-    required double remainingBudget,
+    double? balance,
+    double? monthlyExpense,
+    double? remainingBudget,
   }) async {
     try {
       await HomeWidget.saveWidgetData<String>(
         'widget_balance',
-        AppHelperFunction.formatAmount(balance),
+        balance != null ? AppHelperFunction.formatAmount(balance) : '****** VND',
       );
       await HomeWidget.saveWidgetData<String>(
         'widget_expense',
-        AppHelperFunction.formatAmount(monthlyExpense),
+        monthlyExpense != null
+            ? AppHelperFunction.formatAmount(monthlyExpense)
+            : '****** VND',
       );
       await HomeWidget.saveWidgetData<String>(
         'widget_remaining',
-        AppHelperFunction.formatAmount(remainingBudget),
+        remainingBudget != null
+            ? AppHelperFunction.formatAmount(remainingBudget)
+            : '****** VND',
       );
 
       await HomeWidget.updateWidget(

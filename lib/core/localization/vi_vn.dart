@@ -309,6 +309,11 @@ const Map<String, String> viVN = {
   'dashboard.section.monthlyIncome': 'Thu nhập theo danh mục',
   'dashboard.saveSuccess': 'Đã cập nhật giao diện Dashboard!',
 
+  // ============ Widget Settings ============
+  'widget.settingTitle': 'Cài đặt Widget',
+  'widget.showBalance': 'Hiển thị số dư trên Widget',
+  'widget.showBalanceDesc': 'Bật/Tắt để ẩn thông tin tài chính nhạy cảm ngoài màn hình chính',
+
   // ============ Report ============
   'report.title': 'Báo cáo trong năm',
   'report.portfolio': 'Báo cáo danh mục trong năm',

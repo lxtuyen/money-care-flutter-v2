@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
 import 'package:money_care/core/constants/enums.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 
 class AppController extends GetxController {
   final LocalStorage storage;
@@ -16,6 +17,7 @@ class AppController extends GetxController {
   var currentLocale = 'vi_VN'.obs;
   var startDayOfMonth = 1.obs;
   var dashboardSections = <DashboardSection>[].obs;
+  var isWidgetBalanceVisible = true.obs;
   var errorMessage = RxnString();
 
   @override
@@ -26,6 +28,7 @@ class AppController extends GetxController {
     isDarkMode.value = storage.getDarkMode();
     currentLocale.value = storage.getLocale();
     startDayOfMonth.value = storage.getStartDayOfMonth();
+    isWidgetBalanceVisible.value = storage.getWidgetBalanceVisibility();
     _initDashboardSections();
   }
 
@@ -96,6 +99,13 @@ class AppController extends GetxController {
     Get.updateLocale(Locale(parts[0], parts[1]));
   }
 
+  void setLocale(String newLocale) {
+    currentLocale.value = newLocale;
+    storage.saveLocale(newLocale);
+    final parts = newLocale.split('_');
+    Get.updateLocale(Locale(parts[0], parts[1]));
+  }
+
   Locale get savedLocale {
     final parts = currentLocale.value.split('_');
     return Locale(parts[0], parts[1]);
@@ -109,5 +119,16 @@ class AppController extends GetxController {
   void updateDashboardSections(List<DashboardSection> sections) {
     dashboardSections.value = sections;
     storage.saveDashboardSections(sections.map((e) => e.name).toList());
+  }
+
+  void toggleWidgetBalanceVisibility() {
+    isWidgetBalanceVisible.value = !isWidgetBalanceVisible.value;
+    storage.saveWidgetBalanceVisibility(isWidgetBalanceVisible.value);
+    
+    // Trigger widget update immediately
+    final statsController = Get.find<StatisticsController>();
+    if (userId.value != null) {
+      statsController.refreshStatisticsData(userId.value!);
+    }
   }
 }

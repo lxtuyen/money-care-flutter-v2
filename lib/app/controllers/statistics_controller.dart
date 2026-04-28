@@ -695,20 +695,21 @@ class StatisticsController extends GetxController {
     final totals = globalTotalByType.value;
     if (totals == null) return;
 
-    final income = totals.incomeTotal;
-    final expense = totals.expenseTotal;
+    final appController = Get.find<AppController>();
+    final bool isVisible = appController.isWidgetBalanceVisible.value;
+
+    final income = totals.incomeTotal.toDouble();
+    final expense = totals.expenseTotal.toDouble();
     final balance = income - expense;
 
-    // Remaining budget: If there is a budget summary, use it
-    double remaining = 0;
-    if (statisticsSummary.value != null) {
-      remaining = statisticsSummary.value!.remainingBudget;
-    }
+    // Remaining budget calculation
+    final spent = totals.expenseTotal.toDouble();
+    final remaining = totalBudget > 0 ? (totalBudget - spent) : 0.0;
 
     WidgetService.updateHomeWidget(
-      balance: balance,
-      monthlyExpense: expense,
-      remainingBudget: remaining,
+      balance: isVisible ? balance : null,
+      monthlyExpense: isVisible ? expense : null,
+      remainingBudget: isVisible ? remaining : null,
     );
   }
 }

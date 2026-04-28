@@ -309,6 +309,11 @@ const Map<String, String> enUS = {
   'dashboard.section.monthlyIncome': 'Income by Category',
   'dashboard.saveSuccess': 'Dashboard layout updated!',
 
+  // ============ Widget Settings ============
+  'widget.settingTitle': 'Widget Settings',
+  'widget.showBalance': 'Show balance on Widget',
+  'widget.showBalanceDesc': 'Toggle to hide sensitive financial info on the home screen',
+
   // ============ Report ============
   'report.title': 'Annual Report',
   'report.portfolio': 'Annual Portfolio Report',

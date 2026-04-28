@@ -10,7 +10,7 @@ import 'package:money_care/app/widgets/appbar/appbar.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
-import 'package:money_care/features/gamification/presentation/widgets/badges_section_widget.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -113,6 +113,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                     const SizedBox(height: 24),
+
+                    Text(
+                      'Cài đặt & Bảo mật',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.text1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Theme Toggle
+                    Obx(() => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(
+                            Get.find<AppController>().isDarkMode.value
+                                ? Icons.dark_mode_outlined
+                                : Icons.light_mode_outlined,
+                            color: AppColors.primary,
+                          ),
+                          title: const Text('Chế độ tối'),
+                          trailing: Switch.adaptive(
+                            value: Get.find<AppController>().isDarkMode.value,
+                            activeColor: AppColors.primary,
+                            onChanged: (val) =>
+                                Get.find<AppController>().toggleDarkMode(),
+                          ),
+                        )),
+
+                    // Language Toggle
+                    Obx(() => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.language, color: AppColors.primary),
+                          title: const Text('Ngôn ngữ'),
+                          trailing: DropdownButton<String>(
+                            value: Get.find<AppController>().currentLocale.value,
+                            underline: const SizedBox(),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'vi_VN',
+                                child: Text('Tiếng Việt'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'en_US',
+                                child: Text('English'),
+                              ),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) {
+                                Get.find<AppController>().setLocale(val);
+                              }
+                            },
+                          ),
+                        )),
+
+                    // Widget Privacy Setting
+                    Obx(() => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.widgets_outlined, color: AppColors.primary),
+                          title: Text('widget.showBalance'.tr),
+                          subtitle: Text(
+                            'widget.showBalanceDesc'.tr,
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                          trailing: Switch.adaptive(
+                            value: Get.find<AppController>()
+                                .isWidgetBalanceVisible
+                                .value,
+                            activeColor: AppColors.primary,
+                            onChanged: (val) => Get.find<AppController>()
+                                .toggleWidgetBalanceVisibility(),
+                          ),
+                        )),
+
+                    const SizedBox(height: 32),
 
                     Text(
                       'profile.basicInfo'.tr,

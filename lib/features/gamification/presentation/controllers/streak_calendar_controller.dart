@@ -14,6 +14,10 @@ class StreakCalendarController extends GetxController {
   final RxMap<int, int> dailyNet = <int, int>{}.obs;
   final RxSet<int> daysWithTx = <int>{}.obs;
 
+  final RxInt selectedDay = 0.obs;
+  final RxList<TransactionEntity> selectedDayTransactions = <TransactionEntity>[].obs;
+  List<TransactionEntity> _allTransactions = [];
+
   @override
   void onInit() {
     super.onInit();
@@ -70,8 +74,17 @@ class StreakCalendarController extends GetxController {
       process(data.incomeTransactions, 1);
       process(data.expenseTransactions, -1);
 
+      _allTransactions = [...data.incomeTransactions, ...data.expenseTransactions];
+
       dailyNet.assignAll(net);
       daysWithTx.assignAll(days);
+
+      // Reset selection or update it
+      if (selectedDay.value > 0) {
+        selectDay(selectedDay.value);
+      } else if (isToday(DateTime.now().day)) {
+        selectDay(DateTime.now().day);
+      }
     } catch (e) {
       print('[STREAK_CALENDAR] Error: $e');
     } finally {
@@ -85,6 +98,7 @@ class StreakCalendarController extends GetxController {
       focusedMonth.value.month - 1,
       1,
     );
+    selectedDay.value = 0;
     loadMonthData();
   }
 
@@ -94,6 +108,7 @@ class StreakCalendarController extends GetxController {
       focusedMonth.value.month + 1,
       1,
     );
+    selectedDay.value = 0;
     loadMonthData();
   }
 
@@ -102,5 +117,14 @@ class StreakCalendarController extends GetxController {
     return focusedMonth.value.year == today.year &&
         focusedMonth.value.month == today.month &&
         dayNum == today.day;
+  }
+
+  void selectDay(int dayNum) {
+    selectedDay.value = dayNum;
+    selectedDayTransactions.assignAll(
+      _allTransactions.where((tx) => tx.transactionDate?.day == dayNum).toList()
+        ..sort((a, b) => (b.transactionDate ?? DateTime(0))
+            .compareTo(a.transactionDate ?? DateTime(0))),
+    );
   }
 }

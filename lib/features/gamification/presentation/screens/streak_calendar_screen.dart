@@ -4,6 +4,9 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/gamification/presentation/controllers/streak_calendar_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 class StreakCalendarScreen extends StatelessWidget {
   const StreakCalendarScreen({super.key});
@@ -13,6 +16,7 @@ class StreakCalendarScreen extends StatelessWidget {
     final controller = Get.isRegistered<StreakCalendarController>()
         ? Get.find<StreakCalendarController>()
         : Get.put(StreakCalendarController());
+    final appController = Get.find<AppController>();
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -56,6 +60,8 @@ class StreakCalendarScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     _buildLegend(),
                     const SizedBox(height: 24),
+                    _buildDayTransactionList(controller),
+                    const SizedBox(height: 32),
                   ],
                 ),
               );
@@ -178,12 +184,15 @@ class StreakCalendarScreen extends StatelessWidget {
             final hasTx = controller.daysWithTx.contains(dayNum);
             final net = controller.dailyNet[dayNum] ?? 0;
             final isToday = controller.isToday(dayNum);
+            final isSelected = controller.selectedDay.value == dayNum;
 
             return _DayCell(
               day: dayNum,
               hasTx: hasTx,
               net: net,
               isToday: isToday,
+              isSelected: isSelected,
+              onTap: () => controller.selectDay(dayNum),
             );
           },
         ),
@@ -209,6 +218,113 @@ class StreakCalendarScreen extends StatelessWidget {
             label: 'streak.today'.tr,
             isToday: true,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayTransactionList(StreakCalendarController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Obx(() => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    controller.selectedDay.value == 0
+                        ? 'Chọn một ngày để xem giao dịch'
+                        : 'Giao dịch ngày ${controller.selectedDay.value}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.text1,
+                    ),
+                  ),
+                  if (controller.selectedDayTransactions.isNotEmpty)
+                    Text(
+                      '${controller.selectedDayTransactions.length} giao dịch',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.text3,
+                      ),
+                    ),
+                ],
+              )),
+          const SizedBox(height: 16),
+          Obx(() {
+            if (controller.selectedDayTransactions.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Icon(Icons.receipt_long_outlined,
+                        size: 48, color: AppColors.text4.withOpacity(0.3)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Không có giao dịch nào',
+                      style: TextStyle(
+                        color: AppColors.text3.withOpacity(0.6),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.selectedDayTransactions.length,
+                itemBuilder: (context, index) {
+                  final tx = controller.selectedDayTransactions[index];
+                  return TransactionItem(
+                    item: tx,
+                    isShowDate: false,
+                    isShowDivider:
+                        index < controller.selectedDayTransactions.length - 1,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => TransactionDetail(
+                          item: tx,
+                          isExpense: tx.type == 'expense',
+                          userId: appController.userId.value ?? 0,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -242,19 +358,26 @@ class _DayCell extends StatelessWidget {
   final bool hasTx;
   final int net;
   final bool isToday;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   const _DayCell({
     required this.day,
     required this.hasTx,
     required this.net,
     required this.isToday,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final formattedNet = AppHelperFunction.formatCompactNumber(net);
 
-    return Column(
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
@@ -270,29 +393,35 @@ class _DayCell extends StatelessWidget {
           decoration: BoxDecoration(
             color: isToday
                 ? AppColors.primary
-                : hasTx
-                ? const Color(0xFFFFF3E0)
-                : Colors.transparent,
+                : isSelected
+                    ? AppColors.primary.withOpacity(0.15)
+                    : hasTx
+                        ? const Color(0xFFFFF3E0)
+                        : Colors.transparent,
             shape: BoxShape.circle,
             border: isToday
                 ? null
-                : hasTx
-                ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
-                : null,
+                : isSelected
+                    ? Border.all(color: AppColors.primary, width: 2)
+                    : hasTx
+                        ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
+                        : null,
           ),
           child: Center(
             child: Text(
               '$day',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: isToday || hasTx
+                fontWeight: isToday || hasTx || isSelected
                     ? FontWeight.w700
                     : FontWeight.w500,
                 color: isToday
                     ? Colors.white
-                    : hasTx
-                    ? const Color(0xFFE65100)
-                    : AppThemeColors.of(context).textSecondary,
+                    : isSelected
+                        ? AppColors.primary
+                        : hasTx
+                            ? const Color(0xFFE65100)
+                            : AppThemeColors.of(context).textSecondary,
               ),
             ),
           ),

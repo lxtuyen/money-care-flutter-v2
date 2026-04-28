@@ -13,6 +13,7 @@ class AppController extends GetxController {
   var isBalanceVisible = true.obs;
   var isDarkMode = false.obs;
   var currentLocale = 'vi_VN'.obs;
+  var startDayOfMonth = 1.obs;
   var errorMessage = RxnString();
 
   @override
@@ -22,6 +23,7 @@ class AppController extends GetxController {
     isBalanceVisible.value = storage.getBalanceVisibility();
     isDarkMode.value = storage.getDarkMode();
     currentLocale.value = storage.getLocale();
+    startDayOfMonth.value = storage.getStartDayOfMonth();
   }
 
   Future<void> initializeUser() async {
@@ -83,5 +85,10 @@ class AppController extends GetxController {
   Locale get savedLocale {
     final parts = currentLocale.value.split('_');
     return Locale(parts[0], parts[1]);
+  }
+
+  void setStartDayOfMonth(int day) {
+    startDayOfMonth.value = day;
+    storage.saveStartDayOfMonth(day);
   }
 }

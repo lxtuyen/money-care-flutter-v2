@@ -49,6 +49,9 @@ class UserController extends GetxController {
         ? profile.monthlyIncome.toString()
         : '';
     incomeDate.value = profile.incomeDate;
+    if (profile.incomeDate != null) {
+      Get.find<AppController>().setStartDayOfMonth(profile.incomeDate!.day);
+    }
     avatarController.text = profile.avatar ?? '';
   }
 
@@ -80,6 +83,10 @@ class UserController extends GetxController {
       );
       final updated = await updateMyProfileUseCase(dto);
       userProfile.value = updated;
+
+      if (updated.incomeDate != null) {
+        Get.find<AppController>().setStartDayOfMonth(updated.incomeDate!.day);
+      }
 
       // Trigger balance suggestion = floor(monthlyIncome * 0.9) (Req 2.2)
       if (updated.monthlyIncome != null && updated.monthlyIncome! > 0) {

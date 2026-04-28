@@ -59,9 +59,30 @@ class StatisticsController extends GetxController {
   ).obs;
 
   DateTime get monthStartDate =>
-      DateTime(selectedMonth.value.year, selectedMonth.value.month, 1);
+      _getCycleDate(selectedMonth.value, 0);
   DateTime get monthEndDate =>
-      DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 0);
+      _getCycleDate(selectedMonth.value, 0, isEnd: true);
+
+  DateTime _clampDayToMonth(int year, int month, int day) {
+    int lastDay = DateTime(year, month + 1, 0).day;
+    return DateTime(year, month, day > lastDay ? lastDay : day);
+  }
+
+  DateTime _getCycleDate(DateTime baseMonth, int offsetMonths,
+      {bool isEnd = false}) {
+    final appController = Get.find<AppController>();
+    final startDay = appController.startDayOfMonth.value;
+
+    int year = baseMonth.year;
+    int month = baseMonth.month + offsetMonths;
+
+    if (isEnd) {
+      DateTime nextCycleStart = _clampDayToMonth(year, month + 1, startDay);
+      return nextCycleStart.subtract(const Duration(seconds: 1));
+    }
+
+    return _clampDayToMonth(year, month, startDay);
+  }
 
   DateTime get currentStartDate {
     final baseDate = periodType.value == 'hàng tháng'
@@ -109,11 +130,7 @@ class StatisticsController extends GetxController {
   /// Monthly: previous month. Daily: previous day.
   DateTime get previousStartDate {
     if (periodType.value == 'hàng tháng') {
-      final prev = DateTime(
-        selectedMonth.value.year,
-        selectedMonth.value.month - 1,
-        1,
-      );
+      final prev = _getCycleDate(selectedMonth.value, -1);
       return _clampToGoalStart(prev);
     } else {
       final prev = selectedDay.value.subtract(const Duration(days: 1));
@@ -123,12 +140,7 @@ class StatisticsController extends GetxController {
 
   DateTime get previousEndDate {
     if (periodType.value == 'hàng tháng') {
-      final prevEnd = DateTime(
-        selectedMonth.value.year,
-        selectedMonth.value.month,
-        0, // last day of previous month
-        23, 59, 59,
-      );
+      final prevEnd = _getCycleDate(selectedMonth.value, -1, isEnd: true);
       return _clampToGoalEnd(prevEnd);
     } else {
       final prev = selectedDay.value.subtract(const Duration(days: 1));
@@ -156,6 +168,12 @@ class StatisticsController extends GetxController {
   void onInit() {
     super.onInit();
     final appController = Get.find<AppController>();
+    ever(appController.startDayOfMonth, (_) {
+      final id = appController.userId.value;
+      if (id != null) {
+        refreshStatisticsData(id);
+      }
+    });
 
     ever(appController.userId, (int? id) {
       if (id != null) {

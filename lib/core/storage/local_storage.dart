@@ -50,6 +50,7 @@ class LocalStorage {
   static const String keyIsBalanceVisible = 'is_balance_visible';
   static const String keyIsDarkMode = 'is_dark_mode';
   static const String keyLocale = 'app_locale';
+  static const String keyStartDayOfMonth = 'start_day_of_month';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -117,5 +118,13 @@ class LocalStorage {
 
   String getLocale() {
     return readString(keyLocale) ?? 'vi_VN';
+  }
+
+  Future<void> saveStartDayOfMonth(int day) async {
+    await writeInt(keyStartDayOfMonth, day);
+  }
+
+  int getStartDayOfMonth() {
+    return readInt(keyStartDayOfMonth) ?? 1;
   }
 }

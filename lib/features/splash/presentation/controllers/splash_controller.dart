@@ -16,12 +16,13 @@ class SplashController extends GetxController {
   Future<void> _decideNextScreen() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    final hasLoggedIn = storage.readBool('hasLoggedIn') ?? false;
+    final hasToken = storage.getToken() != null;
+    final hasUserInfo = storage.getUserInfo() != null;
 
-    if (!hasLoggedIn) {
-      Get.offAllNamed(RoutePath.loginOption);
-    } else {
+    if (hasToken && hasUserInfo) {
       Get.offAllNamed(RoutePath.main);
+    } else {
+      Get.offAllNamed(RoutePath.loginOption);
     }
   }
 }

@@ -4,7 +4,6 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/user/presentation/widgets/user_menu_item.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -30,7 +29,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const AppHeader(title: AppTexts.profileTitle, height: 140),
+              AppHeader(title: 'profile.title'.tr, height: 140),
 
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -52,7 +51,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                           color: AppColors.primary,
                         ),
                         title: Text(
-                          'Chế độ tối',
+                          'profile.darkMode'.tr,
                           style: TextStyle(fontSize: 16, color: themeColors.textPrimary),
                         ),
                         trailing: Switch.adaptive(
@@ -64,33 +63,92 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     )),
                     const Divider(height: 1, thickness: 0.5),
 
+                    // Language toggle
+                    Obx(() => Container(
+                      margin: const EdgeInsets.only(bottom: 4),
+                      decoration: BoxDecoration(
+                        color: themeColors.surfaceBackground,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.language_rounded,
+                          color: AppColors.primary,
+                        ),
+                        title: Text(
+                          'profile.language'.tr,
+                          style: TextStyle(fontSize: 16, color: themeColors.textPrimary),
+                        ),
+                        trailing: GestureDetector(
+                          onTap: () => appController.toggleLocale(),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: AppColors.primary.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  appController.currentLocale.value == 'vi_VN' ? '🇻🇳' : '🇺🇸',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  appController.currentLocale.value == 'vi_VN'
+                                      ? 'VI'
+                                      : 'EN',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.swap_horiz_rounded,
+                                  size: 16,
+                                  color: AppColors.primary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    )),
+                    const Divider(height: 1, thickness: 0.5),
+
                     UserMenuItem(
                       icon: Icons.person_outline,
-                      title: AppTexts.profile,
+                      title: 'profile.info'.tr,
                       onTap: () => Get.toNamed(RoutePath.profile),
                     ),
 
                     UserMenuItem(
                       icon: Icons.track_changes_outlined,
-                      title: AppTexts.funds,
+                      title: 'profile.savingGoals'.tr,
                       onTap: () => Get.toNamed(RoutePath.selectSavingGoal),
                     ),
 
                     UserMenuItem(
                       icon: Icons.timer_off_outlined,
-                      title: "Mục tiêu đã hết hạn",
+                      title: 'profile.expiredGoals'.tr,
                       onTap: () => Get.toNamed(RoutePath.expiredSavingGoals),
                     ),
 
                     UserMenuItem(
                       icon: Icons.category_rounded,
-                      title: "Quản lý danh mục",
+                      title: 'profile.categoryManagement'.tr,
                       onTap: () => Get.toNamed(RoutePath.categoryManagement),
                     ),
 
                     UserMenuItem(
                       icon: Icons.exit_to_app,
-                      title: AppTexts.logout,
+                      title: 'auth.logout'.tr,
                       onTap: () {
                         authController.logout();
                         Get.offAllNamed(RoutePath.loginOption);

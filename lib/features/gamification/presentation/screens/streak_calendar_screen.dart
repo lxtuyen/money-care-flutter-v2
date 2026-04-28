@@ -25,8 +25,8 @@ class StreakCalendarScreen extends StatelessWidget {
           color: AppColors.text1,
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Lịch Thành Tích',
+        title: Text(
+          'streak.calendarTitle'.tr,
           style: TextStyle(
             color: AppColors.text1,
             fontWeight: FontWeight.w700,
@@ -200,13 +200,13 @@ class StreakCalendarScreen extends StatelessWidget {
           _LegendItem(
             color: const Color(0xFFFFF3E0),
             borderColor: const Color(0xFFFFB300),
-            label: 'Có giao dịch',
+            label: 'streak.hasTransaction'.tr,
             icon: '🔥',
           ),
           const SizedBox(width: 24),
           _LegendItem(
             color: AppColors.primary,
-            label: 'Hôm nay',
+            label: 'streak.today'.tr,
             isToday: true,
           ),
         ],

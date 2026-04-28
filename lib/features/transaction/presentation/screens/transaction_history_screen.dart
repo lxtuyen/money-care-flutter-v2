@@ -69,12 +69,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       body: Column(
         children: [
           AppHeader(
-            title: 'Thu - Chi',
+            title: 'transaction.title'.tr,
             actions: [
               IconButton(
                 onPressed: () => Get.to(() => const RecurringTransactionScreen()),
                 icon: const Icon(Icons.history_toggle_off_rounded, color: Colors.white),
-                tooltip: 'Giao dịch định kỳ',
+                tooltip: 'transaction.recurring'.tr,
               ),
             ],
             child: Obx(() {
@@ -207,11 +207,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildEmptyView() {
     return AppEmptyState(
-      message: 'Không có giao dịch phù hợp',
+      message: 'transaction.noTransactions'.tr,
       action: filterController.hasActiveFilters
           ? TextButton(
               onPressed: _clearFilters,
-              child: const Text('Xóa tất cả bộ lọc'),
+              child: Text('common.clearAllFilters'.tr),
             )
           : null,
     );
@@ -283,8 +283,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     showDialog(
       context: context,
       builder: (_) => FilterDialog(
-        title: 'Lọc theo thời gian',
-        items: const ['Hôm nay', 'Tuần này', 'Tháng này', 'Tùy chỉnh'],
+        title: 'filter.byTime'.tr,
+        items: ['filter.timeToday'.tr, 'filter.timeWeek'.tr, 'filter.timeMonth'.tr, 'filter.timeCustom'.tr],
         onApply: (_) => _applyFilter(),
       ),
     );
@@ -314,7 +314,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       builder: (context) {
         return SafeArea(
           child: Obx(() {
-            String categorySubtitle = 'Chọn loại chi tiêu hoặc thu nhập cụ thể';
+            String categorySubtitle = 'filter.byCategorySubtitle'.tr;
             if (filterController.categoryId.value != null) {
               final categoryId = filterController.categoryId.value;
               final cats =
@@ -324,9 +324,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 orElse: () => null,
               );
               if (cat != null) {
-                categorySubtitle = 'Đã chọn: ${cat.name}';
+                categorySubtitle = 'filter.selectedCategory'.tr.replaceAll('@name', cat.name);
               } else {
-                categorySubtitle = 'Đã chọn 1 phân loại';
+                categorySubtitle = 'filter.selected1Category'.tr;
               }
             }
 
@@ -371,7 +371,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Bộ lọc giao dịch',
+                              'filter.title'.tr,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -379,7 +379,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Chọn cách bạn muốn thu hẹp danh sách giao dịch.',
+                              'filter.description'.tr,
                               style: TextStyle(
                                 color: AppColors.text4,
                                 fontSize: 13,
@@ -413,8 +413,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         Expanded(
                           child: Text(
                             filterController.hasActiveFilters
-                                ? 'Đang áp dụng ${filterController.activeFilterCount} tiêu chí lọc.'
-                                : 'Chưa có bộ lọc nào được áp dụng.',
+                                ? 'filter.activeCount'.tr.replaceAll('@count', '${filterController.activeFilterCount}')
+                                : 'filter.noActive'.tr,
                             style: TextStyle(
                               color: AppThemeColors.of(context).textPrimary,
                               fontWeight: FontWeight.w600,
@@ -427,7 +427,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 16),
                   _buildFilterSheetTile(
                     icon: Icons.category_outlined,
-                    title: 'Lọc theo phân loại',
+                    title: 'filter.byCategory'.tr,
                     subtitle: categorySubtitle,
                     onTap: () {
                       Get.back();
@@ -437,7 +437,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 12),
                   _buildFilterSheetTile(
                     icon: Icons.calendar_today_rounded,
-                    title: 'Lọc theo thời gian',
+                    title: 'filter.byTime'.tr,
                     subtitle: filterController.dateLabel.value,
                     onTap: () {
                       Get.back();
@@ -454,7 +454,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           _clearFilters();
                         },
                         icon: const Icon(Icons.restart_alt_rounded),
-                        label: const Text('Xóa tất cả bộ lọc'),
+                        label: Text('common.clearAllFilters'.tr),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.text2,
                           side: const BorderSide(

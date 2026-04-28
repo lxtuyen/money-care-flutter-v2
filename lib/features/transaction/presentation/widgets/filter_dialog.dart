@@ -122,8 +122,8 @@ class _FilterDialogState extends State<FilterDialog> {
                   const SizedBox(height: 6),
                   Text(
                     isDateDialog
-                        ? 'Chọn mốc thời gian phù hợp để xem giao dịch chính xác hơn.'
-                        : 'Thu hẹp danh sách giao dịch theo phân loại bạn muốn xem.',
+                        ? 'filter.dateDescription'.tr
+                        : 'filter.categoryDescription'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withOpacity(0.9),
                       height: 1.35,
@@ -182,7 +182,7 @@ class _FilterDialogState extends State<FilterDialog> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text('Xóa lọc'),
+                      child: Text('common.clearFilter'.tr),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -198,8 +198,8 @@ class _FilterDialogState extends State<FilterDialog> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text(
-                        'Áp dụng',
+                      child: Text(
+                        'common.apply'.tr,
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -217,7 +217,7 @@ class _FilterDialogState extends State<FilterDialog> {
     if (isDateDialog) {
       return widget.items!
           .map((item) {
-            final isCustom = item.toLowerCase().contains('tùy chỉnh');
+            final isCustom = item == 'filter.timeCustom'.tr;
             final isSelected = selectedId == item;
 
             return CustomChoiceChip(
@@ -253,12 +253,12 @@ class _FilterDialogState extends State<FilterDialog> {
                 }
 
                 final now = DateTime.now();
-                if (item == 'Hôm nay') {
+                if (item == 'filter.timeToday'.tr) {
                   startDate = DateTime(now.year, now.month, now.day);
                   endDate = startDate!
                       .add(const Duration(days: 1))
                       .subtract(const Duration(seconds: 1));
-                } else if (item == 'Tuần này') {
+                } else if (item == 'filter.timeWeek'.tr) {
                   final weekday = now.weekday;
                   startDate = DateTime(
                     now.year,
@@ -268,7 +268,7 @@ class _FilterDialogState extends State<FilterDialog> {
                   endDate = startDate!
                       .add(const Duration(days: 7))
                       .subtract(const Duration(seconds: 1));
-                } else if (item == 'Tháng này') {
+                } else if (item == 'filter.timeMonth'.tr) {
                   startDate = DateTime(now.year, now.month, 1);
                   endDate = DateTime(
                     now.year,
@@ -309,8 +309,8 @@ class _FilterDialogState extends State<FilterDialog> {
   String _buildSummaryText() {
     if (isDateDialog) {
       return selectedDateLabel != null
-          ? 'Đang chọn: $selectedDateLabel'
-          : 'Chưa chọn khoảng thời gian';
+          ? 'filter.selectingDate'.tr.replaceAll('@label', selectedDateLabel!)
+          : 'filter.noDateSelected'.tr;
     }
 
     if (selectedId != null && widget.categories != null) {
@@ -318,13 +318,13 @@ class _FilterDialogState extends State<FilterDialog> {
         final cat = widget.categories!.firstWhere(
           (c) => c.id.toString() == selectedId,
         );
-        return 'Đã chọn: ${cat.name}';
+        return 'filter.selectedCategory'.tr.replaceAll('@name', cat.name);
       } catch (_) {
-        return 'Đã chọn 1 phân loại giao dịch';
+        return 'filter.selected1Type'.tr;
       }
     }
 
-    return 'Chưa chọn phân loại nào';
+    return 'filter.noCategorySelected'.tr;
   }
 
   void _clearFilter() {

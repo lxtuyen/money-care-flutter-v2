@@ -49,6 +49,7 @@ class LocalStorage {
   static const String keyHasSeenOnboarding = 'hasSeenOnboarding';
   static const String keyIsBalanceVisible = 'is_balance_visible';
   static const String keyIsDarkMode = 'is_dark_mode';
+  static const String keyLocale = 'app_locale';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -108,5 +109,13 @@ class LocalStorage {
 
   bool getDarkMode() {
     return readBool(keyIsDarkMode) ?? false;
+  }
+
+  Future<void> saveLocale(String localeCode) async {
+    await writeString(keyLocale, localeCode);
+  }
+
+  String getLocale() {
+    return readString(keyLocale) ?? 'vi_VN';
   }
 }

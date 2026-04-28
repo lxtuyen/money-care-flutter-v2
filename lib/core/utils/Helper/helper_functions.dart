@@ -230,13 +230,13 @@ class AppHelperFunction {
   static String _defaultTitleFor(AppSnackBarType type) {
     switch (type) {
       case AppSnackBarType.success:
-        return 'Thành công';
+        return 'snackbar.success'.tr;
       case AppSnackBarType.error:
-        return 'Có lỗi xảy ra';
+        return 'snackbar.error'.tr;
       case AppSnackBarType.warning:
-        return 'Lưu ý';
+        return 'snackbar.warning'.tr;
       case AppSnackBarType.info:
-        return 'Thông báo';
+        return 'snackbar.info'.tr;
     }
   }
 
@@ -253,9 +253,9 @@ class AppHelperFunction {
     final diff = now.difference(dateTime);
 
     if (diff.inDays == 0) {
-      return 'Hôm nay';
+      return 'common.today'.tr;
     } else if (diff.inDays == 1) {
-      return 'Hôm qua';
+      return 'common.yesterday'.tr;
     } else {
       return DateFormat('dd/MM/yyyy').format(dateTime);
     }
@@ -282,11 +282,11 @@ class AppHelperFunction {
   static String getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Chào buổi sáng ☀️';
+      return 'greeting.morning'.tr;
     } else if (hour < 18) {
-      return 'Chào buổi chiều 🌤️';
+      return 'greeting.afternoon'.tr;
     } else {
-      return 'Chào buổi tối 🌙';
+      return 'greeting.evening'.tr;
     }
   }
 

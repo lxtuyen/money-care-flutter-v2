@@ -54,15 +54,23 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
     UserCenterScreen(),
   ];
 
-  static const _navItems = [
-    _NavItem(icon: 'home', activeIcon: 'home-active', label: 'Trang chủ'),
+  List<_NavItem> get _navItems => [
+    _NavItem(icon: 'home', activeIcon: 'home-active', label: 'home.title'.tr),
     _NavItem(
       icon: 'transaction',
       activeIcon: 'transaction-active',
-      label: 'Thu - chi',
+      label: 'transaction.title'.tr,
     ),
-    _NavItem(icon: 'chart', activeIcon: 'chart-active', label: 'Thống kê'),
-    _NavItem(icon: 'user', activeIcon: 'user-active', label: 'Cá nhân'),
+    _NavItem(
+      icon: 'chart',
+      activeIcon: 'chart-active',
+      label: 'statistics.title'.tr,
+    ),
+    _NavItem(
+      icon: 'user',
+      activeIcon: 'user-active',
+      label: 'user.centerTitle'.tr,
+    ),
   ];
 
   @override
@@ -212,9 +220,9 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 onPressed: () => _showTransactionOptions(context),
                 icon: const Icon(Icons.add, color: Colors.white),
                 label: _isSidebarExpanded
-                    ? const Text(
-                        'Thêm giao dịch',
-                        style: TextStyle(color: Colors.white),
+                    ? Text(
+                        'transaction.create'.tr,
+                        style: const TextStyle(color: Colors.white),
                       )
                     : const SizedBox.shrink(),
                 style: ElevatedButton.styleFrom(
@@ -366,18 +374,18 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
-                  'Thêm giao dịch',
-                  style: TextStyle(
+                Text(
+                  'transaction.create'.tr,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.text1,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Chọn loại giao dịch bạn muốn tạo mới.',
-                  style: TextStyle(fontSize: 13, color: AppColors.text4),
+                Text(
+                  'transaction.selectTypeDesc'.tr,
+                  style: const TextStyle(fontSize: 13, color: AppColors.text4),
                 ),
                 /*
                 const SizedBox(height: 18),
@@ -410,8 +418,8 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   icon: Icons.add_a_photo_outlined,
                   iconColor: AppColors.secondaryNavyBlue,
                   iconBackground: AppColors.primary.withOpacity(0.12),
-                  title: 'Bản ghi kèm ảnh',
-                  subtitle: 'Chụp ảnh, nhập số tiền và lưu giao dịch nhanh',
+                  title: 'transaction.recordWithPhoto'.tr,
+                  subtitle: 'transaction.recordWithPhotoDesc'.tr,
                   onTap: () {
                     Navigator.pop(context);
                     Get.toNamed(RoutePath.transactionWithImage);
@@ -422,8 +430,8 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   icon: Icons.smart_toy_outlined,
                   iconColor: AppColors.primary,
                   iconBackground: AppColors.primary.withOpacity(0.12),
-                  title: 'Chat với AI',
-                  subtitle: 'Nhờ trợ lý AI giúp bạn quản lý tài chính',
+                  title: 'chatbot.title'.tr,
+                  subtitle: 'chatbot.desc'.tr,
                   onTap: () {
                     Navigator.pop(context);
                     Get.toNamed(RoutePath.chatbot);
@@ -442,7 +450,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text('Đóng'),
+                    child: Text('common.close'.tr),
                   ),
                 ),
               ],

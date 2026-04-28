@@ -1,5 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
@@ -46,8 +47,8 @@ class SpendingSummary extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      'Số tiền bạn chi trong tháng',
+                    Text(
+                      'home.spentInMonth'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -73,7 +74,7 @@ class SpendingSummary extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'Xem chi tiết',
+                        'common.viewDetail'.tr,
                         style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
                       ),
                       const SizedBox(width: 4),
@@ -133,8 +134,8 @@ class SpendingSummary extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       isBalanceVisible
-                          ? 'Số dư: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(balance).toDouble(), 'VND')}'
-                          : 'Số dư: $maskedText',
+                          ? '${'home.balance'.tr}: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(balance).toDouble(), 'VND')}'
+                          : '${'home.balance'.tr}: $maskedText',
                       style: const TextStyle(
                         color: AppColors.text3,
                         fontSize: 10,

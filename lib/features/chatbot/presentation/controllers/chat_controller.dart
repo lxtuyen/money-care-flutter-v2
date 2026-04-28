@@ -34,24 +34,21 @@ class ChatController extends GetxController {
   final errorMessage = RxnString();
   final RxList<ChatMessageEntity> messages = <ChatMessageEntity>[].obs;
 
-  final List<Map<String, dynamic>> options = const [
+  List<Map<String, dynamic>> get options => [
     {
-      'title': '📊 Phân tích chi tiêu',
-      'desc':
-          'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',
-      'template':
-          'Phân tích chi tiêu gần đây của tôi và cho tôi lời khuyên tiết kiệm.',
+      'title': 'chatbot.analysisTitle'.tr,
+      'desc': 'chatbot.analysisDesc'.tr,
+      'template': 'chatbot.analysisTemplate'.tr,
     },
     {
-      'title': '🎯 Gợi ý ngân sách',
-      'desc': 'AI sẽ giúp bạn lên kế hoạch ngân sách thông minh cho tháng tới.',
-      'template':
-          'Hãy gợi ý cho tôi một kế hoạch ngân sách dựa trên thói quen chi tiêu của tôi.',
+      'title': 'chatbot.budgetTitle'.tr,
+      'desc': 'chatbot.budgetDesc'.tr,
+      'template': 'chatbot.budgetTemplate'.tr,
     },
     {
-      'title': '📝 Ghi nhanh chi tiêu',
-      'desc': 'Ghi chép cực nhanh: "bún bò 35k sáng nay", "đổ xăng 50k"...',
-      'template': 'ăn sáng 35k hôm nay',
+      'title': 'chatbot.quickRecordTitle'.tr,
+      'desc': 'chatbot.quickRecordDesc'.tr,
+      'template': 'chatbot.quickRecordTemplate'.tr,
     },
   ];
 
@@ -138,7 +135,7 @@ class ChatController extends GetxController {
         final jsonStr = reply.replaceFirst('__STRUCTURED_ANALYSIS__', '');
         try {
           final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          final summary = data['summary'] ?? 'Phân tích tài chính';
+          final summary = data['summary'] ?? 'chatbot.financialAnalysis'.tr;
           replaceLastBotMessageWithMetadata(summary, data);
         } catch (e) {
           replaceLastBotMessage(
@@ -153,7 +150,7 @@ class ChatController extends GetxController {
           data['__type'] = 'transaction_saved';
           replaceLastBotMessageWithMetadata('', data);
         } catch (e) {
-          replaceLastBotMessage('✅ Đã ghi nhận giao dịch thành công!');
+          replaceLastBotMessage('chatbot.transactionSaved'.tr);
         }
         try {
           await transactionController.refreshAllData(userId);
@@ -170,7 +167,7 @@ class ChatController extends GetxController {
           data['__type'] = 'transaction_list';
           replaceLastBotMessageWithMetadata('', data);
         } catch (e) {
-          replaceLastBotMessage('Không thể hiển thị danh sách giao dịch.');
+          replaceLastBotMessage('chatbot.transactionListError'.tr);
         }
       } else if (reply.startsWith('__CATEGORY_LIST__')) {
         final jsonStr = reply.replaceFirst('__CATEGORY_LIST__', '');
@@ -179,7 +176,7 @@ class ChatController extends GetxController {
           data['__type'] = 'category_list';
           replaceLastBotMessageWithMetadata('', data);
         } catch (e) {
-          replaceLastBotMessage('Không thể hiển thị danh sách hạng mục.');
+          replaceLastBotMessage('chatbot.categoryListError'.tr);
         }
       } else if (reply.startsWith('__CATEGORY_CREATED__')) {
         final jsonStr = reply.replaceFirst('__CATEGORY_CREATED__', '');
@@ -196,7 +193,7 @@ class ChatController extends GetxController {
             Get.find<StatisticsController>().refreshStatisticsData(userId);
           }
         } catch (e) {
-          replaceLastBotMessage('✅ Đã tạo hạng mục mới thành công!');
+          replaceLastBotMessage('chatbot.categoryCreated'.tr);
         }
       } else {
         replaceLastBotMessage(reply);
@@ -204,7 +201,7 @@ class ChatController extends GetxController {
       scrollToBottom();
     } catch (e) {
       errorMessage.value = e.toString();
-      replaceLastBotMessage('Lỗi kết nối: $e');
+      replaceLastBotMessage('chatbot.connectionError'.tr.replaceAll('@error', e.toString()));
     } finally {
       isLoading.value = false;
     }

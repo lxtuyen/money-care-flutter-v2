@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_care/features/home/presentation/widgets/budget_detail_dialog.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
@@ -84,7 +85,7 @@ class SpendingLimitCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Hạn mức:",
+                            'spending.limit'.tr,
                             style: TextStyle(
                               fontSize: AppSizes.fontSizeSm,
                               fontWeight: FontWeight.w400,
@@ -105,7 +106,7 @@ class SpendingLimitCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Đã tiêu:",
+                            'spending.spent'.tr,
                             style: TextStyle(
                               fontSize: AppSizes.fontSizeSm,
                               fontWeight: FontWeight.w400,

@@ -1,114 +1,106 @@
+import 'package:get/get.dart';
+
+/// Legacy wrapper — maps old static AppTexts references to GetX .tr keys.
+/// New code should use 'key'.tr directly.
 class AppTexts {
   // --- Forgot Password ---
-  static const String login = 'Đăng nhập';
-  static const String forgotPasswordTitle = 'Quên mật khẩu';
-  static const String forgotPasswordDescription =
-      'Chúng tôi sẽ gửi cho bạn mã OTP.';
-  static const String emailLabel = 'Email';
-  static const String rememberPassword = 'Nhớ mật khẩu? ';
-  static const String unlockPremium = 'Mở khóa Premium';
+  static String get login => 'auth.login'.tr;
+  static String get forgotPasswordTitle => 'auth.forgotPasswordTitle'.tr;
+  static String get forgotPasswordDescription => 'auth.forgotPasswordDescription'.tr;
+  static String get emailLabel => 'auth.email'.tr;
+  static String get rememberPassword => 'auth.rememberPassword'.tr;
+  static String get unlockPremium => 'premium.unlock'.tr;
 
   // --- OTP ---
-  static const String getOtp = 'Nhận mã OTP';
-  static const String enterOtp = 'Nhập mã OTP';
-  static const String otpDescription = 'Nhập mã OTP để lấy lại mật khẩu.';
-  static const String otpLabel = 'Mã OTP';
+  static String get getOtp => 'otp.getOtp'.tr;
+  static String get enterOtp => 'otp.enterOtp'.tr;
+  static String get otpDescription => 'otp.description'.tr;
+  static String get otpLabel => 'otp.label'.tr;
   static const String otpHint = '- - - - - -';
-  static const String notReceiveOtp = 'Không nhận được mã? Thử lại sau ';
-  static const String confirmOtpButton = 'Xác nhận mã OTP';
+  static String get notReceiveOtp => 'otp.notReceive'.tr;
+  static String get confirmOtpButton => 'otp.confirmButton'.tr;
 
   // --- Reset Password ---
-  static const String resetPasswordTitle = 'Thay đổi mật khẩu';
-  static const String resetPasswordDescription =
-      'Vui lòng nhập mật khẩu mới của bạn.';
-  static const String passwordLabel = 'Mật khẩu';
-  static const String confirmPasswordLabel = 'Nhập lại mật khẩu';
-  static const String confirmButton = 'Xác nhận';
+  static String get resetPasswordTitle => 'resetPassword.title'.tr;
+  static String get resetPasswordDescription => 'resetPassword.description'.tr;
+  static String get passwordLabel => 'auth.password'.tr;
+  static String get confirmPasswordLabel => 'auth.confirmPassword'.tr;
+  static String get confirmButton => 'common.confirm'.tr;
 
   // --- Login ---
-  static const String loginSubtitle = 'Vui lòng đăng nhập với Email của bạn.';
-  static const String forgotPassword = 'Quên mật khẩu?';
-  static const String noAccount = 'Bạn chưa có tài khoản? ';
-  static const String signup = 'Đăng ký';
+  static String get loginSubtitle => 'auth.loginSubtitle'.tr;
+  static String get forgotPassword => 'auth.forgotPassword'.tr;
+  static String get noAccount => 'auth.noAccount'.tr;
+  static String get signup => 'auth.signup'.tr;
 
   // --- Select method login ---
-  static const String loginDescription =
-      'Vui lòng đăng nhập để sử dụng Money Care.';
-  static const String loginWithGoogle = 'Đăng nhập với Google';
-  static const String loginWithFacebook = 'Đăng nhập với Facebook';
+  static String get loginDescription => 'auth.loginDescription'.tr;
+  static String get loginWithGoogle => 'auth.loginWithGoogle'.tr;
+  static String get loginWithFacebook => 'auth.loginWithFacebook'.tr;
 
   // --- Onboarding Expense Management ---
-  static const String onboardingExpenseTitle = 'Quản lý';
-  static const String onboardingExpenseHighlight = 'thu chi';
-  static const String onboardingExpenseDescription =
-      'Ghi chép chi tiêu nhanh chóng, phân loại rõ ràng và xem báo cáo trực quan để đưa ra quyết định tài chính tốt hơn mỗi ngày.';
+  static String get onboardingExpenseTitle => 'onboarding.expenseTitle'.tr;
+  static String get onboardingExpenseHighlight => 'onboarding.expenseHighlight'.tr;
+  static String get onboardingExpenseDescription => 'onboarding.expenseDescription'.tr;
 
   // --- Onboarding Financial Freedom ---
-  static const String onboardingFinancialTitle = 'Làm chủ';
-  static const String onboardingFinancialHighlight = 'tài chính';
-  static const String onboardingFinancialDescription =
-      'Quản lý tiền bạc thông minh để bạn luôn kiểm soát được thu nhập, chi tiêu và tiết kiệm. Bắt đầu hành trình làm chủ tài chính – làm chủ cuộc sống của chính mình.';
+  static String get onboardingFinancialTitle => 'onboarding.financialTitle'.tr;
+  static String get onboardingFinancialHighlight => 'onboarding.financialHighlight'.tr;
+  static String get onboardingFinancialDescription => 'onboarding.financialDescription'.tr;
 
   // --- Onboarding Income ---
-  static const String done = 'Hoàn tất';
-  static const String next = 'Bỏ qua';
-  static const String incomeTitle =
-      'Số tiền thu nhập hàng tháng của bạn là bao nhiêu?';
+  static String get done => 'common.done'.tr;
+  static String get next => 'common.skip'.tr;
+  static String get incomeTitle => 'onboarding.incomeTitle'.tr;
 
   // --- Onboarding Welcome ---
-  static const String welcomeTitle = 'Chào mừng bạn đến với ';
-  static const String welcomeTileHighlight = 'Money Care';
-  static const String welcomeDescription =
-      'Chúng tôi đem đến giải pháp giúp bạn quản lý chi tiêu cực kỳ dễ dàng và hiệu quả.';
-  static const String buttonText = 'Bắt đầu';
+  static String get welcomeTitle => 'onboarding.welcomeTitle'.tr;
+  static String get welcomeTileHighlight => 'onboarding.welcomeHighlight'.tr;
+  static String get welcomeDescription => 'onboarding.welcomeDescription'.tr;
+  static String get buttonText => 'common.start'.tr;
 
   // --- Register ---
-  static const String registerSubtitle = 'Đăng ký tài khoản với Email của bạn';
-  static const String firstName = 'Họ';
-  static const String lastName = 'Tên';
-  static const String alreadyHaveAccount = 'Bạn đã có tài khoản? ';
+  static String get registerSubtitle => 'auth.registerSubtitle'.tr;
+  static String get firstName => 'auth.firstName'.tr;
+  static String get lastName => 'auth.lastName'.tr;
+  static String get alreadyHaveAccount => 'auth.alreadyHaveAccount'.tr;
 
   // --- Profile ---
-  static const String profileTitle = 'Tài chính cá nhân';
-  static const String targetTitle = 'Mục tiêu tiết kiệm';
-  static const String profile = 'Thông tin cá nhân';
-  static const String reportOfTheYear = 'Báo cáo trong năm';
-  static const String annualPortfolioReport = 'Báo cáo danh mục trong năm';
-  static const String funds = 'Quỹ tiết kiệm';
+  static String get profileTitle => 'profile.title'.tr;
+  static String get targetTitle => 'profile.targetTitle'.tr;
+  static String get profile => 'profile.info'.tr;
+  static String get reportOfTheYear => 'report.title'.tr;
+  static String get annualPortfolioReport => 'report.portfolio'.tr;
+  static String get funds => 'profile.savingGoals'.tr;
   static const String fixedCosts = 'Chi phí cố định';
-  static const String logout = 'Đăng xuất';
+  static String get logout => 'auth.logout'.tr;
 
   // --- Statistics ---
-  static const String statisticsTitle = 'Thống kê';
-  static const String totalMonth = 'Tổng chi tiêu theo tháng';
-  static const String dailyAverage = 'Trung bình chi tiêu theo ngày';
-  static const String monthlyAverage = 'Trung bình chi tiêu theo tháng';
-  static const String limitOverview = 'Tổng quan chi tiêu';
-  static const String balance = 'Số dư';
+  static String get statisticsTitle => 'statistics.title'.tr;
+  static String get totalMonth => 'statistics.totalMonth'.tr;
+  static String get dailyAverage => 'statistics.dailyAverage'.tr;
+  static String get monthlyAverage => 'statistics.monthlyAverage'.tr;
+  static String get limitOverview => 'statistics.limitOverview'.tr;
+  static String get balance => 'statistics.balance'.tr;
 
   // --- Transaction & Scan Receipt ---
-  static const String photoTransactionTitle = 'Bản ghi kèm ảnh';
-  static const String transactionTypeExpense = 'Chi';
-  static const String transactionTypeIncome = 'Thu';
-  static const String scanAiButton = 'Phân tích AI';
-  static const String scanningStatus = 'Đang phân tích...';
-  static const String scanSuccess = 'Đã trích xuất thông tin thành công!';
-  static const String scanError = 'Lỗi quét hóa đơn: ';
-  static const String scanInvalid =
-      'Không thể nhận diện thông tin. Ảnh có thể bị mờ hoặc không phải hóa đơn. Bạn vui lòng chụp lại rõ nét nhé!';
-  static const String unknownMerchant = 'Cửa hàng không xác định';
-  static const String selectCategory = 'Chọn category';
-  static const String noCategoryAvailable = 'Không có category để lựa chọn';
-  static const String recordPhotoRequired =
-      'Vui lòng chụp hoặc chọn ảnh cho bản ghi.';
-  static const String userNotFound =
-      'Không thể xác định người dùng. Vui lòng đăng nhập lại.';
-  static const String createTransactionSuccess =
-      'Tạo bản ghi kèm ảnh thành công';
-  static const String photoPreviewTitle = 'Ảnh giao dịch';
-  static const String retakePhoto = 'Chụp lại';
-  static const String transactionInfoSection = 'Thông tin bản ghi';
-  static const String classificationSection = 'Phân loại';
-  static const String incomeNoCategoryMessage =
-      'Bản ghi thu hiện không yêu cầu category.';
+  static String get photoTransactionTitle => 'transaction.photoTitle'.tr;
+  static String get transactionTypeExpense => 'transaction.expense'.tr;
+  static String get transactionTypeIncome => 'transaction.income'.tr;
+  static String get scanAiButton => 'transaction.scanAi'.tr;
+  static String get scanningStatus => 'transaction.scanning'.tr;
+  static String get scanSuccess => 'transaction.scanSuccess'.tr;
+  static String get scanError => 'transaction.scanError'.tr;
+  static String get scanInvalid => 'transaction.scanInvalid'.tr;
+  static String get unknownMerchant => 'transaction.unknownMerchant'.tr;
+  static String get selectCategory => 'transaction.selectCategory'.tr;
+  static String get noCategoryAvailable => 'transaction.noCategory'.tr;
+  static String get recordPhotoRequired => 'transaction.photoRequired'.tr;
+  static String get userNotFound => 'transaction.userNotFound'.tr;
+  static String get createTransactionSuccess => 'transaction.createSuccess'.tr;
+  static String get photoPreviewTitle => 'transaction.photoPreview'.tr;
+  static String get retakePhoto => 'transaction.retakePhoto'.tr;
+  static String get transactionInfoSection => 'transaction.infoSection'.tr;
+  static String get classificationSection => 'transaction.classificationSection'.tr;
+  static String get incomeNoCategoryMessage => 'transaction.incomeNoCategory'.tr;
 }

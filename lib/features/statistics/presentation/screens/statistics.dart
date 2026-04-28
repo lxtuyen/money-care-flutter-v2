@@ -64,7 +64,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppHeader(
-                title: 'Thu - Chi',
+                title: 'transaction.title'.tr,
                 actions: [
                   IconButton(
                     onPressed: () => _showExportDialog(),
@@ -140,7 +140,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                statisticsController.periodType.value,
+                                (statisticsController.periodType.value == 'hàng tháng'
+                                    ? 'statistics.monthly'.tr
+                                    : 'statistics.daily'.tr),
                                 style: const TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 12,
@@ -166,12 +168,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 String title = "";
                 if (statisticsController.periodType.value == 'hàng tháng') {
                   title = statisticsController.selectedType.value == 'chi'
-                      ? "Chi tiêu theo tháng"
-                      : "Thu nhập theo tháng";
+                      ? "statistics.monthlyExpense".tr
+                      : "statistics.monthlyIncome".tr;
                 } else {
                   title = statisticsController.selectedType.value == 'chi'
-                      ? "Chi tiêu theo ngày"
-                      : "Thu nhập theo ngày";
+                      ? "statistics.dailyExpense".tr
+                      : "statistics.dailyIncome".tr;
                 }
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -212,8 +214,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: AppSectionHeading(
                     title: statisticsController.selectedType.value == 'chi'
-                        ? AppTexts.limitOverview
-                        : "Tổng quan thu nhập",
+                        ? 'statistics.limitOverview'.tr
+                        : "statistics.incomeOverview".tr,
                     showActionButton: false,
                   ),
                 ),
@@ -271,7 +273,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: AppSectionHeading(
-                        title: 'Thống kê mục tiêu tiết kiệm',
+                        title: 'statistics.goalStats'.tr,
                         showActionButton: false,
                       ),
                     ),
@@ -409,8 +411,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Xuất báo cáo',
+            Text(
+              'statistics.exportTitle'.tr,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -419,7 +421,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Báo cáo sẽ được gửi về email của bạn (${userController.user.value?.email ?? 'đang tải...'})',
+              'statistics.exportEmailNote'.tr.replaceAll('@email', userController.user.value?.email ?? '...'),
               style: const TextStyle(color: AppColors.text3),
             ),
             const SizedBox(height: 24),

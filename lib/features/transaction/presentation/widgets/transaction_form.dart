@@ -79,16 +79,16 @@ class _TransactionFormState extends State<TransactionForm> {
                               children: [
                                 DatePickerField(
                                   selectedDate: controller.selectedDate,
-                                  label: 'Ngày giao dịch',
-                                  placeholder: 'Chọn ngày',
+                                  label: 'transaction.dateLabel'.tr,
+                                  placeholder: 'transaction.dateHint'.tr,
                                   onTap: () => controller.selectDate(context),
                                 ),
                                 const SizedBox(height: 20),
                                 AppCurrencyFormField(
                                   controller: controller.amountController,
-                                  label: 'Số tiền',
+                                  label: 'transaction.amount'.tr,
                                   icon: Icons.attach_money,
-                                  hintText: 'Nhập số tiền',
+                                  hintText: 'transaction.amountHint'.tr,
                                   validator: (v) =>
                                       AppValidator.validateAmount(v),
                                 ),
@@ -96,9 +96,9 @@ class _TransactionFormState extends State<TransactionForm> {
                                   const SizedBox(height: 20),
                                   AppTextFormField(
                                     controller: controller.categoryController,
-                                    label: 'Phân loại',
+                                    label: 'transaction.category'.tr,
                                     icon: Icons.category,
-                                    hintText: 'Chọn phân loại',
+                                    hintText: 'transaction.categoryHint'.tr,
                                     validator: (v) =>
                                         AppValidator.validateCategory(v),
                                     onTap: () async {
@@ -193,8 +193,8 @@ class _TransactionFormState extends State<TransactionForm> {
                                 const SizedBox(height: 20),
                                 AppTextFormField(
                                   controller: controller.noteController,
-                                  label: 'Ghi chú',
-                                  hintText: 'Nhập ghi chú',
+                                  label: 'transaction.note'.tr,
+                                  hintText: 'transaction.noteHint'.tr,
                                   validator: (v) =>
                                       AppValidator.validateNote(v),
                                   minLines: 3,
@@ -255,7 +255,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     Expanded(
                       child: Obx(() {
                         return PrimaryButton(
-                          label: widget.item?.id == null ? 'Tạo' : 'Cập nhật',
+                          label: widget.item?.id == null ? 'transaction.create'.tr : 'transaction.update'.tr,
                           onPressed: controller.submit,
                           isLoading:
                               controller.transactionController.isLoading.value,

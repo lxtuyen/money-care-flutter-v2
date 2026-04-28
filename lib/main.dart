@@ -8,11 +8,13 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/theme/app_theme.dart';
+import 'package:money_care/core/localization/app_translations.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('vi', null);
+  await initializeDateFormatting('en', null);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: ".env");
@@ -25,6 +27,11 @@ class MainApp extends StatelessWidget {
   final LocalStorage storage;
   const MainApp({super.key, required this.storage});
 
+  Locale _parseLocale(String localeString) {
+    final parts = localeString.split('_');
+    return Locale(parts[0], parts.length > 1 ? parts[1] : '');
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -33,6 +40,9 @@ class MainApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: storage.getDarkMode() ? ThemeMode.dark : ThemeMode.light,
+      translations: AppTranslations(),
+      locale: _parseLocale(storage.getLocale()),
+      fallbackLocale: const Locale('vi', 'VN'),
       getPages: appPages,
       initialRoute: RoutePath.splash,
       initialBinding: AppBinding(storage: storage),

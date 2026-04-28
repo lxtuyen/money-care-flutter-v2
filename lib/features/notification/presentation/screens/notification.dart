@@ -13,14 +13,14 @@ class NotificationScreen extends StatelessWidget {
     final controller = Get.find<NotificationController>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Thông báo'), centerTitle: true),
+      appBar: AppBar(title: Text('notification.title'.tr), centerTitle: true),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
         if (controller.notifications.isEmpty) {
-          return const AppEmptyState(message: 'Bạn chưa có thông báo nào.');
+          return AppEmptyState(message: 'notification.empty'.tr);
         }
 
         return ListView.separated(

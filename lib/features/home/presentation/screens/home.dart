@@ -118,7 +118,7 @@ class HomeScreen extends GetView<HomeController> {
                                     ),
                                   ),
                                   Text(
-                                    profile?.fullName ?? "Người dùng",
+                                    profile?.fullName ?? 'common.user'.tr,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -280,7 +280,7 @@ class HomeScreen extends GetView<HomeController> {
             const SizedBox(height: AppSizes.defaultSpace),
 
             AppSectionHeading(
-              title: "Giao dịch gần đây",
+              title: 'home.recentTransactions'.tr,
               showActionButton: false,
             ),
             Obx(() {
@@ -308,7 +308,7 @@ class HomeScreen extends GetView<HomeController> {
 
             const SizedBox(height: AppSizes.defaultSpace),
 
-            AppSectionHeading(title: "Tổng quan", showActionButton: false),
+            AppSectionHeading(title: 'home.overview'.tr, showActionButton: false),
             const SizedBox(height: AppSizes.spaceBtwItems),
             Obx(() {
               final totalsData =
@@ -373,9 +373,9 @@ class HomeScreen extends GetView<HomeController> {
               return Column(
                 children: [
                   AppSectionHeading(
-                    title: "Hạn mức chi tiêu",
+                    title: 'home.spendingLimit'.tr,
                     showActionButton: filtered.length > 3,
-                    buttonTitle: "Tất cả",
+                    buttonTitle: 'common.all'.tr,
                     onPressed: () {},
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),
@@ -431,20 +431,20 @@ class HomeScreen extends GetView<HomeController> {
               if (filteredCategories.isEmpty) {
                 return mode == FinanceMode.survival
                     ? AppSectionHeading(
-                        title: "Chi tiêu tháng này (Cắt giảm tối đa!)",
+                        title: 'home.maxCutSpending'.tr,
                         showActionButton: false,
                       )
                     : const SizedBox.shrink();
               }
 
-              String sectionTitle = "Chi tiêu tháng này";
+              String sectionTitle = 'home.monthlySpending'.tr;
               String? sectionSubtitle;
 
               if (mode == FinanceMode.survival) {
-                sectionTitle = "Chi tiêu thiết yếu (Sinh tồn)";
+                sectionTitle = 'home.monthlySpendingSurvival'.tr;
               } else if (mode == FinanceMode.saving) {
-                sectionTitle = "Kế hoạch tiết kiệm";
-                sectionSubtitle = "Duy trì chi tiêu dưới 80% hạn mức";
+                sectionTitle = 'home.savingPlan'.tr;
+                sectionSubtitle = 'home.savingPlanSubtitle'.tr;
               }
 
               return Column(
@@ -489,7 +489,7 @@ class HomeScreen extends GetView<HomeController> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        "Đã ẩn ${categories.where((TotalByCategoryEntity c) => !c.isEssential).length} mục không thiết yếu",
+                        "${'home.hiddenNonEssential'.tr.replaceAll('@count', '${categories.where((TotalByCategoryEntity c) => !c.isEssential).length}')}",
                         style: const TextStyle(
                           fontSize: 11,
                           color: AppColors.error,
@@ -516,7 +516,7 @@ class HomeScreen extends GetView<HomeController> {
               return Column(
                 children: [
                   AppSectionHeading(
-                    title: "Thu nhập tháng này",
+                    title: 'home.monthlyIncome'.tr,
                     showActionButton: false,
                   ),
                   const SizedBox(height: AppSizes.spaceBtwItems),

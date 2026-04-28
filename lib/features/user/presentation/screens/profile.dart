@@ -27,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         await userController.updateProfile();
-        AppHelperFunction.showSuccessSnackBar('Cập nhật thành công');
+        AppHelperFunction.showSuccessSnackBar('profile.updateSuccess'.tr);
       } catch (e) {
         AppHelperFunction.showErrorSnackBar(e.toString());
       }
@@ -50,8 +50,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 40),
-                    const Text(
-                      "Hồ sơ của bạn",
+                    Text(
+                      'profile.yourProfile'.tr,
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -100,8 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             );
                           }),
                           const SizedBox(height: 12),
-                          const Text(
-                            "Ảnh đại diện",
+                          Text(
+                            "profile.avatar".tr,
                             style: TextStyle(
                               fontSize: 14,
                               color: AppColors.text4,
@@ -114,8 +114,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'Thông tin cơ bản',
+                    Text(
+                      'profile.basicInfo'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -126,32 +126,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     AppTextFormField(
                       controller: userController.avatarController,
-                      label: 'Link ảnh đại diện',
+                      label: 'profile.avatarLink'.tr,
                       icon: Icons.link,
-                      hintText: 'Nhập URL ảnh của bạn',
+                      hintText: 'profile.avatarHint'.tr,
                     ),
                     const SizedBox(height: 16),
 
                     AppTextFormField(
                       controller: userController.firstNameController,
-                      label: 'Tên',
+                      label: 'auth.firstName'.tr,
                       icon: Icons.person,
-                      hintText: 'VD: Văn A',
+                      hintText: 'profile.nameHint'.tr,
                       validator: (v) => AppValidator.validateFirstName(v),
                     ),
                     const SizedBox(height: 16),
 
                     AppTextFormField(
                       controller: userController.lastNameController,
-                      label: 'Họ',
+                      label: 'auth.lastName'.tr,
                       icon: Icons.person,
-                      hintText: 'VD: Nguyễn',
+                      hintText: 'profile.lastNameHint'.tr,
                       validator: (v) => AppValidator.validateLastName(v),
                     ),
                     const SizedBox(height: 32),
 
-                    const Text(
-                      'Thông tin tài chính',
+                    Text(
+                      'profile.financialInfo'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -162,9 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     AppCurrencyFormField(
                       controller: userController.monthlyIncomeController,
-                      label: 'Thu nhập hàng tháng (VNĐ)',
+                      label: 'profile.monthlyIncomeLabel'.tr,
                       icon: Icons.attach_money_outlined,
-                      hintText: 'VD: 3.000.000',
+                      hintText: 'profile.nameHint'.tr, // Reuse name hint or add a generic one
                     ),
                     const SizedBox(height: 16),
 
@@ -179,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     Obx(() {
                       return PrimaryButton(
-                        label: 'Cập nhật',
+                        label: 'transaction.update'.tr,
                         onPressed: onUpdateProfile,
                         isLoading: userController.isLoading.value,
                         isEnabled: !userController.isLoading.value,
@@ -206,13 +206,13 @@ class _IncomeDateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayText = incomeDate != null
-        ? 'Ngày ${incomeDate!.day.toString().padLeft(2, '0')}'
+        ? 'profile.incomeDayValue'.tr.replaceAll('@day', incomeDate!.day.toString().padLeft(2, '0'))
         : '';
 
     return AppTextFormField(
-      label: 'Ngày nhận tiền hàng tháng',
+      label: 'profile.incomeDayLabel'.tr,
       icon: Icons.event_outlined,
-      hintText: 'Chọn ngày',
+      hintText: 'profile.selectDayHint'.tr,
       controller: TextEditingController(text: displayText),
       readOnly: true,
       onTap: onTap,

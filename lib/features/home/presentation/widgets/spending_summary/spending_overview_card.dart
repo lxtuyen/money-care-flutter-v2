@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -70,7 +71,7 @@ class SpendingOverviewCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Số tiền đã chi tiêu trong 7 ngày gần đây',
+              'home.spentIn7Days'.tr,
               style: TextStyle(color: AppThemeColors.of(context).textSecondary),
             ),
             const SizedBox(height: AppSizes.spaceBtwItems),

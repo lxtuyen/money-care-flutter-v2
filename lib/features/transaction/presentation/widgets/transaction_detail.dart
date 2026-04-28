@@ -117,7 +117,7 @@ class TransactionDetail extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isExpense ? 'Khoản chi tiêu' : 'Khoản thu nhập',
+                        isExpense ? 'transaction.expenseType'.tr : 'transaction.incomeType'.tr,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -136,26 +136,26 @@ class TransactionDetail extends StatelessWidget {
                     children: [
                       _buildDetailRow(
                         icon: Icons.category_outlined,
-                        label: 'Hạng mục',
-                        value: item.category?.name ?? 'Không có',
+                        label: 'transaction.categoryLabel'.tr,
+                        value: item.category?.name ?? 'transaction.none'.tr,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
                         icon: Icons.calendar_today_outlined,
-                        label: 'Thời gian',
+                        label: 'transaction.timeLabel'.tr,
                         value: item.transactionDate != null
                             ? AppHelperFunction.formatDateTime(
                                 item.transactionDate!,
                               )
-                            : 'Không có',
+                            : 'transaction.none'.tr,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
                         icon: Icons.notes_outlined,
-                        label: 'Ghi chú',
+                        label: 'transaction.note'.tr,
                         value: item.note != null && item.note!.isNotEmpty
                             ? item.note!
-                            : 'Không có ghi chú',
+                            : 'transaction.noNote'.tr,
                         isMultiLine: true,
                       ),
 
@@ -166,7 +166,7 @@ class TransactionDetail extends StatelessWidget {
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Hình ảnh minh chứng',
+                            'transaction.evidencePhoto'.tr,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -210,8 +210,8 @@ class TransactionDetail extends StatelessWidget {
                                   MaterialPageRoute(
                                     builder: (context) => TransactionForm(
                                       title: isExpense
-                                          ? 'Chỉnh sửa chi'
-                                          : 'Chỉnh sửa thu',
+                                          ? 'transaction.editExpense'.tr
+                                          : 'transaction.editIncome'.tr,
                                       item: item,
                                       transactionType: isExpense
                                           ? 'expense'
@@ -337,13 +337,13 @@ class TransactionDetail extends StatelessWidget {
       context: context,
       builder: (context) => WarningDialog(
         message:
-            'Bạn có chắc chắn muốn xóa giao dịch này? Hành động này không thể hoàn tác.',
+            'transaction.deleteConfirm'.tr,
         onCancel: () => Get.back(),
         onConfirm: () {
           Get.back();
           Get.back();
           controller.deleteTransaction(item.id!, userId);
-          AppHelperFunction.showSuccessSnackBar('Đã xóa giao dịch thành công');
+          AppHelperFunction.showSuccessSnackBar('transaction.deleteSuccess'.tr);
         },
       ),
     );

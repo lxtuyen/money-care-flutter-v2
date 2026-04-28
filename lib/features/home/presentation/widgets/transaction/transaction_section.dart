@@ -42,14 +42,14 @@ class _TransactionSectionState extends State<TransactionSection> {
             ),
             child: Row(
               children: [
-                _buildTab('Chi', isExpense),
-                _buildTab('Thu', !isExpense),
+                _buildTab('statistics.expense'.tr, isExpense, 'expense'),
+                _buildTab('statistics.income'.tr, !isExpense, 'income'),
               ],
             ),
           ),
           const SizedBox(height: AppSizes.defaultSpace),
           if (currentList.isEmpty)
-            const AppEmptyState(message: 'Không có giao dịch nào gần đây.')
+            AppEmptyState(message: 'transaction.noRecent'.tr)
           else
             ...currentList
                 .take(5)
@@ -71,10 +71,10 @@ class _TransactionSectionState extends State<TransactionSection> {
     );
   }
 
-  Expanded _buildTab(String label, bool isActive) {
+  Expanded _buildTab(String label, bool isActive, String type) {
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => isExpense = (label == 'Chi')),
+        onTap: () => setState(() => isExpense = (type == 'expense')),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(

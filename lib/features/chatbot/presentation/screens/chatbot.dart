@@ -129,7 +129,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               minLines: 1,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText: 'Hỏi AI bất cứ điều gì...',
+                hintText: 'chatbot.hintText'.tr,
                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,

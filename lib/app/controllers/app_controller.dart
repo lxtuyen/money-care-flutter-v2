@@ -12,6 +12,7 @@ class AppController extends GetxController {
   var isUserInitialized = false.obs;
   var isBalanceVisible = true.obs;
   var isDarkMode = false.obs;
+  var currentLocale = 'vi_VN'.obs;
   var errorMessage = RxnString();
 
   @override
@@ -20,6 +21,7 @@ class AppController extends GetxController {
     initializeUser();
     isBalanceVisible.value = storage.getBalanceVisibility();
     isDarkMode.value = storage.getDarkMode();
+    currentLocale.value = storage.getLocale();
   }
 
   Future<void> initializeUser() async {
@@ -68,5 +70,18 @@ class AppController extends GetxController {
     isDarkMode.value = !isDarkMode.value;
     storage.saveDarkMode(isDarkMode.value);
     Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
+  }
+
+  void toggleLocale() {
+    final newLocale = currentLocale.value == 'vi_VN' ? 'en_US' : 'vi_VN';
+    currentLocale.value = newLocale;
+    storage.saveLocale(newLocale);
+    final parts = newLocale.split('_');
+    Get.updateLocale(Locale(parts[0], parts[1]));
+  }
+
+  Locale get savedLocale {
+    final parts = currentLocale.value.split('_');
+    return Locale(parts[0], parts[1]);
   }
 }

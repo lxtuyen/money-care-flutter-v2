@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
+import 'package:money_care/core/constants/enums.dart';
 
 class AppController extends GetxController {
   final LocalStorage storage;
@@ -14,6 +15,7 @@ class AppController extends GetxController {
   var isDarkMode = false.obs;
   var currentLocale = 'vi_VN'.obs;
   var startDayOfMonth = 1.obs;
+  var dashboardSections = <DashboardSection>[].obs;
   var errorMessage = RxnString();
 
   @override
@@ -24,6 +26,18 @@ class AppController extends GetxController {
     isDarkMode.value = storage.getDarkMode();
     currentLocale.value = storage.getLocale();
     startDayOfMonth.value = storage.getStartDayOfMonth();
+    _initDashboardSections();
+  }
+
+  void _initDashboardSections() {
+    final saved = storage.getDashboardSections();
+    if (saved != null) {
+      dashboardSections.value = saved
+          .map((e) => DashboardSection.values.firstWhere((s) => s.name == e))
+          .toList();
+    } else {
+      dashboardSections.value = DashboardSection.values.toList();
+    }
   }
 
   Future<void> initializeUser() async {
@@ -90,5 +104,10 @@ class AppController extends GetxController {
   void setStartDayOfMonth(int day) {
     startDayOfMonth.value = day;
     storage.saveStartDayOfMonth(day);
+  }
+
+  void updateDashboardSections(List<DashboardSection> sections) {
+    dashboardSections.value = sections;
+    storage.saveDashboardSections(sections.map((e) => e.name).toList());
   }
 }

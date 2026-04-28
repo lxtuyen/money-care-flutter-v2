@@ -25,6 +25,8 @@ import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/constants/enums.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -194,6 +196,16 @@ class HomeScreen extends GetView<HomeController> {
                           },
                         ),
                         const SizedBox(width: 12),
+                        CircularIcon(
+                          icon: Icons.dashboard_customize_outlined,
+                          backgroundColor: AppThemeColors.of(context).iconBackground,
+                          height: 38,
+                          width: 38,
+                          size: 20,
+                          onTap: () =>
+                              Get.toNamed(RoutePath.dashboardCustomization),
+                        ),
+                        const SizedBox(width: 12),
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -229,316 +241,368 @@ class HomeScreen extends GetView<HomeController> {
 
                 const SizedBox(height: 16),
 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  child: Row(
-                    children: [
-                      const FinanceModeBanner(),
-                      const SizedBox(width: 8),
-                      const StreakBadgeWidget(),
-                      const SizedBox(width: 8),
-                      const DaysUntilIncomeWidget(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: AppSizes.defaultSpace),
+            const SizedBox(height: 16),
             Obx(() {
-              final totals =
-                  controller.statisticsController.globalTotalByType.value;
-              final isVisible = controller.appController.isBalanceVisible.value;
-
-              if (controller.statisticsController.isLoading.value) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              if (totals == null) {
-                return SpendingSummary(
-                  incomeTotal: 0,
-                  expenseTotal: 0,
-                  isBalanceVisible: isVisible,
-                  onToggleVisibility: () =>
-                      controller.appController.toggleBalanceVisibility(),
-                );
-              }
-
-              return SpendingSummary(
-                incomeTotal: totals.incomeTotal,
-                expenseTotal: totals.expenseTotal,
-                isBalanceVisible: isVisible,
-                onToggleVisibility: () =>
-                    controller.appController.toggleBalanceVisibility(),
-              );
-            }),
-
-            const SizedBox(height: AppSizes.defaultSpace),
-
-            AppSectionHeading(
-              title: 'home.recentTransactions'.tr,
-              showActionButton: false,
-            ),
-            Obx(() {
-              final transactions =
-                  controller.transactionController.recentTransactions.value;
-              if (controller.transactionController.isRecentLoading.value) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              if (transactions == null) {
-                return const TransactionSection(
-                  incomeTransactions: [],
-                  expenseTransactions: [],
-                );
-              }
-
-              return TransactionSection(
-                incomeTransactions: transactions.incomeTransactions,
-                expenseTransactions: transactions.expenseTransactions,
-              );
-            }),
-
-            const SizedBox(height: AppSizes.defaultSpace),
-
-            AppSectionHeading(title: 'home.overview'.tr, showActionButton: false),
-            const SizedBox(height: AppSizes.spaceBtwItems),
-            Obx(() {
-              final totalsData =
-                  controller.statisticsController.totalByDate.value;
-
-              if (controller.statisticsController.isLoading.value) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              if (totalsData == null || totalsData.expense.isEmpty) {
-                return SpendingOverviewCard(
-                  startDate: controller.startDate,
-                  endDate: controller.endDate,
-                  totals: [],
-                  amountSpent: 0,
-                  isBalanceVisible: controller.appController.isBalanceVisible.value,
-                );
-              }
-
-              final totals = totalsData.expense;
-              double totalSpent = totals.fold(0, (sum, t) => sum + t.total);
-
-              return SpendingOverviewCard(
-                startDate: controller.startDate,
-                endDate: controller.endDate,
-                totals: totals,
-                amountSpent: totalSpent,
-                isBalanceVisible: controller.appController.isBalanceVisible.value,
-              );
-            }),
-
-            const SizedBox(height: AppSizes.defaultSpace),
-
-            Obx(() {
-              final categories = controller.statisticsController.totalByCate;
-              final mode = controller.financeModeController.currentMode.value;
-
-              final filtered = categories.where((TotalByCategoryEntity cat) {
-                if (cat.limit > 0) return true;
-                if (mode == FinanceMode.survival &&
-                    !cat.isEssential &&
-                    cat.total > 0) {
-                  return true;
-                }
-                return false;
-              }).toList();
-              filtered.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
-                double percentA = a.limit > 0
-                    ? a.total / a.limit
-                    : (a.total > 0 ? 10.0 : 0.0);
-                double percentB = b.limit > 0
-                    ? b.total / b.limit
-                    : (b.total > 0 ? 10.0 : 0.0);
-                return percentB.compareTo(percentA);
-              });
-
-              if (filtered.isEmpty) return const SizedBox.shrink();
-
+              final sections = controller.appController.dashboardSections;
               return Column(
-                children: [
-                  AppSectionHeading(
-                    title: 'home.spendingLimit'.tr,
-                    showActionButton: filtered.length > 3,
-                    buttonTitle: 'common.all'.tr,
-                    onPressed: () {},
-                  ),
-                  const SizedBox(height: AppSizes.spaceBtwItems),
-                  ...filtered.take(3).map((TotalByCategoryEntity category) {
-                    return CategoryOverviewCard(
-                      title: category.categoryName,
-                      limit: category.limit,
-                      spent: category.total,
-                      iconPath: category.categoryIcon,
-                      isBalanceVisible: controller.appController.isBalanceVisible.value,
-                    );
-                  }).toList(),
-                ],
-              );
-            }),
-            const SizedBox(height: AppSizes.defaultSpace),
-
-            Obx(() {
-              if (controller.statisticsController.isLoading.value) {
-                return const SizedBox(
-                  height: 124,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              final mode = controller.financeModeController.currentMode.value;
-              final categories =
-                  controller.statisticsController.expenseCategories;
-
-              List<TotalByCategoryEntity> filteredCategories;
-              if (mode == FinanceMode.survival) {
-                filteredCategories = categories
-                    .where((TotalByCategoryEntity c) => c.isEssential)
-                    .toList();
-              } else {
-                filteredCategories = categories.toList();
-              }
-
-              if (mode == FinanceMode.saving) {
-                filteredCategories.sort((
-                  TotalByCategoryEntity a,
-                  TotalByCategoryEntity b,
-                ) {
-                  if (a.limit <= 0 && b.limit <= 0) return 0;
-                  if (a.limit <= 0) return 1;
-                  if (b.limit <= 0) return -1;
-                  final aPercent = a.total / a.limit;
-                  final bPercent = b.total / b.limit;
-                  return bPercent.compareTo(aPercent);
-                });
-              }
-
-              if (filteredCategories.isEmpty) {
-                return mode == FinanceMode.survival
-                    ? AppSectionHeading(
-                        title: 'home.maxCutSpending'.tr,
-                        showActionButton: false,
-                      )
-                    : const SizedBox.shrink();
-              }
-
-              String sectionTitle = 'home.monthlySpending'.tr;
-              String? sectionSubtitle;
-
-              if (mode == FinanceMode.survival) {
-                sectionTitle = 'home.monthlySpendingSurvival'.tr;
-              } else if (mode == FinanceMode.saving) {
-                sectionTitle = 'home.savingPlan'.tr;
-                sectionSubtitle = 'home.savingPlanSubtitle'.tr;
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppSectionHeading(
-                    title: sectionTitle,
-                    showActionButton: false,
-                  ),
-                  if (sectionSubtitle != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4, bottom: 12),
-                      child: Text(
-                        sectionSubtitle,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.text4,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  SizedBox(
-                    height: sectionSubtitle != null
-                        ? 0
-                        : AppSizes.spaceBtwItems,
-                  ),
-                  ...filteredCategories.map((TotalByCategoryEntity category) {
-                    return CategoryOverviewCard(
-                      title: category.categoryName,
-                      limit: category.limit,
-                      spent: category.total,
-                      iconPath: category.categoryIcon,
-                      isIncome: false,
-                      isBalanceVisible: controller.appController.isBalanceVisible.value,
-                    );
-                  }).toList(),
-                  if (mode == FinanceMode.survival &&
-                      categories.any(
-                        (TotalByCategoryEntity c) =>
-                            !c.isEssential && c.total > 0,
-                      ))
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        "${'home.hiddenNonEssential'.tr.replaceAll('@count', '${categories.where((TotalByCategoryEntity c) => !c.isEssential).length}')}",
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.error,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            }),
-
-            const SizedBox(height: AppSizes.md),
-
-            Obx(() {
-              if (controller.statisticsController.isLoading.value) {
-                return const SizedBox(
-                  height: 124,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              if (controller.statisticsController.incomeCategories.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return Column(
-                children: [
-                  AppSectionHeading(
-                    title: 'home.monthlyIncome'.tr,
-                    showActionButton: false,
-                  ),
-                  const SizedBox(height: AppSizes.spaceBtwItems),
-                  ...controller.statisticsController.incomeCategories.map((
-                    TotalByCategoryEntity category,
-                  ) {
-                    return CategoryOverviewCard(
-                      title: category.categoryName,
-                      limit: category.limit,
-                      spent: category.total,
-                      iconPath: category.categoryIcon,
-                      isIncome: true,
-                      isBalanceVisible: controller.appController.isBalanceVisible.value,
-                    );
-                  }).toList(),
-                ],
+                children: sections.map((section) {
+                  switch (section) {
+                    case DashboardSection.quickStatus:
+                      return _buildQuickStatus();
+                    case DashboardSection.spendingSummary:
+                      return _buildSpendingSummary();
+                    case DashboardSection.recentTransactions:
+                      return _buildRecentTransactions();
+                    case DashboardSection.spendingOverview:
+                      return _buildSpendingOverview();
+                    case DashboardSection.spendingLimit:
+                      return _buildSpendingLimit();
+                    case DashboardSection.monthlySpending:
+                      return _buildMonthlySpending();
+                    case DashboardSection.monthlyIncome:
+                      return _buildMonthlyIncome();
+                  }
+                }).toList(),
               );
             }),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildQuickStatus() {
+    return Column(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              const FinanceModeBanner(),
+              const SizedBox(width: 8),
+              const StreakBadgeWidget(),
+              const SizedBox(width: 8),
+              const DaysUntilIncomeWidget(),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSizes.defaultSpace),
+      ],
+    );
+  }
+
+  Widget _buildSpendingSummary() {
+    return Column(
+      children: [
+        Obx(() {
+          final totals =
+              controller.statisticsController.globalTotalByType.value;
+          final isVisible = controller.appController.isBalanceVisible.value;
+
+          if (controller.statisticsController.isLoading.value) {
+            return const SizedBox(
+              height: 120,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (totals == null) {
+            return SpendingSummary(
+              incomeTotal: 0,
+              expenseTotal: 0,
+              isBalanceVisible: isVisible,
+              onToggleVisibility: () =>
+                  controller.appController.toggleBalanceVisibility(),
+            );
+          }
+
+          return SpendingSummary(
+            incomeTotal: totals.incomeTotal,
+            expenseTotal: totals.expenseTotal,
+            isBalanceVisible: isVisible,
+            onToggleVisibility: () =>
+                controller.appController.toggleBalanceVisibility(),
+          );
+        }),
+        const SizedBox(height: AppSizes.defaultSpace),
+      ],
+    );
+  }
+
+  Widget _buildRecentTransactions() {
+    return Column(
+      children: [
+        AppSectionHeading(
+          title: 'home.recentTransactions'.tr,
+          showActionButton: false,
+        ),
+        Obx(() {
+          final transactions =
+              controller.transactionController.recentTransactions.value;
+          if (controller.transactionController.isRecentLoading.value) {
+            return const SizedBox(
+              height: 120,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (transactions == null) {
+            return const TransactionSection(
+              incomeTransactions: [],
+              expenseTransactions: [],
+            );
+          }
+
+          return TransactionSection(
+            incomeTransactions: transactions.incomeTransactions,
+            expenseTransactions: transactions.expenseTransactions,
+          );
+        }),
+        const SizedBox(height: AppSizes.defaultSpace),
+      ],
+    );
+  }
+
+  Widget _buildSpendingOverview() {
+    return Column(
+      children: [
+        AppSectionHeading(title: 'home.overview'.tr, showActionButton: false),
+        const SizedBox(height: AppSizes.spaceBtwItems),
+        Obx(() {
+          final totalsData = controller.statisticsController.totalByDate.value;
+
+          if (controller.statisticsController.isLoading.value) {
+            return const SizedBox(
+              height: 120,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (totalsData == null || totalsData.expense.isEmpty) {
+            return SpendingOverviewCard(
+              startDate: controller.startDate,
+              endDate: controller.endDate,
+              totals: [],
+              amountSpent: 0,
+              isBalanceVisible:
+                  controller.appController.isBalanceVisible.value,
+            );
+          }
+
+          final totals = totalsData.expense;
+          double totalSpent = totals.fold(0, (sum, t) => sum + t.total);
+
+          return SpendingOverviewCard(
+            startDate: controller.startDate,
+            endDate: controller.endDate,
+            totals: totals,
+            amountSpent: totalSpent,
+            isBalanceVisible: controller.appController.isBalanceVisible.value,
+          );
+        }),
+        const SizedBox(height: AppSizes.defaultSpace),
+      ],
+    );
+  }
+
+  Widget _buildSpendingLimit() {
+    return Obx(() {
+      final categories = controller.statisticsController.totalByCate;
+      final mode = controller.financeModeController.currentMode.value;
+
+      final filtered = categories.where((TotalByCategoryEntity cat) {
+        if (cat.limit > 0) return true;
+        if (mode == FinanceMode.survival &&
+            !cat.isEssential &&
+            cat.total > 0) {
+          return true;
+        }
+        return false;
+      }).toList();
+      filtered.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
+        double percentA =
+            a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
+        double percentB =
+            b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
+        return percentB.compareTo(percentA);
+      });
+
+      if (filtered.isEmpty) return const SizedBox.shrink();
+
+      return Column(
+        children: [
+          AppSectionHeading(
+            title: 'home.spendingLimit'.tr,
+            showActionButton: filtered.length > 3,
+            buttonTitle: 'common.all'.tr,
+            onPressed: () {},
+          ),
+          const SizedBox(height: AppSizes.spaceBtwItems),
+          ...filtered.take(3).map((TotalByCategoryEntity category) {
+            return CategoryOverviewCard(
+              title: category.categoryName,
+              limit: category.limit,
+              spent: category.total,
+              iconPath: category.categoryIcon,
+              isBalanceVisible:
+                  controller.appController.isBalanceVisible.value,
+            );
+          }).toList(),
+          const SizedBox(height: AppSizes.defaultSpace),
+        ],
+      );
+    });
+  }
+
+  Widget _buildMonthlySpending() {
+    return Obx(() {
+      if (controller.statisticsController.isLoading.value) {
+        return const SizedBox(
+          height: 124,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      final mode = controller.financeModeController.currentMode.value;
+      final categories = controller.statisticsController.expenseCategories;
+
+      List<TotalByCategoryEntity> filteredCategories;
+      if (mode == FinanceMode.survival) {
+        filteredCategories = categories
+            .where((TotalByCategoryEntity c) => c.isEssential)
+            .toList();
+      } else {
+        filteredCategories = categories.toList();
+      }
+
+      if (mode == FinanceMode.saving) {
+        filteredCategories.sort((
+          TotalByCategoryEntity a,
+          TotalByCategoryEntity b,
+        ) {
+          if (a.limit <= 0 && b.limit <= 0) return 0;
+          if (a.limit <= 0) return 1;
+          if (b.limit <= 0) return -1;
+          final aPercent = a.total / a.limit;
+          final bPercent = b.total / b.limit;
+          return bPercent.compareTo(aPercent);
+        });
+      }
+
+      if (filteredCategories.isEmpty) {
+        return mode == FinanceMode.survival
+            ? Column(
+                children: [
+                  AppSectionHeading(
+                    title: 'home.maxCutSpending'.tr,
+                    showActionButton: false,
+                  ),
+                  const SizedBox(height: AppSizes.defaultSpace),
+                ],
+              )
+            : const SizedBox.shrink();
+      }
+
+      String sectionTitle = 'home.monthlySpending'.tr;
+      String? sectionSubtitle;
+
+      if (mode == FinanceMode.survival) {
+        sectionTitle = 'home.monthlySpendingSurvival'.tr;
+      } else if (mode == FinanceMode.saving) {
+        sectionTitle = 'home.savingPlan'.tr;
+        sectionSubtitle = 'home.savingPlanSubtitle'.tr;
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppSectionHeading(
+            title: sectionTitle,
+            showActionButton: false,
+          ),
+          if (sectionSubtitle != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
+              child: Text(
+                sectionSubtitle,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.text4,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          SizedBox(
+            height: sectionSubtitle != null ? 0 : AppSizes.spaceBtwItems,
+          ),
+          ...filteredCategories.map((TotalByCategoryEntity category) {
+            return CategoryOverviewCard(
+              title: category.categoryName,
+              limit: category.limit,
+              spent: category.total,
+              iconPath: category.categoryIcon,
+              isIncome: false,
+              isBalanceVisible:
+                  controller.appController.isBalanceVisible.value,
+            );
+          }).toList(),
+          if (mode == FinanceMode.survival &&
+              categories.any(
+                (TotalByCategoryEntity c) => !c.isEssential && c.total > 0,
+              ))
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                "${'home.hiddenNonEssential'.tr.replaceAll('@count', '${categories.where((TotalByCategoryEntity c) => !c.isEssential).length}')}",
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.error,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          const SizedBox(height: AppSizes.defaultSpace),
+        ],
+      );
+    });
+  }
+
+  Widget _buildMonthlyIncome() {
+    return Obx(() {
+      if (controller.statisticsController.isLoading.value) {
+        return const SizedBox(
+          height: 124,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (controller.statisticsController.incomeCategories.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return Column(
+        children: [
+          AppSectionHeading(
+            title: 'home.monthlyIncome'.tr,
+            showActionButton: false,
+          ),
+          const SizedBox(height: AppSizes.spaceBtwItems),
+          ...controller.statisticsController.incomeCategories.map((
+            TotalByCategoryEntity category,
+          ) {
+            return CategoryOverviewCard(
+              title: category.categoryName,
+              limit: category.limit,
+              spent: category.total,
+              iconPath: category.categoryIcon,
+              isIncome: true,
+              isBalanceVisible:
+                  controller.appController.isBalanceVisible.value,
+            );
+          }).toList(),
+          const SizedBox(height: AppSizes.defaultSpace),
+        ],
+      );
+    });
   }
 }
 

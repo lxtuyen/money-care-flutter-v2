@@ -32,6 +32,8 @@ import 'package:money_care/features/user/presentation/bindings/user_binding.dart
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
 
+import 'package:money_care/features/home/presentation/screens/dashboard_customization.dart';
+
 final List<GetPage> appPages = [
   GetPage(
     name: '/splash',
@@ -148,6 +150,11 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/streak_calendar',
     page: () => const StreakCalendarScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/dashboard_customization',
+    page: () => const DashboardCustomizationScreen(),
     transition: Transition.rightToLeft,
   ),
 ];

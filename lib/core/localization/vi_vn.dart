@@ -297,6 +297,18 @@ const Map<String, String> viVN = {
   'notification.title': 'Thông báo',
   'notification.empty': 'Bạn chưa có thông báo nào.',
 
+  // ============ Dashboard Customization ============
+  'dashboard.customizeTitle': 'Tùy chỉnh Dashboard',
+  'dashboard.customizeDesc': 'Kéo thả để sắp xếp hoặc ẩn/hiện các mục',
+  'dashboard.section.quickStatus': 'Trạng thái nhanh (Chuỗi ngày, Chế độ tài chính)',
+  'dashboard.section.spendingSummary': 'Tổng quan Thu/Chi',
+  'dashboard.section.recentTransactions': 'Giao dịch gần đây',
+  'dashboard.section.spendingOverview': 'Biểu đồ chi tiêu',
+  'dashboard.section.spendingLimit': 'Hạn mức chi tiêu',
+  'dashboard.section.monthlySpending': 'Chi tiêu theo danh mục',
+  'dashboard.section.monthlyIncome': 'Thu nhập theo danh mục',
+  'dashboard.saveSuccess': 'Đã cập nhật giao diện Dashboard!',
+
   // ============ Report ============
   'report.title': 'Báo cáo trong năm',
   'report.portfolio': 'Báo cáo danh mục trong năm',

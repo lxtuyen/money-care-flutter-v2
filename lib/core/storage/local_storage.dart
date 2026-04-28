@@ -51,6 +51,7 @@ class LocalStorage {
   static const String keyIsDarkMode = 'is_dark_mode';
   static const String keyLocale = 'app_locale';
   static const String keyStartDayOfMonth = 'start_day_of_month';
+  static const String keyDashboardSections = 'dashboard_sections';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -126,5 +127,15 @@ class LocalStorage {
 
   int getStartDayOfMonth() {
     return readInt(keyStartDayOfMonth) ?? 1;
+  }
+
+  Future<void> saveDashboardSections(List<String> sections) async {
+    await writeString(keyDashboardSections, jsonEncode(sections));
+  }
+
+  List<String>? getDashboardSections() {
+    String? json = readString(keyDashboardSections);
+    if (json == null) return null;
+    return List<String>.from(jsonDecode(json));
   }
 }

@@ -297,6 +297,18 @@ const Map<String, String> enUS = {
   'notification.title': 'Notifications',
   'notification.empty': 'You have no notifications.',
 
+  // ============ Dashboard Customization ============
+  'dashboard.customizeTitle': 'Customize Dashboard',
+  'dashboard.customizeDesc': 'Drag and drop to reorder or hide/show sections',
+  'dashboard.section.quickStatus': 'Quick Status (Streak, Finance Mode)',
+  'dashboard.section.spendingSummary': 'Income/Expense Summary',
+  'dashboard.section.recentTransactions': 'Recent Transactions',
+  'dashboard.section.spendingOverview': 'Spending Chart',
+  'dashboard.section.spendingLimit': 'Spending Limits',
+  'dashboard.section.monthlySpending': 'Spending by Category',
+  'dashboard.section.monthlyIncome': 'Income by Category',
+  'dashboard.saveSuccess': 'Dashboard layout updated!',
+
   // ============ Report ============
   'report.title': 'Annual Report',
   'report.portfolio': 'Annual Portfolio Report',

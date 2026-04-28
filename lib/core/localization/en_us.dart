@@ -145,6 +145,17 @@ const Map<String, String> enUS = {
   'statistics.monthly': 'monthly',
   'statistics.daily': 'daily',
 
+  // ============ Period Comparison ============
+  'comparison.title': 'Compare with Previous',
+  'comparison.change': 'Change',
+  'comparison.income': 'Income',
+  'comparison.expense': 'Expense',
+  'comparison.balance': 'Balance',
+  'comparison.previousMonth': 'Last month',
+  'comparison.currentMonth': 'This month',
+  'comparison.previousDay': 'Yesterday',
+  'comparison.currentDay': 'Today',
+
   // ============ Transaction ============
   'transaction.title': 'Income - Expense',
   'transaction.expense': 'Expense',
@@ -238,6 +249,18 @@ const Map<String, String> enUS = {
 
   // ============ Budget Detail ============
   'budget.detail': 'Budget Detail',
+  'budget.monthlyTitle': 'Monthly Budget',
+  'budget.totalBudget': 'Total Budget',
+  'budget.spent': 'Spent',
+  'budget.remaining': 'Remaining',
+  'budget.used': 'used',
+  'budget.dailyAllowance': 'Daily allowance',
+  'budget.daysLeft': 'Days remaining',
+  'budget.day': 'day',
+  'budget.days': 'days',
+  'budget.exceeded': 'Over budget',
+  'budget.nearLimit': 'Near limit',
+  'budget.onTrack': 'On track',
 
   // ============ Streak / Calendar ============
   'streak.calendarTitle': 'Achievement Calendar',

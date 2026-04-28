@@ -145,6 +145,17 @@ const Map<String, String> viVN = {
   'statistics.monthly': 'hàng tháng',
   'statistics.daily': 'hàng ngày',
 
+  // ============ Period Comparison ============
+  'comparison.title': 'So sánh với kỳ trước',
+  'comparison.change': 'Thay đổi',
+  'comparison.income': 'Thu nhập',
+  'comparison.expense': 'Chi tiêu',
+  'comparison.balance': 'Số dư',
+  'comparison.previousMonth': 'Tháng trước',
+  'comparison.currentMonth': 'Tháng này',
+  'comparison.previousDay': 'Hôm qua',
+  'comparison.currentDay': 'Hôm nay',
+
   // ============ Transaction ============
   'transaction.title': 'Thu - Chi',
   'transaction.expense': 'Chi',
@@ -238,6 +249,18 @@ const Map<String, String> viVN = {
 
   // ============ Budget Detail ============
   'budget.detail': 'Chi tiết ngân sách',
+  'budget.monthlyTitle': 'Ngân sách tháng',
+  'budget.totalBudget': 'Tổng ngân sách',
+  'budget.spent': 'Đã chi',
+  'budget.remaining': 'Còn lại',
+  'budget.used': 'đã dùng',
+  'budget.dailyAllowance': 'Khả dụng mỗi ngày',
+  'budget.daysLeft': 'Số ngày còn lại',
+  'budget.day': 'ngày',
+  'budget.days': 'ngày',
+  'budget.exceeded': 'Vượt ngân sách',
+  'budget.nearLimit': 'Sắp hết',
+  'budget.onTrack': 'Đang tốt',
 
   // ============ Streak / Calendar ============
   'streak.calendarTitle': 'Lịch Thành Tích',

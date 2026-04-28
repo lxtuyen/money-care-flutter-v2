@@ -20,6 +20,7 @@ class StatisticsController extends GetxController {
 
   var totalByType = Rxn<TotalByTypeEntity>();
   var globalTotalByType = Rxn<TotalByTypeEntity>();
+  var previousTotalByType = Rxn<TotalByTypeEntity>();
   RxList<TotalByCategoryEntity> totalByCate = <TotalByCategoryEntity>[].obs;
   RxList<TotalByCategoryEntity> expenseCategories =
       <TotalByCategoryEntity>[].obs;
@@ -104,6 +105,39 @@ class StatisticsController extends GetxController {
     return date;
   }
 
+  /// Date range for the previous equivalent period.
+  /// Monthly: previous month. Daily: previous day.
+  DateTime get previousStartDate {
+    if (periodType.value == 'hàng tháng') {
+      final prev = DateTime(
+        selectedMonth.value.year,
+        selectedMonth.value.month - 1,
+        1,
+      );
+      return _clampToGoalStart(prev);
+    } else {
+      final prev = selectedDay.value.subtract(const Duration(days: 1));
+      return _clampToGoalStart(prev);
+    }
+  }
+
+  DateTime get previousEndDate {
+    if (periodType.value == 'hàng tháng') {
+      final prevEnd = DateTime(
+        selectedMonth.value.year,
+        selectedMonth.value.month,
+        0, // last day of previous month
+        23, 59, 59,
+      );
+      return _clampToGoalEnd(prevEnd);
+    } else {
+      final prev = selectedDay.value.subtract(const Duration(days: 1));
+      return _clampToGoalEnd(
+        DateTime(prev.year, prev.month, prev.day, 23, 59, 59),
+      );
+    }
+  }
+
   var isLoading = false.obs;
   var errorMessage = RxnString();
 
@@ -154,6 +188,7 @@ class StatisticsController extends GetxController {
   void _clearData() {
     totalByType.value = null;
     globalTotalByType.value = null;
+    previousTotalByType.value = null;
     totalByCate.clear();
     expenseCategories.clear();
     incomeCategories.clear();
@@ -173,6 +208,20 @@ class StatisticsController extends GetxController {
       globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
       debugPrint('Error loading global totals: $e');
+    }
+  }
+
+  Future<void> _loadPreviousTotalByType(int userId) async {
+    try {
+      final dto = TransactionTotalsDto(
+        goalId: _currentGoalIdOrNull,
+        startDate: previousStartDate.toIso8601String(),
+        endDate: previousEndDate.toIso8601String(),
+      );
+      previousTotalByType.value = await getTotalByTypeUseCase(userId, dto);
+    } catch (e) {
+      previousTotalByType.value = null;
+      debugPrint('Error loading previous totals: $e');
     }
   }
 
@@ -358,6 +407,7 @@ class StatisticsController extends GetxController {
             endDate: currentEndDate,
           ),
           _loadGlobalTotalByType(userId),
+          _loadPreviousTotalByType(userId),
           _loadTotalByCate(
             userId,
             startDate: currentStartDate,
@@ -386,6 +436,7 @@ class StatisticsController extends GetxController {
             endDate: currentEndDate,
           ),
           _loadGlobalTotalByType(userId),
+          _loadPreviousTotalByType(userId),
           _loadTotalByCate(
             userId,
             startDate: currentStartDate,

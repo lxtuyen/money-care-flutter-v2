@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -9,12 +8,10 @@ import 'package:money_care/features/finance_mode/domain/entities/finance_mode_en
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
-import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
-import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =

@@ -147,11 +147,11 @@ class _FilterDialogState extends State<FilterDialog> {
                       ),
                       child: Text(
                         _buildSummaryText(),
-                        style: const TextStyle(
-                          color: AppThemeColors.of(context).textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      style: TextStyle(
+                        color: AppThemeColors.of(context).textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                       ),
                     ),
                     const SizedBox(height: 16),

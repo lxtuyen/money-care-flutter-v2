@@ -61,7 +61,7 @@ class UserCategoryController extends GetxController {
         }
         categories.assignAll(loaded);
       } else if (!res.success) {}
-    } catch (e, stack) {
+    } catch (e) {
       print('UserCategoryController: Catch error loading categories: $e');
     } finally {
       isLoading.value = false;

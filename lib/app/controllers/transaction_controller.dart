@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
@@ -164,7 +163,6 @@ class TransactionController extends GetxController {
         recentFilterDto,
       );
       recentTransactions.value = recentRes;
-    } catch (e) {
     } finally {
       isRecentLoading.value = false;
     }

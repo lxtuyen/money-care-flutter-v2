@@ -29,7 +29,7 @@ class RegisterScreen extends GetView<RegisterController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AuthHeader(
+                      AuthHeader(
                         title: AppTexts.signup,
                         subtitle: AppTexts.registerSubtitle,
                         topSpacing: 35,

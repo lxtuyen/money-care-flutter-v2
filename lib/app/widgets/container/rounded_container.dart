@@ -21,8 +21,9 @@ class RoundedContainer extends StatelessWidget {
   final double? height;
   final double radius;
   final bool showBorder;
-  final Color backgroundColor;
-  final Color borderColor;
+  final Color? backgroundColor;
+  final Color? borderColor;
+
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
 

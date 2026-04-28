@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:money_care/features/chatbot/domain/entities/chat_entity.dart';
+import 'package:money_care/features/chatbot/domain/entities/chat_message_entity.dart';
 
 part 'chat_message_model.freezed.dart';
 part 'chat_message_model.g.dart';

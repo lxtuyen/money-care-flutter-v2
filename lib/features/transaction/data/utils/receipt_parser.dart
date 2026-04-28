@@ -23,10 +23,12 @@ class ReceiptParser {
       if (l.contains('đt:') ||
           l.contains('sđt:') ||
           l.contains('tel:') ||
-          l.contains('phone:'))
+          l.contains('phone:')) {
         return false;
-      if (l.contains('.jpg') || l.contains('.png') || l.contains('.jpeg'))
+      }
+      if (l.contains('.jpg') || l.contains('.png') || l.contains('.jpeg')) {
         return false;
+      }
       if (RegExp(r'\d{3,4}\.\d{3}\.\d{3}').hasMatch(line)) return false;
       if (l.length < 3) return false;
       return true;

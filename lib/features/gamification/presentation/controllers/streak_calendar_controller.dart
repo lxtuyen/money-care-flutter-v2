@@ -3,7 +3,6 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class StreakCalendarController extends GetxController {
   final TransactionController _txController = Get.find<TransactionController>();

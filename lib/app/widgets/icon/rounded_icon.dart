@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/constants/sizes.dart';
 

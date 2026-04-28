@@ -271,7 +271,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         }
 
         return FilterDialog(
-          title: 'Lọc theo phân loại',
+          title: 'filter.byCategory'.tr,
           categories: filteredCategories,
           onApply: (_) => _applyFilter(),
         );
@@ -366,7 +366,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -457,7 +457,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         label: Text('common.clearAllFilters'.tr),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.text2,
-                          side: const BorderSide(
+                          side: BorderSide(
                             color: AppThemeColors.of(context).textMuted,
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -520,7 +520,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppThemeColors.of(context).textPrimary,
@@ -529,7 +529,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppThemeColors.of(context).textSecondary,
                       ),
@@ -537,7 +537,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
                 color: AppThemeColors.of(context).textMuted,

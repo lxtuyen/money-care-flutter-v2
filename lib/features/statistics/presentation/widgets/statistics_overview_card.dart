@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/statistics/presentation/widgets/category_share_chip.dart';
 import 'package:get/get.dart';
@@ -175,9 +174,10 @@ class StatisticsOverviewCard extends StatelessWidget {
             ],
           ],
         ),
-      );
-    });
-  }
+      ),
+    );
+  });
+}
 
   Widget _buildAmountRow({
     required String label,

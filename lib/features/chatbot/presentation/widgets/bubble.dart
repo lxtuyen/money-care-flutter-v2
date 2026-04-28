@@ -4,7 +4,7 @@ class Bubble extends StatelessWidget {
   final bool isUser;
   final String text;
 
-  const Bubble({required this.isUser, required this.text});
+  const Bubble({super.key, required this.isUser, required this.text});
 
   @override
   Widget build(BuildContext context) {

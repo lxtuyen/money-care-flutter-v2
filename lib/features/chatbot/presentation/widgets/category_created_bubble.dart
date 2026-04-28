@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/transaction/data/models/category_model.dart';
-import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class CategoryCreatedBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;

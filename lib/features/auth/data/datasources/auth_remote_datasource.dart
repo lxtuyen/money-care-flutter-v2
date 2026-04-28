@@ -51,7 +51,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       } catch (_) {
         throw const ServerException('Dang nhap Google da bi huy');
       }
-      final googleAuth = await googleUser.authentication;
+      final googleAuth = googleUser.authentication;
       idToken = googleAuth.idToken;
       final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,

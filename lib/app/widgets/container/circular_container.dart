@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/core/constants/colors.dart';
 
 class AppCircularContainer extends StatelessWidget {
   const AppCircularContainer({

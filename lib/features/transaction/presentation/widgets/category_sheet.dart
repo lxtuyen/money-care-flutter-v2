@@ -111,8 +111,8 @@ class _CategorySheetState extends State<CategorySheet> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Chọn phân loại',
+                            Text(
+                              'transaction.selectCategoryTitle'.tr,
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
@@ -122,8 +122,8 @@ class _CategorySheetState extends State<CategorySheet> {
                             const SizedBox(height: 4),
                             Text(
                               isSurvival
-                                  ? 'Chế độ Sinh tồn: chỉ hiển thị danh mục thiết yếu.'
-                                  : 'Chọn nhóm phù hợp cho giao dịch của bạn.',
+                                  ? 'transaction.categorySurvivalDesc'.tr
+                                  : 'transaction.categoryNormalDesc'.tr,
                               style: TextStyle(
                                 fontSize: 13,
                                 color: isSurvival
@@ -149,9 +149,9 @@ class _CategorySheetState extends State<CategorySheet> {
                     ),
                     child: Text(
                       selectedCategory != null
-                          ? 'Đang chọn: ${selectedCategory!.name}'
-                          : 'Chưa chọn phân loại nào',
-                      style: const TextStyle(
+                          ? 'filter.selectedCategory'.trParams({'name': selectedCategory!.name})
+                          : 'filter.noCategorySelected'.tr,
+                      style: TextStyle(
                         color: AppThemeColors.of(context).textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -166,7 +166,7 @@ class _CategorySheetState extends State<CategorySheet> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24),
                             child: Text(
-                              'Không có phân loại nào.\nVui lòng kiểm tra lại thiết lập quỹ.',
+                              'transaction.noCategoryAvailable'.tr,
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppColors.text4),
                             ),

@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 
-/// Legacy wrapper — maps old static AppTexts references to GetX .tr keys.
-/// New code should use 'key'.tr directly.
 class AppTexts {
   // --- Forgot Password ---
   static String get login => 'auth.login'.tr;
@@ -9,7 +7,6 @@ class AppTexts {
   static String get forgotPasswordDescription => 'auth.forgotPasswordDescription'.tr;
   static String get emailLabel => 'auth.email'.tr;
   static String get rememberPassword => 'auth.rememberPassword'.tr;
-  static String get unlockPremium => 'premium.unlock'.tr;
 
   // --- OTP ---
   static String get getOtp => 'otp.getOtp'.tr;

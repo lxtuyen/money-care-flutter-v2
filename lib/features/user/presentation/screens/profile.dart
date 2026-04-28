@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-import 'package:money_care/features/user/data/models/user_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/user_controller.dart';

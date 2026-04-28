@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,9 +9,7 @@ import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
 
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';

@@ -70,7 +70,7 @@ class RecurringTransactionScreen extends GetView<RecurringTransactionController>
     final dateFormat = DateFormat('dd/MM/yyyy');
 
     return Card(
-      margin: const EdgeInsets.bottom(12),
+      margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 0,
       color: AppThemeColors.of(context).cardBackground,
@@ -214,7 +214,7 @@ class RecurringTransactionScreen extends GetView<RecurringTransactionController>
               )),
               const SizedBox(height: 16),
               Obx(() => DropdownButtonFormField<String>(
-                value: rxFreq.value,
+                initialValue: rxFreq.value,
                 decoration: const InputDecoration(
                   labelText: 'Tần suất',
                   border: OutlineInputBorder(),

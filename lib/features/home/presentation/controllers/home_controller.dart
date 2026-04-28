@@ -8,9 +8,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
-import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 
-import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 
 class HomeController extends GetxController {

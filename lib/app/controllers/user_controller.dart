@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:money_care/features/user/data/models/user_profile_model.dart';
 import 'package:money_care/features/user/data/models/profile_update_dto.dart';
-import 'package:money_care/features/user/data/models/user_update_dto.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/date_picker_util.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+
 
 class UserController extends GetxController {
   final UpdateMyProfileUseCase updateMyProfileUseCase;

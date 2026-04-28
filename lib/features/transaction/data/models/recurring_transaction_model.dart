@@ -1,5 +1,4 @@
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class RecurringTransactionModel {
   final int id;

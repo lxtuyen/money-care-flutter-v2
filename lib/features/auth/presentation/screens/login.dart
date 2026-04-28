@@ -29,7 +29,7 @@ class LoginScreen extends GetView<LoginController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AuthHeader(
+                      AuthHeader(
                         title: AppTexts.login,
                         subtitle: AppTexts.loginSubtitle,
                         subtitleColor: AppColors.text1,
@@ -70,9 +70,9 @@ class LoginScreen extends GetView<LoginController> {
                           onPressed: () {
                             Get.toNamed(RoutePath.forgotPassword);
                           },
-                          child: const Text(
+                          child: Text(
                             AppTexts.forgotPassword,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.text3,
                               fontSize: 14,
                             ),

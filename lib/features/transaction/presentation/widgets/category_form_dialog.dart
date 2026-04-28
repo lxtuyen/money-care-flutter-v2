@@ -243,7 +243,7 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _iconCategories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final isSelected = _selectedCategoryIndex == index;
                   return ChoiceChip(
@@ -356,7 +356,7 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
                   Switch(
                     value: _isEssential,
                     onChanged: (val) => setState(() => _isEssential = val),
-                    activeColor: AppColors.primary,
+                    activeThumbColor: AppColors.primary,
                   ),
                 ],
               ),

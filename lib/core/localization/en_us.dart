@@ -10,8 +10,8 @@ const Map<String, String> enUS = {
   'common.skip': 'Skip',
   'common.next': 'Next',
   'common.back': 'Back',
-  'common.close': 'Close',
   'common.start': 'Get Started',
+
   'common.apply': 'Apply',
   'common.clearFilter': 'Clear Filter',
   'common.clearAllFilters': 'Clear All Filters',
@@ -130,8 +130,8 @@ const Map<String, String> enUS = {
   'statistics.dailyAverage': 'Daily Average Spending',
   'statistics.monthlyAverage': 'Monthly Average Spending',
   'statistics.limitOverview': 'Spending Overview',
-  'statistics.title': 'Statistics',
   'statistics.balance': 'Balance',
+
   'statistics.income': 'Income',
   'statistics.expense': 'Expense',
   'statistics.monthlyIncome': 'Monthly Income',
@@ -213,6 +213,10 @@ const Map<String, String> enUS = {
   'transaction.update': 'Update',
   'transaction.editTitle': 'Edit Category',
   'transaction.updateSuccess': 'Updated successfully',
+  'transaction.selectCategoryTitle': 'Select Category',
+  'transaction.categorySurvivalDesc': 'Survival Mode: only essential categories are shown.',
+  'transaction.categoryNormalDesc': 'Select an appropriate group for your transaction.',
+  'transaction.noCategoryAvailable': 'No categories available.\nPlease check your fund settings.',
 
   // ============ Filter ============
   'filter.title': 'Transaction Filter',
@@ -266,6 +270,17 @@ const Map<String, String> enUS = {
   'streak.calendarTitle': 'Achievement Calendar',
   'streak.hasTransaction': 'Has transactions',
   'streak.today': 'Today',
+  'streak.mon': 'Mon',
+  'streak.tue': 'Tue',
+  'streak.wed': 'Wed',
+  'streak.thu': 'Thu',
+  'streak.fri': 'Fri',
+  'streak.sat': 'Sat',
+  'streak.sun': 'Sun',
+  'streak.selectDayDesc': 'Select a day to view transactions',
+  'streak.transactionOnDay': 'Transactions on @day',
+  'streak.transactionCount': '@count transactions',
+  'streak.noTransactionOnDay': 'No transactions found',
 
   // ============ Category Management ============
   'categoryMgmt.title': 'Category Management',

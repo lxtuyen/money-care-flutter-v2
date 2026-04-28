@@ -107,7 +107,7 @@ class TransactionDetail extends StatelessWidget {
                       const SizedBox(height: 16),
                       // Amount
                       Text(
-                        '${isExpense ? '-' : '+'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), '₫')}',
+                        '${isExpense ? '-' : '+'} ${AppHelperFunction.formatAmount(item.amount.toDouble())}',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
@@ -135,12 +135,14 @@ class TransactionDetail extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildDetailRow(
+                        context,
                         icon: Icons.category_outlined,
                         label: 'transaction.categoryLabel'.tr,
                         value: item.category?.name ?? 'transaction.none'.tr,
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
+                        context,
                         icon: Icons.calendar_today_outlined,
                         label: 'transaction.timeLabel'.tr,
                         value: item.transactionDate != null
@@ -151,6 +153,7 @@ class TransactionDetail extends StatelessWidget {
                       ),
                       const Divider(height: 24),
                       _buildDetailRow(
+                        context,
                         icon: Icons.notes_outlined,
                         label: 'transaction.note'.tr,
                         value: item.note != null && item.note!.isNotEmpty
@@ -162,8 +165,8 @@ class TransactionDetail extends StatelessWidget {
                       // Picture Section
                       if (item.pictureUrl != null &&
                           item.pictureUrl!.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        const Align(
+                        SizedBox(height: 24),
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'transaction.evidencePhoto'.tr,
@@ -174,7 +177,7 @@ class TransactionDetail extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: ConstrainedBox(
@@ -201,8 +204,9 @@ class TransactionDetail extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildActionButton(
+                              context,
                               icon: Icons.edit_outlined,
-                              label: 'Sửa',
+                              label: 'common.edit'.tr,
                               onPressed: () async {
                                 Get.back();
                                 await Navigator.push(
@@ -227,8 +231,9 @@ class TransactionDetail extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildActionButton(
+                              context,
                               icon: Icons.delete_outline_rounded,
-                              label: 'Xóa',
+                              label: 'common.delete'.tr,
                               onPressed: () =>
                                   _handleDelete(context, transactionController),
                               color: const Color(0xFFE53935),
@@ -248,7 +253,8 @@ class TransactionDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow({
+  Widget _buildDetailRow(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
@@ -274,7 +280,7 @@ class TransactionDetail extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: AppThemeColors.of(context).textSecondary,
                   fontWeight: FontWeight.w500,
@@ -283,7 +289,7 @@ class TransactionDetail extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   color: AppThemeColors.of(context).textPrimary,
                   fontWeight: FontWeight.w600,
@@ -298,7 +304,8 @@ class TransactionDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton({
+  Widget _buildActionButton(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required VoidCallback onPressed,

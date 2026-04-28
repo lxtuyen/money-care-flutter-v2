@@ -1,27 +1,16 @@
-import 'package:money_care/app/controllers/statistics_controller.dart';
-import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
-import 'package:money_care/app/controllers/saving_goal_controller.dart';
-import 'package:money_care/app/controllers/transaction_controller.dart';
-import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
 import 'package:money_care/app/widgets/icon/circular_icon.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
-import 'package:money_care/core/constants/app_assets.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
-import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/finance_mode/presentation/widgets/finance_mode_banner.dart';
 import 'package:money_care/features/finance_mode/presentation/widgets/days_until_income_widget.dart';
-import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_progress_bar.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -238,10 +227,10 @@ class HomeScreen extends GetView<HomeController> {
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
+              ],
+            ),
             const SizedBox(height: 16),
+
             Obx(() {
               final sections = controller.appController.dashboardSections;
               return Column(
@@ -448,7 +437,7 @@ class HomeScreen extends GetView<HomeController> {
               isBalanceVisible:
                   controller.appController.isBalanceVisible.value,
             );
-          }).toList(),
+          }),
           const SizedBox(height: AppSizes.defaultSpace),
         ],
       );
@@ -546,7 +535,7 @@ class HomeScreen extends GetView<HomeController> {
               isBalanceVisible:
                   controller.appController.isBalanceVisible.value,
             );
-          }).toList(),
+          }),
           if (mode == FinanceMode.survival &&
               categories.any(
                 (TotalByCategoryEntity c) => !c.isEssential && c.total > 0,
@@ -554,7 +543,7 @@ class HomeScreen extends GetView<HomeController> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                "${'home.hiddenNonEssential'.tr.replaceAll('@count', '${categories.where((TotalByCategoryEntity c) => !c.isEssential).length}')}",
+                'home.hiddenNonEssential'.tr.replaceAll('@count', '${categories.where((TotalByCategoryEntity c) => !c.isEssential).length}'),
                 style: const TextStyle(
                   fontSize: 11,
                   color: AppColors.error,
@@ -598,7 +587,7 @@ class HomeScreen extends GetView<HomeController> {
               isBalanceVisible:
                   controller.appController.isBalanceVisible.value,
             );
-          }).toList(),
+          }),
           const SizedBox(height: AppSizes.defaultSpace),
         ],
       );

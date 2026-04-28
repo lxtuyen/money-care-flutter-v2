@@ -252,7 +252,8 @@ class SavingGoalSummaryCard extends StatelessWidget {
         ],
       ),
     );
-  }
+  });
+ }
 }
 
 class _CircleMetric extends StatelessWidget {
@@ -332,11 +333,12 @@ class _CircleMetric extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: AppThemeColors.of(context).textPrimary,
             ),
+
             overflow: TextOverflow.ellipsis,
           ),
           Text(
@@ -411,20 +413,22 @@ class _CategoryPieRow extends StatelessWidget {
                     Expanded(
                       child: Text(
                         cat.categoryName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppThemeColors.of(context).textSecondary,
                         ),
+
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Text(
                       '${cat.percentage}%',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppThemeColors.of(context).textPrimary,
                       ),
+
                     ),
                   ],
                 ),
@@ -502,11 +506,12 @@ class _BudgetRow extends StatelessWidget {
             ),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: AppThemeColors.of(context).textPrimary,
               ),
+
             ),
           ],
         ),

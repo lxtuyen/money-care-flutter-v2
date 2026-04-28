@@ -4,7 +4,7 @@ import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 
 class SearchWithFilter extends StatelessWidget {
-  final String hintText;
+  final String? hintText;
   final VoidCallback onFilterTap;
   final VoidCallback? onClearSearch;
   final ValueChanged<String>? onChanged;
@@ -15,7 +15,7 @@ class SearchWithFilter extends StatelessWidget {
   const SearchWithFilter({
     super.key,
     required this.onFilterTap,
-    this.hintText = 'Tìm giao dịch',
+    this.hintText,
     this.onClearSearch,
     this.onChanged,
     this.controller,
@@ -25,6 +25,7 @@ class SearchWithFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveHintText = hintText ?? 'transaction.searchHint'.tr;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -67,7 +68,7 @@ class SearchWithFilter extends StatelessWidget {
                           ),
                         )
                       : null,
-                  hintText: hintText,
+                  hintText: effectiveHintText,
                   hintStyle: const TextStyle(
                     color: AppColors.text4,
                     fontSize: 14,

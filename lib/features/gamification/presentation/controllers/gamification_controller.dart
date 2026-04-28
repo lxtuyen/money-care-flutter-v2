@@ -4,7 +4,6 @@ import 'package:money_care/app/services/notification_service.dart';
 import 'package:money_care/features/gamification/domain/entities/gamification_entity.dart';
 import 'package:money_care/features/gamification/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_dialog.dart';
 
 class GamificationController extends GetxController {

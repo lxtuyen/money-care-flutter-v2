@@ -26,7 +26,7 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AuthHeader(
+                  AuthHeader(
                     title: AppTexts.forgotPasswordTitle,
                     subtitle: AppTexts.forgotPasswordDescription,
                     subtitleColor: AppColors.text4,

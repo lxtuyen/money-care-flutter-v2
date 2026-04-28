@@ -320,9 +320,9 @@ class _CreatePhotoTransactionScreenState
             controller.selectedImagePath.value = null;
           }),
         ),
-        title: const Text(
+        title: Text(
           AppTexts.photoTransactionTitle,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: AppSizes.fontSizeLg,
           ),
@@ -410,9 +410,9 @@ class _CreatePhotoTransactionScreenState
                                   color: AppColors.borderSecondary,
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 AppTexts.incomeNoCategoryMessage,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.text3,
                                   fontSize: AppSizes.fontSizeSm,
                                   fontWeight: FontWeight.w500,
@@ -489,7 +489,7 @@ class _CreatePhotoTransactionScreenState
           }
           final currentGoal = controller.savingGoalController.currentGoal.value;
           if (currentGoal == null) {
-            return const SizedBox(
+            return SizedBox(
               height: 220,
               child: Center(child: Text(AppTexts.noCategoryAvailable)),
             );
@@ -677,9 +677,9 @@ class _PhotoPreviewCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   AppTexts.photoPreviewTitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.text1,
                     fontSize: 17,
                     fontWeight: FontWeight.w700,

@@ -25,19 +25,21 @@ class LoginOptionScreen extends GetView<LoginOptionController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircularImages(image: AppImages.logo, height: 100, width: 100),
-                const Text(
+                Text(
                   AppTexts.login,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.text1,
                   ),
                 ),
+
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   AppTexts.loginDescription,
-                  style: TextStyle(fontSize: 15, color: AppColors.text3),
+                  style: const TextStyle(fontSize: 15, color: AppColors.text3),
                 ),
+
                 const SizedBox(height: 20),
                 Obx(() {
                   if (controller.isLoading.value) {
@@ -69,13 +71,14 @@ class LoginOptionScreen extends GetView<LoginOptionController> {
                           height: 40,
                         ),
                         const SizedBox(width: 16),
-                        const Text(
+                        Text(
                           AppTexts.loginWithGoogle,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+
                       ],
                     ),
                   );

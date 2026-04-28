@@ -24,7 +24,7 @@ class OtpScreen extends GetView<OtpController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AuthHeader(
+                AuthHeader(
                   title: AppTexts.enterOtp,
                   subtitle: AppTexts.otpDescription,
                   titleFontSize: 28,

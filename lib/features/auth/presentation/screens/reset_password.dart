@@ -26,7 +26,7 @@ class ResetPasswordScreen extends GetView<ResetPasswordController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AuthHeader(
+                  AuthHeader(
                     title: AppTexts.resetPasswordTitle,
                     subtitle: AppTexts.resetPasswordDescription,
                   ),

@@ -10,8 +10,8 @@ const Map<String, String> viVN = {
   'common.skip': 'Bỏ qua',
   'common.next': 'Tiếp tục',
   'common.back': 'Quay lại',
-  'common.close': 'Đóng',
   'common.start': 'Bắt đầu',
+
   'common.apply': 'Áp dụng',
   'common.clearFilter': 'Xóa lọc',
   'common.clearAllFilters': 'Xóa tất cả bộ lọc',
@@ -130,8 +130,8 @@ const Map<String, String> viVN = {
   'statistics.dailyAverage': 'Trung bình chi tiêu theo ngày',
   'statistics.monthlyAverage': 'Trung bình chi tiêu theo tháng',
   'statistics.limitOverview': 'Tổng quan chi tiêu',
-  'statistics.title': 'Thống kê',
   'statistics.balance': 'Số dư',
+
   'statistics.income': 'Thu',
   'statistics.expense': 'Chi',
   'statistics.monthlyIncome': 'Thu nhập theo tháng',
@@ -213,6 +213,10 @@ const Map<String, String> viVN = {
   'transaction.update': 'Cập nhật',
   'transaction.editTitle': 'Chỉnh sửa phân loại',
   'transaction.updateSuccess': 'Chỉnh sửa thành công',
+  'transaction.selectCategoryTitle': 'Chọn phân loại',
+  'transaction.categorySurvivalDesc': 'Chế độ Sinh tồn: chỉ hiển thị danh mục thiết yếu.',
+  'transaction.categoryNormalDesc': 'Chọn nhóm phù hợp cho giao dịch của bạn.',
+  'transaction.noCategoryAvailable': 'Không có phân loại nào.\nVui lòng kiểm tra lại thiết lập quỹ.',
 
   // ============ Filter ============
   'filter.title': 'Bộ lọc giao dịch',
@@ -266,6 +270,17 @@ const Map<String, String> viVN = {
   'streak.calendarTitle': 'Lịch Thành Tích',
   'streak.hasTransaction': 'Có giao dịch',
   'streak.today': 'Hôm nay',
+  'streak.mon': 'T2',
+  'streak.tue': 'T3',
+  'streak.wed': 'T4',
+  'streak.thu': 'T5',
+  'streak.fri': 'T6',
+  'streak.sat': 'T7',
+  'streak.sun': 'CN',
+  'streak.selectDayDesc': 'Chọn một ngày để xem giao dịch',
+  'streak.transactionOnDay': 'Giao dịch ngày @day',
+  'streak.transactionCount': '@count giao dịch',
+  'streak.noTransactionOnDay': 'Không có giao dịch nào',
 
   // ============ Category Management ============
   'categoryMgmt.title': 'Quản lý danh mục',

@@ -77,7 +77,7 @@ class StreakCalendarScreen extends StatelessWidget {
       final monthName = AppHelperFunction.getFormattedDate(
         controller.focusedMonth.value,
         format: 'MMMM yyyy',
-        locale: 'vi_VN',
+        locale: Get.locale?.toString(),
       );
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -102,7 +102,7 @@ class StreakCalendarScreen extends StatelessWidget {
             ),
             Text(
               monthName,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
                 color: AppThemeColors.of(context).textPrimary,
@@ -119,7 +119,15 @@ class StreakCalendarScreen extends StatelessWidget {
   }
 
   Widget _buildWeekdayRow() {
-    const labels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+    final labels = [
+      'streak.mon'.tr,
+      'streak.tue'.tr,
+      'streak.wed'.tr,
+      'streak.thu'.tr,
+      'streak.fri'.tr,
+      'streak.sat'.tr,
+      'streak.sun'.tr,
+    ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -129,7 +137,7 @@ class StreakCalendarScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     l,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppThemeColors.of(context).textSecondary,
@@ -234,8 +242,8 @@ class StreakCalendarScreen extends StatelessWidget {
                 children: [
                   Text(
                     controller.selectedDay.value == 0
-                        ? 'Chọn một ngày để xem giao dịch'
-                        : 'Giao dịch ngày ${controller.selectedDay.value}',
+                        ? 'streak.selectDayDesc'.tr
+                        : 'streak.transactionOnDay'.trParams({'day': '${controller.selectedDay.value}'}),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -244,7 +252,7 @@ class StreakCalendarScreen extends StatelessWidget {
                   ),
                   if (controller.selectedDayTransactions.isNotEmpty)
                     Text(
-                      '${controller.selectedDayTransactions.length} giao dịch',
+                      'streak.transactionCount'.trParams({'count': '${controller.selectedDayTransactions.length}'}),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -276,7 +284,7 @@ class StreakCalendarScreen extends StatelessWidget {
                         size: 48, color: AppColors.text4.withOpacity(0.3)),
                     const SizedBox(height: 12),
                     Text(
-                      'Không có giao dịch nào',
+                      'streak.noTransactionOnDay'.tr,
                       style: TextStyle(
                         color: AppColors.text3.withOpacity(0.6),
                         fontSize: 14,
@@ -378,75 +386,76 @@ class _DayCell extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 18,
-          child: hasTx
-              ? const Text('🔥', style: TextStyle(fontSize: 12))
-              : null,
-        ),
-        const SizedBox(height: 1),
-        Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: isToday
-                ? AppColors.primary
-                : isSelected
-                    ? AppColors.primary.withOpacity(0.15)
-                    : hasTx
-                        ? const Color(0xFFFFF3E0)
-                        : Colors.transparent,
-            shape: BoxShape.circle,
-            border: isToday
-                ? null
-                : isSelected
-                    ? Border.all(color: AppColors.primary, width: 2)
-                    : hasTx
-                        ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
-                        : null,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 18,
+            child: hasTx
+                ? const Text('🔥', style: TextStyle(fontSize: 12))
+                : null,
           ),
-          child: Center(
-            child: Text(
-              '$day',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: isToday || hasTx || isSelected
-                    ? FontWeight.w700
-                    : FontWeight.w500,
-                color: isToday
-                    ? Colors.white
-                    : isSelected
-                        ? AppColors.primary
-                        : hasTx
-                            ? const Color(0xFFE65100)
-                            : AppThemeColors.of(context).textSecondary,
+          const SizedBox(height: 1),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: isToday
+                  ? AppColors.primary
+                  : isSelected
+                      ? AppColors.primary.withOpacity(0.15)
+                      : hasTx
+                          ? const Color(0xFFFFF3E0)
+                          : Colors.transparent,
+              shape: BoxShape.circle,
+              border: isToday
+                  ? null
+                  : isSelected
+                      ? Border.all(color: AppColors.primary, width: 2)
+                      : hasTx
+                          ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
+                          : null,
+            ),
+            child: Center(
+              child: Text(
+                '$day',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isToday || hasTx || isSelected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                  color: isToday
+                      ? Colors.white
+                      : isSelected
+                          ? AppColors.primary
+                          : hasTx
+                              ? const Color(0xFFE65100)
+                              : AppThemeColors.of(context).textSecondary,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 2),
-        SizedBox(
-          height: 13,
-          child: hasTx
-              ? Text(
-                  net >= 0
-                      ? '+$formattedNet'
-                      : formattedNet,
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                    color: net >= 0
-                        ? const Color(0xFF27AE60)
-                        : const Color(0xFFE53935),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.clip,
-                )
-              : null,
-        ),
-      ],
+          const SizedBox(height: 2),
+          SizedBox(
+            height: 13,
+            child: hasTx
+                ? Text(
+                    net >= 0
+                        ? '+$formattedNet'
+                        : formattedNet,
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      color: net >= 0
+                          ? const Color(0xFF27AE60)
+                          : const Color(0xFFE53935),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.clip,
+                  )
+                : null,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -487,7 +496,7 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             color: AppThemeColors.of(context).textSecondary,
             fontWeight: FontWeight.w500,

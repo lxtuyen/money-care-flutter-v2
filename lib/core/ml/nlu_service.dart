@@ -14,7 +14,7 @@ class NluResult {
   });
 
   /// True if the model is confident enough to act without Gemini fallback.
-  bool get isConfident => confidence >= 0.80;
+  bool get isConfident => confidence >= 0.30; // Hạ xuống 0.30 để ưu tiên xử lý Offline hơn
 
   /// True if this is a basic CRUD intent (not a complex analysis request).
   bool get isBasicCrud {
@@ -23,8 +23,6 @@ class NluResult {
       Intent.addIncome,
       Intent.getExpense,
       Intent.getIncome,
-      Intent.addCategory,
-      Intent.getCategory,
     }.contains(intent);
   }
 
@@ -58,7 +56,8 @@ class NluService {
 
     try {
       intentResult = await _classifier.classify(text);
-    } catch (_) {
+    } catch (e) {
+      print('❌ NLU Error: $e');
       intentResult = const IntentResult(
         intent: Intent.unknown,
         confidence: 0.0,
@@ -67,8 +66,62 @@ class NluService {
 
     final entities = EntityExtractor.extract(text);
 
+    var finalIntent = intentResult.intent;
+    
+    // 💡 Correction Logic: Cưỡng ép Intent nếu model phân loại sai hoặc không chắc chắn
+    final textLower = text.toLowerCase();
+    
+    // 1. Kiểm tra xem có phải là câu hỏi/truy vấn không (getExpense/getIncome)
+    if (textLower.contains('bao nhiêu') || 
+        textLower.contains('xem') || 
+        textLower.contains('liệt kê') || 
+        textLower.contains('thống kê') ||
+        textLower.contains('báo cáo') ||
+        textLower.contains('mấy')) {
+      
+      // Nếu có từ khóa thu nhập trong câu hỏi -> getIncome
+      if (textLower.contains('lương') || textLower.contains('thu nhập') || textLower.contains('nhận')) {
+        finalIntent = Intent.getIncome;
+      } else {
+        finalIntent = Intent.getExpense;
+      }
+      print("💡 [Correction] Detected query intent (getExpense/getIncome)");
+    } 
+    // 2. Nếu không phải câu hỏi, kiểm tra Unknown/Low-conf để ép vào addExpense
+    else if (finalIntent == Intent.unknown || intentResult.confidence < 0.2) {
+      if (textLower.contains('chi') || 
+          textLower.contains('tiêu') || 
+          textLower.contains('nộp') || 
+          textLower.contains('đóng') || 
+          textLower.contains('trả') ||
+          textLower.contains('mất') ||
+          textLower.contains('hết') ||
+          textLower.contains('mua')) {
+        finalIntent = Intent.addExpense;
+        print("💡 [Correction] Switched to addExpense");
+      }
+    }
+
+    // 3. Nếu là addExpense nhưng chứa từ khóa đặc thù thu nhập -> addIncome
+    if (finalIntent == Intent.addExpense) {
+      if (textLower.contains('lời') || 
+          textLower.contains('lãi') || 
+          textLower.contains('lương') || 
+          textLower.contains('thu nhập') ||
+          textLower.contains('thưởng') ||
+          textLower.contains('nhận được') ||
+          textLower.contains('lì xì') ||
+          textLower.contains('quà') ||
+          textLower.contains('biếu') ||
+          textLower.contains('tặng') ||
+          textLower.contains('tạm ứng')) {
+        finalIntent = Intent.addIncome;
+        print("💡 [Correction] Switched to addIncome");
+      }
+    }
+
     final result = NluResult(
-      intent: intentResult.intent,
+      intent: finalIntent,
       confidence: intentResult.confidence,
       entities: entities,
     );
@@ -78,6 +131,7 @@ class NluService {
     print('🤖 NLU Result for: "$text"');
     print('Detected Intent: ${result.intent.value}');
     print('Confidence: ${(result.confidence * 100).toStringAsFixed(1)}%');
+    print('Entities: ${result.entities}'); // In ra thực thể bóc tách được
     print('Confident enough? ${result.isConfident ? "✅ YES (Offline)" : "❌ NO (Fallback to Gemini)"}');
     print('-------------------------------------------');
 

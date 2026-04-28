@@ -3,6 +3,7 @@ import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/ml/entity_extractor.dart';
 import 'package:money_care/core/ml/intent_classifier.dart';
 import 'package:money_care/core/ml/nlu_service.dart';
+import 'package:money_care/core/ml/embedding_service.dart';
 import 'package:money_care/core/ml/response_builder.dart';
 import 'package:money_care/core/ml/time_resolver.dart';
 import 'package:money_care/core/network/api_client.dart';
@@ -15,6 +16,7 @@ import 'package:money_care/features/transaction/data/models/transaction_by_type_
 /// a human-readable response string for the chat UI.
 class NluDispatcher {
   final ApiClient _api;
+  final EmbeddingService _embeddingService = EmbeddingService();
 
   NluDispatcher({required ApiClient api}) : _api = api;
 
@@ -33,7 +35,7 @@ class NluDispatcher {
           entities: entities,
           userId: userId,
           fundId: fundId,
-          type: 'EXPENSE',
+          type: 'expense',
         );
 
       case Intent.addIncome:
@@ -41,7 +43,7 @@ class NluDispatcher {
           entities: entities,
           userId: userId,
           fundId: fundId,
-          type: 'INCOME',
+          type: 'income',
         );
 
       case Intent.getExpense:
@@ -49,7 +51,7 @@ class NluDispatcher {
           entities: entities,
           userId: userId,
           fundId: fundId,
-          type: 'EXPENSE',
+          type: 'expense',
         );
 
       case Intent.getIncome:
@@ -57,14 +59,8 @@ class NluDispatcher {
           entities: entities,
           userId: userId,
           fundId: fundId,
-          type: 'INCOME',
+          type: 'income',
         );
-
-      case Intent.addCategory:
-        return _addCategory(entities: entities, userId: userId);
-
-      case Intent.getCategory:
-        return _getCategories(userId: userId);
 
       case Intent.unknown:
         return ResponseBuilder.fallback();
@@ -108,18 +104,20 @@ class NluDispatcher {
     );
 
     try {
+      // Tạm thời chặn gửi lên Backend để test Offline
+      print("🧪 [TEST MODE] Chặn lưu giao dịch: $categoryName - ${entities.amount}");
+      
+      /*
       final res = await _api.post<TransactionModel>(
         ApiRoutes.transaction,
-        body: {
-          ...dto.toJson(),
-          'fundId': fundId,
-        },
+        body: dto.toJson(), 
         fromJsonT: (json) => TransactionModel.fromJson(json),
       );
 
       if (!res.success || res.data == null) {
         return ResponseBuilder.apiError(res.message);
       }
+      */
 
       return ResponseBuilder.transactionSaved(
         amount: entities.amount!,
@@ -174,7 +172,7 @@ class NluDispatcher {
 
       final data = res.data!;
       // TransactionByTypeModel uses .income and .expense (no 's')
-      final txModels = type == 'EXPENSE' ? data.expense : data.income;
+      final txModels = type == 'expense' ? data.expense : data.income;
       final transactions = txModels.map((m) => m.toEntity()).toList();
 
       return ResponseBuilder.transactionList(
@@ -304,7 +302,39 @@ class NluDispatcher {
         }
       }
 
-      return bestScore > 0 ? best : null;
+      if (bestScore > 0) return best;
+
+      // 4. Semantic match using EmbeddingService
+      print('🧠 Semantic matching for: "$queryLower"...');
+      if (!_embeddingService.isInitialized) {
+        await _embeddingService.initialize();
+      }
+
+      final queryEmb = await _embeddingService.getEmbedding(queryLower);
+      CategoryModel? bestSemantic;
+      double bestSimilarity = -1.0;
+
+      for (final cat in categories) {
+        final catEmb = await _embeddingService.getEmbedding(cat.name.toLowerCase());
+        final similarity = EmbeddingService.cosineSimilarity(queryEmb, catEmb);
+        
+        // Log chi tiết từng danh mục để bạn theo dõi
+        print('   🔍 Thử với: "${cat.name}" -> Similarity: ${(similarity * 100).toStringAsFixed(1)}%');
+
+        if (similarity > bestSimilarity) {
+          bestSimilarity = similarity;
+          bestSemantic = cat;
+        }
+      }
+
+      // If semantic similarity is > 65%, consider it a match
+      if (bestSemantic != null && bestSimilarity > 0.65) {
+        print('   ✅ Chọn danh mục: "${bestSemantic.name}" (Độ tương đồng cao nhất: ${(bestSimilarity * 100).toStringAsFixed(1)}%)');
+        return bestSemantic;
+      }
+
+      print('   ⚠️ Không tìm thấy danh mục nào đủ giống (Max: ${(bestSimilarity * 100).toStringAsFixed(1)}%)');
+      return null;
     } catch (_) {
       return null;
     }

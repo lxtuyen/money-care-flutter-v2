@@ -1,8 +1,6 @@
 {
-  "0": "add_category",
-  "1": "add_expense",
-  "2": "add_income",
-  "3": "get_category",
-  "4": "get_expense",
-  "5": "get_income"
+  "0": "add_expense",
+  "1": "add_income",
+  "2": "get_expense",
+  "3": "get_income"
 }

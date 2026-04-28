@@ -103,7 +103,11 @@ class EntityExtractor {
     'nhập', 'xem', 'xài', 'mua', 'đi', 'bao', 'nhiêu', 'là',
     'của', 'gần', 'hiện', 'tại', 'nay', 'qua', 'này', 'trước',
     'rồi', 'thế', 'nào', 'không', 'danh', 'mục', 'category', 'khoản',
-    'phân', 'loại', 'ứng', 'dụng', 'đang', 'dùng',
+    'phân', 'loại', 'ứng', 'dụng', 'đang', 'dùng', 'phí',
+    'nộp', 'đóng', 'trả', 'gửi', 'chuyển', 'tiền', 'giá',
+    'cái', 'con', 'chiếc', 'bó', 'mớ', 'tờ', 'quyển', 'viên',
+    'tận', 'những', 'chỉ',
+    'bank', 'banking', 'momo', 'ví', 'zalopay', 'chuyển khoản',
     // Connectors
     'và', 'hoặc', 'hay', 'với', 'từ', 'trong', 'vào', 'lại', 'ra',
     'về', 'lên', 'xuống', 'cho', 'để', 'mà', 'nhưng', 'nếu',

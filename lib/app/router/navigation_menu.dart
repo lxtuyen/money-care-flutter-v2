@@ -5,6 +5,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/app/router/nav_controller.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/expired_goal_popup.dart';
@@ -128,7 +129,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       width: _isSidebarExpanded ? 240 : 80,
-      color: AppColors.white,
+      color: AppThemeColors.of(context).cardBackground,
       child: Column(
         children: [
           Padding(
@@ -245,9 +246,9 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.96),
+          color: AppThemeColors.of(context).cardBackground.withOpacity(0.96),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.borderSecondary),
+          border: Border.all(color: AppThemeColors.of(context).borderSecondary),
           boxShadow: [
             BoxShadow(
               color: AppColors.text1.withOpacity(0.08),
@@ -343,7 +344,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
             margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppThemeColors.of(context).cardBackground,
               borderRadius: BorderRadius.circular(28),
               boxShadow: [
                 BoxShadow(
@@ -468,7 +469,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
         child: Ink(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppThemeColors.of(context).cardBackground,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.borderSecondary),
           ),

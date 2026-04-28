@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class CategoryItem extends StatelessWidget {
   final String title;
@@ -22,7 +23,7 @@ class CategoryItem extends StatelessWidget {
       duration: const Duration(milliseconds: 180),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+        color: isSelected ? AppColors.primary.withOpacity(0.1) : AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isSelected
@@ -32,7 +33,7 @@ class CategoryItem extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.text1.withOpacity(0.04),
+            color: AppThemeColors.of(context).textPrimary.withOpacity(0.04),
             blurRadius: 14,
             offset: const Offset(0, 6),
           ),
@@ -56,7 +57,7 @@ class CategoryItem extends StatelessWidget {
                 child: Center(
                   child: AppSvgIcon(
                     iconName: icon,
-                    color: isSelected ? AppColors.primary : AppColors.text4,
+                    color: isSelected ? AppColors.primary : AppThemeColors.of(context).textSecondary,
                     size: 22,
                   ),
                 ),
@@ -69,14 +70,14 @@ class CategoryItem extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Colors.white.withOpacity(0.86)
-                      : AppColors.backgroundPrimary,
+                      ? (Theme.of(context).brightness == Brightness.dark ? Colors.black26 : Colors.white.withOpacity(0.86))
+                      : AppThemeColors.of(context).surfaceBackground,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   '$percentage%',
                   style: TextStyle(
-                    color: isSelected ? AppColors.primary : AppColors.text3,
+                    color: isSelected ? AppColors.primary : AppThemeColors.of(context).textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -92,7 +93,7 @@ class CategoryItem extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: isSelected ? AppColors.primary : AppColors.text2,
+              color: isSelected ? AppColors.primary : AppThemeColors.of(context).textPrimary,
               height: 1.2,
             ),
           ),

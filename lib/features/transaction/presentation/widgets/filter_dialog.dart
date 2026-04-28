@@ -4,6 +4,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({
@@ -57,7 +58,7 @@ class _FilterDialogState extends State<FilterDialog> {
       backgroundColor: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppThemeColors.of(context).cardBackground,
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
@@ -141,13 +142,13 @@ class _FilterDialogState extends State<FilterDialog> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.backgroundPrimary,
+                        color: AppThemeColors.of(context).surfaceBackground,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
                         _buildSummaryText(),
                         style: const TextStyle(
-                          color: AppColors.text3,
+                          color: AppThemeColors.of(context).textSecondary,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),

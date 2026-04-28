@@ -34,7 +34,9 @@ class CircularIcon extends StatelessWidget {
           borderRadius: BorderRadius.circular(100),
           color: backgroundColor != null
               ? backgroundColor!
-              : AppColors.white.withOpacity(0.9),
+              : (Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF1E2630).withOpacity(0.9)
+                  : AppColors.white.withOpacity(0.9)),
         ),
         child: iconPath != null
             ? SvgPicture.asset(

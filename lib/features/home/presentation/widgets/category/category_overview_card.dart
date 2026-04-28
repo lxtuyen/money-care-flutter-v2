@@ -4,6 +4,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class CategoryOverviewCard extends StatelessWidget {
   final String title;
@@ -64,7 +65,7 @@ class CategoryOverviewCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppThemeColors.of(context).cardBackground,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.borderSecondary.withOpacity(0.5)),
           boxShadow: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class UserMenuItem extends StatelessWidget {
   const UserMenuItem({
@@ -18,11 +19,11 @@ class UserMenuItem extends StatelessWidget {
       children: [
         ListTile(
           leading: Icon(icon, color: AppColors.primary),
-          title: Text(title, style: const TextStyle(fontSize: 16)),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          title: Text(title, style: TextStyle(fontSize: 16, color: AppThemeColors.of(context).textPrimary)),
+          trailing: Icon(Icons.arrow_forward_ios, size: 16, color: AppThemeColors.of(context).textSecondary),
           onTap: onTap,
         ),
-        const Divider(height: 1, thickness: 0.5),
+        Divider(height: 1, thickness: 0.5, color: AppThemeColors.of(context).textMuted.withOpacity(0.2)),
       ],
     );
   }

@@ -14,6 +14,8 @@ import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/filter_dialog.dart';
 import 'package:money_care/features/transaction/presentation/widgets/search_filter.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
+import 'package:money_care/features/transaction/presentation/screens/recurring_transaction_screen.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -63,11 +65,18 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           AppHeader(
             title: 'Thu - Chi',
+            actions: [
+              IconButton(
+                onPressed: () => Get.to(() => const RecurringTransactionScreen()),
+                icon: const Icon(Icons.history_toggle_off_rounded, color: Colors.white),
+                tooltip: 'Giao dịch định kỳ',
+              ),
+            ],
             child: Obx(() {
               final data = statisticsController.totalByType.value;
               final selectedType = statisticsController.selectedType.value;
@@ -322,9 +331,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             }
 
             return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              decoration: BoxDecoration(
+                color: AppThemeColors.of(context).cardBackground,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
               ),
               padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
               child: Column(
@@ -348,7 +357,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: AppColors.backgroundPrimary,
+                          color: AppThemeColors.of(context).surfaceBackground,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: const Icon(
@@ -406,8 +415,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                             filterController.hasActiveFilters
                                 ? 'Đang áp dụng ${filterController.activeFilterCount} tiêu chí lọc.'
                                 : 'Chưa có bộ lọc nào được áp dụng.',
-                            style: const TextStyle(
-                              color: AppColors.text2,
+                            style: TextStyle(
+                              color: AppThemeColors.of(context).textPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -449,7 +458,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.text2,
                           side: const BorderSide(
-                            color: AppColors.borderSecondary,
+                            color: AppThemeColors.of(context).textMuted,
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
@@ -482,9 +491,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         child: Ink(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppThemeColors.of(context).cardBackground,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.borderSecondary),
+            border: Border.all(color: AppThemeColors.of(context).textMuted.withOpacity(0.2)),
             boxShadow: [
               BoxShadow(
                 color: AppColors.text1.withOpacity(0.04),
@@ -499,7 +508,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: AppColors.backgroundPrimary,
+                  color: AppThemeColors.of(context).surfaceBackground,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: AppColors.primary),
@@ -514,7 +523,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.text2,
+                        color: AppThemeColors.of(context).textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -522,7 +531,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                       subtitle,
                       style: const TextStyle(
                         fontSize: 13,
-                        color: AppColors.text4,
+                        color: AppThemeColors.of(context).textSecondary,
                       ),
                     ),
                   ],
@@ -531,7 +540,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               const Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
-                color: AppColors.text5,
+                color: AppThemeColors.of(context).textMuted,
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/gamification/presentation/controllers/streak_calendar_controller.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class StreakCalendarScreen extends StatelessWidget {
   const StreakCalendarScreen({super.key});
@@ -14,9 +15,9 @@ class StreakCalendarScreen extends StatelessWidget {
         : Get.put(StreakCalendarController());
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -98,7 +99,7 @@ class StreakCalendarScreen extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
-                color: AppColors.text1,
+                color: AppThemeColors.of(context).textPrimary,
               ),
             ),
             _NavButton(
@@ -125,7 +126,7 @@ class StreakCalendarScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.text4,
+                      color: AppThemeColors.of(context).textSecondary,
                     ),
                   ),
                 ),
@@ -149,7 +150,7 @@ class StreakCalendarScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppThemeColors.of(context).cardBackground,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -227,10 +228,10 @@ class _NavButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: AppColors.backgroundPrimary,
+          color: AppThemeColors.of(context).surfaceBackground,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: AppColors.text2, size: 20),
+        child: Icon(icon, color: AppThemeColors.of(context).textPrimary, size: 20),
       ),
     );
   }
@@ -291,7 +292,7 @@ class _DayCell extends StatelessWidget {
                     ? Colors.white
                     : hasTx
                     ? const Color(0xFFE65100)
-                    : AppColors.text3,
+                    : AppThemeColors.of(context).textSecondary,
               ),
             ),
           ),
@@ -359,7 +360,7 @@ class _LegendItem extends StatelessWidget {
           label,
           style: const TextStyle(
             fontSize: 12,
-            color: AppColors.text4,
+            color: AppThemeColors.of(context).textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),

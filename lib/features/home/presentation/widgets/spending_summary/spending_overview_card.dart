@@ -5,6 +5,7 @@ import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/app/widgets/chart/app_bar_chart.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class SpendingOverviewCard extends StatelessWidget {
   final DateTime? startDate;
@@ -51,7 +52,7 @@ class SpendingOverviewCard extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
+      color: AppThemeColors.of(context).cardBackground,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -64,13 +65,13 @@ class SpendingOverviewCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: AppSizes.lg,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text1,
+                color: AppThemeColors.of(context).textPrimary,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Số tiền đã chi tiêu trong 7 ngày gần đây',
-              style: TextStyle(color: AppColors.text4),
+              style: TextStyle(color: AppThemeColors.of(context).textSecondary),
             ),
             const SizedBox(height: AppSizes.spaceBtwItems),
             SizedBox(
@@ -88,7 +89,7 @@ class SpendingOverviewCard extends StatelessWidget {
                           label,
                           style: const TextStyle(
                             fontSize: 10,
-                            color: AppColors.text4,
+                            color: AppThemeColors.of(context).textSecondary,
                           ),
                         );
                       }

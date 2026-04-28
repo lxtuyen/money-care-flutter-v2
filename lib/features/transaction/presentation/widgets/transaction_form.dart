@@ -12,6 +12,7 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class TransactionForm extends StatefulWidget {
   final String title;
@@ -46,7 +47,7 @@ class _TransactionFormState extends State<TransactionForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -107,7 +108,7 @@ class _TransactionFormState extends State<TransactionForm> {
                                           >(
                                             context: context,
                                             isScrollControlled: true,
-                                            backgroundColor: Colors.white,
+                                            backgroundColor: AppThemeColors.of(context).cardBackground,
                                             shape: const RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.vertical(

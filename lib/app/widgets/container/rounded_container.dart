@@ -10,8 +10,8 @@ class RoundedContainer extends StatelessWidget {
     this.height,
     this.radius = AppSizes.cardRadiusLg,
     this.showBorder = false,
-    this.backgroundColor = AppColors.white,
-    this.borderColor = AppColors.borderPrimary,
+    this.backgroundColor,
+    this.borderColor,
     this.padding,
     this.margin,
   });
@@ -34,9 +34,9 @@ class RoundedContainer extends StatelessWidget {
       padding: padding,
       margin: margin,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: backgroundColor ?? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2630) : Colors.white),
         borderRadius: BorderRadius.circular(radius),
-        border: showBorder ? Border.all(color: borderColor) : null,
+        border: showBorder ? Border.all(color: borderColor ?? AppColors.borderPrimary) : null,
       ),
       child: child,
     );

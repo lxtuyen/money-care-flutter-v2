@@ -5,6 +5,7 @@ import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class TransactionSection extends StatefulWidget {
   const TransactionSection({
@@ -36,7 +37,7 @@ class _TransactionSectionState extends State<TransactionSection> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppColors.backgroundPrimary,
+              color: AppThemeColors.of(context).surfaceBackground,
               borderRadius: BorderRadius.circular(AppSizes.borderRadiusLg),
             ),
             child: Row(
@@ -86,7 +87,9 @@ class _TransactionSectionState extends State<TransactionSection> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: isActive ? Colors.white : Colors.black,
+              color: isActive
+                  ? Colors.white
+                  : AppThemeColors.of(context).textSecondary,
             ),
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
@@ -10,6 +11,7 @@ class AppController extends GetxController {
   var userId = Rxn<int>();
   var isUserInitialized = false.obs;
   var isBalanceVisible = true.obs;
+  var isDarkMode = false.obs;
   var errorMessage = RxnString();
 
   @override
@@ -17,6 +19,7 @@ class AppController extends GetxController {
     super.onInit();
     initializeUser();
     isBalanceVisible.value = storage.getBalanceVisibility();
+    isDarkMode.value = storage.getDarkMode();
   }
 
   Future<void> initializeUser() async {
@@ -59,5 +62,11 @@ class AppController extends GetxController {
   void toggleBalanceVisibility() {
     isBalanceVisible.value = !isBalanceVisible.value;
     storage.saveBalanceVisibility(isBalanceVisible.value);
+  }
+
+  void toggleDarkMode() {
+    isDarkMode.value = !isDarkMode.value;
+    storage.saveDarkMode(isDarkMode.value);
+    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
   }
 }

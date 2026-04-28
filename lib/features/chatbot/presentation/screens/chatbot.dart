@@ -37,7 +37,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
@@ -54,8 +54,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       centerTitle: false,
       title: Row(
@@ -120,7 +120,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   Widget _buildInputArea() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      color: Colors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
         children: [
           Expanded(

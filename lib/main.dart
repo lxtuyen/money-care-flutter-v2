@@ -7,6 +7,7 @@ import 'package:money_care/app/router/app_router.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:money_care/core/storage/local_storage.dart';
+import 'package:money_care/core/theme/app_theme.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -29,7 +30,9 @@ class MainApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Money Care',
-      themeMode: ThemeMode.system,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: storage.getDarkMode() ? ThemeMode.dark : ThemeMode.light,
       getPages: appPages,
       initialRoute: RoutePath.splash,
       initialBinding: AppBinding(storage: storage),

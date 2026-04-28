@@ -6,6 +6,7 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/features/statistics/presentation/widgets/category_share_chip.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class StatisticsOverviewCard extends StatelessWidget {
   final String startDate;
@@ -40,7 +41,7 @@ class StatisticsOverviewCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppThemeColors.of(context).cardBackground,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(

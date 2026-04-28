@@ -18,6 +18,7 @@ import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/photo_transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class CreatePhotoTransactionScreen extends StatefulWidget {
   const CreatePhotoTransactionScreen({super.key});
@@ -308,9 +309,9 @@ class _CreatePhotoTransactionScreenState
 
   Widget _buildFormView() {
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundPrimary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
@@ -403,7 +404,7 @@ class _CreatePhotoTransactionScreenState
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppColors.backgroundSecondary,
+                                color: AppThemeColors.of(context).surfaceBackground,
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(
                                   color: AppColors.borderSecondary,
@@ -448,7 +449,7 @@ class _CreatePhotoTransactionScreenState
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppThemeColors.of(context).cardBackground,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -474,7 +475,7 @@ class _CreatePhotoTransactionScreenState
     final selected = await showModalBottomSheet<CategoryEntity>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppThemeColors.of(context).cardBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -658,7 +659,7 @@ class _PhotoPreviewCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -786,7 +787,7 @@ class _SectionCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(

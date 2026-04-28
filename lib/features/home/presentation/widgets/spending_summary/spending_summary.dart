@@ -5,6 +5,7 @@ import 'package:money_care/core/constants/icon_string.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class SpendingSummary extends StatelessWidget {
   const SpendingSummary({
@@ -27,10 +28,13 @@ class SpendingSummary extends StatelessWidget {
     final balance = incomeTotal - expenseTotal;
     final maskedText = '********';
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeColors = AppThemeColors.of(context);
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF7FF),
+        color: isDark ? const Color(0xFF1A2A3A) : const Color(0xFFEFF7FF),
         borderRadius: BorderRadius.circular(AppSizes.borderRadiusLg),
       ),
       child: Row(
@@ -47,7 +51,7 @@ class SpendingSummary extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.text2,
+                        color: AppThemeColors.of(context).textPrimary,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -58,7 +62,7 @@ class SpendingSummary extends StatelessWidget {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         size: 18,
-                        color: AppColors.text3,
+                        color: themeColors.textSecondary,
                       ),
                     ),
                   ],
@@ -67,15 +71,15 @@ class SpendingSummary extends StatelessWidget {
                 GestureDetector(
                   onTap: onPressed,
                   child: Row(
-                    children: const [
+                    children: [
                       Text(
                         'Xem chi tiết',
-                        style: TextStyle(color: AppColors.primary, fontSize: 14),
+                        style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
                       ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Icon(
                         Icons.arrow_forward,
-                        color: AppColors.primary,
+                        color: themeColors.textSecondary,
                         size: AppSizes.md,
                       ),
                     ],
@@ -96,13 +100,13 @@ class SpendingSummary extends StatelessWidget {
             options: RoundedRectDottedBorderOptions(
               radius: const Radius.circular(AppSizes.borderRadiusLg),
               dashPattern: const [6, 3],
-              color: AppColors.text4,
+              color: AppThemeColors.of(context).textSecondary,
             ),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.35,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 32),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: themeColors.cardBackground,
                 borderRadius: BorderRadius.circular(AppSizes.borderRadiusLg),
               ),
               child: Column(

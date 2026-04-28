@@ -4,6 +4,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class SpendingLimitCard extends StatelessWidget {
   final String title;
@@ -43,7 +44,7 @@ class SpendingLimitCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: AppSizes.fontSizeMd,
               fontWeight: FontWeight.w600,
-              color: AppColors.text4,
+              color: AppThemeColors.of(context).textSecondary,
             ),
           ),
           const SizedBox(height: AppSizes.spaceBtwItems / 2),
@@ -51,7 +52,7 @@ class SpendingLimitCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppThemeColors.of(context).cardBackground,
               borderRadius: BorderRadius.circular(AppSizes.borderRadiusLg),
               boxShadow: [
                 BoxShadow(
@@ -87,7 +88,7 @@ class SpendingLimitCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: AppSizes.fontSizeSm,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.text3,
+                              color: AppThemeColors.of(context).textSecondary,
                             ),
                           ),
                           Text(
@@ -95,7 +96,7 @@ class SpendingLimitCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: AppSizes.fontSizeSm,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.text3,
+                              color: AppThemeColors.of(context).textSecondary,
                             ),
                           ),
                         ],
@@ -108,7 +109,7 @@ class SpendingLimitCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: AppSizes.fontSizeSm,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.text3,
+                              color: AppThemeColors.of(context).textSecondary,
                             ),
                           ),
                           Text(

@@ -48,6 +48,7 @@ class LocalStorage {
   static const String keyUserInfo = 'user_info';
   static const String keyHasSeenOnboarding = 'hasSeenOnboarding';
   static const String keyIsBalanceVisible = 'is_balance_visible';
+  static const String keyIsDarkMode = 'is_dark_mode';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -99,5 +100,13 @@ class LocalStorage {
 
   bool getBalanceVisibility() {
     return readBool(keyIsBalanceVisible) ?? true;
+  }
+
+  Future<void> saveDarkMode(bool isDark) async {
+    await writeBool(keyIsDarkMode, isDark);
+  }
+
+  bool getDarkMode() {
+    return readBool(keyIsDarkMode) ?? false;
   }
 }

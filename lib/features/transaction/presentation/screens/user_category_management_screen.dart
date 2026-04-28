@@ -5,6 +5,7 @@ import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_form_dialog.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class UserCategoryManagementScreen extends StatefulWidget {
   const UserCategoryManagementScreen({super.key});
@@ -42,7 +43,7 @@ class _UserCategoryManagementScreenState
           style: TextStyle(fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         bottom: TabBar(
           controller: _tabController,
@@ -181,7 +182,7 @@ class _CategoryItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5)),
         boxShadow: [
@@ -198,7 +199,7 @@ class _CategoryItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.backgroundSecondary,
+              color: AppThemeColors.of(context).surfaceBackground,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(category.icon, style: const TextStyle(fontSize: 24)),

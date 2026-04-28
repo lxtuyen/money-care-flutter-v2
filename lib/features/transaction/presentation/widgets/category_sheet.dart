@@ -5,6 +5,7 @@ import 'package:money_care/features/finance_mode/domain/entities/finance_mode_en
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_item.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class CategorySheet extends StatefulWidget {
   final List<CategoryEntity> categories;
@@ -70,8 +71,8 @@ class _CategorySheetState extends State<CategorySheet> {
         builder: (context, scrollController) {
           return Container(
             width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: AppThemeColors.of(context).cardBackground,
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: Column(
@@ -97,7 +98,7 @@ class _CategorySheetState extends State<CategorySheet> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: AppColors.backgroundPrimary,
+                          color: AppThemeColors.of(context).surfaceBackground,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: const Icon(
@@ -115,7 +116,7 @@ class _CategorySheetState extends State<CategorySheet> {
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.text1,
+                                color: AppThemeColors.of(context).textPrimary,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -127,7 +128,7 @@ class _CategorySheetState extends State<CategorySheet> {
                                 fontSize: 13,
                                 color: isSurvival
                                     ? AppColors.error
-                                    : AppColors.text4,
+                                    : AppThemeColors.of(context).textSecondary,
                               ),
                             ),
                           ],
@@ -143,7 +144,7 @@ class _CategorySheetState extends State<CategorySheet> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: AppColors.backgroundPrimary,
+                      color: AppThemeColors.of(context).surfaceBackground,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
@@ -151,7 +152,7 @@ class _CategorySheetState extends State<CategorySheet> {
                           ? 'Đang chọn: ${selectedCategory!.name}'
                           : 'Chưa chọn phân loại nào',
                       style: const TextStyle(
-                        color: AppColors.text3,
+                        color: AppThemeColors.of(context).textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),

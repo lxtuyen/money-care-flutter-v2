@@ -6,6 +6,8 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 class TransactionItem extends StatelessWidget {
   const TransactionItem({
@@ -91,7 +93,7 @@ class TransactionItem extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: AppSizes.fontSizeSm + 1,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.text2,
+                        color: AppThemeColors.of(context).textPrimary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -101,7 +103,7 @@ class TransactionItem extends StatelessWidget {
                       item.category?.name ?? 'Không có danh mục',
                       style: const TextStyle(
                         fontSize: 12,
-                        color: AppColors.text4,
+                        color: AppThemeColors.of(context).textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -131,7 +133,7 @@ class TransactionItem extends StatelessWidget {
                       AppHelperFunction.formatDateTime(item.transactionDate!),
                       style: const TextStyle(
                         fontSize: 11,
-                        color: AppColors.text5,
+                        color: AppThemeColors.of(context).textMuted,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

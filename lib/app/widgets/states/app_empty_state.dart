@@ -24,7 +24,12 @@ class AppEmptyState extends StatelessWidget {
           const SizedBox(height: AppSizes.sm),
           Text(
             message,
-            style: const TextStyle(fontSize: 16, color: AppColors.text5),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white54
+                  : AppColors.text5,
+            ),
             textAlign: TextAlign.center,
           ),
           if (action != null) ...[const SizedBox(height: 8), action!],

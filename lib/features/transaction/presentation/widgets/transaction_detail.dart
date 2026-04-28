@@ -7,6 +7,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class TransactionDetail extends StatelessWidget {
   final TransactionEntity item;
@@ -52,7 +53,7 @@ class TransactionDetail extends StatelessWidget {
       child: Container(
         width: screenWidth,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppThemeColors.of(context).cardBackground,
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
@@ -88,7 +89,7 @@ class TransactionDetail extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppThemeColors.of(context).cardBackground,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
@@ -169,7 +170,7 @@ class TransactionDetail extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.text2,
+                              color: AppThemeColors.of(context).textPrimary,
                             ),
                           ),
                         ),
@@ -261,7 +262,7 @@ class TransactionDetail extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.08),
+            color: AppThemeColors.of(context).surfaceBackground,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 20, color: AppColors.text3),
@@ -275,7 +276,7 @@ class TransactionDetail extends StatelessWidget {
                 label,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: AppColors.text4,
+                  color: AppThemeColors.of(context).textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -284,7 +285,7 @@ class TransactionDetail extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   fontSize: 15,
-                  color: AppColors.text2,
+                  color: AppThemeColors.of(context).textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
                 maxLines: isMultiLine ? 3 : 1,
@@ -316,7 +317,7 @@ class TransactionDetail extends StatelessWidget {
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isOutlined ? Colors.white : color,
+        backgroundColor: isOutlined ? AppThemeColors.of(context).cardBackground : color,
         foregroundColor: isOutlined ? color : Colors.white,
         elevation: isOutlined ? 0 : 4,
         padding: const EdgeInsets.symmetric(vertical: 12),

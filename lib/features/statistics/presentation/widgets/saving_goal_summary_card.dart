@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
@@ -27,7 +29,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
@@ -275,7 +277,7 @@ class _CircleMetric extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.backgroundPrimary,
+        color: AppThemeColors.of(context).surfaceBackground,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -284,7 +286,7 @@ class _CircleMetric extends StatelessWidget {
             label,
             style: const TextStyle(
               fontSize: 12,
-              color: AppColors.text3,
+              color: AppThemeColors.of(context).textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -333,13 +335,13 @@ class _CircleMetric extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppColors.text1,
+              color: AppThemeColors.of(context).textPrimary,
             ),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
             subtitleLabel,
-            style: const TextStyle(fontSize: 11, color: AppColors.text4),
+            style: TextStyle(fontSize: 11, color: AppThemeColors.of(context).textSecondary),
           ),
         ],
       ),
@@ -411,7 +413,7 @@ class _CategoryPieRow extends StatelessWidget {
                         cat.categoryName,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: AppColors.text2,
+                          color: AppThemeColors.of(context).textSecondary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -421,7 +423,7 @@ class _CategoryPieRow extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.text1,
+                        color: AppThemeColors.of(context).textPrimary,
                       ),
                     ),
                   ],
@@ -459,14 +461,14 @@ class _QuickStat extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: valueColor ?? AppColors.text1,
+            color: valueColor ?? AppThemeColors.of(context).textPrimary,
           ),
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: AppColors.text4),
+          style: TextStyle(fontSize: 10, color: AppThemeColors.of(context).textSecondary),
         ),
       ],
     );
@@ -496,14 +498,14 @@ class _BudgetRow extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 13, color: AppColors.text3),
+              style: TextStyle(fontSize: 13, color: AppThemeColors.of(context).textSecondary),
             ),
             Text(
               value,
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.text1,
+                color: AppThemeColors.of(context).textPrimary,
               ),
             ),
           ],

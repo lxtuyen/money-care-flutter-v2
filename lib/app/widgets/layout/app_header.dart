@@ -28,21 +28,29 @@ class AppHeader extends StatelessWidget {
         ? _foregroundColorFor(backgroundColor!)
         : Colors.white;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: height,
       decoration: BoxDecoration(
         color: hasCustomBackground ? backgroundColor : null,
         gradient: hasCustomBackground
             ? null
-            : const LinearGradient(
+            : LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF79CBFF),
-                  AppColors.primary,
-                  AppColors.secondaryNavyBlue,
-                ],
-                stops: [0.0, 0.52, 1.0],
+                colors: isDark
+                    ? const [
+                        Color(0xFF2A6FA0),
+                        Color(0xFF1E5A8C),
+                        Color(0xFF0E4A7A),
+                      ]
+                    : const [
+                        Color(0xFF79CBFF),
+                        AppColors.primary,
+                        AppColors.secondaryNavyBlue,
+                      ],
+                stops: const [0.0, 0.52, 1.0],
               ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(40),

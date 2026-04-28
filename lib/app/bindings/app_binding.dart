@@ -35,6 +35,7 @@ import 'package:money_care/features/transaction/domain/usecases/create_transacti
 import 'package:money_care/features/transaction/domain/usecases/delete_transaction_usecase.dart';
 import 'package:money_care/features/transaction/domain/usecases/filter_transactions_usecase.dart';
 import 'package:money_care/features/transaction/domain/usecases/update_transaction_usecase.dart';
+import 'package:money_care/features/transaction/domain/usecases/export_report_usecase.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
@@ -159,6 +160,7 @@ class AppBinding extends Bindings {
         createTransactionUseCase: CreateTransactionUseCase(transactionRepo),
         updateTransactionUseCase: UpdateTransactionUseCase(transactionRepo),
         deleteTransactionUseCase: DeleteTransactionUseCase(transactionRepo),
+        exportReportUseCase: ExportReportUseCase(transactionRepo),
       ),
       permanent: true,
     );

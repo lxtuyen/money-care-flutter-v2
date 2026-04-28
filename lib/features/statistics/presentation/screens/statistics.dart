@@ -65,7 +65,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               AppHeader(
                 title: 'Thu - Chi',
-
+                actions: [
+                  IconButton(
+                    onPressed: () => _showExportDialog(),
+                    icon: const Icon(
+                      Icons.file_download_outlined,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
                 child: Obx(() {
                   final data = statisticsController.totalByType.value;
                   final selectedType = statisticsController.selectedType.value;
@@ -387,5 +395,108 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
       ),
     );
+  }
+
+  void _showExportDialog() {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Xuất báo cáo',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text1,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Báo cáo sẽ được gửi về email của bạn (${userController.user.value?.email ?? 'đang tải...'})',
+              style: const TextStyle(color: AppColors.text3),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildExportOption(
+                    icon: Icons.picture_as_pdf_rounded,
+                    label: 'PDF',
+                    color: Colors.red,
+                    onTap: () => _handleExport('pdf'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildExportOption(
+                    icon: Icons.table_chart_rounded,
+                    label: 'CSV',
+                    color: Colors.green,
+                    onTap: () => _handleExport('csv'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExportOption({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          border: Border.all(color: color.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(16),
+          color: color.withOpacity(0.05),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleExport(String format) async {
+    Get.back(); // Close bottom sheet
+    final userId = appController.userId.value;
+    if (userId == null) return;
+
+    final filterDto = TransactionFilterDto(
+      startDate: statisticsController.currentStartDate.toIso8601String(),
+      endDate: statisticsController.currentEndDate.toIso8601String(),
+      goalId: statisticsController.savingGoalController.currentGoalId > 0
+          ? statisticsController.savingGoalController.currentGoalId
+          : null,
+    );
+
+    await Get.find<TransactionController>().exportReport(userId, filterDto, format);
   }
 }

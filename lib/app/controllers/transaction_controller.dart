@@ -14,6 +14,7 @@ class TransactionController extends GetxController {
   final CreateTransactionUseCase createTransactionUseCase;
   final UpdateTransactionUseCase updateTransactionUseCase;
   final DeleteTransactionUseCase deleteTransactionUseCase;
+  final ExportReportUseCase exportReportUseCase;
 
   final SavingGoalController savingGoalController =
       Get.find<SavingGoalController>();
@@ -38,6 +39,7 @@ class TransactionController extends GetxController {
     required this.createTransactionUseCase,
     required this.updateTransactionUseCase,
     required this.deleteTransactionUseCase,
+    required this.exportReportUseCase,
   });
 
   @override
@@ -221,6 +223,32 @@ class TransactionController extends GetxController {
       return date.isBefore(goalStart) ? goalStart : date;
     } else {
       return date.isAfter(goalEnd) ? goalEnd : date;
+    }
+  }
+
+  Future<void> exportReport(int userId, TransactionFilterDto dto, String format) async {
+    isLoading.value = true;
+    try {
+      final success = await exportReportUseCase(userId, dto, format);
+      if (success) {
+        Get.snackbar(
+          'Thành công',
+          'Báo cáo đã được gửi về email của bạn!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        throw Exception('Export failed');
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Lỗi',
+        'Không thể xuất báo cáo: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 }

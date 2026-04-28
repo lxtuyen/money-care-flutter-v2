@@ -28,4 +28,9 @@ abstract class TransactionRepository {
     int userId,
     TransactionTotalsDto dto,
   );
+  Future<bool> exportReport(
+    int userId,
+    TransactionFilterDto dto,
+    String format,
+  );
 }

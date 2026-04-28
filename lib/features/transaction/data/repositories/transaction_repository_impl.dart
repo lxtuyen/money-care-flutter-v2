@@ -94,4 +94,13 @@ class TransactionRepositoryImpl implements TransactionRepository {
     final model = await remoteDatasource.getStatisticsSummary(userId, dto);
     return model.toEntity();
   }
+
+  @override
+  Future<bool> exportReport(
+    int userId,
+    TransactionFilterDto dto,
+    String format,
+  ) {
+    return remoteDatasource.exportReport(userId, dto, format);
+  }
 }

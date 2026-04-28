@@ -27,6 +27,11 @@ abstract class TransactionRemoteDatasource {
     int userId,
     TransactionTotalsDto dto,
   );
+  Future<bool> exportReport(
+    int userId,
+    TransactionFilterDto dto,
+    String format,
+  );
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
@@ -154,5 +159,19 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     );
     if (!res.success || res.data == null) throw Exception(res.message);
     return res.data!;
+  }
+
+  @override
+  Future<bool> exportReport(
+    int userId,
+    TransactionFilterDto dto,
+    String format,
+  ) async {
+    final res = await api.post<void>(
+      '${ApiRoutes.transaction}/$userId/export',
+      queryParameters: {'format': format},
+      body: dto.toJson(),
+    );
+    return res.success;
   }
 }

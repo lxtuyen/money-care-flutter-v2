@@ -9,12 +9,14 @@ class AppController extends GetxController {
 
   var userId = Rxn<int>();
   var isUserInitialized = false.obs;
+  var isBalanceVisible = true.obs;
   var errorMessage = RxnString();
 
   @override
   void onInit() {
     super.onInit();
     initializeUser();
+    isBalanceVisible.value = storage.getBalanceVisibility();
   }
 
   Future<void> initializeUser() async {
@@ -52,5 +54,10 @@ class AppController extends GetxController {
       await initializeUser();
     }
     return userId.value;
+  }
+
+  void toggleBalanceVisibility() {
+    isBalanceVisible.value = !isBalanceVisible.value;
+    storage.saveBalanceVisibility(isBalanceVisible.value);
   }
 }

@@ -4,6 +4,8 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/text_string.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/statistics/presentation/widgets/category_share_chip.dart';
+import 'package:get/get.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 class StatisticsOverviewCard extends StatelessWidget {
   final String startDate;
@@ -23,7 +25,15 @@ class StatisticsOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasData = categories.isNotEmpty;
+    final AppController appController = Get.find<AppController>();
+
+    return Obx(() {
+      final isVisible = appController.isBalanceVisible.value;
+      final String maskedText = '•••••• VND';
+      final String displayTotal = isVisible ? totalAmount : maskedText;
+      final String displayIncome = isVisible ? incomeAmount : maskedText;
+
+      final bool hasData = categories.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -125,14 +135,14 @@ class StatisticsOverviewCard extends StatelessWidget {
                     children: [
                       _buildAmountRow(
                         label: 'Chi tiêu',
-                        amount: totalAmount,
+                        amount: displayTotal,
                         color: AppColors.error,
                         icon: Icons.arrow_upward_rounded,
                       ),
                       const SizedBox(height: 10),
                       _buildAmountRow(
                         label: 'Thu nhập',
-                        amount: incomeAmount,
+                        amount: displayIncome,
                         color: AppColors.success,
                         icon: Icons.arrow_downward_rounded,
                       ),
@@ -164,8 +174,8 @@ class StatisticsOverviewCard extends StatelessWidget {
             ],
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildAmountRow({

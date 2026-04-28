@@ -11,6 +11,7 @@ class SpendingOverviewCard extends StatelessWidget {
   final DateTime? endDate;
   final double amountSpent;
   final List<TotalByDateEntity> totals;
+  final bool isBalanceVisible;
 
   const SpendingOverviewCard({
     super.key,
@@ -18,16 +19,15 @@ class SpendingOverviewCard extends StatelessWidget {
     this.startDate,
     this.endDate,
     required this.amountSpent,
+    this.isBalanceVisible = true,
   });
 
   List<DateTime> get dateRange {
     if (startDate == null || endDate == null) return [];
     final days = <DateTime>[];
-    for (
-      var d = startDate!;
-      d.isBefore(endDate!.add(const Duration(days: 1)));
-      d = d.add(const Duration(days: 1))
-    ) {
+    for (var d = startDate!;
+        d.isBefore(endDate!.add(const Duration(days: 1)));
+        d = d.add(const Duration(days: 1))) {
       days.add(d);
     }
     return days;
@@ -58,7 +58,9 @@ class SpendingOverviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppHelperFunction.formatAmount(amountSpent.toDouble(), 'VND'),
+              isBalanceVisible
+                  ? AppHelperFunction.formatAmount(amountSpent.toDouble(), 'VND')
+                  : '•••••• VND',
               style: const TextStyle(
                 fontSize: AppSizes.lg,
                 fontWeight: FontWeight.bold,
@@ -73,59 +75,68 @@ class SpendingOverviewCard extends StatelessWidget {
             const SizedBox(height: AppSizes.spaceBtwItems),
             SizedBox(
               height: 220,
-              child: AppBarChart(
-                minY: 0,
-                getBottomTitles: (value, meta) {
-                  final index = value.toInt();
-                  if (index >= 0 && index < dateRange.length) {
-                    final date = dateRange[index];
-                    final label = AppHelperFunction.formatDayMonth(date);
-                    return Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AppColors.text4,
+              child: Stack(
+                children: [
+                  AppBarChart(
+                    minY: 0,
+                    getBottomTitles: (value, meta) {
+                      final index = value.toInt();
+                      if (index >= 0 && index < dateRange.length) {
+                        final date = dateRange[index];
+                        final label = AppHelperFunction.formatDayMonth(date);
+                        return Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: AppColors.text4,
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                    barGroups: List.generate(
+                      spendingData.length,
+                      (i) => BarChartGroupData(
+                        x: i,
+                        barRods: [
+                          BarChartRodData(
+                            toY: spendingData[i].toDouble(),
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.primary,
+                                AppColors.primary.withOpacity(0.6),
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                            width: 16,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ],
                       ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-                barGroups: List.generate(
-                  spendingData.length,
-                  (i) => BarChartGroupData(
-                    x: i,
-                    barRods: [
-                      BarChartRodData(
-                        toY: spendingData[i].toDouble(),
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.primary,
-                            AppColors.primary.withOpacity(0.6),
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ],
+                    ),
+                    tooltipData: BarTouchTooltipData(
+                      getTooltipColor: (_) => AppColors.primary,
+                      tooltipBorderRadius: BorderRadius.circular(16),
+                      fitInsideHorizontally: true,
+                      fitInsideVertically: true,
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        final dateStr = AppHelperFunction.getFormattedDate(
+                            dateRange[group.x.toInt()]);
+                        final amountStr = isBalanceVisible
+                            ? AppHelperFunction.formatAmount(rod.toY, 'VND')
+                            : '••••••';
+                        return BarTooltipItem(
+                          "$dateStr\n$amountStr",
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                tooltipData: BarTouchTooltipData(
-                  getTooltipColor: (_) => AppColors.primary,
-                  tooltipBorderRadius: BorderRadius.circular(16),
-                  fitInsideHorizontally: true,
-                  fitInsideVertically: true,
-                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    return BarTooltipItem(
-                      "${AppHelperFunction.getFormattedDate(dateRange[group.x.toInt()])}\n${AppHelperFunction.formatAmount(rod.toY, 'VND')}",
-                      const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    );
-                  },
-                ),
+                ],
               ),
             ),
           ],

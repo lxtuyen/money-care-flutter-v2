@@ -87,92 +87,114 @@ class SavingGoalSummaryCard extends StatelessWidget {
   }
 
   Widget _buildFromFundOnly() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          if (fund.savedAmount > 0)
-            _BudgetRow(
-              label: 'Đã tiết kiệm',
-              value: AppHelperFunction.formatAmount(fund.savedAmount, 'VND'),
-              progress: fund.target != null && fund.target! > 0
-                  ? (fund.savedAmount / fund.target!).clamp(0, 1)
-                  : 0,
-              color: AppColors.primary,
-            ),
-          if (fund.target != null && fund.target! > 0) ...[
-            const SizedBox(height: 12),
-            _BudgetRow(
-              label: 'Mục tiêu',
-              value: AppHelperFunction.formatAmount(fund.target!, 'VND'),
-              progress: 0,
-              color: AppColors.success,
-            ),
+    final AppController appController = Get.find<AppController>();
+    return Obx(() {
+      final isVisible = appController.isBalanceVisible.value;
+      final String maskedText = '•••••• VND';
+
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            if (fund.savedAmount > 0)
+              _BudgetRow(
+                label: 'Đã tiết kiệm',
+                value: isVisible
+                    ? AppHelperFunction.formatAmount(fund.savedAmount, 'VND')
+                    : maskedText,
+                progress: fund.target != null && fund.target! > 0
+                    ? (fund.savedAmount / fund.target!).clamp(0, 1)
+                    : 0,
+                color: AppColors.primary,
+              ),
+            if (fund.target != null && fund.target! > 0) ...[
+              const SizedBox(height: 12),
+              _BudgetRow(
+                label: 'Mục tiêu',
+                value: isVisible
+                    ? AppHelperFunction.formatAmount(fund.target!, 'VND')
+                    : maskedText,
+                progress: 0,
+                color: AppColors.success,
+              ),
+            ],
           ],
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
   Widget _buildFromReport(SavingGoalReportModel r) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _CircleMetric(
-                  label: 'Mục tiêu',
-                  percent: (r.targetCompletionPercentage / 100).clamp(0.0, 1.0),
-                  centerText: '${r.targetCompletionPercentage}%',
-                  color: r.isTargetAchieved
-                      ? AppColors.success
-                      : AppColors.secondaryOrange,
-                  subtitle: AppHelperFunction.formatAmount(r.target, 'VND'),
-                  subtitleLabel: 'mục tiêu',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickStat(
-                  icon: Icons.receipt_long_rounded,
-                  label: 'Giao dịch',
-                  value: '${r.totalTransactions}',
-                ),
-              ),
-              Expanded(
-                child: _QuickStat(
-                  icon: Icons.today_rounded,
-                  label: 'TB/ngày',
-                  value: AppHelperFunction.formatAmount(
-                    r.dailyAverageSpending,
-                    'VND',
+    final AppController appController = Get.find<AppController>();
+    return Obx(() {
+      final isVisible = appController.isBalanceVisible.value;
+      final String maskedText = '•••••• VND';
+
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _CircleMetric(
+                    label: 'Mục tiêu',
+                    percent:
+                        (r.targetCompletionPercentage / 100).clamp(0.0, 1.0),
+                    centerText: '${r.targetCompletionPercentage}%',
+                    color: r.isTargetAchieved
+                        ? AppColors.success
+                        : AppColors.secondaryOrange,
+                    subtitle: isVisible
+                        ? AppHelperFunction.formatAmount(r.target, 'VND')
+                        : maskedText,
+                    subtitleLabel: 'mục tiêu',
                   ),
                 ),
-              ),
-              Expanded(
-                child: _QuickStat(
-                  icon: Icons.calendar_month_rounded,
-                  label: 'Còn lại',
-                  value: AppHelperFunction.formatAmount(
-                    r.remainingBudget,
-                    'VND',
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _QuickStat(
+                    icon: Icons.receipt_long_rounded,
+                    label: 'Giao dịch',
+                    value: '${r.totalTransactions}',
                   ),
-                  valueColor: r.remainingBudget < 0
-                      ? AppColors.error
-                      : AppColors.success,
                 ),
-              ),
-            ],
-          ),
+                Expanded(
+                  child: _QuickStat(
+                    icon: Icons.today_rounded,
+                    label: 'TB/ngày',
+                    value: isVisible
+                        ? AppHelperFunction.formatAmount(
+                            r.dailyAverageSpending,
+                            'VND',
+                          )
+                        : maskedText,
+                  ),
+                ),
+                Expanded(
+                  child: _QuickStat(
+                    icon: Icons.calendar_month_rounded,
+                    label: 'Còn lại',
+                    value: isVisible
+                        ? AppHelperFunction.formatAmount(
+                            r.remainingBudget,
+                            'VND',
+                          )
+                        : maskedText,
+                    valueColor: r.remainingBudget < 0
+                        ? AppColors.error
+                        : AppColors.success,
+                  ),
+                ),
+              ],
+            ),
 
           if (r.milestones.isNotEmpty) ...[
             const SizedBox(height: 24),

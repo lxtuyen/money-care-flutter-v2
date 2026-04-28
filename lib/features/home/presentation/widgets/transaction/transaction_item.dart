@@ -27,16 +27,23 @@ class TransactionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final FinanceModeController? financeModeController =
         Get.isRegistered<FinanceModeController>()
-        ? Get.find<FinanceModeController>()
-        : null;
+            ? Get.find<FinanceModeController>()
+            : null;
+    final AppController appController = Get.find<AppController>();
 
-    Widget content = _buildContent(isSavingMode: false);
+    Widget content;
 
     if (financeModeController != null) {
       content = Obx(() {
         final isSaving =
             financeModeController.currentMode.value == FinanceMode.saving;
-        return _buildContent(isSavingMode: isSaving);
+        final isVisible = appController.isBalanceVisible.value;
+        return _buildContent(isSavingMode: isSaving, isVisible: isVisible);
+      });
+    } else {
+      content = Obx(() {
+        final isVisible = appController.isBalanceVisible.value;
+        return _buildContent(isSavingMode: false, isVisible: isVisible);
       });
     }
 
@@ -47,7 +54,7 @@ class TransactionItem extends StatelessWidget {
     );
   }
 
-  Widget _buildContent({required bool isSavingMode}) {
+  Widget _buildContent({required bool isSavingMode, required bool isVisible}) {
     final bool isIncome = item.type == 'income';
     final Color typeColor = isIncome ? AppColors.success : AppColors.error;
     final bool showSkippableLabel =
@@ -110,7 +117,9 @@ class TransactionItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), '')} ₫',
+                    isVisible
+                        ? '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), '')} ₫'
+                        : '${isIncome ? '+' : '-'} •••••• ₫',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

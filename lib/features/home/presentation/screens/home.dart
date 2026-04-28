@@ -249,6 +249,7 @@ class HomeScreen extends GetView<HomeController> {
             Obx(() {
               final totals =
                   controller.statisticsController.globalTotalByType.value;
+              final isVisible = controller.appController.isBalanceVisible.value;
 
               if (controller.statisticsController.isLoading.value) {
                 return const SizedBox(
@@ -258,12 +259,21 @@ class HomeScreen extends GetView<HomeController> {
               }
 
               if (totals == null) {
-                return SpendingSummary(incomeTotal: 0, expenseTotal: 0);
+                return SpendingSummary(
+                  incomeTotal: 0,
+                  expenseTotal: 0,
+                  isBalanceVisible: isVisible,
+                  onToggleVisibility: () =>
+                      controller.appController.toggleBalanceVisibility(),
+                );
               }
 
               return SpendingSummary(
                 incomeTotal: totals.incomeTotal,
                 expenseTotal: totals.expenseTotal,
+                isBalanceVisible: isVisible,
+                onToggleVisibility: () =>
+                    controller.appController.toggleBalanceVisibility(),
               );
             }),
 
@@ -317,6 +327,7 @@ class HomeScreen extends GetView<HomeController> {
                   endDate: controller.endDate,
                   totals: [],
                   amountSpent: 0,
+                  isBalanceVisible: controller.appController.isBalanceVisible.value,
                 );
               }
 
@@ -328,6 +339,7 @@ class HomeScreen extends GetView<HomeController> {
                 endDate: controller.endDate,
                 totals: totals,
                 amountSpent: totalSpent,
+                isBalanceVisible: controller.appController.isBalanceVisible.value,
               );
             }),
 
@@ -373,6 +385,7 @@ class HomeScreen extends GetView<HomeController> {
                       limit: category.limit,
                       spent: category.total,
                       iconPath: category.categoryIcon,
+                      isBalanceVisible: controller.appController.isBalanceVisible.value,
                     );
                   }).toList(),
                 ],
@@ -465,6 +478,7 @@ class HomeScreen extends GetView<HomeController> {
                       spent: category.total,
                       iconPath: category.categoryIcon,
                       isIncome: false,
+                      isBalanceVisible: controller.appController.isBalanceVisible.value,
                     );
                   }).toList(),
                   if (mode == FinanceMode.survival &&
@@ -515,6 +529,7 @@ class HomeScreen extends GetView<HomeController> {
                       spent: category.total,
                       iconPath: category.categoryIcon,
                       isIncome: true,
+                      isBalanceVisible: controller.appController.isBalanceVisible.value,
                     );
                   }).toList(),
                 ],

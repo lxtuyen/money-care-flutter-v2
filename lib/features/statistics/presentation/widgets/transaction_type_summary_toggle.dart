@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:get/get.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 class TransactionTypeSummaryToggle extends StatelessWidget {
   final String selected;
@@ -18,35 +20,46 @@ class TransactionTypeSummaryToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            _buildSelectCard(
-              label: 'Chi tiêu',
-              value: AppHelperFunction.formatAmount(
-                spendText.toDouble(),
-                'VND',
+    final AppController appController = Get.find<AppController>();
+
+    return Obx(() {
+      final isVisible = appController.isBalanceVisible.value;
+      final String maskedText = '•••••• VND';
+
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              _buildSelectCard(
+                label: 'Chi tiêu',
+                value: isVisible
+                    ? AppHelperFunction.formatAmount(
+                        spendText.toDouble(),
+                        'VND',
+                      )
+                    : maskedText,
+                isActive: selected == 'chi',
+                onTap: () => onSelected('chi'),
               ),
-              isActive: selected == 'chi',
-              onTap: () => onSelected('chi'),
-            ),
-            const SizedBox(width: 12),
-            _buildSelectCard(
-              label: 'Thu nhập',
-              value: AppHelperFunction.formatAmount(
-                incomeText.toDouble(),
-                'VND',
+              const SizedBox(width: 12),
+              _buildSelectCard(
+                label: 'Thu nhập',
+                value: isVisible
+                    ? AppHelperFunction.formatAmount(
+                        incomeText.toDouble(),
+                        'VND',
+                      )
+                    : maskedText,
+                isActive: selected == 'thu',
+                onTap: () => onSelected('thu'),
               ),
-              isActive: selected == 'thu',
-              onTap: () => onSelected('thu'),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildSelectCard({

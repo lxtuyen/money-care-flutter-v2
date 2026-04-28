@@ -47,6 +47,7 @@ class LocalStorage {
   static const String keyAccessToken = 'access_token';
   static const String keyUserInfo = 'user_info';
   static const String keyHasSeenOnboarding = 'hasSeenOnboarding';
+  static const String keyIsBalanceVisible = 'is_balance_visible';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -90,5 +91,13 @@ class LocalStorage {
 
   bool isOnboardingDone(int userId) {
     return readBool(_onboardingDoneKey(userId)) ?? false;
+  }
+
+  Future<void> saveBalanceVisibility(bool isVisible) async {
+    await writeBool(keyIsBalanceVisible, isVisible);
+  }
+
+  bool getBalanceVisibility() {
+    return readBool(keyIsBalanceVisible) ?? true;
   }
 }

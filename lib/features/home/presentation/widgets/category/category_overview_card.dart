@@ -11,6 +11,7 @@ class CategoryOverviewCard extends StatelessWidget {
   final int spent;
   final String iconPath;
   final bool isIncome;
+  final bool isBalanceVisible;
 
   const CategoryOverviewCard({
     super.key,
@@ -19,25 +20,30 @@ class CategoryOverviewCard extends StatelessWidget {
     required this.spent,
     required this.iconPath,
     this.isIncome = false,
+    this.isBalanceVisible = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final String limitText = AppHelperFunction.formatAmount(limit, 'VND');
-    final String spentText = AppHelperFunction.formatAmount(
-      spent.toDouble(),
-      'VND',
-    );
+    final String maskedText = '••••••';
+    final String limitText = isBalanceVisible
+        ? AppHelperFunction.formatAmount(limit, 'VND')
+        : maskedText;
+    final String spentText = isBalanceVisible
+        ? AppHelperFunction.formatAmount(spent.toDouble(), 'VND')
+        : maskedText;
+
     final bool isOverLimit = limit > 0 && spent >= limit;
     final bool isNearLimit =
         limit > 0 && spent >= (limit * 0.8) && !isOverLimit;
 
     Color themeColor = isIncome ? AppColors.success : AppColors.error;
     if (!isIncome) {
-      if (isNearLimit)
+      if (isNearLimit) {
         themeColor = AppColors.warning;
-      else if (isOverLimit)
+      } else if (isOverLimit) {
         themeColor = AppColors.error;
+      }
     }
 
     final String spentLabel = isIncome ? "Đã nhận:" : "Đã tiêu:";

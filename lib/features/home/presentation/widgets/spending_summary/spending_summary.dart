@@ -11,15 +11,22 @@ class SpendingSummary extends StatelessWidget {
     super.key,
     required this.incomeTotal,
     required this.expenseTotal,
+    this.isBalanceVisible = true,
+    this.onToggleVisibility,
     this.onPressed,
   });
 
   final int incomeTotal;
   final int expenseTotal;
+  final bool isBalanceVisible;
+  final VoidCallback? onToggleVisibility;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final balance = incomeTotal - expenseTotal;
+    final maskedText = '********';
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -29,44 +36,61 @@ class SpendingSummary extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Số tiền bạn chi trong tháng',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: onPressed,
-                child: Row(
-                  children: const [
-                    Text(
-                      'Xem chi tiết',
-                      style: TextStyle(color: AppColors.primary, fontSize: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'Số tiền bạn chi trong tháng',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text2,
+                      ),
                     ),
-                    SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: AppColors.primary,
-                      size: AppSizes.md,
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: onToggleVisibility,
+                      child: Icon(
+                        isBalanceVisible
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        size: 18,
+                        color: AppColors.text3,
+                      ),
                     ),
                   ],
                 ),
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppSizes.borderRadiusMd),
-                child: AppSvgIcon(
-                  assetPath: AppIcons.chart2,
-                  width: 150,
-                  height: 70,
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: onPressed,
+                  child: Row(
+                    children: const [
+                      Text(
+                        'Xem chi tiết',
+                        style: TextStyle(color: AppColors.primary, fontSize: 14),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.primary,
+                        size: AppSizes.md,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppSizes.borderRadiusMd),
+                  child: AppSvgIcon(
+                    assetPath: AppIcons.chart2,
+                    width: 150,
+                    height: 70,
+                  ),
+                ),
+              ],
+            ),
           ),
           DottedBorder(
             options: RoundedRectDottedBorderOptions(
@@ -75,7 +99,7 @@ class SpendingSummary extends StatelessWidget {
               color: AppColors.text4,
             ),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.32,
+              width: MediaQuery.of(context).size.width * 0.35,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 32),
               decoration: BoxDecoration(
                 color: AppColors.white,
@@ -87,10 +111,12 @@ class SpendingSummary extends StatelessWidget {
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      AppHelperFunction.formatAmount(
-                        expenseTotal.toDouble(),
-                        '',
-                      ),
+                      isBalanceVisible
+                          ? AppHelperFunction.formatAmount(
+                              expenseTotal.toDouble(),
+                              '',
+                            )
+                          : maskedText,
                       style: const TextStyle(
                         color: AppColors.secondaryOrange,
                         fontWeight: FontWeight.bold,
@@ -102,7 +128,9 @@ class SpendingSummary extends StatelessWidget {
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      'Số dư: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(incomeTotal - expenseTotal).toDouble(), 'VND')}',
+                      isBalanceVisible
+                          ? 'Số dư: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(balance).toDouble(), 'VND')}'
+                          : 'Số dư: $maskedText',
                       style: const TextStyle(
                         color: AppColors.text3,
                         fontSize: 10,

@@ -87,8 +87,23 @@ class NluService {
       }
       print("💡 [Correction] Detected query intent (getExpense/getIncome)");
     } 
-    // 2. Nếu không phải câu hỏi, kiểm tra Unknown/Low-conf để ép vào addExpense
-    else if (finalIntent == Intent.unknown || intentResult.confidence < 0.2) {
+    // 2. Nếu không phải câu hỏi, kiểm tra xem có từ khóa THU NHẬP không (Ưu tiên cao)
+    else if (textLower.contains('lương') || 
+             textLower.contains('thưởng') || 
+             textLower.contains('thu nhập') ||
+             textLower.contains('nhận') ||
+             textLower.contains('lời') ||
+             textLower.contains('lãi') ||
+             textLower.contains('lì xì') ||
+             textLower.contains('quà') ||
+             textLower.contains('biếu') ||
+             textLower.contains('tặng') ||
+             textLower.contains('tạm ứng')) {
+      finalIntent = Intent.addIncome;
+      print("💡 [Correction] Forced to addIncome based on keywords");
+    }
+    // 3. Nếu không phải thu nhập, kiểm tra từ khóa CHI TIÊU
+    else if (finalIntent == Intent.unknown || intentResult.confidence < 0.25) {
       if (textLower.contains('chi') || 
           textLower.contains('tiêu') || 
           textLower.contains('nộp') || 
@@ -96,27 +111,11 @@ class NluService {
           textLower.contains('trả') ||
           textLower.contains('mất') ||
           textLower.contains('hết') ||
-          textLower.contains('mua')) {
+          textLower.contains('mua') ||
+          textLower.contains('tiền') || // Thêm "tiền" (ví dụ: tiền điện, tiền nhà)
+          textLower.contains('phí')) {
         finalIntent = Intent.addExpense;
-        print("💡 [Correction] Switched to addExpense");
-      }
-    }
-
-    // 3. Nếu là addExpense nhưng chứa từ khóa đặc thù thu nhập -> addIncome
-    if (finalIntent == Intent.addExpense) {
-      if (textLower.contains('lời') || 
-          textLower.contains('lãi') || 
-          textLower.contains('lương') || 
-          textLower.contains('thu nhập') ||
-          textLower.contains('thưởng') ||
-          textLower.contains('nhận được') ||
-          textLower.contains('lì xì') ||
-          textLower.contains('quà') ||
-          textLower.contains('biếu') ||
-          textLower.contains('tặng') ||
-          textLower.contains('tạm ứng')) {
-        finalIntent = Intent.addIncome;
-        print("💡 [Correction] Switched to addIncome");
+        print("💡 [Correction] Forced to addExpense based on keywords");
       }
     }
 
@@ -131,7 +130,7 @@ class NluService {
     print('🤖 NLU Result for: "$text"');
     print('Detected Intent: ${result.intent.value}');
     print('Confidence: ${(result.confidence * 100).toStringAsFixed(1)}%');
-    print('Entities: ${result.entities}'); // In ra thực thể bóc tách được
+    print('Entities: ${result.entities}');
     print('Confident enough? ${result.isConfident ? "✅ YES (Offline)" : "❌ NO (Fallback to Gemini)"}');
     print('-------------------------------------------');
 

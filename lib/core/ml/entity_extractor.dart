@@ -27,12 +27,15 @@ class EntityExtractor {
         '',
       ).trim();
     }
+    // rawCategory giữ cụm từ trước khi loại stop words → cho semantic matching
+    final rawCategory = _extractRawCategory(cleaned);
     final category = _extractCategory(cleaned);
 
     return EntityResult(
       amount: amount,
       rawAmount: rawAmount,
       category: category,
+      rawCategory: rawCategory,
       dateRange: dateRange,
       rawTime: rawTime,
     );
@@ -113,10 +116,24 @@ class EntityExtractor {
     'về', 'lên', 'xuống', 'cho', 'để', 'mà', 'nhưng', 'nếu',
   };
 
+  /// Trích xuất raw category — loại bỏ punctuation nhưng GIỮ stop words
+  /// để giữ nguyên ngữ nghĩa cho semantic matching.
+  static String? _extractRawCategory(String cleaned) {
+    final tokens = cleaned
+        .replaceAll(RegExp(r'[!?.,;:()\[\]{}"]+'), ' ')
+        .split(RegExp(r'\s+'))
+        .where((t) => t.length > 1)
+        .toList();
+
+    if (tokens.isEmpty) return null;
+    final result = tokens.join(' ').trim();
+    return result.isEmpty ? null : result.toLowerCase();
+  }
+
   static String? _extractCategory(String cleaned) {
     // Split into tokens, remove stop words and punctuation
     final tokens = cleaned
-        .replaceAll(RegExp(r'[!?.,;:()[]{}"]+'), ' ')
+        .replaceAll(RegExp(r'[!?.,;:()\[\]{}"]+'), ' ')
         .split(RegExp(r'\s+'))
         .where((t) => t.length > 1 && !_stopWords.contains(t.toLowerCase()))
         .toList();
@@ -145,6 +162,10 @@ class EntityResult {
   /// Extracted category text (e.g. "Ăn trưa")
   final String? category;
 
+  /// Raw category text trước khi loại stop words (e.g. "nộp tiền điện")
+  /// Dùng cho semantic matching với embedding model.
+  final String? rawCategory;
+
   /// Resolved date range from time expression
   final DateRange? dateRange;
 
@@ -155,14 +176,17 @@ class EntityResult {
     this.amount,
     this.rawAmount,
     this.category,
+    this.rawCategory,
     this.dateRange,
     this.rawTime,
   });
 
+  /// Returns the start of the date range, or today's date if not specified.
+  DateTime get effectiveDate => dateRange?.start ?? DateTime.now();
+
   @override
-  String toString() => 'EntityResult('
-      'amount=$amount, '
-      'category=$category, '
-      'time=$rawTime'
-      ')';
+  String toString() {
+    final timeDisplay = rawTime ?? "Hôm nay (mặc định)";
+    return 'EntityResult(amount=$amount, category=$category, rawCategory=$rawCategory, time=$timeDisplay)';
+  }
 }

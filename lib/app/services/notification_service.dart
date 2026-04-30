@@ -24,7 +24,11 @@ class NotificationService extends GetxService {
     await _initLocalNotifications();
     await _setupFCMListener();
 
-    fcmToken = await _firebaseMessaging.getToken();
+    try {
+      fcmToken = await _firebaseMessaging.getToken();
+    } catch (e) {
+      print('DEBUG: Lỗi khi lấy FCM token trong init: $e');
+    }
 
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       fcmToken = newToken;
@@ -118,7 +122,11 @@ class NotificationService extends GetxService {
   }
 
   Future<void> syncToken() async {
-    fcmToken ??= await _firebaseMessaging.getToken();
+    try {
+      fcmToken ??= await _firebaseMessaging.getToken();
+    } catch (e) {
+      print('DEBUG: Lỗi khi lấy FCM token trong syncToken: $e');
+    }
     print('syncToken gọi: $fcmToken');
     if (fcmToken != null) {
       await _sendTokenToServer(fcmToken!);
@@ -153,7 +161,11 @@ class NotificationService extends GetxService {
   }
 
   Future<void> removeTokenFromServer() async {
-    fcmToken ??= await _firebaseMessaging.getToken();
+    try {
+      fcmToken ??= await _firebaseMessaging.getToken();
+    } catch (e) {
+      print('DEBUG: Lỗi khi lấy FCM token trong removeTokenFromServer: $e');
+    }
     if (fcmToken != null) {
       try {
         final apiClient = Get.find<ApiClient>();

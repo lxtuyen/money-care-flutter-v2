@@ -30,8 +30,8 @@ class StatisticsOverviewCard extends StatelessWidget {
     return Obx(() {
       final isVisible = appController.isBalanceVisible.value;
       final String maskedText = '•••••• VND';
-      final String displayTotal = isVisible ? totalAmount : maskedText;
-      final String displayIncome = isVisible ? incomeAmount : maskedText;
+      final String displayTotal = totalAmount;
+      final String displayIncome = incomeAmount;
 
       final bool hasData = categories.isNotEmpty;
 
@@ -44,7 +44,7 @@ class StatisticsOverviewCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -54,16 +54,8 @@ class StatisticsOverviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
-                  'Tổng quan tháng',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.text1,
-                  ),
-                ),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -137,14 +129,14 @@ class StatisticsOverviewCard extends StatelessWidget {
                         label: 'Chi tiêu',
                         amount: displayTotal,
                         color: AppColors.error,
-                        icon: Icons.arrow_upward_rounded,
+                        icon: Icons.arrow_downward_rounded,
                       ),
                       const SizedBox(height: 10),
                       _buildAmountRow(
                         label: 'Thu nhập',
                         amount: displayIncome,
                         color: AppColors.success,
-                        icon: Icons.arrow_downward_rounded,
+                        icon: Icons.arrow_upward_rounded,
                       ),
                     ],
                   ),
@@ -179,7 +171,7 @@ class StatisticsOverviewCard extends StatelessWidget {
   });
 }
 
-  Widget _buildAmountRow({
+Widget _buildAmountRow({
     required String label,
     required String amount,
     required Color color,

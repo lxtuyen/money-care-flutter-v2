@@ -20,6 +20,7 @@ import 'package:money_care/features/statistics/presentation/widgets/transaction_
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -208,7 +209,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 25),
 
-              // ====== Period comparison card ======
               Obx(() {
                 final current = statisticsController.totalByType.value;
                 final previous = statisticsController.previousTotalByType.value;
@@ -271,9 +271,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   key: ValueKey(statisticsController.currentStartDate),
                   startDate: AppHelperFunction.getFormattedDate(
                     statisticsController.currentStartDate,
+                    format: 'dd/MM',
                   ),
                   endDate: AppHelperFunction.getFormattedDate(
                     statisticsController.currentEndDate,
+                    format: 'dd/MM',
                   ),
                   totalAmount: AppHelperFunction.formatAmount(
                     (data?.expenseTotal ?? 0).toDouble(),
@@ -287,9 +289,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 25),
 
-              // ====== Monthly Budget Tracking Card ======
               Obx(() {
-                // Only show in monthly expense mode
                 if (statisticsController.periodType.value != 'hàng tháng') {
                   return const SizedBox.shrink();
                 }

@@ -85,6 +85,7 @@ const Map<String, String> enUS = {
       'We provide a solution to help you manage your spending easily and effectively.',
 
   // ============ Home ============
+  'home.title': 'Home',
   'home.recentTransactions': 'Recent Transactions',
   'home.overview': 'Overview',
   'home.spendingLimit': 'Spending Limit',
@@ -102,6 +103,7 @@ const Map<String, String> enUS = {
 
   // ============ Profile / User Center ============
   'profile.title': 'Personal Finance',
+  'user.centerTitle': 'Profile',
   'profile.info': 'Personal Info',
   'profile.savingGoals': 'Saving Goals',
   'profile.expiredGoals': 'Expired Goals',

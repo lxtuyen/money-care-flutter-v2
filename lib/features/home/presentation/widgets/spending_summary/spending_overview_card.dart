@@ -60,10 +60,8 @@ class SpendingOverviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isBalanceVisible
-                  ? AppHelperFunction.formatAmount(amountSpent.toDouble(), 'VND')
-                  : '•••••• VND',
-              style: const TextStyle(
+              AppHelperFunction.formatAmount(amountSpent.toDouble(), currency: 'VND'),
+              style: TextStyle(
                 fontSize: AppSizes.lg,
                 fontWeight: FontWeight.bold,
                 color: AppThemeColors.of(context).textPrimary,
@@ -88,7 +86,7 @@ class SpendingOverviewCard extends StatelessWidget {
                         final label = AppHelperFunction.formatDayMonth(date);
                         return Text(
                           label,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             color: AppThemeColors.of(context).textSecondary,
                           ),
@@ -124,10 +122,8 @@ class SpendingOverviewCard extends StatelessWidget {
                       fitInsideVertically: true,
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         final dateStr = AppHelperFunction.getFormattedDate(
-                            dateRange[group.x.toInt()]);
-                        final amountStr = isBalanceVisible
-                            ? AppHelperFunction.formatAmount(rod.toY, 'VND')
-                            : '••••••';
+                            dateRange[group.x.toInt()], format: 'dd/MM');
+                        final amountStr = AppHelperFunction.formatAmount(rod.toY, currency: 'VND');
                         return BarTooltipItem(
                           "$dateStr\n$amountStr",
                           const TextStyle(

@@ -34,24 +34,20 @@ class TransactionTypeSummaryToggle extends StatelessWidget {
             children: [
               _buildSelectCard(
                 label: 'Chi tiêu',
-                value: isVisible
-                    ? AppHelperFunction.formatAmount(
+                value: AppHelperFunction.formatAmount(
                         spendText.toDouble(),
-                        'VND',
-                      )
-                    : maskedText,
+                        currency: 'VND',
+                      ),
                 isActive: selected == 'chi',
                 onTap: () => onSelected('chi'),
               ),
               const SizedBox(width: 12),
               _buildSelectCard(
                 label: 'Thu nhập',
-                value: isVisible
-                    ? AppHelperFunction.formatAmount(
+                value: AppHelperFunction.formatAmount(
                         incomeText.toDouble(),
-                        'VND',
-                      )
-                    : maskedText,
+                        currency: 'VND',
+                      ),
                 isActive: selected == 'thu',
                 onTap: () => onSelected('thu'),
               ),

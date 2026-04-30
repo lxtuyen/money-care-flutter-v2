@@ -26,12 +26,8 @@ class CategoryOverviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String maskedText = '••••••';
-    final String limitText = isBalanceVisible
-        ? AppHelperFunction.formatAmount(limit, 'VND')
-        : maskedText;
-    final String spentText = isBalanceVisible
-        ? AppHelperFunction.formatAmount(spent.toDouble(), 'VND')
-        : maskedText;
+    final String limitText = AppHelperFunction.formatAmount(limit, currency: 'VND');
+    final String spentText = AppHelperFunction.formatAmount(spent.toDouble(), currency: 'VND');
 
     final bool isOverLimit = limit > 0 && spent >= limit;
     final bool isNearLimit =

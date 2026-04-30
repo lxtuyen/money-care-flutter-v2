@@ -41,9 +41,9 @@ class StreakCalendarScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 16),
-          _buildMonthHeader(controller),
+          _buildMonthHeader(context, controller),
           const SizedBox(height: 16),
-          _buildWeekdayRow(),
+          _buildWeekdayRow(context),
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
@@ -56,11 +56,11 @@ class StreakCalendarScreen extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    _buildCalendarGrid(controller),
+                    _buildCalendarGrid(context, controller),
                     const SizedBox(height: 16),
                     _buildLegend(),
                     const SizedBox(height: 24),
-                    _buildDayTransactionList(controller),
+                    _buildDayTransactionList(context, controller, appController),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -72,7 +72,7 @@ class StreakCalendarScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMonthHeader(StreakCalendarController controller) {
+  Widget _buildMonthHeader(BuildContext context, StreakCalendarController controller) {
     return Obx(() {
       final monthName = AppHelperFunction.getFormattedDate(
         controller.focusedMonth.value,
@@ -118,7 +118,7 @@ class StreakCalendarScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildWeekdayRow() {
+  Widget _buildWeekdayRow(BuildContext context) {
     final labels = [
       'streak.mon'.tr,
       'streak.tue'.tr,
@@ -151,7 +151,7 @@ class StreakCalendarScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCalendarGrid(StreakCalendarController controller) {
+  Widget _buildCalendarGrid(BuildContext context, StreakCalendarController controller) {
     final focus = controller.focusedMonth.value;
     final firstDay = DateTime(focus.year, focus.month, 1);
     final daysInMonth = DateTime(focus.year, focus.month + 1, 0).day;
@@ -231,7 +231,7 @@ class StreakCalendarScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDayTransactionList(StreakCalendarController controller) {
+  Widget _buildDayTransactionList(BuildContext context, StreakCalendarController controller, AppController appController) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(

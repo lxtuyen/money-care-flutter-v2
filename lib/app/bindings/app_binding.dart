@@ -153,7 +153,7 @@ class AppBinding extends Bindings {
     final transactionRemoteDs = TransactionRemoteDatasourceImpl(
       api: apiService,
     );
-    final ocrService = OCRService();
+    final ocrService = Get.put(OCRService());
     final transactionRepo = TransactionRepositoryImpl(
       remoteDatasource: transactionRemoteDs,
       ocrService: ocrService,

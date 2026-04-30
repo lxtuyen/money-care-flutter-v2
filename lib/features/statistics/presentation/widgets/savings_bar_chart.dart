@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/app/widgets/chart/app_bar_chart.dart';
@@ -48,16 +49,22 @@ class SavingsBarChart extends StatelessWidget {
       return BarChartGroupData(x: index, barRods: rods);
     });
 
+    final themeColors = AppThemeColors.of(context);
+
     return Container(
-      height: 220,
-      padding: const EdgeInsets.only(top: 12, right: 0, bottom: 12, left: 0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-        ],
-      ),
+        height: 220,
+        padding: const EdgeInsets.only(top: 12, right: 0, bottom: 12, left: 0),
+        decoration: BoxDecoration(
+          color: themeColors.cardBackground,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
       child: AppBarChart(
         minY: 0,
         alignment: BarChartAlignment.start,
@@ -77,7 +84,7 @@ class SavingsBarChart extends StatelessWidget {
               xLabels[index],
               style: TextStyle(
                 fontSize: xLabels.length > 24 ? 8 : 10,
-                color: AppColors.text1,
+                color: themeColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -113,7 +120,7 @@ class SavingsBarChart extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: AppHelperFunction.formatAmount(rod.toY, 'VND'),
+                  text: AppHelperFunction.formatAmount(rod.toY, currency: 'VND'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,

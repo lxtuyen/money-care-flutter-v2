@@ -165,7 +165,7 @@ class MilestoneMap extends StatelessWidget {
           style: const TextStyle(fontSize: 10, color: AppColors.text4),
         ),
         Text(
-          AppHelperFunction.formatAmount(amount, 'VND'),
+          AppHelperFunction.formatAmount(amount, currency: 'VND'),
           style: TextStyle(
             fontSize: 12,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,

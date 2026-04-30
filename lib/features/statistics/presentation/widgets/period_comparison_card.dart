@@ -3,9 +3,8 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/texts/section_heading.dart';
 
-/// A premium card that compares current-period vs previous-period
-/// income and expense, with animated change indicators.
 class PeriodComparisonCard extends StatelessWidget {
   final int currentIncome;
   final int currentExpense;
@@ -40,55 +39,28 @@ class PeriodComparisonCard extends StatelessWidget {
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Container(
-          decoration: BoxDecoration(
-            color: themeColors.cardBackground,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.06),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
+        child: Column(
+          children: [
+            AppSectionHeading(
+              title: 'comparison.title'.tr,
+              showActionButton: false,
+            ),
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                color: themeColors.cardBackground,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.compare_arrows_rounded,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'comparison.title'.tr,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: themeColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
 
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -96,9 +68,9 @@ class PeriodComparisonCard extends StatelessWidget {
                   children: [
                     const SizedBox(width: 4),
                     Expanded(
-                      flex: 3,
+                      flex: 4,
                       child: Text(
-                        '',
+                        'Hạng mục',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -110,7 +82,7 @@ class PeriodComparisonCard extends StatelessWidget {
                       flex: 3,
                       child: Text(
                         previousLabel,
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -125,7 +97,7 @@ class PeriodComparisonCard extends StatelessWidget {
                       flex: 3,
                       child: Text(
                         currentLabel,
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -137,10 +109,10 @@ class PeriodComparisonCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     SizedBox(
-                      width: 52,
+                      width: 65,
                       child: Text(
                         'comparison.change'.tr,
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -154,9 +126,8 @@ class PeriodComparisonCard extends StatelessWidget {
 
               const Divider(height: 1, indent: 16, endIndent: 16),
 
-              // Income row
               _buildComparisonRow(
-                icon: Icons.arrow_downward_rounded,
+                icon: Icons.arrow_upward_rounded,
                 iconColor: const Color(0xFF43A047),
                 label: 'comparison.income'.tr,
                 previousValue: previousIncome,
@@ -174,9 +145,8 @@ class PeriodComparisonCard extends StatelessWidget {
                 color: themeColors.borderSecondary,
               ),
 
-              // Expense row
               _buildComparisonRow(
-                icon: Icons.arrow_upward_rounded,
+                icon: Icons.arrow_downward_rounded,
                 iconColor: const Color(0xFFE53935),
                 label: 'comparison.expense'.tr,
                 previousValue: previousExpense,
@@ -194,7 +164,6 @@ class PeriodComparisonCard extends StatelessWidget {
                 color: themeColors.borderSecondary,
               ),
 
-              // Balance row
               _buildComparisonRow(
                 icon: Icons.account_balance_wallet_rounded,
                 iconColor: AppColors.primary,
@@ -208,9 +177,10 @@ class PeriodComparisonCard extends StatelessWidget {
                 isBold: true,
               ),
 
-              const SizedBox(height: 8),
-            ],
-          ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     });
@@ -244,7 +214,6 @@ class PeriodComparisonCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          // Icon
           Container(
             width: 32,
             height: 32,
@@ -256,9 +225,8 @@ class PeriodComparisonCard extends StatelessWidget {
           ),
           const SizedBox(width: 10),
 
-          // Label
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Text(
               label,
               style: TextStyle(
@@ -269,14 +237,11 @@ class PeriodComparisonCard extends StatelessWidget {
             ),
           ),
 
-          // Previous value
           Expanded(
             flex: 3,
             child: Text(
-              isVisible
-                  ? _formatCompact(previousValue)
-                  : maskedText,
-              textAlign: TextAlign.end,
+              _formatCompact(previousValue),
+              textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -289,14 +254,11 @@ class PeriodComparisonCard extends StatelessWidget {
 
           const SizedBox(width: 8),
 
-          // Current value
           Expanded(
             flex: 3,
             child: Text(
-              isVisible
-                  ? _formatCompact(currentValue)
-                  : maskedText,
-              textAlign: TextAlign.end,
+              _formatCompact(currentValue),
+              textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -309,9 +271,8 @@ class PeriodComparisonCard extends StatelessWidget {
 
           const SizedBox(width: 8),
 
-          // Change badge
           SizedBox(
-            width: 52,
+            width: 65,
             child: _buildChangeBadge(
               changePercent,
               changeColor,
@@ -342,7 +303,7 @@ class PeriodComparisonCard extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (!isNeutral)
             Icon(

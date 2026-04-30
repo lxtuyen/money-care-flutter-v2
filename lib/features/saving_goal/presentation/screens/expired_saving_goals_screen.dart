@@ -256,7 +256,7 @@ class _ExpiredGoalCard extends StatelessWidget {
                       icon: Icons.track_changes_rounded,
                       label: 'Mục tiêu',
                       value: goal.target != null
-                          ? AppHelperFunction.formatAmount(goal.target!, 'VND')
+                          ? AppHelperFunction.formatAmount(goal.target!, currency: 'VND')
                           : '—',
                       color: AppColors.primary,
                     ),
@@ -266,7 +266,7 @@ class _ExpiredGoalCard extends StatelessWidget {
                       label: 'Đã tiết kiệm',
                       value: AppHelperFunction.formatAmount(
                         goal.savedAmount,
-                        'VND',
+                        currency: 'VND',
                       ),
                       color: AppColors.success,
                     ),

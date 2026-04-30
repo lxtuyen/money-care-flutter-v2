@@ -4,7 +4,7 @@ part 'financial_analysis_model.freezed.dart';
 part 'financial_analysis_model.g.dart';
 
 @freezed
-class FinancialAnalysisModel with _$FinancialAnalysisModel {
+abstract class FinancialAnalysisModel with _$FinancialAnalysisModel {
   const factory FinancialAnalysisModel({
     @Default('') String summary,
     @JsonKey(name: 'budget_plan') @Default([]) List<BudgetGroupModel> budgetPlan,
@@ -15,7 +15,7 @@ class FinancialAnalysisModel with _$FinancialAnalysisModel {
 }
 
 @freezed
-class BudgetGroupModel with _$BudgetGroupModel {
+abstract class BudgetGroupModel with _$BudgetGroupModel {
   const factory BudgetGroupModel({
     @JsonKey(name: 'group_name') @Default('Khác') String groupName,
     @Default([]) List<BudgetItemModel> items,
@@ -26,7 +26,7 @@ class BudgetGroupModel with _$BudgetGroupModel {
 }
 
 @freezed
-class BudgetItemModel with _$BudgetItemModel {
+abstract class BudgetItemModel with _$BudgetItemModel {
   const factory BudgetItemModel({
     @Default('') String name,
     @Default(0.0) double amount,

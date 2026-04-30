@@ -62,7 +62,7 @@ class SavingGoalItemCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Cần: ${AppHelperFunction.formatAmount(fund.target ?? 0, 'VND')}',
+                        'Cần: ${AppHelperFunction.formatAmount(fund.target ?? 0, currency: 'VND')}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.text3,

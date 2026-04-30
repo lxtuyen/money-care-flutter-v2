@@ -39,13 +39,11 @@ class TransactionItem extends StatelessWidget {
       content = Obx(() {
         final isSaving =
             financeModeController.currentMode.value == FinanceMode.saving;
-        final isVisible = appController.isBalanceVisible.value;
-        return _buildContent(isSavingMode: isSaving, isVisible: isVisible);
+        return _buildContent(context, isSavingMode: isSaving);
       });
     } else {
       content = Obx(() {
-        final isVisible = appController.isBalanceVisible.value;
-        return _buildContent(isSavingMode: false, isVisible: isVisible);
+        return _buildContent(context, isSavingMode: false);
       });
     }
 
@@ -56,7 +54,7 @@ class TransactionItem extends StatelessWidget {
     );
   }
 
-  Widget _buildContent({required bool isSavingMode, required bool isVisible}) {
+  Widget _buildContent(BuildContext context, {required bool isSavingMode}) {
     final bool isIncome = item.type == 'income';
     final Color typeColor = isIncome ? AppColors.success : AppColors.error;
     final bool showSkippableLabel =
@@ -90,7 +88,7 @@ class TransactionItem extends StatelessWidget {
                   children: [
                     Text(
                       item.note ?? "",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: AppSizes.fontSizeSm + 1,
                         fontWeight: FontWeight.w600,
                         color: AppThemeColors.of(context).textPrimary,
@@ -101,7 +99,7 @@ class TransactionItem extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       item.category?.name ?? 'Không có danh mục',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppThemeColors.of(context).textSecondary,
                         fontWeight: FontWeight.w500,
@@ -119,9 +117,7 @@ class TransactionItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    isVisible
-                        ? '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), '')} ₫'
-                        : '${isIncome ? '+' : '-'} •••••• ₫',
+                    '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), currency: '')} ₫',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -131,7 +127,7 @@ class TransactionItem extends StatelessWidget {
                   if (isShowDate && item.transactionDate != null)
                     Text(
                       AppHelperFunction.formatDateTime(item.transactionDate!),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: AppThemeColors.of(context).textMuted,
                         fontWeight: FontWeight.w500,

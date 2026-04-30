@@ -101,9 +101,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
             if (fund.savedAmount > 0)
               _BudgetRow(
                 label: 'Đã tiết kiệm',
-                value: isVisible
-                    ? AppHelperFunction.formatAmount(fund.savedAmount, 'VND')
-                    : maskedText,
+                value: AppHelperFunction.formatAmount(fund.savedAmount, currency: 'VND'),
                 progress: fund.target != null && fund.target! > 0
                     ? (fund.savedAmount / fund.target!).clamp(0, 1)
                     : 0,
@@ -113,9 +111,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
               const SizedBox(height: 12),
               _BudgetRow(
                 label: 'Mục tiêu',
-                value: isVisible
-                    ? AppHelperFunction.formatAmount(fund.target!, 'VND')
-                    : maskedText,
+                value: AppHelperFunction.formatAmount(fund.target!, currency: 'VND'),
                 progress: 0,
                 color: AppColors.success,
               ),
@@ -148,9 +144,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     color: r.isTargetAchieved
                         ? AppColors.success
                         : AppColors.secondaryOrange,
-                    subtitle: isVisible
-                        ? AppHelperFunction.formatAmount(r.target, 'VND')
-                        : maskedText,
+                    subtitle: AppHelperFunction.formatAmount(r.target, currency: 'VND'),
                     subtitleLabel: 'mục tiêu',
                   ),
                 ),
@@ -172,24 +166,20 @@ class SavingGoalSummaryCard extends StatelessWidget {
                   child: _QuickStat(
                     icon: Icons.today_rounded,
                     label: 'TB/ngày',
-                    value: isVisible
-                        ? AppHelperFunction.formatAmount(
+                    value: AppHelperFunction.formatAmount(
                             r.dailyAverageSpending,
-                            'VND',
-                          )
-                        : maskedText,
+                            currency: 'VND',
+                          ),
                   ),
                 ),
                 Expanded(
                   child: _QuickStat(
                     icon: Icons.calendar_month_rounded,
                     label: 'Còn lại',
-                    value: isVisible
-                        ? AppHelperFunction.formatAmount(
+                    value: AppHelperFunction.formatAmount(
                             r.remainingBudget,
-                            'VND',
-                          )
-                        : maskedText,
+                            currency: 'VND',
+                          ),
                     valueColor: r.remainingBudget < 0
                         ? AppColors.error
                         : AppColors.success,
@@ -285,7 +275,7 @@ class _CircleMetric extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: AppThemeColors.of(context).textSecondary,
               fontWeight: FontWeight.w500,

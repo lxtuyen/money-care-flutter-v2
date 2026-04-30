@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_care/features/user/data/models/profile_update_dto.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
+import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -19,6 +20,8 @@ class UserController extends GetxController {
   final TextEditingController monthlyIncomeController = TextEditingController();
   final TextEditingController avatarController = TextEditingController();
   final Rx<DateTime?> incomeDate = Rx(null);
+
+  Rxn<UserEntity> get user => Get.find<AuthController>().user;
 
   Worker? _userWorker;
 

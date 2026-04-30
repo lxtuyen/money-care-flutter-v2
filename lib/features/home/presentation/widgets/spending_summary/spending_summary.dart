@@ -47,23 +47,15 @@ class SpendingSummary extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      'home.spentInMonth'.tr,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppThemeColors.of(context).textPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: onToggleVisibility,
-                      child: Icon(
-                        isBalanceVisible
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        size: 18,
-                        color: themeColors.textSecondary,
+                    Flexible(
+                      child: Text(
+                        'home.spentInMonth'.tr,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppThemeColors.of(context).textPrimary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -73,9 +65,12 @@ class SpendingSummary extends StatelessWidget {
                   onTap: onPressed,
                   child: Row(
                     children: [
-                      Text(
-                        'common.viewDetail'.tr,
-                        style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+                      Flexible(
+                        child: Text(
+                          'common.viewDetail'.tr,
+                          style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Icon(
@@ -116,12 +111,10 @@ class SpendingSummary extends StatelessWidget {
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      isBalanceVisible
-                          ? AppHelperFunction.formatAmount(
-                              expenseTotal.toDouble(),
-                              '',
-                            )
-                          : maskedText,
+                      AppHelperFunction.formatAmount(
+                        expenseTotal.toDouble(),
+                        currency: '',
+                      ),
                       style: const TextStyle(
                         color: AppColors.secondaryOrange,
                         fontWeight: FontWeight.bold,
@@ -130,18 +123,36 @@ class SpendingSummary extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      isBalanceVisible
-                          ? '${'home.balance'.tr}: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(balance).toDouble(), 'VND')}'
-                          : '${'home.balance'.tr}: $maskedText',
-                      style: const TextStyle(
-                        color: AppColors.text3,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            isBalanceVisible
+                                ? '${'home.balance'.tr}: ${AppHelperFunction.formatAmount(AppHelperFunction.clampZero(balance).toDouble(), currency: 'VND')}'
+                                : '${'home.balance'.tr}: $maskedText',
+                            style: const TextStyle(
+                              color: AppColors.text3,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: onToggleVisibility,
+                        child: Icon(
+                          isBalanceVisible
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          size: 14,
+                          color: themeColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -162,7 +162,7 @@ class _CategorySheetState extends State<CategorySheet> {
                 const SizedBox(height: 14),
                 Expanded(
                   child: displayCategories.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24),
                             child: Text(

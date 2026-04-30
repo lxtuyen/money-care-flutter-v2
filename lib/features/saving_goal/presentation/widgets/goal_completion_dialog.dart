@@ -59,7 +59,7 @@ class GoalCompletionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Bạn đã hoàn thành mục tiêu "${report.name}" với số dư ${AppHelperFunction.formatAmount(report.currentBalance, 'VND')}.',
+              'Bạn đã hoàn thành mục tiêu "${report.name}" với số dư ${AppHelperFunction.formatAmount(report.currentBalance, currency: 'VND')}.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

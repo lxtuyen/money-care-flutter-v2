@@ -85,6 +85,7 @@ const Map<String, String> viVN = {
       'Chúng tôi đem đến giải pháp giúp bạn quản lý chi tiêu cực kỳ dễ dàng và hiệu quả.',
 
   // ============ Home ============
+  'home.title': 'Trang chủ',
   'home.recentTransactions': 'Giao dịch gần đây',
   'home.overview': 'Tổng quan',
   'home.spendingLimit': 'Hạn mức chi tiêu',
@@ -102,6 +103,7 @@ const Map<String, String> viVN = {
 
   // ============ Profile / User Center ============
   'profile.title': 'Tài chính cá nhân',
+  'user.centerTitle': 'Cá nhân',
   'profile.info': 'Thông tin cá nhân',
   'profile.savingGoals': 'Quỹ tiết kiệm',
   'profile.expiredGoals': 'Mục tiêu đã hết hạn',

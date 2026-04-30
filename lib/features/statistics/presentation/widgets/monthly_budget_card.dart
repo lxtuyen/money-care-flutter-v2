@@ -194,10 +194,7 @@ class MonthlyBudgetCard extends StatelessWidget {
                             children: [
                               _buildInfoRow(
                                 label: 'budget.totalBudget'.tr,
-                                value: isVisible
-                                    ? AppHelperFunction.formatAmount(
-                                        totalBudget)
-                                    : maskedText,
+                                value: AppHelperFunction.formatAmount(totalBudget),
                                 color: themeColors.textPrimary,
                                 isBold: true,
                                 themeColors: themeColors,
@@ -205,20 +202,14 @@ class MonthlyBudgetCard extends StatelessWidget {
                               const SizedBox(height: 8),
                               _buildInfoRow(
                                 label: 'budget.spent'.tr,
-                                value: isVisible
-                                    ? AppHelperFunction.formatAmount(
-                                        totalSpent)
-                                    : maskedText,
+                                value: AppHelperFunction.formatAmount(totalSpent),
                                 color: const Color(0xFFE53935),
                                 themeColors: themeColors,
                               ),
                               const SizedBox(height: 8),
                               _buildInfoRow(
                                 label: 'budget.remaining'.tr,
-                                value: isVisible
-                                    ? AppHelperFunction.formatAmount(
-                                        remaining.clamp(0, double.infinity))
-                                    : maskedText,
+                                value: AppHelperFunction.formatAmount(remaining.clamp(0, double.infinity)),
                                 color: isOverBudget
                                     ? const Color(0xFFE53935)
                                     : const Color(0xFF43A047),
@@ -261,10 +252,8 @@ class MonthlyBudgetCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            isVisible
-                                ? AppHelperFunction.formatAmount(
-                                    dailyAllowance.clamp(0, double.infinity))
-                                : maskedText,
+                            AppHelperFunction.formatAmount(
+                                    dailyAllowance.clamp(0, double.infinity)),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,

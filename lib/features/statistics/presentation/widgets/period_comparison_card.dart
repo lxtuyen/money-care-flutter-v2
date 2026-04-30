@@ -208,8 +208,6 @@ class PeriodComparisonCard extends StatelessWidget {
         ? themeColors.textMuted
         : (isGood ? const Color(0xFF43A047) : const Color(0xFFE53935));
 
-    final String maskedText = '••••••';
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(

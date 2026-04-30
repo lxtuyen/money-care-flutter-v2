@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
+import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
@@ -17,6 +18,9 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 class TransactionForm extends StatefulWidget {
   final String title;
   final bool showCategory;
+  final bool isRecurring;
+  final bool showTypeSelector;
+  final void Function(CreateRecurringTransactionDto dto)? onRecurringSubmit;
 
   /// 'income' hoặc 'expense' — dùng để filter category đúng loại.
   final String transactionType;
@@ -27,6 +31,9 @@ class TransactionForm extends StatefulWidget {
     required this.title,
     required this.transactionType,
     this.showCategory = true,
+    this.isRecurring = false,
+    this.showTypeSelector = false,
+    this.onRecurringSubmit,
     this.item,
   });
 
@@ -36,12 +43,15 @@ class TransactionForm extends StatefulWidget {
 
 class _TransactionFormState extends State<TransactionForm> {
   late final TransactionFormController controller;
+  late String selectedTransactionType;
+  String selectedFrequency = 'monthly';
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<TransactionFormController>();
-    controller.init(widget.showCategory, widget.item, widget.transactionType);
+    selectedTransactionType = widget.transactionType;
+    controller.init(widget.showCategory, widget.item, selectedTransactionType);
   }
 
   @override
@@ -92,6 +102,75 @@ class _TransactionFormState extends State<TransactionForm> {
                                   validator: (v) =>
                                       AppValidator.validateAmount(v),
                                 ),
+                                if (widget.showTypeSelector) ...[
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: RadioListTile<String>(
+                                          title: const Text('Chi'),
+                                          value: 'expense',
+                                          groupValue: selectedTransactionType,
+                                          onChanged: (v) {
+                                            if (v == null) return;
+                                            setState(() {
+                                              selectedTransactionType = v;
+                                              controller.transactionType = v;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile<String>(
+                                          title: const Text('Thu'),
+                                          value: 'income',
+                                          groupValue: selectedTransactionType,
+                                          onChanged: (v) {
+                                            if (v == null) return;
+                                            setState(() {
+                                              selectedTransactionType = v;
+                                              controller.transactionType = v;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                                if (widget.isRecurring) ...[
+                                  const SizedBox(height: 20),
+                                  DropdownButtonFormField<String>(
+                                    value: selectedFrequency,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Tần suất',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'daily',
+                                        child: Text('Hàng ngày'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'weekly',
+                                        child: Text('Hàng tuần'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'monthly',
+                                        child: Text('Hàng tháng'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'yearly',
+                                        child: Text('Hàng năm'),
+                                      ),
+                                    ],
+                                    onChanged: (v) {
+                                      if (v == null) return;
+                                      setState(() {
+                                        selectedFrequency = v;
+                                      });
+                                    },
+                                  ),
+                                ],
                                 if (widget.showCategory) ...[
                                   const SizedBox(height: 20),
                                   AppTextFormField(
@@ -108,7 +187,9 @@ class _TransactionFormState extends State<TransactionForm> {
                                           >(
                                             context: context,
                                             isScrollControlled: true,
-                                            backgroundColor: AppThemeColors.of(context).cardBackground,
+                                            backgroundColor: AppThemeColors.of(
+                                              context,
+                                            ).cardBackground,
                                             shape: const RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.vertical(
@@ -164,7 +245,7 @@ class _TransactionFormState extends State<TransactionForm> {
                                                 return CategorySheet(
                                                   categories: categories,
                                                   transactionType:
-                                                      widget.transactionType,
+                                                      selectedTransactionType,
                                                   selectedCategoryInit:
                                                       controller
                                                               .selectedCategoryId
@@ -217,46 +298,36 @@ class _TransactionFormState extends State<TransactionForm> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    if (widget.showCategory)
-                      Obx(
-                        () => GestureDetector(
-                          onTap:
-                              controller.scanReceiptController.isScanning.value
-                              ? null
-                              : () => controller.openScanOptions(context),
-                          child: Container(
-                            height: 55,
-                            width: 55,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.borderPrimary,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child:
-                                controller
-                                    .scanReceiptController
-                                    .isScanning
-                                    .value
-                                ? const Padding(
-                                    padding: EdgeInsets.all(12),
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.document_scanner_outlined,
-                                    color: Colors.grey,
-                                  ),
-                          ),
-                        ),
-                      ),
-                    if (widget.showCategory) const SizedBox(width: 12),
                     Expanded(
                       child: Obx(() {
                         return PrimaryButton(
-                          label: widget.item?.id == null ? 'transaction.create'.tr : 'transaction.update'.tr,
-                          onPressed: controller.submit,
+                          label: widget.isRecurring
+                              ? 'transaction.create'.tr
+                              : (widget.item?.id == null
+                                    ? 'transaction.create'.tr
+                                    : 'transaction.update'.tr),
+                          onPressed: widget.isRecurring
+                              ? () {
+                                  if (!controller.formKey.currentState!
+                                      .validate()) {
+                                    return;
+                                  }
+
+                                  if (widget.onRecurringSubmit != null) {
+                                    try {
+                                      widget.onRecurringSubmit!.call(
+                                        controller.buildRecurringTransactionDto(
+                                          selectedFrequency,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      AppHelperFunction.showErrorSnackBar(
+                                        e.toString(),
+                                      );
+                                    }
+                                  }
+                                }
+                              : controller.submit,
                           isLoading:
                               controller.transactionController.isLoading.value,
                           isEnabled:

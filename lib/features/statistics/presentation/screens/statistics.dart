@@ -140,7 +140,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                (statisticsController.periodType.value == 'hàng tháng'
+                                (statisticsController.periodType.value ==
+                                        'hàng tháng'
                                     ? 'statistics.monthly'.tr
                                     : 'statistics.daily'.tr),
                                 style: const TextStyle(
@@ -300,8 +301,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 final budget = statisticsController.totalBudget;
                 if (budget <= 0) return const SizedBox.shrink();
 
-                final spent = statisticsController.totalByType.value
-                        ?.expenseTotal
+                final spent =
+                    statisticsController.totalByType.value?.expenseTotal
                         .toDouble() ??
                     0.0;
                 final now = DateTime.now();
@@ -309,8 +310,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 final lastDay = DateTime(sel.year, sel.month + 1, 0).day;
                 final isCurrentMonth =
                     sel.year == now.year && sel.month == now.month;
-                final daysRemaining =
-                    isCurrentMonth ? (lastDay - now.day + 1) : lastDay;
+                final daysRemaining = isCurrentMonth
+                    ? (lastDay - now.day + 1)
+                    : lastDay;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -492,7 +494,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'statistics.exportEmailNote'.tr.replaceAll('@email', userController.user.value?.email ?? '...'),
+              'statistics.exportEmailNote'.tr.replaceAll(
+                '@email',
+                userController.user.value?.email ?? '...',
+              ),
               style: const TextStyle(color: AppColors.text3),
             ),
             const SizedBox(height: 24),
@@ -546,10 +551,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             const SizedBox(height: 8),
             Text(
               label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, color: color),
             ),
           ],
         ),
@@ -565,11 +567,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final filterDto = TransactionFilterDto(
       startDate: statisticsController.currentStartDate.toIso8601String(),
       endDate: statisticsController.currentEndDate.toIso8601String(),
-      goalId: statisticsController.savingGoalController.currentGoalId > 0
-          ? statisticsController.savingGoalController.currentGoalId
-          : null,
     );
 
-    await Get.find<TransactionController>().exportReport(userId, filterDto, format);
+    await Get.find<TransactionController>().exportReport(
+      userId,
+      filterDto,
+      format,
+    );
   }
 }

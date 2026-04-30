@@ -33,7 +33,7 @@ class PhotoTransactionController extends GetxController {
   final RxnInt selectedCategoryId = RxnInt();
   final RxnString selectedImagePath = RxnString();
   final RxString transactionType =
-      'expense'.obs; // We can keep internal logic keys as is or use constants
+      'expense'.obs;
   final RxBool isPickingImage = false.obs;
   final RxBool isScanning = false.obs;
 
@@ -72,7 +72,6 @@ class PhotoTransactionController extends GetxController {
     try {
       final result = await scanReceiptUseCase!(XFile(path));
 
-      // Validation: If no amount and no merchant, it's likely a bad scan
       if (result.totalAmount == 0 && result.merchantName.isEmpty) {
         AppHelperFunction.showErrorSnackBar(AppTexts.scanInvalid);
         return;

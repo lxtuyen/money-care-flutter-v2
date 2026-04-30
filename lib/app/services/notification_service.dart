@@ -75,7 +75,6 @@ class NotificationService extends GetxService {
 
   Future<void> _setupFCMListener() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
       if (message.notification != null) {
         _showLocalNotification(message);
       }

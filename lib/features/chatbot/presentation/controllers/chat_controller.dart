@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 import 'package:money_care/features/chatbot/domain/entities/chat_message_entity.dart';
 import 'package:money_care/features/chatbot/data/models/models.dart';
-import 'package:money_care/features/chatbot/domain/entities/chat_message_entity.dart';
-import 'package:money_care/features/chatbot/domain/entities/quick_option_entity.dart';
 
 import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
 import 'package:money_care/app/controllers/app_controller.dart';

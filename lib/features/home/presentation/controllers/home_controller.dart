@@ -74,12 +74,10 @@ class HomeController extends GetxController {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-            Obx(
-              () => Text(
-                'Bạn đã tiêu quá ${(statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: AppColors.text4),
-              ),
+            Text(
+              'Bạn đã tiêu quá ${(statisticsController.utilizationPercentage * 100).toInt()}% ngân sách tháng này. Bạn có muốn chuyển sang chế độ Sinh tồn để tối ưu hóa chi tiêu?',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, color: AppColors.text4),
             ),
             const SizedBox(height: 24),
             Row(

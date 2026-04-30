@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
@@ -67,11 +68,8 @@ class FinanceModeController extends GetxController {
       (failure) {
         currentMode.value = oldMode;
         themeColor.value = oldColor;
-        Get.snackbar(
-          'Lỗi',
+        AppHelperFunction.showErrorSnackBar(
           'Không thể chuyển sang chế độ ${mode.name}. Vui lòng thử lại!',
-          backgroundColor: AppColors.error.withOpacity(0.1),
-          colorText: AppColors.error,
         );
       },
       (entity) {
@@ -82,10 +80,6 @@ class FinanceModeController extends GetxController {
     );
   }
 
-  /// Check spending percentage and suggest a mode change if appropriate.
-  ///
-  /// Returns the suggested [FinanceMode] if a suggestion should be shown,
-  /// or `null` if no suggestion is needed or cooldown is active (Req 5.3, 5.4, 5.5).
   Future<FinanceMode?> checkAndSuggestMode(double spentPercent) async {
     if (!canSuggest()) return null;
 
@@ -100,9 +94,6 @@ class FinanceModeController extends GetxController {
     return result.fold((_) => null, (suggested) => suggested);
   }
 
-  /// Decline a suggestion and start the 24-hour cooldown (Req 5.5).
-  ///
-  /// Call this when the user dismisses a mode suggestion dialog.
   Future<void> declineSuggestion() async {
     final userId = await _appController.getCurrentUserId();
     if (userId == null) return;
@@ -110,7 +101,6 @@ class FinanceModeController extends GetxController {
     final cooldownEnd = DateTime.now().add(const Duration(hours: 24));
     _cooldownUntil = cooldownEnd;
 
-    // Persist the cooldown by saving an updated entity with the new cooldown.
     final currentResult = await _getFinanceModeUseCase(userId);
     await currentResult.fold((_) async {}, (entity) async {
       final updated = FinanceModeEntity(
@@ -123,21 +113,19 @@ class FinanceModeController extends GetxController {
     });
   }
 
-  /// Returns `false` if a 24-hour cooldown is currently active (Req 5.5).
   bool canSuggest() {
     if (_cooldownUntil == null) return true;
     return DateTime.now().isAfter(_cooldownUntil!);
   }
 
-  /// Maps a [FinanceMode] to its corresponding theme color (Req 5.6).
   static Color colorForMode(FinanceMode mode) {
     switch (mode) {
       case FinanceMode.normal:
-        return AppColors.success; // green
+        return AppColors.primary;
       case FinanceMode.saving:
-        return AppColors.warning; // yellow/amber
+        return AppColors.warning;
       case FinanceMode.survival:
-        return AppColors.error; // red
+        return AppColors.error;
     }
   }
 }

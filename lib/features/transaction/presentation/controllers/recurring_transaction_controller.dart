@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/domain/usecases/recurring_transaction_usecases.dart';
 
@@ -48,10 +48,9 @@ class RecurringTransactionController extends GetxController {
       await loadRecurringTransactions(dto.userId);
       errorMessage.value = null;
       Get.back();
-      Get.snackbar('Thành công', 'Đã thêm giao dịch định kỳ');
+      AppHelperFunction.showSuccessSnackBar('Tạo giao dịch thành công');
     } catch (e) {
-      errorMessage.value = e.toString();
-      Get.snackbar('Lỗi', e.toString(), backgroundColor: Colors.red, colorText: Colors.white);
+      AppHelperFunction.showErrorSnackBar(e.toString());
     } finally {
       isLoading.value = false;
     }

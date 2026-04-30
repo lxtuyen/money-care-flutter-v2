@@ -88,7 +88,7 @@ const Map<String, String> viVN = {
   'home.title': 'Trang chủ',
   'home.recentTransactions': 'Giao dịch gần đây',
   'home.overview': 'Tổng quan',
-  'home.spendingLimit': 'Hạn mức chi tiêu',
+
   'home.monthlySpending': 'Chi tiêu tháng này',
   'home.monthlySpendingSurvival': 'Chi tiêu thiết yếu (Sinh tồn)',
   'home.savingPlan': 'Kế hoạch tiết kiệm',
@@ -304,10 +304,10 @@ const Map<String, String> viVN = {
   'chatbot.quickRecordDesc': 'Ghi chép cực nhanh: "bún bò 35k sáng nay", "đổ xăng 50k"...',
   'chatbot.quickRecordTemplate': 'ăn sáng 35k hôm nay',
   'chatbot.financialAnalysis': 'Phân tích tài chính',
-  'chatbot.transactionSaved': '✅ Đã ghi nhận giao dịch thành công!',
+  'chatbot.transactionSaved': 'Đã ghi nhận giao dịch thành công!',
   'chatbot.transactionListError': 'Không thể hiển thị danh sách giao dịch.',
   'chatbot.categoryListError': 'Không thể hiển thị danh sách hạng mục.',
-  'chatbot.categoryCreated': '✅ Đã tạo hạng mục mới thành công!',
+  'chatbot.categoryCreated': 'Đã tạo hạng mục mới thành công!',
   'chatbot.connectionError': 'Lỗi kết nối: @error',
 
   // ============ Notification ============
@@ -321,7 +321,6 @@ const Map<String, String> viVN = {
   'dashboard.section.spendingSummary': 'Tổng quan Thu/Chi',
   'dashboard.section.recentTransactions': 'Giao dịch gần đây',
   'dashboard.section.spendingOverview': 'Biểu đồ chi tiêu',
-  'dashboard.section.spendingLimit': 'Hạn mức chi tiêu',
   'dashboard.section.monthlySpending': 'Chi tiêu theo danh mục',
   'dashboard.section.monthlyIncome': 'Thu nhập theo danh mục',
   'dashboard.saveSuccess': 'Đã cập nhật giao diện Dashboard!',

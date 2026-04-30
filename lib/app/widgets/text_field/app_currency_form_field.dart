@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
@@ -175,9 +174,6 @@ class _AppCurrencyFormFieldState extends State<AppCurrencyFormField> {
 }
 
 class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
-  static final NumberFormat _numberFormat = NumberFormat.decimalPattern(
-    'vi_VN',
-  );
 
   static String formatRaw(String value) {
     return AppHelperFunction.formatCurrency(value);

@@ -129,7 +129,31 @@ class ApiClient {
     http.Response response,
     T Function(dynamic)? fromJsonT,
   ) {
-    final body = jsonDecode(response.body);
-    return ApiResponse<T>.fromJson(body, fromJsonT);
+    final rawBody = response.body.trim();
+
+    if (rawBody.isEmpty) {
+      return ApiResponse<T>(
+        success: response.statusCode >= 200 && response.statusCode < 300,
+        message: '',
+      );
+    }
+
+    try {
+      final decoded = jsonDecode(rawBody);
+      if (decoded is Map<String, dynamic>) {
+        return ApiResponse<T>.fromJson(decoded, fromJsonT);
+      }
+
+      return ApiResponse<T>(
+        success: response.statusCode >= 200 && response.statusCode < 300,
+        message: '',
+        data: fromJsonT != null ? fromJsonT(decoded) : null,
+      );
+    } catch (_) {
+      return ApiResponse<T>(
+        success: response.statusCode >= 200 && response.statusCode < 300,
+        message: rawBody,
+      );
+    }
   }
 }

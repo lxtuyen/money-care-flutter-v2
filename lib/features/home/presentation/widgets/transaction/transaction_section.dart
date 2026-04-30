@@ -63,7 +63,6 @@ class _TransactionSectionState extends State<TransactionSection> {
                     child: TransactionItem(
                       item: entry.value,
                       onTap: () {},
-                      color: AppHelperFunction.getChartColorByIndex(entry.key),
                     ),
                   ),
                 ),

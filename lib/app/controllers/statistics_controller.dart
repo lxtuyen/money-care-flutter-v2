@@ -8,6 +8,7 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/entities.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/widget_service.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 
 class StatisticsController extends GetxController {
@@ -127,8 +128,6 @@ class StatisticsController extends GetxController {
     return date;
   }
 
-  /// Date range for the previous equivalent period.
-  /// Monthly: previous month. Daily: previous day.
   DateTime get previousStartDate {
     if (periodType.value == 'hàng tháng') {
       final prev = _getCycleDate(selectedMonth.value, -1);
@@ -219,7 +218,6 @@ class StatisticsController extends GetxController {
   Future<void> _loadGlobalTotalByType(int userId) async {
     try {
       final dto = TransactionTotalsDto(
-        goalId: _currentGoalIdOrNull,
         startDate: currentStartDate.toIso8601String(),
         endDate: currentEndDate.toIso8601String(),
       );
@@ -233,7 +231,6 @@ class StatisticsController extends GetxController {
   Future<void> _loadPreviousTotalByType(int userId) async {
     try {
       final dto = TransactionTotalsDto(
-        goalId: _currentGoalIdOrNull,
         startDate: previousStartDate.toIso8601String(),
         endDate: previousEndDate.toIso8601String(),
       );
@@ -315,7 +312,6 @@ class StatisticsController extends GetxController {
     isLoading.value = true;
     try {
       final totalsDto = TransactionTotalsDto(
-        goalId: _currentGoalIdOrNull,
         startDate: startDate.toIso8601String(),
         endDate: endDate.toIso8601String(),
       );
@@ -372,13 +368,11 @@ class StatisticsController extends GetxController {
   Future<void> _loadMonthlyCategories(int userId) async {
     try {
       final expenseDto = TransactionTotalsDto(
-        goalId: _currentGoalIdOrNull,
         startDate: currentStartDate.toIso8601String(),
         endDate: currentEndDate.toIso8601String(),
         type: 'expense',
       );
       final incomeDto = TransactionTotalsDto(
-        goalId: _currentGoalIdOrNull,
         startDate: currentStartDate.toIso8601String(),
         endDate: currentEndDate.toIso8601String(),
         type: 'income',
@@ -437,9 +431,10 @@ class StatisticsController extends GetxController {
           _loadStatisticsSummary(userId),
         ];
 
-        if (_currentGoalIdOrNull != null) {
+        final activeGoalId = savingGoalController.goalId.value;
+        if (activeGoalId > 0) {
           futures.add(
-            savingGoalController.loadGoalReport(_currentGoalIdOrNull!),
+            savingGoalController.loadGoalReport(activeGoalId),
           );
         }
 
@@ -466,9 +461,10 @@ class StatisticsController extends GetxController {
           _loadStatisticsSummary(userId),
         ];
 
-        if (_currentGoalIdOrNull != null) {
+        final activeGoalId = savingGoalController.goalId.value;
+        if (activeGoalId > 0) {
           futures.add(
-            savingGoalController.loadGoalReport(_currentGoalIdOrNull!),
+            savingGoalController.loadGoalReport(activeGoalId),
           );
         }
 
@@ -495,7 +491,6 @@ class StatisticsController extends GetxController {
       final filterDto = TransactionFilterDto(
         startDate: currentStartDate.toIso8601String(),
         endDate: currentEndDate.toIso8601String(),
-        goalId: _currentGoalIdOrNull,
       );
 
       final result = await Get.find<TransactionController>()
@@ -606,14 +601,9 @@ class StatisticsController extends GetxController {
     }
   }
 
-  int? get _currentGoalIdOrNull => savingGoalController.currentGoalId > 0
-      ? savingGoalController.currentGoalId
-      : null;
-
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
     final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
     return TransactionTotalsDto(
-      goalId: _currentGoalIdOrNull,
       startDate: start.toIso8601String(),
       endDate: end.toIso8601String(),
       type: backendType,

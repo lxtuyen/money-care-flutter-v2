@@ -5,7 +5,6 @@ import 'package:money_care/features/finance_mode/domain/entities/finance_mode_en
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 
-/// Redesigned to be a compact status chip for better integration.
 class DaysUntilIncomeWidget extends StatefulWidget {
   const DaysUntilIncomeWidget({super.key});
 
@@ -24,31 +23,11 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
   }
 
   Future<void> _loadIncomeDate() async {
-    final userController = Get.find<UserController>();
-
-    // The userController already handles loading the profile and filling the incomeDate Rx.
-    // We just need to wait if it's currently loading, or just use the current value.
-    // However, since this is a StatefulWidget, we can just observe the controller.
+    Get.find<UserController>();
 
     if (mounted) {
       setState(() => _loaded = true);
     }
-  }
-
-  DateTime _nextIncomeDate(DateTime today, DateTime incomeDate) {
-    final incomeDay = incomeDate.day;
-    final thisMonthIncome = DateTime(today.year, today.month, incomeDay);
-
-    if (!thisMonthIncome.isBefore(
-      DateTime(today.year, today.month, today.day),
-    )) {
-      return thisMonthIncome;
-    }
-
-    final nextMonth = today.month == 12
-        ? DateTime(today.year + 1, 1, incomeDay)
-        : DateTime(today.year, today.month + 1, incomeDay);
-    return nextMonth;
   }
 
   @override
@@ -64,14 +43,6 @@ class _DaysUntilIncomeWidgetState extends State<DaysUntilIncomeWidget> {
 
       final incomeDate = userController.incomeDate.value;
       if (incomeDate == null) return const SizedBox.shrink();
-
-      final today = DateTime.now();
-      final nextIncome = _nextIncomeDate(today, incomeDate);
-      final days = nextIncome
-          .difference(DateTime(today.year, today.month, today.day))
-          .inDays;
-
-      final daysUntilIncome = days > 0 ? days : 0;
 
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

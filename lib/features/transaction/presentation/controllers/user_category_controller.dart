@@ -3,9 +3,9 @@ import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
-/// Quản lý danh mục của user độc lập với quỹ tiết kiệm.
 class UserCategoryController extends GetxController {
   final ApiClient apiClient;
   final AppController appController;
@@ -50,19 +50,15 @@ class UserCategoryController extends GetxController {
           try {
             if (e is Map<String, dynamic>) {
               loaded.add(_fromJson(e));
-            } else {
-              print('UserCategoryController: Skipping non-map item: $e');
             }
           } catch (err) {
-            print(
-              'UserCategoryController: Error parsing category item: $err. Data: $e',
-            );
+            AppHelperFunction.showErrorSnackBar(err.toString());
           }
         }
         categories.assignAll(loaded);
       } else if (!res.success) {}
     } catch (e) {
-      print('UserCategoryController: Catch error loading categories: $e');
+      AppHelperFunction.showErrorSnackBar(e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -88,7 +84,7 @@ class UserCategoryController extends GetxController {
           try {
             saved.add(_fromJson(e as Map<String, dynamic>));
           } catch (err) {
-            print('UserCategoryController: Error parsing saved category: $err');
+            AppHelperFunction.showErrorSnackBar(err.toString());
           }
         }
         categories.assignAll(saved);

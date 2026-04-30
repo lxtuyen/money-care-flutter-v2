@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_form_dialog.dart';
@@ -147,9 +148,9 @@ class _UserCategoryManagementScreenState
               Get.back();
               final success = await _controller.deleteCategory(category.id!);
               if (success) {
-                Get.snackbar('Thành công', 'Đã xóa danh mục');
+                AppHelperFunction.showSuccessSnackBar('Xóa danh mục này thành công');
               } else {
-                Get.snackbar('Lỗi', 'Không thể xóa danh mục này');
+                AppHelperFunction.showErrorSnackBar('Không thể xóa danh mục này');
               }
             },
             style: ElevatedButton.styleFrom(

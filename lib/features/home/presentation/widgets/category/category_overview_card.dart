@@ -25,7 +25,6 @@ class CategoryOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String maskedText = '••••••';
     final String limitText = AppHelperFunction.formatAmount(limit, currency: 'VND');
     final String spentText = AppHelperFunction.formatAmount(spent.toDouble(), currency: 'VND');
 

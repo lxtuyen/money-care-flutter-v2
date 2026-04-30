@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
@@ -403,7 +404,7 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
 
   void _submit() async {
     if (_nameController.text.trim().isEmpty) {
-      Get.snackbar('Lỗi', 'Vui lòng nhập tên danh mục');
+      AppHelperFunction.showErrorSnackBar('Vui lòng nhập tên danh mục');
       return;
     }
 
@@ -427,14 +428,13 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
 
     if (success) {
       Get.back();
-      Get.snackbar(
-        'Thành công',
+      AppHelperFunction.showSuccessSnackBar(
         widget.category != null
             ? 'Đã cập nhật danh mục'
             : 'Đã thêm danh mục mới',
       );
     } else {
-      Get.snackbar('Lỗi', 'Không thể lưu danh mục. Vui lòng thử lại.');
+      AppHelperFunction.showErrorSnackBar('Không thể lưu danh mục. Vui lòng thử lại.');
     }
   }
 }

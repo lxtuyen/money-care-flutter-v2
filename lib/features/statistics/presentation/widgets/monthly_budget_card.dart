@@ -47,8 +47,6 @@ class MonthlyBudgetCard extends StatelessWidget {
               ? const Color(0xFFFFA726)
               : const Color(0xFF43A047);
 
-      final String maskedText = '•••••• ₫';
-
       // Get top categories with limits (max 4)
       final budgetedCategories = categories
           .where((c) => c.limit > 0)

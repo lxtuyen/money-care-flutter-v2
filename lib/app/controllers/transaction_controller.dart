@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 
@@ -150,8 +152,7 @@ class TransactionController extends GetxController {
     final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
 
     final recentFilterDto = TransactionFilterDto(
-      goalId: _currentGoalIdOrNull,
-      startDate: clampedStart?.toIso8601String(),
+      startDate: clampedStart != null ? _getStartOfDay(clampedStart).toIso8601String() : null,
       endDate: clampedEnd?.toIso8601String(),
       limit: 5,
     );
@@ -183,7 +184,6 @@ class TransactionController extends GetxController {
 
     final dto = TransactionFilterDto(
       categoryId: filterController.categoryId.value,
-      goalId: _currentGoalIdOrNull,
       startDate: clampedStart?.toIso8601String(),
       endDate: clampedEnd?.toIso8601String(),
     );
@@ -205,9 +205,9 @@ class TransactionController extends GetxController {
     return date;
   }
 
-  int? get _currentGoalIdOrNull => savingGoalController.goalId.value > 0
-      ? savingGoalController.goalId.value
-      : null;
+  DateTime _getStartOfDay(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
 
   DateTime _clampToGoalRange(
     DateTime date,
@@ -229,21 +229,15 @@ class TransactionController extends GetxController {
     try {
       final success = await exportReportUseCase(userId, dto, format);
       if (success) {
-        Get.snackbar(
-          'Thành công',
+        AppHelperFunction.showSuccessSnackBar(
           'Báo cáo đã được gửi về email của bạn!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
         );
       } else {
         throw Exception('Export failed');
       }
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
+      AppHelperFunction.showErrorSnackBar(
         'Không thể xuất báo cáo: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
     } finally {
       isLoading.value = false;

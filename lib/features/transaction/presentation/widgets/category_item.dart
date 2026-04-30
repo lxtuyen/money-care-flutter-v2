@@ -23,7 +23,9 @@ class CategoryItem extends StatelessWidget {
       duration: const Duration(milliseconds: 180),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.1) : AppThemeColors.of(context).cardBackground,
+        color: isSelected
+            ? AppColors.primary.withOpacity(0.1)
+            : AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isSelected
@@ -57,29 +59,10 @@ class CategoryItem extends StatelessWidget {
                 child: Center(
                   child: AppSvgIcon(
                     iconName: icon,
-                    color: isSelected ? AppColors.primary : AppThemeColors.of(context).textSecondary,
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppThemeColors.of(context).textSecondary,
                     size: 22,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? (Theme.of(context).brightness == Brightness.dark ? Colors.black26 : Colors.white.withOpacity(0.86))
-                      : AppThemeColors.of(context).surfaceBackground,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  '$percentage%',
-                  style: TextStyle(
-                    color: isSelected ? AppColors.primary : AppThemeColors.of(context).textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -93,7 +76,9 @@ class CategoryItem extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 14,
-              color: isSelected ? AppColors.primary : AppThemeColors.of(context).textPrimary,
+              color: isSelected
+                  ? AppColors.primary
+                  : AppThemeColors.of(context).textPrimary,
               height: 1.2,
             ),
           ),

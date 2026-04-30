@@ -6,7 +6,6 @@ part 'transaction_totals_dto.g.dart';
 @freezed
 abstract class TransactionTotalsDto with _$TransactionTotalsDto {
   const factory TransactionTotalsDto({
-    @JsonKey(name: 'savingGoalId') int? goalId,
     @JsonKey(name: 'startDate') String? startDate,
     @JsonKey(name: 'endDate') String? endDate,
     String? type,

@@ -1,14 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
-
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
-
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
 
@@ -89,12 +87,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
   }
 
   Widget _buildFromFundOnly() {
-    final AppController appController = Get.find<AppController>();
-    return Obx(() {
-      final isVisible = appController.isBalanceVisible.value;
-      final String maskedText = '•••••• VND';
-
-      return Padding(
+    return Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -119,16 +112,10 @@ class SavingGoalSummaryCard extends StatelessWidget {
           ],
         ),
       );
-    });
   }
 
   Widget _buildFromReport(SavingGoalReportModel r) {
-    final AppController appController = Get.find<AppController>();
-    return Obx(() {
-      final isVisible = appController.isBalanceVisible.value;
-      final String maskedText = '•••••• VND';
-
-      return Padding(
+    return Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,8 +229,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
         ],
       ),
     );
-  });
- }
+  }
 }
 
 class _CircleMetric extends StatelessWidget {
@@ -337,96 +323,6 @@ class _CircleMetric extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CategoryPieRow extends StatelessWidget {
-  final List<CategorySpendingModel> categories;
-
-  const _CategoryPieRow({required this.categories});
-
-  static const _colors = [
-    AppColors.primary,
-    AppColors.secondaryOrange,
-    AppColors.success,
-    AppColors.warning,
-    AppColors.secondaryNavyBlue,
-    AppColors.info,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final top = categories.take(5).toList();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 80,
-          height: 80,
-          child: PieChart(
-            PieChartData(
-              startDegreeOffset: -90,
-              centerSpaceRadius: 22,
-              sectionsSpace: 2,
-              sections: top.asMap().entries.map((e) {
-                return PieChartSectionData(
-                  color: _colors[e.key % _colors.length],
-                  value: e.value.percentage.toDouble(),
-                  title: '',
-                  radius: 18,
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: top.asMap().entries.map((e) {
-              final cat = e.value;
-              final color = _colors[e.key % _colors.length];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        cat.categoryName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppThemeColors.of(context).textSecondary,
-                        ),
-
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      '${cat.percentage}%',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppThemeColors.of(context).textPrimary,
-                      ),
-
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
     );
   }
 }

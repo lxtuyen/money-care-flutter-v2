@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/data/models/user_model.dart';
-import 'package:money_care/core/constants/enums.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 
 class AppController extends GetxController {
@@ -16,7 +15,6 @@ class AppController extends GetxController {
   var isDarkMode = false.obs;
   var currentLocale = 'vi_VN'.obs;
   var startDayOfMonth = 1.obs;
-  var dashboardSections = <DashboardSection>[].obs;
   var isWidgetBalanceVisible = true.obs;
   var errorMessage = RxnString();
 
@@ -29,19 +27,8 @@ class AppController extends GetxController {
     currentLocale.value = storage.getLocale();
     startDayOfMonth.value = storage.getStartDayOfMonth();
     isWidgetBalanceVisible.value = storage.getWidgetBalanceVisibility();
-    _initDashboardSections();
   }
 
-  void _initDashboardSections() {
-    final saved = storage.getDashboardSections();
-    if (saved != null) {
-      dashboardSections.value = saved
-          .map((e) => DashboardSection.values.firstWhere((s) => s.name == e))
-          .toList();
-    } else {
-      dashboardSections.value = DashboardSection.values.toList();
-    }
-  }
 
   Future<void> initializeUser() async {
     try {
@@ -116,16 +103,10 @@ class AppController extends GetxController {
     storage.saveStartDayOfMonth(day);
   }
 
-  void updateDashboardSections(List<DashboardSection> sections) {
-    dashboardSections.value = sections;
-    storage.saveDashboardSections(sections.map((e) => e.name).toList());
-  }
-
   void toggleWidgetBalanceVisibility() {
     isWidgetBalanceVisible.value = !isWidgetBalanceVisible.value;
     storage.saveWidgetBalanceVisibility(isWidgetBalanceVisible.value);
     
-    // Trigger widget update immediately
     final statsController = Get.find<StatisticsController>();
     if (userId.value != null) {
       statsController.refreshStatisticsData(userId.value!);

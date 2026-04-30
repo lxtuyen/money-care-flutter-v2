@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
 import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/core/theme/app_theme_colors.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 
 class TransactionItem extends StatelessWidget {
   const TransactionItem({
@@ -17,6 +16,13 @@ class TransactionItem extends StatelessWidget {
     this.isShowDate = true,
     this.isShowDivider = true,
     this.color,
+    this.title,
+    this.subtitle,
+    this.detail,
+    this.trailingSubtitle,
+    this.trailingAction,
+    this.trailingInlineAction,
+    this.showAmountSign = true,
   });
 
   final TransactionEntity item;
@@ -24,6 +30,13 @@ class TransactionItem extends StatelessWidget {
   final bool isShowDivider;
   final VoidCallback onTap;
   final Color? color;
+  final String? title;
+  final String? subtitle;
+  final Widget? detail;
+  final String? trailingSubtitle;
+  final Widget? trailingAction;
+  final Widget? trailingInlineAction;
+  final bool showAmountSign;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +44,6 @@ class TransactionItem extends StatelessWidget {
         Get.isRegistered<FinanceModeController>()
             ? Get.find<FinanceModeController>()
             : null;
-    final AppController appController = Get.find<AppController>();
 
     Widget content;
 
@@ -56,9 +68,12 @@ class TransactionItem extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, {required bool isSavingMode}) {
     final bool isIncome = item.type == 'income';
-    final Color typeColor = isIncome ? AppColors.success : AppColors.error;
+    final Color typeColor =
+        color ?? (isIncome ? AppColors.success : AppColors.error);
     final bool showSkippableLabel =
         isSavingMode && (item.category?.isEssential == false);
+    final String amountText =
+        '${showAmountSign ? (isIncome ? '+' : '-') : ''} ${AppHelperFunction.formatAmount(item.amount.toDouble(), currency: '')} ₫';
 
     return Column(
       children: [
@@ -81,13 +96,12 @@ class TransactionItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSizes.spaceBtwItems),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.note ?? "",
+                      title ?? item.note ?? '',
                       style: TextStyle(
                         fontSize: AppSizes.fontSizeSm + 1,
                         fontWeight: FontWeight.w600,
@@ -98,13 +112,17 @@ class TransactionItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      item.category?.name ?? 'Không có danh mục',
+                      subtitle ?? item.category?.name ?? 'Không có danh mục',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppThemeColors.of(context).textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    if (detail != null) ...[
+                      const SizedBox(height: 4),
+                      detail!,
+                    ],
                     if (showSkippableLabel) ...[
                       const SizedBox(height: 4),
                       _SkippableLabel(),
@@ -112,18 +130,35 @@ class TransactionItem extends StatelessWidget {
                   ],
                 ),
               ),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    '${isIncome ? '+' : '-'} ${AppHelperFunction.formatAmount(item.amount.toDouble(), currency: '')} ₫',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: typeColor,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        amountText,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: typeColor,
+                        ),
+                      ),
+                      if (trailingInlineAction != null) ...[
+                        const SizedBox(width: 8),
+                        trailingInlineAction!,
+                      ],
+                    ],
                   ),
+                  if (trailingSubtitle != null)
+                    Text(
+                      trailingSubtitle!,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppThemeColors.of(context).textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   if (isShowDate && item.transactionDate != null)
                     Text(
                       AppHelperFunction.formatDateTime(item.transactionDate!),
@@ -133,14 +168,16 @@ class TransactionItem extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                  if (trailingAction != null) ...[
+                    const SizedBox(height: 6),
+                    trailingAction!,
+                  ],
                 ],
               ),
             ],
           ),
         ),
-
         const SizedBox(height: 8),
-
         if (isShowDivider)
           const Divider(
             color: AppColors.borderSecondary,

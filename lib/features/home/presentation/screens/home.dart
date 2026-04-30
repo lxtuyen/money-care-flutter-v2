@@ -14,7 +14,6 @@ import 'package:money_care/features/finance_mode/presentation/widgets/days_until
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/core/constants/enums.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -185,16 +184,6 @@ class HomeScreen extends GetView<HomeController> {
                           },
                         ),
                         const SizedBox(width: 12),
-                        CircularIcon(
-                          icon: Icons.dashboard_customize_outlined,
-                          backgroundColor: AppThemeColors.of(context).iconBackground,
-                          height: 38,
-                          width: 38,
-                          size: 20,
-                          onTap: () =>
-                              Get.toNamed(RoutePath.dashboardCustomization),
-                        ),
-                        const SizedBox(width: 12),
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -231,29 +220,12 @@ class HomeScreen extends GetView<HomeController> {
             ),
             const SizedBox(height: 16),
 
-            Obx(() {
-              final sections = controller.appController.dashboardSections;
-              return Column(
-                children: sections.map((section) {
-                  switch (section) {
-                    case DashboardSection.quickStatus:
-                      return _buildQuickStatus();
-                    case DashboardSection.spendingSummary:
-                      return _buildSpendingSummary();
-                    case DashboardSection.recentTransactions:
-                      return _buildRecentTransactions();
-                    case DashboardSection.spendingOverview:
-                      return _buildSpendingOverview();
-                    case DashboardSection.spendingLimit:
-                      return _buildSpendingLimit();
-                    case DashboardSection.monthlySpending:
-                      return _buildMonthlySpending();
-                    case DashboardSection.monthlyIncome:
-                      return _buildMonthlyIncome();
-                  }
-                }).toList(),
-              );
-            }),
+            _buildQuickStatus(),
+            _buildSpendingSummary(),
+            _buildRecentTransactions(),
+            _buildSpendingOverview(),
+            _buildMonthlySpending(),
+            _buildMonthlyIncome(),
           ],
         ),
       ),
@@ -393,55 +365,6 @@ class HomeScreen extends GetView<HomeController> {
         const SizedBox(height: AppSizes.defaultSpace),
       ],
     );
-  }
-
-  Widget _buildSpendingLimit() {
-    return Obx(() {
-      final categories = controller.statisticsController.totalByCate;
-      final mode = controller.financeModeController.currentMode.value;
-
-      final filtered = categories.where((TotalByCategoryEntity cat) {
-        if (cat.limit > 0) return true;
-        if (mode == FinanceMode.survival &&
-            !cat.isEssential &&
-            cat.total > 0) {
-          return true;
-        }
-        return false;
-      }).toList();
-      filtered.sort((TotalByCategoryEntity a, TotalByCategoryEntity b) {
-        double percentA =
-            a.limit > 0 ? a.total / a.limit : (a.total > 0 ? 10.0 : 0.0);
-        double percentB =
-            b.limit > 0 ? b.total / b.limit : (b.total > 0 ? 10.0 : 0.0);
-        return percentB.compareTo(percentA);
-      });
-
-      if (filtered.isEmpty) return const SizedBox.shrink();
-
-      return Column(
-        children: [
-          AppSectionHeading(
-            title: 'home.spendingLimit'.tr,
-            showActionButton: filtered.length > 3,
-            buttonTitle: 'common.all'.tr,
-            onPressed: () {},
-          ),
-          const SizedBox(height: AppSizes.spaceBtwItems),
-          ...filtered.take(3).map((TotalByCategoryEntity category) {
-            return CategoryOverviewCard(
-              title: category.categoryName,
-              limit: category.limit,
-              spent: category.total,
-              iconPath: category.categoryIcon,
-              isBalanceVisible:
-                  controller.appController.isBalanceVisible.value,
-            );
-          }),
-          const SizedBox(height: AppSizes.defaultSpace),
-        ],
-      );
-    });
   }
 
   Widget _buildMonthlySpending() {
@@ -592,51 +515,5 @@ class HomeScreen extends GetView<HomeController> {
         ],
       );
     });
-  }
-}
-
-class _QuickActionCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _QuickActionCard({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(AppSizes.cardRadiusLg),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSizes.fontSizeSm,
-                ),
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios, color: color, size: 14),
-          ],
-        ),
-      ),
-    );
   }
 }

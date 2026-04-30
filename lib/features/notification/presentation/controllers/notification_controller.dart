@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/notification/domain/entities/notification_entity.dart';
@@ -71,33 +72,24 @@ class NotificationController extends GetxController {
         'DEBUG: Test notification result: success=${result.success}, data=${result.data}, message=${result.message}',
       );
 
-      // Đợi 1 chút để BE xử lý lưu xong rồi reload danh sách
       await Future.delayed(const Duration(seconds: 1));
       await fetchNotifications();
 
       final data = result.data;
       if (data != null && data['success'] == true) {
-        Get.snackbar(
-          'Thành công',
+        AppHelperFunction.showSuccessSnackBar(
           'Đã gửi thông báo tới ${data['successCount']} thiết bị.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
         );
       } else {
-        Get.snackbar(
-          'Chú ý',
+        AppHelperFunction.showWarningSnackBar(
           'Server báo: ${data?['error'] ?? 'Không rõ lỗi'} (Số token: ${data?['tokenCount'] ?? 0})',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange.withValues(alpha: 0.1),
           duration: const Duration(seconds: 5),
         );
       }
     } catch (e) {
       print('Test notification error: $e');
-      Get.snackbar(
-        'Lỗi',
+      AppHelperFunction.showErrorSnackBar(
         'Không thể gửi yêu cầu thông báo test: $e',
-        snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
       isLoading.value = false;

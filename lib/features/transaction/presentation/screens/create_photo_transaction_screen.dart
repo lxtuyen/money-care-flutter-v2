@@ -867,8 +867,6 @@ class _TypeChip extends StatelessWidget {
   }
 }
 
-// ─── Scanner Overlay ──────────────────────────────────────────────────────────
-
 class _ScannerOverlay extends StatelessWidget {
   const _ScannerOverlay({required this.animation});
   final Animation<double> animation;
@@ -921,42 +919,9 @@ class _ScannerOverlay extends StatelessWidget {
                 width: holeWidth,
                 child: Stack(
                   children: [
-                    // Stylized Corners
                     CustomPaint(
                       painter: _ScannerPainter(),
                       size: Size.infinite,
-                    ),
-
-                    // Moving Scan Line
-                    AnimatedBuilder(
-                      animation: animation,
-                      builder: (context, child) {
-                        return Positioned(
-                          top: animation.value * holeHeight,
-                          left: 0,
-                          right: 0,
-                          child: child!,
-                        );
-                      },
-                      child: Container(
-                        height: 2,
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.5),
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary.withValues(alpha: 0.01),
-                              AppColors.primary,
-                              AppColors.primary.withValues(alpha: 0.01),
-                            ],
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),

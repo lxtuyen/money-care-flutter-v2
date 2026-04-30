@@ -49,6 +49,12 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
       queryParameters: dto.toQueryParams(),
       fromJsonT: (json) => TransactionByTypeModel.fromJson(json),
     );
+
+    if (res.success && res.data != null) {
+      print(
+          'Found ${res.data?.income.length} income and ${res.data?.expense.length} expense transactions');
+    }
+
     if (!res.success || res.data == null) throw Exception(res.message);
     return res.data!;
   }
@@ -172,6 +178,11 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
       queryParameters: {'format': format},
       body: dto.toJson(),
     );
-    return res.success;
+    if (!res.success) {
+      throw Exception(
+        res.message.isNotEmpty ? res.message : 'Không thể xuất báo cáo',
+      );
+    }
+    return true;
   }
 }

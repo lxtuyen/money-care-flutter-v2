@@ -46,7 +46,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   void _syncUserId(int id) {
     try {
-      Get.find<AppController>().userId.value = id;
+      Get.find<AppController>().setUserId(id);
     } catch (_) {}
   }
 

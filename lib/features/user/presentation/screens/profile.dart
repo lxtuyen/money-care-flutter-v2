@@ -123,67 +123,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 8),
 
                     // Theme Toggle
-                    Obx(() => ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(
-                            Get.find<AppController>().isDarkMode.value
-                                ? Icons.dark_mode_outlined
-                                : Icons.light_mode_outlined,
-                            color: AppColors.primary,
-                          ),
-                          title: const Text('Chế độ tối'),
-                          trailing: Switch.adaptive(
-                            value: Get.find<AppController>().isDarkMode.value,
-                            activeColor: AppColors.primary,
-                            onChanged: (val) =>
-                                Get.find<AppController>().toggleDarkMode(),
-                          ),
-                        )),
+                    Obx(
+                      () => ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Get.find<AppController>().isDarkMode.value
+                              ? Icons.dark_mode_outlined
+                              : Icons.light_mode_outlined,
+                          color: AppColors.primary,
+                        ),
+                        title: const Text('Chế độ tối'),
+                        trailing: Switch.adaptive(
+                          value: Get.find<AppController>().isDarkMode.value,
+                          activeColor: AppColors.primary,
+                          onChanged: (val) =>
+                              Get.find<AppController>().toggleDarkMode(),
+                        ),
+                      ),
+                    ),
 
                     // Language Toggle
-                    Obx(() => ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.language, color: AppColors.primary),
-                          title: const Text('Ngôn ngữ'),
-                          trailing: DropdownButton<String>(
-                            value: Get.find<AppController>().currentLocale.value,
-                            underline: const SizedBox(),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'vi_VN',
-                                child: Text('Tiếng Việt'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'en_US',
-                                child: Text('English'),
-                              ),
-                            ],
-                            onChanged: (val) {
-                              if (val != null) {
-                                Get.find<AppController>().setLocale(val);
-                              }
-                            },
-                          ),
-                        )),
+                    Obx(
+                      () => ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          Icons.language,
+                          color: AppColors.primary,
+                        ),
+                        title: const Text('Ngôn ngữ'),
+                        trailing: DropdownButton<String>(
+                          value: Get.find<AppController>().currentLocale.value,
+                          underline: const SizedBox(),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'vi_VN',
+                              child: Text('Tiếng Việt'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'en_US',
+                              child: Text('English'),
+                            ),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              Get.find<AppController>().setLocale(val);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
 
                     // Widget Privacy Setting
-                    Obx(() => ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.widgets_outlined, color: AppColors.primary),
-                          title: Text('widget.showBalance'.tr),
-                          subtitle: Text(
-                            'widget.showBalanceDesc'.tr,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                          trailing: Switch.adaptive(
-                            value: Get.find<AppController>()
-                                .isWidgetBalanceVisible
-                                .value,
-                            activeColor: AppColors.primary,
-                            onChanged: (val) => Get.find<AppController>()
-                                .toggleWidgetBalanceVisibility(),
-                          ),
-                        )),
+                    Obx(
+                      () => ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          Icons.widgets_outlined,
+                          color: AppColors.primary,
+                        ),
+                        title: Text('widget.showBalance'.tr),
+                        subtitle: Text(
+                          'widget.showBalanceDesc'.tr,
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        trailing: Switch.adaptive(
+                          value: Get.find<AppController>()
+                              .isWidgetBalanceVisible
+                              .value,
+                          activeColor: AppColors.primary,
+                          onChanged: (val) => Get.find<AppController>()
+                              .toggleWidgetBalanceVisibility(),
+                        ),
+                      ),
+                    ),
 
                     const SizedBox(height: 32),
 
@@ -237,7 +249,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       controller: userController.monthlyIncomeController,
                       label: 'profile.monthlyIncomeLabel'.tr,
                       icon: Icons.attach_money_outlined,
-                      hintText: 'profile.nameHint'.tr, // Reuse name hint or add a generic one
+                      hintText: 'profile.nameHint'
+                          .tr, // Reuse name hint or add a generic one
                     ),
                     const SizedBox(height: 16),
 
@@ -279,7 +292,10 @@ class _IncomeDateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayText = incomeDate != null
-        ? 'profile.incomeDayValue'.tr.replaceAll('@day', incomeDate!.day.toString().padLeft(2, '0'))
+        ? 'profile.incomeDayValue'.tr.replaceAll(
+            '@day',
+            incomeDate!.day.toString().padLeft(2, '0'),
+          )
         : '';
 
     return AppTextFormField(

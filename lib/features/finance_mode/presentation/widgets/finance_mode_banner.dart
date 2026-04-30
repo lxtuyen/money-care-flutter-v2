@@ -126,7 +126,7 @@ class _ModeSwitchSheet extends StatelessWidget {
             mode: FinanceMode.normal,
             label: 'Bình thường',
             description: 'Chi tiêu thoải mái, theo dõi thông thường.',
-            color: AppColors.success,
+            color: AppColors.primary,
             isSelected: currentMode == FinanceMode.normal,
             onTap: () {
               controller.switchMode(FinanceMode.normal);

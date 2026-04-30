@@ -11,7 +11,6 @@ class CategorySheet extends StatefulWidget {
   final List<CategoryEntity> categories;
   final CategoryEntity? selectedCategoryInit;
 
-  /// 'income' hoặc 'expense' — chỉ hiển thị category khớp type hoặc type null.
   final String? transactionType;
 
   const CategorySheet({
@@ -34,12 +33,8 @@ class _CategorySheetState extends State<CategorySheet> {
     selectedCategory = widget.selectedCategoryInit;
   }
 
-  /// Returns the filtered category list.
-  /// - Lọc theo [transactionType] nếu category có type (null = hiển thị cho cả hai).
-  /// - Trong SURVIVAL mode, ẩn các category không thiết yếu (Requirement 5.8).
   List<CategoryEntity> _filteredCategories(FinanceMode mode) {
     var list = widget.categories.where((c) {
-      // Nếu là 'others' thì luôn cho phép hiển thị bất kể transactionType là gì.
       if (c.type == 'others') return true;
 
       if (widget.transactionType != null && c.type != null) {
@@ -94,19 +89,6 @@ class _CategorySheetState extends State<CategorySheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: Row(
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: AppThemeColors.of(context).surfaceBackground,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Icon(
-                          Icons.category_rounded,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +131,9 @@ class _CategorySheetState extends State<CategorySheet> {
                     ),
                     child: Text(
                       selectedCategory != null
-                          ? 'filter.selectedCategory'.trParams({'name': selectedCategory!.name})
+                          ? 'filter.selectedCategory'.trParams({
+                              'name': selectedCategory!.name,
+                            })
                           : 'filter.noCategorySelected'.tr,
                       style: TextStyle(
                         color: AppThemeColors.of(context).textSecondary,

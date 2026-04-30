@@ -88,7 +88,7 @@ const Map<String, String> enUS = {
   'home.title': 'Home',
   'home.recentTransactions': 'Recent Transactions',
   'home.overview': 'Overview',
-  'home.spendingLimit': 'Spending Limit',
+
   'home.monthlySpending': 'This Month Spending',
   'home.monthlySpendingSurvival': 'Essential Spending (Survival)',
   'home.savingPlan': 'Saving Plan',
@@ -321,7 +321,7 @@ const Map<String, String> enUS = {
   'dashboard.section.spendingSummary': 'Income/Expense Summary',
   'dashboard.section.recentTransactions': 'Recent Transactions',
   'dashboard.section.spendingOverview': 'Spending Chart',
-  'dashboard.section.spendingLimit': 'Spending Limits',
+
   'dashboard.section.monthlySpending': 'Spending by Category',
   'dashboard.section.monthlyIncome': 'Income by Category',
   'dashboard.saveSuccess': 'Dashboard layout updated!',

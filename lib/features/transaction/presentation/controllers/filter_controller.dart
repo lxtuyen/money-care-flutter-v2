@@ -51,7 +51,8 @@ class FilterController extends GetxController {
   void _setDefaultMonthRange() {
     final now = DateTime.now();
     startDate.value = DateTime(now.year, now.month, 1);
-    endDate.value = DateTime(now.year, now.month + 1, 0);
+    // Set to the last millisecond of the month to include all transactions on the last day
+    endDate.value = DateTime(now.year, now.month + 1, 1).subtract(const Duration(milliseconds: 1));
     dateLabel.value = defaultDateLabel;
   }
 
@@ -60,14 +61,17 @@ class FilterController extends GetxController {
 
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month, 1);
-    final monthEnd = DateTime(now.year, now.month + 1, 0);
+    final nextMonthStart = DateTime(now.year, now.month + 1, 1);
 
-    return start.year == monthStart.year &&
+    // Check if start is first day of current month
+    final isStartMatch = start.year == monthStart.year &&
         start.month == monthStart.month &&
-        start.day == monthStart.day &&
-        end.year == monthEnd.year &&
-        end.month == monthEnd.month &&
-        end.day == monthEnd.day;
+        start.day == 1;
+
+    // Check if end is within the current month (same month and year)
+    final isEndMatch = end.year == now.year && end.month == now.month;
+
+    return isStartMatch && isEndMatch;
   }
 }
 

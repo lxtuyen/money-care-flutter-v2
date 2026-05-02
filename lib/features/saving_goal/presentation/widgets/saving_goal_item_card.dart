@@ -68,6 +68,24 @@ class SavingGoalItemCard extends StatelessWidget {
                           color: AppColors.text3,
                         ),
                       ),
+                      if (fund.wallet != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.account_balance_wallet, size: 12, color: AppColors.primary),
+                              const SizedBox(width: 4),
+                              Text(
+                                fund.wallet!.name,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),

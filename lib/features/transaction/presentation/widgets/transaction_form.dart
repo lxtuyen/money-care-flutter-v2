@@ -13,7 +13,9 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/core/constants/colors.dart';
 
 class TransactionForm extends StatefulWidget {
   final String title;
@@ -102,6 +104,34 @@ class _TransactionFormState extends State<TransactionForm> {
                                   validator: (v) =>
                                       AppValidator.validateAmount(v),
                                 ),
+                                const SizedBox(height: 20),
+                                Obx(() {
+                                  final wallets =
+                                      controller.walletController.wallets;
+                                  return DropdownButtonFormField<int>(
+                                    value: controller.selectedWalletId.value,
+                                    decoration: InputDecoration(
+                                      labelText: 'Ví / Tài khoản',
+                                      prefixIcon: const Icon(Icons.account_balance_wallet),
+                                      border: const OutlineInputBorder(),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.primary.withOpacity(0.3),
+                                        ),
+                                      ),
+                                    ),
+                                    items: wallets.map((w) {
+                                      return DropdownMenuItem<int>(
+                                        value: w.id,
+                                        child: Text(w.name),
+                                      );
+                                    }).toList(),
+                                    onChanged: (v) {
+                                      controller.selectedWalletId.value = v;
+                                    },
+                                    validator: (v) => v == null ? 'Vui lòng chọn ví' : null,
+                                  );
+                                }),
                                 if (widget.showTypeSelector) ...[
                                   const SizedBox(height: 20),
                                   Row(

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/app/widgets/dialog/warning_dialog.dart';
+import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -334,19 +334,15 @@ class TransactionDetail extends StatelessWidget {
   }
 
   void _handleDelete(BuildContext context, TransactionController controller) {
-    showDialog(
-      context: context,
-      builder: (context) => WarningDialog(
-        message:
-            'transaction.deleteConfirm'.tr,
-        onCancel: () => Get.back(),
-        onConfirm: () {
-          Get.back();
-          Get.back();
-          controller.deleteTransaction(item.id!, userId);
-          AppHelperFunction.showSuccessSnackBar('transaction.deleteSuccess'.tr);
-        },
-      ),
+    AppConfirmDialog.show(
+      message: 'transaction.deleteConfirm'.tr,
+      confirmText: 'common.delete'.tr,
+      cancelText: 'common.back'.tr,
+      onConfirm: () {
+        Get.back();
+        controller.deleteTransaction(item.id!, userId);
+        AppHelperFunction.showSuccessSnackBar('transaction.deleteSuccess'.tr);
+      },
     );
   }
 }

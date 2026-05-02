@@ -62,6 +62,10 @@ abstract class SavingGoalReportModel with _$SavingGoalReportModel {
     @Default(0) int totalTransactions,
     @Default(0) double dailyAverageSpending,
     @Default(0) double remainingBudget,
+    @JsonKey(name: 'wallet_name') String? walletName,
+    @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)
+    @Default(0)
+    double walletBalance,
   }) = _SavingGoalReportModel;
 
   factory SavingGoalReportModel.fromJson(Map<String, dynamic> json) =>

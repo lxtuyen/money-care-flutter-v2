@@ -9,6 +9,7 @@ import 'package:money_care/features/transaction/data/models/transaction_model.da
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
@@ -17,6 +18,7 @@ class TransactionFormController extends GetxController {
       Get.find<SavingGoalController>();
   final ScanReceiptController scanReceiptController =
       Get.find<ScanReceiptController>();
+  final WalletController walletController = Get.find<WalletController>();
   final AppController appController = Get.find<AppController>();
 
   final formKey = GlobalKey<FormState>();
@@ -26,6 +28,7 @@ class TransactionFormController extends GetxController {
 
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final RxnInt selectedCategoryId = RxnInt();
+  final RxnInt selectedWalletId = RxnInt();
 
   CategoryEntity? selectedCategory;
 
@@ -50,6 +53,9 @@ class TransactionFormController extends GetxController {
       selectedCategoryId.value = item.category?.id;
     } else {
       selectedDate.value = DateTime.now();
+      if (walletController.selectedWallet.value != null) {
+        selectedWalletId.value = walletController.selectedWallet.value!.id;
+      }
     }
   }
 
@@ -74,6 +80,7 @@ class TransactionFormController extends GetxController {
       categoryId: selectedCategoryId.value,
       transactionDate: selectedDate.value,
       userId: appController.userId.value,
+      walletId: selectedWalletId.value,
     );
   }
 

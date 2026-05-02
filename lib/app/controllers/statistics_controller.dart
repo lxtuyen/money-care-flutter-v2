@@ -87,14 +87,13 @@ class StatisticsController extends GetxController {
   }
 
   DateTime get currentStartDate {
-    final baseDate = periodType.value == 'hàng tháng'
+    return periodType.value == 'hàng tháng'
         ? monthStartDate
         : selectedDay.value;
-    return _clampToGoalStart(baseDate);
   }
 
   DateTime get currentEndDate {
-    final baseDate = periodType.value == 'hàng tháng'
+    return periodType.value == 'hàng tháng'
         ? DateTime(
             monthEndDate.year,
             monthEndDate.month,
@@ -111,7 +110,6 @@ class StatisticsController extends GetxController {
             59,
             59,
           );
-    return _clampToGoalEnd(baseDate);
   }
 
   DateTime _clampToGoalStart(DateTime date) {
@@ -130,23 +128,18 @@ class StatisticsController extends GetxController {
 
   DateTime get previousStartDate {
     if (periodType.value == 'hàng tháng') {
-      final prev = _getCycleDate(selectedMonth.value, -1);
-      return _clampToGoalStart(prev);
+      return _getCycleDate(selectedMonth.value, -1);
     } else {
-      final prev = selectedDay.value.subtract(const Duration(days: 1));
-      return _clampToGoalStart(prev);
+      return selectedDay.value.subtract(const Duration(days: 1));
     }
   }
 
   DateTime get previousEndDate {
     if (periodType.value == 'hàng tháng') {
-      final prevEnd = _getCycleDate(selectedMonth.value, -1, isEnd: true);
-      return _clampToGoalEnd(prevEnd);
+      return _getCycleDate(selectedMonth.value, -1, isEnd: true);
     } else {
       final prev = selectedDay.value.subtract(const Duration(days: 1));
-      return _clampToGoalEnd(
-        DateTime(prev.year, prev.month, prev.day, 23, 59, 59),
-      );
+      return DateTime(prev.year, prev.month, prev.day, 23, 59, 59);
     }
   }
 

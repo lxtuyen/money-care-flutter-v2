@@ -88,6 +88,10 @@ _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   totalTransactions: (json['totalTransactions'] as num?)?.toInt() ?? 0,
   dailyAverageSpending: (json['dailyAverageSpending'] as num?)?.toDouble() ?? 0,
   remainingBudget: (json['remainingBudget'] as num?)?.toDouble() ?? 0,
+  walletName: json['wallet_name'] as String?,
+  walletBalance: json['wallet_balance'] == null
+      ? 0
+      : NumParser.parseDouble(json['wallet_balance']),
 );
 
 Map<String, dynamic> _$SavingGoalReportModelToJson(
@@ -113,4 +117,6 @@ Map<String, dynamic> _$SavingGoalReportModelToJson(
   'totalTransactions': instance.totalTransactions,
   'dailyAverageSpending': instance.dailyAverageSpending,
   'remainingBudget': instance.remainingBudget,
+  'wallet_name': instance.walletName,
+  'wallet_balance': instance.walletBalance,
 };

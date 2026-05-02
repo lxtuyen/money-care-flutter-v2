@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
@@ -37,44 +38,71 @@ class SavingGoalSummaryCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            decoration: BoxDecoration(
-              gradient: AppColors.linearGradient,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    fund.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => Get.toNamed(RoutePath.savingGoalDetail, arguments: fund),
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                decoration: BoxDecoration(
+                  gradient: AppColors.linearGradient,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
                   ),
                 ),
-              ],
-            ),
-          ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        fund.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Xem chi tiết',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 10,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
 
-          if (isLoading)
-            const Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (report == null)
-            _buildFromFundOnly()
-          else
-            _buildFromReport(report!),
-        ],
+              if (isLoading)
+                const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (report == null)
+                _buildFromFundOnly()
+              else
+                _buildFromReport(context, report!),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -107,7 +135,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
       );
   }
 
-  Widget _buildFromReport(SavingGoalReportModel r) {
+  Widget _buildFromReport(BuildContext context, SavingGoalReportModel r) {
     return Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -125,7 +153,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
                         ? AppColors.income
                         : AppColors.secondaryOrange,
                     subtitle: AppHelperFunction.formatAmount(r.target, currency: 'VND'),
-                    subtitleLabel: 'mục tiêu',
                   ),
                 ),
               ],
@@ -133,40 +160,176 @@ class SavingGoalSummaryCard extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(height: 1),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _QuickStat(
-                    icon: Icons.receipt_long_rounded,
-                    label: 'Giao dịch',
-                    value: '${r.totalTransactions}',
+            if (r.walletName != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary.withOpacity(0.08),
+                      AppColors.primary.withOpacity(0.02),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.15),
+                    width: 1,
                   ),
                 ),
-                Expanded(
-                  child: _QuickStat(
-                    icon: Icons.today_rounded,
-                    label: 'TB/ngày',
-                    value: AppHelperFunction.formatAmount(
-                            r.dailyAverageSpending,
-                            currency: 'VND',
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            shape: BoxShape.circle,
                           ),
-                  ),
-                ),
-                Expanded(
-                  child: _QuickStat(
-                    icon: Icons.calendar_month_rounded,
-                    label: 'Còn lại',
-                    value: AppHelperFunction.formatAmount(
-                            r.remainingBudget,
-                            currency: 'VND',
+                          child: const Icon(
+                            Icons.account_balance_wallet_rounded,
+                            size: 22,
+                            color: AppColors.primary,
                           ),
-                    valueColor: r.remainingBudget < 0
-                        ? AppColors.expense
-                        : AppColors.income,
-                  ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    r.walletName!,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    const Divider(height: 1, thickness: 0.5),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Số dư hiện khả dụng',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppThemeColors.of(context).textSecondary,
+                          ),
+                        ),
+                        Text(
+                          AppHelperFunction.formatAmount(r.walletBalance, currency: 'VND'),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _SmallStat(
+                              label: 'Giao dịch',
+                              value: '${r.totalTransactions}',
+                              context: context,
+                            ),
+                          ),
+                          VerticalDivider(
+                            width: 1,
+                            thickness: 0.5,
+                            color: AppThemeColors.of(context).textMuted.withOpacity(0.2),
+                          ),
+                          Expanded(
+                            child: _SmallStat(
+                              label: 'TB Chi tiêu',
+                              value: AppHelperFunction.formatAmount(
+                                r.dailyAverageSpending,
+                                currency: 'VND',
+                              ),
+                              context: context,
+                            ),
+                          ),
+                          VerticalDivider(
+                            width: 1,
+                            thickness: 0.5,
+                            color: AppThemeColors.of(context).textMuted.withOpacity(0.2),
+                          ),
+                          Expanded(
+                            child: _SmallStat(
+                              label: 'Còn lại',
+                              value: AppHelperFunction.formatAmount(
+                                r.remainingBudget,
+                                currency: 'VND',
+                              ),
+                              valueColor: r.remainingBudget < 0
+                                  ? AppColors.expense
+                                  : AppColors.income,
+                              context: context,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ] else ...[
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickStat(
+                      icon: Icons.receipt_long_rounded,
+                      label: 'Giao dịch',
+                      value: '${r.totalTransactions}',
+                    ),
+                  ),
+                  Expanded(
+                    child: _QuickStat(
+                      icon: Icons.today_rounded,
+                      label: 'TB/ngày',
+                      value: AppHelperFunction.formatAmount(
+                        r.dailyAverageSpending,
+                        currency: 'VND',
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: _QuickStat(
+                      icon: Icons.calendar_month_rounded,
+                      label: 'Còn lại',
+                      value: AppHelperFunction.formatAmount(
+                        r.remainingBudget,
+                        currency: 'VND',
+                      ),
+                      valueColor: r.remainingBudget < 0
+                          ? AppColors.expense
+                          : AppColors.income,
+                    ),
+                  ),
+                ],
+              ),
+            ],
 
           if (r.milestones.isNotEmpty) ...[
             const SizedBox(height: 24),
@@ -175,10 +338,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
             MilestoneMap(milestones: r.milestones),
           ],
 
-          if (!r.isCompleted &&
-              r.currentBalance >= r.target &&
-              r.currentMilestoneIndex >= 0 &&
-              r.currentMilestoneIndex < r.milestones.length - 1) ...[
+          if (!r.isCompleted && r.isTargetAchieved) ...[
             const SizedBox(height: 20),
             Center(
               child: Container(
@@ -203,7 +363,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     size: 20,
                   ),
                   label: const Text(
-                    'Hoàn thành sớm mục tiêu',
+                    'Hoàn thành mục tiêu',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -231,7 +391,6 @@ class _CircleMetric extends StatelessWidget {
   final String centerText;
   final Color color;
   final String subtitle;
-  final String subtitleLabel;
 
   const _CircleMetric({
     required this.label,
@@ -239,7 +398,6 @@ class _CircleMetric extends StatelessWidget {
     required this.centerText,
     required this.color,
     required this.subtitle,
-    required this.subtitleLabel,
   });
 
   @override
@@ -309,10 +467,6 @@ class _CircleMetric extends StatelessWidget {
             ),
 
             overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            subtitleLabel,
-            style: TextStyle(fontSize: 11, color: AppThemeColors.of(context).textSecondary),
           ),
         ],
       ),
@@ -403,6 +557,51 @@ class _BudgetRow extends StatelessWidget {
             backgroundColor: AppColors.borderSecondary,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SmallStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+  final BuildContext context;
+
+  const _SmallStat({
+    required this.label,
+    required this.value,
+    this.valueColor,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: valueColor ?? AppThemeColors.of(context).textPrimary,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 9,
+                color: AppThemeColors.of(context).textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ],
     );

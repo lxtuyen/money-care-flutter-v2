@@ -27,6 +27,10 @@ class RoutePath {
   static const expiredSavingGoals = '/expired_saving_goals';
   static const categoryManagement = '/category_management';
   static const streakCalendar = '/streak_calendar';
+  static const wallets = '/wallets';
+  static const walletTransfer = '/wallet_transfer';
+  static const walletDetail = '/wallet_detail';
+  static const savingGoalDetail = '/saving_goal_detail';
 
   static const selectFund = selectSavingGoal;
   static const createFund = createSavingGoal;

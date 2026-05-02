@@ -18,6 +18,7 @@ class TransactionEntity {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final CategoryEntity? category;
+  final String? walletName;
 
   const TransactionEntity({
     this.id,
@@ -29,6 +30,7 @@ class TransactionEntity {
     this.createdAt,
     this.updatedAt,
     this.category,
+    this.walletName,
   });
 
   factory TransactionEntity.fromMap(Map<String, dynamic> map) {
@@ -37,6 +39,7 @@ class TransactionEntity {
       amount: map['amount'] ?? 0,
       type: map['type'] ?? 'expense',
       note: map['note'],
+      walletName: map['walletName'],
       transactionDate: map['date'] != null
           ? DateTime.tryParse(map['date'].toString())
           : null,

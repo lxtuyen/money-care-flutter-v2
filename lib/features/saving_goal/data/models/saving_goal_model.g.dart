@@ -30,6 +30,9 @@ _SavingGoalModel _$SavingGoalModelFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['updated_at'] as String),
       status: json['status'] as String?,
+      wallet: json['wallet'] == null
+          ? null
+          : WalletModel.fromJson(json['wallet'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$SavingGoalModelToJson(_SavingGoalModel instance) =>
@@ -46,4 +49,5 @@ Map<String, dynamic> _$SavingGoalModelToJson(_SavingGoalModel instance) =>
       'end_date': instance.endDate?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
       'status': instance.status,
+      'wallet': instance.wallet,
     };

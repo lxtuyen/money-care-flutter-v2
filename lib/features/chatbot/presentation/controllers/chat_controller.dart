@@ -15,6 +15,7 @@ import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatController extends GetxController {
@@ -153,6 +154,22 @@ class ChatController extends GetxController {
         }
         try {
           await transactionController.refreshAllData(userId);
+          
+          // Refresh Wallet balances
+          if (Get.isRegistered<WalletController>()) {
+            Get.find<WalletController>().refreshWallets();
+          }
+
+          // Refresh current Saving Goal progress
+          if (savingGoalController.goalId.value > 0) {
+            savingGoalController.loadGoalById();
+          }
+
+          // Refresh Statistics
+          if (Get.isRegistered<StatisticsController>()) {
+            Get.find<StatisticsController>().refreshStatisticsData(userId);
+          }
+
           if (Get.isRegistered<GamificationController>()) {
             Future.delayed(const Duration(milliseconds: 300), () {
               Get.find<GamificationController>().recordDailyTransaction();

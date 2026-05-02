@@ -50,7 +50,7 @@ class GoalCompletionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Chúc mừng!',
+              'Tuyệt vời!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -59,7 +59,7 @@ class GoalCompletionDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Bạn đã hoàn thành mục tiêu "${report.name}" với số dư ${AppHelperFunction.formatAmount(report.currentBalance, currency: 'VND')}.',
+              'Bạn đã đạt mục tiêu "${report.name}" với số dư hiện tại là ${AppHelperFunction.formatAmount(report.currentBalance, currency: 'VND')}.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

@@ -139,6 +139,27 @@ class TransactionSavedBubble extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ],
+                            if (transaction.walletName != null) ...[
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.account_balance_wallet_outlined,
+                                    size: 14,
+                                    color: Colors.blue.shade600,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    transaction.walletName!,
+                                    style: TextStyle(
+                                      color: Colors.blue.shade600,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionCreateDto {
 
- int? get amount; String? get type; String? get note;@JsonKey(name: 'pictuteURL') String? get pictureUrl; DateTime? get transactionDate; int? get categoryId; int? get userId;
+ int? get amount; String? get type; String? get note;@JsonKey(name: 'pictuteURL') String? get pictureUrl; DateTime? get transactionDate; int? get categoryId; int? get userId; int? get walletId;
 /// Create a copy of TransactionCreateDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $TransactionCreateDtoCopyWith<TransactionCreateDto> get copyWith => _$Transactio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionCreateDto&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note)&&(identical(other.pictureUrl, pictureUrl) || other.pictureUrl == pictureUrl)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.userId, userId) || other.userId == userId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionCreateDto&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note)&&(identical(other.pictureUrl, pictureUrl) || other.pictureUrl == pictureUrl)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.walletId, walletId) || other.walletId == walletId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,amount,type,note,pictureUrl,transactionDate,categoryId,userId);
+int get hashCode => Object.hash(runtimeType,amount,type,note,pictureUrl,transactionDate,categoryId,userId,walletId);
 
 @override
 String toString() {
-  return 'TransactionCreateDto(amount: $amount, type: $type, note: $note, pictureUrl: $pictureUrl, transactionDate: $transactionDate, categoryId: $categoryId, userId: $userId)';
+  return 'TransactionCreateDto(amount: $amount, type: $type, note: $note, pictureUrl: $pictureUrl, transactionDate: $transactionDate, categoryId: $categoryId, userId: $userId, walletId: $walletId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $TransactionCreateDtoCopyWith<$Res>  {
   factory $TransactionCreateDtoCopyWith(TransactionCreateDto value, $Res Function(TransactionCreateDto) _then) = _$TransactionCreateDtoCopyWithImpl;
 @useResult
 $Res call({
- int? amount, String? type, String? note,@JsonKey(name: 'pictuteURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId
+ int? amount, String? type, String? note,@JsonKey(name: 'pictuteURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId, int? walletId
 });
 
 
@@ -65,7 +65,7 @@ class _$TransactionCreateDtoCopyWithImpl<$Res>
 
 /// Create a copy of TransactionCreateDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? amount = freezed,Object? type = freezed,Object? note = freezed,Object? pictureUrl = freezed,Object? transactionDate = freezed,Object? categoryId = freezed,Object? userId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? amount = freezed,Object? type = freezed,Object? note = freezed,Object? pictureUrl = freezed,Object? transactionDate = freezed,Object? categoryId = freezed,Object? userId = freezed,Object? walletId = freezed,}) {
   return _then(_self.copyWith(
 amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as int?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -74,6 +74,7 @@ as String?,pictureUrl: freezed == pictureUrl ? _self.pictureUrl : pictureUrl // 
 as String?,transactionDate: freezed == transactionDate ? _self.transactionDate : transactionDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as int?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as int?,walletId: freezed == walletId ? _self.walletId : walletId // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -159,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionCreateDto() when $default != null:
-return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId);case _:
+return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId,_that.walletId);case _:
   return orElse();
 
 }
@@ -180,10 +181,10 @@ return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionCreateDto():
-return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId);case _:
+return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId,_that.walletId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +201,10 @@ return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionCreateDto() when $default != null:
-return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId);case _:
+return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId,_that.walletId);case _:
   return null;
 
 }
@@ -215,7 +216,7 @@ return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transa
 @JsonSerializable()
 
 class _TransactionCreateDto implements TransactionCreateDto {
-  const _TransactionCreateDto({this.amount, this.type, this.note, @JsonKey(name: 'pictuteURL') this.pictureUrl, this.transactionDate, this.categoryId, this.userId});
+  const _TransactionCreateDto({this.amount, this.type, this.note, @JsonKey(name: 'pictuteURL') this.pictureUrl, this.transactionDate, this.categoryId, this.userId, this.walletId});
   factory _TransactionCreateDto.fromJson(Map<String, dynamic> json) => _$TransactionCreateDtoFromJson(json);
 
 @override final  int? amount;
@@ -225,6 +226,7 @@ class _TransactionCreateDto implements TransactionCreateDto {
 @override final  DateTime? transactionDate;
 @override final  int? categoryId;
 @override final  int? userId;
+@override final  int? walletId;
 
 /// Create a copy of TransactionCreateDto
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionCreateDto&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note)&&(identical(other.pictureUrl, pictureUrl) || other.pictureUrl == pictureUrl)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.userId, userId) || other.userId == userId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionCreateDto&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.type, type) || other.type == type)&&(identical(other.note, note) || other.note == note)&&(identical(other.pictureUrl, pictureUrl) || other.pictureUrl == pictureUrl)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.walletId, walletId) || other.walletId == walletId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,amount,type,note,pictureUrl,transactionDate,categoryId,userId);
+int get hashCode => Object.hash(runtimeType,amount,type,note,pictureUrl,transactionDate,categoryId,userId,walletId);
 
 @override
 String toString() {
-  return 'TransactionCreateDto(amount: $amount, type: $type, note: $note, pictureUrl: $pictureUrl, transactionDate: $transactionDate, categoryId: $categoryId, userId: $userId)';
+  return 'TransactionCreateDto(amount: $amount, type: $type, note: $note, pictureUrl: $pictureUrl, transactionDate: $transactionDate, categoryId: $categoryId, userId: $userId, walletId: $walletId)';
 }
 
 
@@ -259,7 +261,7 @@ abstract mixin class _$TransactionCreateDtoCopyWith<$Res> implements $Transactio
   factory _$TransactionCreateDtoCopyWith(_TransactionCreateDto value, $Res Function(_TransactionCreateDto) _then) = __$TransactionCreateDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int? amount, String? type, String? note,@JsonKey(name: 'pictuteURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId
+ int? amount, String? type, String? note,@JsonKey(name: 'pictuteURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId, int? walletId
 });
 
 
@@ -276,7 +278,7 @@ class __$TransactionCreateDtoCopyWithImpl<$Res>
 
 /// Create a copy of TransactionCreateDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? amount = freezed,Object? type = freezed,Object? note = freezed,Object? pictureUrl = freezed,Object? transactionDate = freezed,Object? categoryId = freezed,Object? userId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? amount = freezed,Object? type = freezed,Object? note = freezed,Object? pictureUrl = freezed,Object? transactionDate = freezed,Object? categoryId = freezed,Object? userId = freezed,Object? walletId = freezed,}) {
   return _then(_TransactionCreateDto(
 amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as int?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -285,6 +287,7 @@ as String?,pictureUrl: freezed == pictureUrl ? _self.pictureUrl : pictureUrl // 
 as String?,transactionDate: freezed == transactionDate ? _self.transactionDate : transactionDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as int?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as int?,walletId: freezed == walletId ? _self.walletId : walletId // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }

@@ -16,6 +16,7 @@ import 'package:money_care/features/transaction/presentation/widgets/search_filt
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 import 'package:money_care/features/transaction/presentation/screens/recurring_transaction_screen.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -290,6 +291,56 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     );
   }
 
+  void _showWalletFilterDialog(BuildContext context) {
+    final walletController = Get.find<WalletController>();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chọn ví'),
+        content: Obx(() {
+          if (walletController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final wallets = walletController.wallets;
+          if (wallets.isEmpty) {
+            return const Text('Chưa có ví nào');
+          }
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.all_inclusive),
+                title: const Text('Tất cả ví'),
+                selected: filterController.walletId.value == null,
+                onTap: () {
+                  filterController.updateWallet(null);
+                  Navigator.pop(context);
+                  _applyFilter();
+                },
+              ),
+              const Divider(),
+              ...wallets.map((wallet) {
+                return ListTile(
+                  leading: Text(wallet.icon ?? '💰', style: const TextStyle(fontSize: 24)),
+                  title: Text(wallet.name),
+                  selected: filterController.walletId.value == wallet.id,
+                  onTap: () {
+                    filterController.updateWallet(wallet.id);
+                    Navigator.pop(context);
+                    _applyFilter();
+                  },
+                );
+              }).toList(),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
   Future<void> _applyFilter() async {
     final userId = appController.userId.value;
     if (userId == null) return;
@@ -327,6 +378,17 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 categorySubtitle = 'filter.selectedCategory'.tr.replaceAll('@name', cat.name);
               } else {
                 categorySubtitle = 'filter.selected1Category'.tr;
+              }
+            }
+
+            String walletSubtitle = 'Tất cả ví';
+            if (filterController.walletId.value != null) {
+              final walletController = Get.find<WalletController>();
+              final wallet = walletController.wallets.firstWhereOrNull(
+                (w) => w.id == filterController.walletId.value,
+              );
+              if (wallet != null) {
+                walletSubtitle = wallet.name;
               }
             }
 
@@ -432,6 +494,16 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     onTap: () {
                       Get.back();
                       _showCategoryFilterDialog(context);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildFilterSheetTile(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: 'Theo ví',
+                    subtitle: walletSubtitle,
+                    onTap: () {
+                      Get.back();
+                      _showWalletFilterDialog(context);
                     },
                   ),
                   const SizedBox(height: 12),

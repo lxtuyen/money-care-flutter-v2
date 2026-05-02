@@ -134,10 +134,16 @@ class SavingGoalController extends GetxController {
   Future<void> loadGoalById() async {
     isLoadingCurrent.value = true;
     final result = await getSavingGoalUseCase(goalId.value);
-    result.fold(_handleFailure, (goal) {
-      currentGoal.value = goal;
-      loadGoalReport(goal.id);
-    });
+    result.fold(
+      (failure) {
+        _handleFailure(failure);
+        _clearCurrentGoal();
+      },
+      (goal) {
+        currentGoal.value = goal;
+        loadGoalReport(goal.id);
+      },
+    );
     isLoadingCurrent.value = false;
   }
 
@@ -203,7 +209,6 @@ class SavingGoalController extends GetxController {
     if (currentUserId != null) {
       await selectSavingGoalUseCase(currentUserId, 0);
 
-      // Refresh data after deselecting
       if (Get.isRegistered<StatisticsController>()) {
         Get.find<StatisticsController>().refreshStatisticsData(currentUserId);
       }
@@ -256,8 +261,7 @@ class SavingGoalController extends GetxController {
         goals.refresh();
 
         if (currentGoal.value?.id == id) {
-          currentGoal.value = null;
-          goalId.value = 0;
+          deselectGoal();
         }
         AppHelperFunction.showSuccessSnackBar('Xóa mục tiêu thành công');
         return true;
@@ -343,7 +347,7 @@ class SavingGoalController extends GetxController {
     final result = await getSavingGoalReportUseCase(id);
     result.fold(_handleFailure, (report) {
       goalReport.value = report;
-      if (report.isCompleted &&
+      if ((report.isCompleted || report.isTargetAchieved) &&
           !report.completionNotified &&
           !_notifiedGoalIds.contains(id) &&
           !(Get.isDialogOpen ?? false)) {

@@ -7,6 +7,7 @@ part 'transaction_filter_dto.g.dart';
 abstract class TransactionFilterDto with _$TransactionFilterDto {
   const factory TransactionFilterDto({
     @JsonKey(name: 'categoryId') int? categoryId,
+    @JsonKey(name: 'walletId') int? walletId,
     @JsonKey(name: 'startDate') String? startDate,
     @JsonKey(name: 'endDate') String? endDate,
     @JsonKey(name: 'limit') int? limit,

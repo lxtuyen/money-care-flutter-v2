@@ -19,6 +19,9 @@ class ApiRoutes {
   static const transaction = 'transactions';
   static const getTransactionsFilter = 'transactions/filter';
 
+  static const wallets = 'wallets';
+  static const totalAssets = 'wallets/total-assets';
+
   static const categories = 'categories';
   static const userCategories = 'categories/user';
 

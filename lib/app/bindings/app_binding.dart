@@ -17,6 +17,9 @@ import 'package:money_care/features/saving_goal/presentation/bindings/saving_goa
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
+import 'package:money_care/features/wallet/data/datasources/wallet_remote_datasource.dart';
+import 'package:money_care/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 import 'package:money_care/features/finance_mode/data/datasources/finance_mode_local_datasource.dart';
 import 'package:money_care/features/finance_mode/data/datasources/finance_mode_remote_datasource.dart';
@@ -177,6 +180,13 @@ class AppBinding extends Bindings {
         createRecurringTransactionUseCase: CreateRecurringTransactionUseCase(recurringRepo),
         deleteRecurringTransactionUseCase: DeleteRecurringTransactionUseCase(recurringRepo),
       ),
+      permanent: true,
+    );
+    
+    final walletRemoteDs = WalletRemoteDatasourceImpl(api: apiService);
+    final walletRepo = WalletRepositoryImpl(remoteDatasource: walletRemoteDs);
+    Get.put<WalletController>(
+      WalletController(repository: walletRepo),
       permanent: true,
     );
 

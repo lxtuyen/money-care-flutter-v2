@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/router/navigation_menu.dart';
 import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
 import 'package:money_care/features/auth/presentation/screens/otp.dart';
@@ -23,6 +24,10 @@ import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
 import 'package:money_care/features/gamification/presentation/screens/streak_calendar_screen.dart';
+import 'package:money_care/features/wallet/presentation/screens/wallet_list_screen.dart';
+import 'package:money_care/features/wallet/presentation/screens/wallet_transfer_screen.dart';
+import 'package:money_care/features/wallet/presentation/screens/wallet_detail_screen.dart';
+import 'package:money_care/features/saving_goal/presentation/screens/saving_goal_detail_screen.dart';
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
 import 'package:money_care/features/onboarding/presentation/bindings/onboarding_binding.dart';
@@ -149,6 +154,26 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/streak_calendar',
     page: () => const StreakCalendarScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/wallets',
+    page: () => const WalletListScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/wallet_transfer',
+    page: () => const WalletTransferScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/wallet_detail',
+    page: () => const WalletDetailScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.savingGoalDetail,
+    page: () => const SavingGoalDetailScreen(),
     transition: Transition.rightToLeft,
   ),
 ];

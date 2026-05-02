@@ -9,6 +9,8 @@ import 'package:money_care/features/gamification/presentation/controllers/gamifi
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 
 class TransactionController extends GetxController {
   final FilterTransactionsUseCase filterTransactionsUseCase;
@@ -28,6 +30,12 @@ class TransactionController extends GetxController {
   var errorMessage = RxnString();
 
   final RxInt transactionChangedCount = 0.obs;
+
+  List<TransactionEntity> get allTransactions {
+    final data = transactionByfilter.value;
+    if (data == null) return [];
+    return [...data.incomeTransactions, ...data.expenseTransactions];
+  }
 
   final now = DateTime.now();
   late DateTime monthStartDate = DateTime(now.year, now.month, 1);
@@ -152,7 +160,9 @@ class TransactionController extends GetxController {
     final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
 
     final recentFilterDto = TransactionFilterDto(
-      startDate: clampedStart != null ? _getStartOfDay(clampedStart).toIso8601String() : null,
+      startDate: clampedStart != null
+          ? _getStartOfDay(clampedStart).toIso8601String()
+          : null,
       endDate: clampedEnd?.toIso8601String(),
       limit: 5,
     );
@@ -170,6 +180,17 @@ class TransactionController extends GetxController {
 
     await applyFilters(userId);
 
+    if (Get.isRegistered<WalletController>()) {
+      Get.find<WalletController>().refreshWallets();
+    }
+    if (Get.isRegistered<StatisticsController>()) {
+      Get.find<StatisticsController>().refreshStatisticsData(userId);
+    }
+    final activeGoalId = savingGoalController.goalId.value;
+    if (activeGoalId > 0) {
+      savingGoalController.loadGoalReport(activeGoalId);
+    }
+
     transactionChangedCount.value++;
   }
 
@@ -184,6 +205,7 @@ class TransactionController extends GetxController {
 
     final dto = TransactionFilterDto(
       categoryId: filterController.categoryId.value,
+      walletId: filterController.walletId.value,
       startDate: clampedStart?.toIso8601String(),
       endDate: clampedEnd?.toIso8601String(),
     );

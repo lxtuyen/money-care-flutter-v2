@@ -203,7 +203,7 @@ const Map<String, String> enUS = {
   'transaction.recordWithPhoto': 'Record with Photo',
   'transaction.recordWithPhotoDesc': 'Take photo, enter amount and save fast',
   'transaction.noRecent': 'No recent transactions found.',
-  'transaction.deleteConfirm': 'Are you sure you want to delete this transaction? This action cannot be undone.',
+  'transaction.deleteConfirm': 'Are you sure you want to delete this transaction?',
   'transaction.deleteSuccess': 'Transaction deleted successfully',
   'transaction.searchHint': 'Search transactions',
   'transaction.dateLabel': 'Transaction Date',

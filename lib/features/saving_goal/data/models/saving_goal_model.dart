@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/core/utils/helper/num_parser.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
+import 'package:money_care/features/wallet/data/models/wallet_model.dart';
 
 part 'saving_goal_model.freezed.dart';
 part 'saving_goal_model.g.dart';
@@ -25,6 +26,7 @@ abstract class SavingGoalModel with _$SavingGoalModel {
     @JsonKey(name: 'end_date') DateTime? endDate,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
     String? status,
+    WalletModel? wallet,
   }) = _SavingGoalModel;
 
   const SavingGoalModel._();
@@ -46,6 +48,7 @@ abstract class SavingGoalModel with _$SavingGoalModel {
       endDate: endDate,
       updatedAt: updatedAt,
       status: status,
+      wallet: wallet?.toEntity(),
     );
   }
 }

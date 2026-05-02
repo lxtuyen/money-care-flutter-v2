@@ -14,6 +14,8 @@ abstract class SavingGoalDto with _$SavingGoalDto {
     @JsonKey(name: 'end_date') DateTime? endDate,
     List<int>? categoryIds,
     @JsonKey(name: 'is_completed') bool? isCompleted,
+    int? walletId,
+    @JsonKey(name: 'create_new_wallet') bool? createNewWallet,
   }) = _SavingGoalDto;
 
   const SavingGoalDto._();
@@ -27,6 +29,8 @@ abstract class SavingGoalDto with _$SavingGoalDto {
       'start_date': startDate?.toIso8601String(),
       'end_date': endDate?.toIso8601String(),
       'categoryIds': categoryIds,
+      'walletId': walletId,
+      'create_new_wallet': createNewWallet,
     };
     map.removeWhere((key, value) => value == null);
     return map;
@@ -41,6 +45,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
       'end_date': endDate?.toIso8601String(),
       'categoryIds': categoryIds,
       'is_completed': isCompleted,
+      'walletId': walletId,
     };
     map.removeWhere((key, value) => value == null);
     return map;

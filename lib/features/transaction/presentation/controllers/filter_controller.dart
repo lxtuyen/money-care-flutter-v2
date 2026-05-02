@@ -4,6 +4,7 @@ class FilterController extends GetxController {
   static const String defaultDateLabel = 'Tháng này';
 
   var categoryId = RxnInt();
+  var walletId = RxnInt();
   var startDate = Rxn<DateTime>();
   var endDate = Rxn<DateTime>();
   var keyword = ''.obs;
@@ -16,6 +17,8 @@ class FilterController extends GetxController {
   }
 
   void updateCategory(int? id) => categoryId.value = id;
+
+  void updateWallet(int? id) => walletId.value = id;
 
   void updateDateRange(DateTime? start, DateTime? end, {String? label}) {
     startDate.value = start;
@@ -35,15 +38,17 @@ class FilterController extends GetxController {
 
   bool get hasKeyword => keyword.value.trim().isNotEmpty;
   bool get hasCategory => categoryId.value != null;
+  bool get hasWallet => walletId.value != null;
   bool get hasDateFilter =>
       dateLabel.value != defaultDateLabel ||
       !_isCurrentMonthRange(startDate.value, endDate.value);
-  bool get hasActiveFilters => hasKeyword || hasCategory || hasDateFilter;
+  bool get hasActiveFilters => hasKeyword || hasCategory || hasWallet || hasDateFilter;
   int get activeFilterCount =>
-      (hasKeyword ? 1 : 0) + (hasCategory ? 1 : 0) + (hasDateFilter ? 1 : 0);
+      (hasKeyword ? 1 : 0) + (hasCategory ? 1 : 0) + (hasWallet ? 1 : 0) + (hasDateFilter ? 1 : 0);
 
   void clearAll() {
     categoryId.value = null;
+    walletId.value = null;
     keyword.value = '';
     _setDefaultMonthRange();
   }
@@ -51,7 +56,6 @@ class FilterController extends GetxController {
   void _setDefaultMonthRange() {
     final now = DateTime.now();
     startDate.value = DateTime(now.year, now.month, 1);
-    // Set to the last millisecond of the month to include all transactions on the last day
     endDate.value = DateTime(now.year, now.month + 1, 1).subtract(const Duration(milliseconds: 1));
     dateLabel.value = defaultDateLabel;
   }

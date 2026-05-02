@@ -8,6 +8,8 @@ import 'package:money_care/features/transaction/presentation/controllers/user_ca
 import 'package:money_care/features/transaction/presentation/widgets/category_form_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
 class UserCategoryManagementScreen extends StatefulWidget {
   const UserCategoryManagementScreen({super.key});
@@ -91,20 +93,21 @@ class _UserCategoryManagementScreenState
       }
 
       if (list.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('😞', style: TextStyle(fontSize: 48)),
-              const SizedBox(height: 16),
-              Text(
-                type == 'others'
-                    ? 'Chưa có danh mục chưa phân loại'
-                    : 'Chưa có danh mục ${type == 'expense' ? 'chi tiêu' : 'thu nhập'} nào',
-                style: const TextStyle(color: AppColors.text4),
-              ),
-            ],
-          ),
+        return AppEmptyState(
+          message: type == 'others'
+              ? 'Chưa có danh mục chưa phân loại'
+              : 'Chưa có danh mục ${type == 'expense' ? 'chi tiêu' : 'thu nhập'} nào',
+          action: type != 'others' 
+              ? ElevatedButton(
+                  onPressed: () => _showFormDialog(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text("Thêm ngay"),
+                )
+              : null,
         );
       }
 
@@ -139,38 +142,19 @@ class _UserCategoryManagementScreenState
   }
 
   void _confirmDelete(CategoryEntity category) {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Xóa danh mục?'),
-        content: Text(
-          'Bạn có chắc chắn muốn xóa danh mục "${category.name}"? Hành động này không thể hoàn tác.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Hủy', style: TextStyle(color: AppColors.text4)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Get.back();
-              final success = await _controller.deleteCategory(category.id!);
-              if (success) {
-                AppHelperFunction.showSuccessSnackBar('Xóa danh mục này thành công');
-              } else {
-                AppHelperFunction.showErrorSnackBar('Không thể xóa danh mục này');
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Xóa', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+    AppConfirmDialog.show(
+      title: 'Xóa danh mục?',
+      message: 'Bạn có chắc chắn muốn xóa danh mục "${category.name}"? Hành động này không thể hoàn tác.',
+      confirmText: 'Xóa',
+      cancelText: 'Hủy',
+      onConfirm: () async {
+        final success = await _controller.deleteCategory(category.id!);
+        if (success) {
+          AppHelperFunction.showSuccessSnackBar('Xóa danh mục này thành công');
+        } else {
+          AppHelperFunction.showErrorSnackBar('Không thể xóa danh mục này');
+        }
+      },
     );
   }
 }

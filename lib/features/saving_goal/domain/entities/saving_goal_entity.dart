@@ -1,10 +1,12 @@
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 
 class SavingGoalEntity {
   final int id;
   final String name;
   final bool? isSelected;
   final List<CategoryEntity> categories;
+  final WalletEntity? wallet;
 
   final double? target;
 
@@ -32,6 +34,7 @@ class SavingGoalEntity {
     this.endDate,
     this.updatedAt,
     this.status,
+    this.wallet,
   });
 
   double get progressPercent {
@@ -61,5 +64,31 @@ class SavingGoalEntity {
   int get daysSinceExpired {
     if (!isExpired || endDate == null) return 0;
     return DateTime.now().difference(endDate!).inDays;
+  }
+
+  factory SavingGoalEntity.fromJson(Map<String, dynamic> json) {
+    return SavingGoalEntity(
+      id: json['id'],
+      name: json['name'],
+      target: double.tryParse(json['target']?.toString() ?? '0'),
+      savedAmount: double.tryParse(json['saved_amount']?.toString() ?? '0') ?? 0,
+      isCompleted: json['is_completed'] ?? false,
+      status: json['status'],
+      startDate: json['start_date'] != null ? DateTime.parse(json['start_date']) : null,
+      endDate: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'target': target,
+      'saved_amount': savedAmount,
+      'is_completed': isCompleted,
+      'status': status,
+      'start_date': startDate?.toIso8601String(),
+      'end_date': endDate?.toIso8601String(),
+    };
   }
 }

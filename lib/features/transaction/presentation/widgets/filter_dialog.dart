@@ -5,6 +5,7 @@ import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({
@@ -12,12 +13,14 @@ class FilterDialog extends StatefulWidget {
     required this.title,
     this.items,
     this.categories,
+    this.wallets,
     required this.onApply,
   });
 
   final String title;
   final List<String>? items;
   final List<CategoryEntity>? categories;
+  final List<WalletEntity>? wallets;
   final ValueChanged<FilterResult> onApply;
 
   @override
@@ -87,21 +90,6 @@ class _FilterDialogState extends State<FilterDialog> {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(
-                          isDateDialog
-                              ? Icons.calendar_month_rounded
-                              : Icons.category_rounded,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const Spacer(),
                       IconButton(
                         onPressed: () => Get.back(),
                         icon: const Icon(

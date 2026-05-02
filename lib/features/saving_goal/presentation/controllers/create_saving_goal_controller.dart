@@ -7,11 +7,13 @@ import 'package:money_care/features/saving_goal/data/models/models.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 class CreateSavingGoalController extends GetxController {
   late final SavingGoalController savingGoalController =
       Get.find<SavingGoalController>();
   late final AppController appController = Get.find<AppController>();
+  late final WalletController walletController = Get.find<WalletController>();
 
   CreateSavingGoalUseCase get _createUseCase =>
       Get.find<CreateSavingGoalUseCase>();
@@ -29,6 +31,8 @@ class CreateSavingGoalController extends GetxController {
   Rxn<double> target = Rxn<double>();
   Rxn<DateTime> startDate = Rxn<DateTime>();
   Rxn<DateTime> endDate = Rxn<DateTime>();
+  RxnInt selectedWalletId = RxnInt();
+  RxBool createNewWallet = false.obs;
 
   @override
   void onClose() {
@@ -49,6 +53,7 @@ class CreateSavingGoalController extends GetxController {
       targetController.text = arg.target?.toInt().toString() ?? '';
       startDate.value = arg.startDate;
       endDate.value = arg.endDate;
+      selectedWalletId.value = arg.wallet?.id;
     } else {
       _resetForm();
       startDate.value = DateTime.now();
@@ -101,6 +106,8 @@ class CreateSavingGoalController extends GetxController {
       savedAmount: 0,
       startDate: startDate.value,
       endDate: endDate.value,
+      walletId: selectedWalletId.value,
+      createNewWallet: createNewWallet.value,
     );
 
     isLoading.value = true;
@@ -129,7 +136,9 @@ class CreateSavingGoalController extends GetxController {
     targetController.clear();
     target.value = null;
     startDate.value = DateTime.now();
-    endDate.value = null;
+    endDate = Rxn<DateTime>();
+    selectedWalletId.value = null;
+    createNewWallet.value = false;
     isEditMode.value = false;
   }
 }

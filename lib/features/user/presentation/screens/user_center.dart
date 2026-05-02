@@ -36,6 +36,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    /*
                     Obx(() => ListTile(
                       leading: Icon(
                         appController.isDarkMode.value
@@ -105,6 +106,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       ),
                     )),
                     const Divider(height: 1, thickness: 0.5),
+                    */
 
                     UserMenuItem(
                       icon: Icons.person_outline,
@@ -128,6 +130,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       icon: Icons.category_rounded,
                       title: 'profile.categoryManagement'.tr,
                       onTap: () => Get.toNamed(RoutePath.categoryManagement),
+                    ),
+                    UserMenuItem(
+                      icon: Icons.account_balance_wallet_outlined,
+                      title: 'Ví của tôi',
+                      onTap: () => Get.toNamed(RoutePath.wallets),
                     ),
 
                     UserMenuItem(

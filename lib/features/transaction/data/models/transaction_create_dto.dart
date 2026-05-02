@@ -13,6 +13,7 @@ abstract class TransactionCreateDto with _$TransactionCreateDto {
     DateTime? transactionDate,
     int? categoryId,
     int? userId,
+    int? walletId,
   }) = _TransactionCreateDto;
 
   factory TransactionCreateDto.fromJson(Map<String, dynamic> json) =>

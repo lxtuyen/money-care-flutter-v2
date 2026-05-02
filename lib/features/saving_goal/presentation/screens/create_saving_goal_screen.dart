@@ -6,6 +6,7 @@ import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
+import 'package:money_care/app/widgets/text_field/app_dropdown_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/saving_goal/presentation/controllers/create_saving_goal_controller.dart';
 
@@ -87,6 +88,75 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                             onRawChanged: (value) =>
                                 _controller.target.value = double.tryParse(value),
                           ),
+                          const SizedBox(height: 16),
+                          Obx(() {
+                            final wallets = _controller.walletController.wallets;
+                            return AppDropdownField<int>(
+                              value: _controller.selectedWalletId.value,
+                              label: 'Ví liên kết (Tùy chọn)',
+                              icon: Icons.account_balance_wallet_rounded,
+                              items: wallets.map((w) {
+                                return DropdownMenuItem<int>(
+                                  value: w.id,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.wallet_rounded,
+                                          size: 20,
+                                          color: AppColors.secondaryNavyBlue,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          w.name,
+                                          style: const TextStyle(
+                                            color: AppColors.text1,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              selectedItemBuilder: (context) {
+                                return wallets.map((w) {
+                                  return Text(
+                                    w.name,
+                                    style: const TextStyle(
+                                      color: AppColors.text1,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  );
+                                }).toList();
+                              },
+                              onChanged: (v) {
+                                _controller.selectedWalletId.value = v;
+                                if (v != null) {
+                                  _controller.createNewWallet.value = false;
+                                }
+                              },
+                            );
+                          }),
+                          Obx(() => CheckboxListTile(
+                                value: _controller.createNewWallet.value,
+                                onChanged: _controller.selectedWalletId.value != null
+                                    ? null
+                                    : (v) => _controller.createNewWallet.value = v ?? false,
+                                title: const Text(
+                                  'Tạo ví mới cho mục tiêu này',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                subtitle: const Text(
+                                  'Hệ thống sẽ tự động tạo một ví riêng để theo dõi mục tiêu này',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                controlAffinity: ListTileControlAffinity.leading,
+                                contentPadding: EdgeInsets.zero,
+                                activeColor: AppColors.primary,
+                              )),
                           const SizedBox(height: 24),
                           const Text(
                             'Thời gian thực hiện',

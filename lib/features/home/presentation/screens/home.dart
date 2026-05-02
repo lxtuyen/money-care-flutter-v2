@@ -15,6 +15,7 @@ import 'package:money_care/features/gamification/presentation/widgets/streak_bad
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -151,13 +152,15 @@ class HomeScreen extends GetView<HomeController> {
                                           MediaQuery.of(context).size.width *
                                           0.9,
                                       child: Obx(() {
-                                        final transactions =
-                                            controller
+                                        final recent = controller
                                                 .transactionController
                                                 .recentTransactions
-                                                .value
-                                                ?.expenseTransactions ??
-                                            [];
+                                                .value;
+                                        final List<TransactionEntity> transactions = [
+                                          ...(recent?.expenseTransactions ?? []),
+                                          ...(recent?.incomeTransactions ?? []),
+                                        ]..sort((a, b) => (b.transactionDate ?? DateTime.now())
+                                            .compareTo(a.transactionDate ?? DateTime.now()));
 
                                         if (controller
                                             .transactionController

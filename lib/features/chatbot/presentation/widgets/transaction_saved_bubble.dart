@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -54,11 +55,9 @@ class TransactionSavedBubble extends StatelessWidget {
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: isIncome
-                          ? [const Color(0xFF00b09b), const Color(0xFF96c93d)]
-                          : [const Color(0xFF11998e), const Color(0xFF38ef7d)],
-                    ),
+                    color: isIncome
+                        ? const Color(0xFFE8F5E9)
+                        : const Color(0xFFFFEBEE),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -66,28 +65,28 @@ class TransactionSavedBubble extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.check_circle_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
                       Text(
                         isIncome
                             ? 'Đã ghi nhận thu nhập'
                             : 'Đã ghi nhận chi tiêu',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                        style: TextStyle(
+                          color: isIncome
+                              ? AppColors.income
+                              : AppColors.expense,
+                          fontWeight: FontWeight.w700,
                           fontSize: 13,
                         ),
                       ),
                       const Spacer(),
                       Text(
                         formattedDate,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
+                        style: TextStyle(
+                          color: (isIncome
+                                  ? AppColors.income
+                                  : AppColors.expense)
+                              .withValues(alpha: 0.6),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -102,11 +101,10 @@ class TransactionSavedBubble extends StatelessWidget {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color:
-                              (isIncome
-                                      ? const Color(0xFF00b09b)
-                                      : const Color(0xFF11998e))
-                                  .withValues(alpha: 0.1),
+                          color: (isIncome
+                                  ? const Color(0xFF43A047)
+                                  : const Color(0xFFE53935))
+                              .withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
@@ -150,8 +148,8 @@ class TransactionSavedBubble extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                           color: isIncome
-                              ? const Color(0xFF43A047)
-                              : const Color(0xFFE53935),
+                              ? AppColors.income
+                              : AppColors.expense,
                         ),
                       ),
                     ],

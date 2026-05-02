@@ -23,9 +23,6 @@ class DatePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final dateDisplay = selectedDate.value != null
-          ? '$label: ${_formatDate(selectedDate.value!)}'
-          : placeholder;
       return GestureDetector(
         onTap: onTap,
         child: Container(
@@ -37,17 +34,36 @@ class DatePickerField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.date_range, color: AppColors.secondaryNavyBlue),
+              const Icon(Icons.date_range_rounded,
+                  color: AppColors.secondaryNavyBlue, size: 24),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  dateDisplay,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: selectedDate.value != null
-                        ? Colors.black
-                        : Colors.grey[600],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      selectedDate.value != null
+                          ? _formatDate(selectedDate.value!)
+                          : placeholder,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: selectedDate.value != null
+                            ? AppColors.text2
+                            : Colors.grey[400],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

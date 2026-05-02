@@ -9,6 +9,8 @@ import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
+import 'package:money_care/app/widgets/layout/app_header.dart';
+
 class SelectSavingGoalScreen extends StatefulWidget {
   const SelectSavingGoalScreen({super.key});
 
@@ -30,79 +32,89 @@ class _SelectSavingGoalScreenState extends State<SelectSavingGoalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppbarCustom(
-        title: Text('Chọn mục tiêu đang thực hiện'),
-        showBackArrow: true,
-      ),
-      backgroundColor: Colors.grey[50],
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Obx(() {
-                    if (controller.isLoadingGoals.value) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (controller.goals.isEmpty) {
-                      return const AppEmptyState(
-                        message: 'Bạn chưa thiết lập mục tiêu nào.',
-                      );
-                    }
-
-                    return ListView.builder(
-                      itemCount: controller.goals.length,
-                      itemBuilder: (context, index) {
-                        final goal = controller.goals[index];
-                        return Obx(() {
-                          final isSelected =
-                              controller.selectedGoalIndex.value == index;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: SavingGoalItemCard(
-                              fund: goal,
-                              isSelected: isSelected,
-                              onTap: () =>
-                                  controller.updateSelectedGoalIndex(index),
-                              onDelete: () => _confirmDelete(context, goal),
-                              onUpdate: () => _handleUpdate(goal),
-                            ),
-                          );
-                        });
-                      },
-                    );
-                  }),
-                ),
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: controller.goToCreateGoal,
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
-                  ),
-                  icon: const Icon(Icons.add_circle_outline),
-                  label: const Text('Thiết lập mục tiêu mới'),
-                ),
-                const SizedBox(height: 16),
-                Obx(() {
-                  final isLoading = controller.isLoadingCurrent.value;
-                  return PrimaryButton(
-                    label: 'Sử dụng mục tiêu này',
-                    onPressed: controller.confirmSelectedGoal,
-                    isLoading: isLoading,
-                  );
-                }),
-                const SizedBox(height: 12),
-              ],
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            AppHeader(
+              title: 'Mục tiêu tiết kiệm',
+              showBackButton: true,
+              height: 140,
             ),
-          ),
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Obx(() {
+                            if (controller.isLoadingGoals.value) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+
+                            if (controller.goals.isEmpty) {
+                              return const AppEmptyState(
+                                message: 'Bạn chưa thiết lập mục tiêu nào.',
+                              );
+                            }
+
+                            return ListView.builder(
+                              itemCount: controller.goals.length,
+                              itemBuilder: (context, index) {
+                                final goal = controller.goals[index];
+                                return Obx(() {
+                                  final isSelected =
+                                      controller.selectedGoalIndex.value == index;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: SavingGoalItemCard(
+                                      fund: goal,
+                                      isSelected: isSelected,
+                                      onTap: () =>
+                                          controller.updateSelectedGoalIndex(index),
+                                      onDelete: () => _confirmDelete(context, goal),
+                                      onUpdate: () => _handleUpdate(goal),
+                                    ),
+                                  );
+                                });
+                              },
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          onPressed: controller.goToCreateGoal,
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                          ),
+                          icon: const Icon(Icons.add_circle_outline),
+                          label: const Text('Thiết lập mục tiêu mới'),
+                        ),
+                        const SizedBox(height: 16),
+                        Obx(() {
+                          final isLoading = controller.isLoadingCurrent.value;
+                          return PrimaryButton(
+                            label: 'Sử dụng mục tiêu này',
+                            onPressed: controller.confirmSelectedGoal,
+                            isLoading: isLoading,
+                          );
+                        }),
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

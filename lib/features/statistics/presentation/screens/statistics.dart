@@ -339,7 +339,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               Obx(() {
                 final fund = savingGoalController.currentGoal.value;
-                if (fund == null) return const SizedBox.shrink();
+                if (fund == null || fund.isCompleted) return const SizedBox.shrink();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

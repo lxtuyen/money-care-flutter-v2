@@ -67,9 +67,9 @@ class TransactionItem extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, {required bool isSavingMode}) {
-    final bool isIncome = item.type == 'income';
+    final bool isIncome = item.type == 'income' || item.type == 'thu';
     final Color typeColor =
-        color ?? (isIncome ? AppColors.success : AppColors.error);
+        color ?? (isIncome ? AppColors.income : AppColors.expense);
     final bool showSkippableLabel =
         isSavingMode && (item.category?.isEssential == false);
     final String amountText =
@@ -161,7 +161,7 @@ class TransactionItem extends StatelessWidget {
                     ),
                   if (isShowDate && item.transactionDate != null)
                     Text(
-                      AppHelperFunction.formatDateTime(item.transactionDate!),
+                      AppHelperFunction.getFormattedDate(item.transactionDate!),
                       style: TextStyle(
                         fontSize: 11,
                         color: AppThemeColors.of(context).textMuted,

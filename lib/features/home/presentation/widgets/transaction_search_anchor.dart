@@ -47,7 +47,6 @@ class _TransactionSearchAnchorState extends State<TransactionSearchAnchor> {
               child: TransactionItem(
                 item: entry.value,
                 onTap: () {},
-                color: AppHelperFunction.getChartColorByIndex(entry.key),
               ),
             );
           }).toList();

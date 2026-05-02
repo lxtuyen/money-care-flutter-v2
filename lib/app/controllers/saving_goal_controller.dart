@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
@@ -43,6 +45,7 @@ class SavingGoalController extends GetxController {
   RxString? errorMessage = RxString('');
   var goalId = 0.obs;
   RxInt selectedGoalIndex = 0.obs;
+  final Set<int> _notifiedGoalIds = {};
 
   Rxn<ExpiredGoalInfoModel> expiredGoal = Rxn<ExpiredGoalInfoModel>();
   RxBool hasExpiredGoal = false.obs;
@@ -76,6 +79,10 @@ class SavingGoalController extends GetxController {
   }
 
   void _syncCurrentGoal(SavingGoalEntity goal) {
+    if (goal.isCompleted) {
+      _clearCurrentGoal();
+      return;
+    }
     currentGoal.value = goal;
     goalId.value = goal.id;
   }
@@ -84,6 +91,7 @@ class SavingGoalController extends GetxController {
     currentGoal.value = null;
     goalId.value = 0;
     selectedGoalIndex.value = -1;
+    goalReport.value = null;
   }
 
   Future<void> loadGoals([int? manualUserId]) async {
@@ -194,6 +202,14 @@ class SavingGoalController extends GetxController {
     final currentUserId = appController.userId.value;
     if (currentUserId != null) {
       await selectSavingGoalUseCase(currentUserId, 0);
+
+      // Refresh data after deselecting
+      if (Get.isRegistered<StatisticsController>()) {
+        Get.find<StatisticsController>().refreshStatisticsData(currentUserId);
+      }
+      if (Get.isRegistered<TransactionController>()) {
+        Get.find<TransactionController>().refreshAllData(currentUserId);
+      }
     }
   }
 
@@ -327,7 +343,11 @@ class SavingGoalController extends GetxController {
     final result = await getSavingGoalReportUseCase(id);
     result.fold(_handleFailure, (report) {
       goalReport.value = report;
-      if (report.isCompleted && !report.completionNotified) {
+      if (report.isCompleted &&
+          !report.completionNotified &&
+          !_notifiedGoalIds.contains(id) &&
+          !(Get.isDialogOpen ?? false)) {
+        _notifiedGoalIds.add(id);
         GoalCompletionDialog.show(report);
       }
     });
@@ -339,13 +359,24 @@ class SavingGoalController extends GetxController {
       SavingGoalDto(id: id, isCompleted: true),
     );
 
-    result.fold(_handleFailure, (updated) {
+    result.fold(_handleFailure, (updated) async {
       goals.removeWhere((g) => g.id == updated.id);
       goals.refresh();
 
+      if (currentGoal.value?.id == updated.id) {
+        _clearCurrentGoal();
+      }
+
       loadGoalReport(id);
-      if (currentGoal.value?.id == id) {
-        currentGoal.value = updated;
+
+      final userId = appController.userId.value;
+      if (userId != null) {
+        if (Get.isRegistered<StatisticsController>()) {
+          Get.find<StatisticsController>().refreshStatisticsData(userId);
+        }
+        if (Get.isRegistered<TransactionController>()) {
+          Get.find<TransactionController>().refreshAllData(userId);
+        }
       }
 
       if (!completedGoals.any((g) => g.id == updated.id)) {

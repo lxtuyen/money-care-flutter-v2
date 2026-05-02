@@ -531,7 +531,7 @@ class StatisticsController extends GetxController {
 
     final data = selectedType.value == 'chi' ? totals.expense : totals.income;
     final Map<int, double> dayMap = {
-      for (var d in data) d.date.day: d.total.toDouble(),
+      for (var d in data) d.date.toLocal().day: d.total.toDouble(),
     };
 
     final lastDay = monthEndDate.day;
@@ -627,7 +627,7 @@ class StatisticsController extends GetxController {
   double calculateDailyAverage(List<TotalByDateEntity> list, DateTime endDate) {
     final Map<String, int> map = {
       for (var d in list)
-        "${d.date.year}-${d.date.month}-${d.date.day}": d.total,
+        "${d.date.toLocal().year}-${d.date.toLocal().month}-${d.date.toLocal().day}": d.total,
     };
 
     if (list.isEmpty) return 0;
@@ -665,7 +665,7 @@ class StatisticsController extends GetxController {
   ) {
     final Map<String, double> map = {
       for (var d in data)
-        "${d.date.year}-${d.date.month}-${d.date.day}": d.total.toDouble(),
+        "${d.date.toLocal().year}-${d.date.toLocal().month}-${d.date.toLocal().day}": d.total.toDouble(),
     };
 
     final List<FlSpot> spots = [];

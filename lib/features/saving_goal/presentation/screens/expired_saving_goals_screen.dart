@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
@@ -55,7 +56,9 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
               final expired = controller.finishedSavingGoals;
 
               if (expired.isEmpty) {
-                return _buildEmpty();
+                return const AppEmptyState(
+                  message: 'Không có mục tiêu hết hạn',
+                );
               }
 
               return RefreshIndicator(
@@ -70,44 +73,6 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
                 ),
               );
             }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmpty() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check_circle_outline_rounded,
-              size: 40,
-              color: AppColors.success,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Không có mục tiêu hết hạn',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: AppColors.text2,
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'Tất cả mục tiêu tiết kiệm của bạn vẫn còn thời hạn',
-            style: TextStyle(fontSize: 13, color: AppColors.text4),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -152,30 +117,20 @@ class _ExpiredGoalCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: goal.isCompleted
-                    ? [const Color(0xFF4CAF50), const Color(0xFF2E7D32)]
-                    : [const Color(0xFFFF7D39), const Color(0xFFFF4E4E)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
+              color: goal.isCompleted
+                  ? const Color(0xFFE8F5E9)
+                  : const Color(0xFFFFEBEE),
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
             child: Row(
               children: [
-                Icon(
-                  goal.isCompleted
-                      ? Icons.workspace_premium_rounded
-                      : Icons.timer_off_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     goal.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: goal.isCompleted
+                          ? AppColors.income
+                          : AppColors.expense,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -188,15 +143,20 @@ class _ExpiredGoalCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.22),
+                    color: (goal.isCompleted
+                            ? AppColors.income
+                            : AppColors.expense)
+                        .withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     goal.isCompleted
                         ? 'Đã hoàn thành'
                         : 'Hết hạn ${goal.daysSinceExpired} ngày trước',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: goal.isCompleted
+                          ? AppColors.income
+                          : AppColors.expense,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -213,7 +173,6 @@ class _ExpiredGoalCard extends StatelessWidget {
                 Row(
                   children: [
                     _DateChip(
-                      icon: Icons.play_circle_outline_rounded,
                       label: 'Bắt đầu',
                       value: goal.startDate != null
                           ? AppHelperFunction.getFormattedDate(goal.startDate!)
@@ -228,9 +187,6 @@ class _ExpiredGoalCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _DateChip(
-                      icon: goal.isCompleted
-                          ? Icons.check_circle_rounded
-                          : Icons.stop_circle_outlined,
                       label: goal.isCompleted ? 'Hoàn thành' : 'Dự kiến',
                       value: (goal.isCompleted && goal.updatedAt != null)
                           ? AppHelperFunction.getFormattedDate(goal.updatedAt!)
@@ -240,8 +196,8 @@ class _ExpiredGoalCard extends StatelessWidget {
                                   )
                                 : '—'),
                       color: goal.isCompleted
-                          ? AppColors.success
-                          : AppColors.secondaryOrange,
+                          ? AppColors.income
+                          : AppColors.expense,
                     ),
                   ],
                 ),
@@ -268,7 +224,9 @@ class _ExpiredGoalCard extends StatelessWidget {
                         goal.savedAmount,
                         currency: 'VND',
                       ),
-                      color: AppColors.success,
+                      color: goal.isCompleted
+                          ? AppColors.income
+                          : AppColors.expense,
                     ),
                   ],
                 ),
@@ -307,13 +265,11 @@ class _ExpiredGoalCard extends StatelessWidget {
 
 class _DateChip extends StatelessWidget {
   const _DateChip({
-    required this.icon,
     required this.label,
     required this.value,
     required this.color,
   });
 
-  final IconData icon;
   final String label;
   final String value;
   final Color color;
@@ -329,8 +285,6 @@ class _DateChip extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 14, color: color),
-            const SizedBox(width: 6),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

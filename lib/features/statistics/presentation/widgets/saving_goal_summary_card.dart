@@ -40,7 +40,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
             decoration: BoxDecoration(
@@ -51,12 +50,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.savings_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     fund.name,
@@ -127,9 +120,9 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     label: 'Mục tiêu',
                     percent:
                         (r.targetCompletionPercentage / 100).clamp(0.0, 1.0),
-                    centerText: '${r.targetCompletionPercentage}%',
+                    centerText: '${r.targetCompletionPercentage > 100 ? 100 : r.targetCompletionPercentage}%',
                     color: r.isTargetAchieved
-                        ? AppColors.success
+                        ? AppColors.income
                         : AppColors.secondaryOrange,
                     subtitle: AppHelperFunction.formatAmount(r.target, currency: 'VND'),
                     subtitleLabel: 'mục tiêu',
@@ -168,8 +161,8 @@ class SavingGoalSummaryCard extends StatelessWidget {
                             currency: 'VND',
                           ),
                     valueColor: r.remainingBudget < 0
-                        ? AppColors.error
-                        : AppColors.success,
+                        ? AppColors.expense
+                        : AppColors.income,
                   ),
                 ),
               ],
@@ -214,7 +207,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.success,
+                    backgroundColor: AppColors.income,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(

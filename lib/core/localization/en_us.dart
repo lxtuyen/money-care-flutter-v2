@@ -121,6 +121,7 @@ const Map<String, String> enUS = {
   'profile.nameHint': 'e.g., John Doe',
   'profile.lastNameHint': 'e.g., Smith',
   'profile.monthlyIncomeLabel': 'Monthly Income (VND)',
+  'profile.monthlyIncomeHint': 'e.g., 15,000,000',
   'profile.incomeDayLabel': 'Monthly Income Day',
   'profile.selectDayHint': 'Select Day',
   'profile.updateSuccess': 'Updated successfully',

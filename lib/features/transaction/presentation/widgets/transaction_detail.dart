@@ -44,8 +44,8 @@ class TransactionDetail extends StatelessWidget {
 
     final double screenWidth = MediaQuery.of(context).size.width;
     final Color themeColor = isExpense
-        ? const Color(0xFFE53935) // Elegant Red
-        : const Color(0xFF43A047); // Elegant Green
+        ? AppColors.expense // Standard Red
+        : AppColors.income; // Standard Green
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -146,7 +146,7 @@ class TransactionDetail extends StatelessWidget {
                         icon: Icons.calendar_today_outlined,
                         label: 'transaction.timeLabel'.tr,
                         value: item.transactionDate != null
-                            ? AppHelperFunction.formatDateTime(
+                            ? AppHelperFunction.getFormattedDate(
                                 item.transactionDate!,
                               )
                             : 'transaction.none'.tr,
@@ -236,8 +236,7 @@ class TransactionDetail extends StatelessWidget {
                               label: 'common.delete'.tr,
                               onPressed: () =>
                                   _handleDelete(context, transactionController),
-                              color: const Color(0xFFE53935),
-                              isOutlined: true,
+                              color: AppColors.expense,
                             ),
                           ),
                         ],
@@ -310,31 +309,26 @@ class TransactionDetail extends StatelessWidget {
     required String label,
     required VoidCallback onPressed,
     required Color color,
-    bool isOutlined = false,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 20, color: isOutlined ? color : Colors.white),
+      icon: Icon(icon, size: 20, color: color),
       label: Text(
         label,
         style: TextStyle(
-          color: isOutlined ? color : Colors.white,
+          color: color,
           fontSize: 15,
           fontWeight: FontWeight.bold,
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isOutlined ? AppThemeColors.of(context).cardBackground : color,
-        foregroundColor: isOutlined ? color : Colors.white,
-        elevation: isOutlined ? 0 : 4,
+        backgroundColor: color.withValues(alpha: 0.1),
+        foregroundColor: color,
+        elevation: 0,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side: isOutlined
-              ? BorderSide(color: color, width: 1.5)
-              : BorderSide.none,
         ),
-        shadowColor: color.withOpacity(0.3),
       ),
     );
   }

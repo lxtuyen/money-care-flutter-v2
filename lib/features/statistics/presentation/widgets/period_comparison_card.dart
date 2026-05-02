@@ -103,7 +103,7 @@ class PeriodComparisonCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
+                          color: themeColors.textPrimary,
                         ),
                       ),
                     ),
@@ -176,15 +176,14 @@ class PeriodComparisonCard extends StatelessWidget {
                 themeColors: themeColors,
                 isBold: true,
               ),
-
                 ],
               ),
             ),
           ],
         ),
-      );
-    });
-  }
+    );
+  });
+}
 
   Widget _buildComparisonRow({
     required IconData icon,
@@ -206,7 +205,7 @@ class PeriodComparisonCard extends StatelessWidget {
 
     final Color changeColor = isNeutral
         ? themeColors.textMuted
-        : (isGood ? const Color(0xFF43A047) : const Color(0xFFE53935));
+        : (isUp ? AppColors.income : AppColors.expense);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -303,13 +302,6 @@ class PeriodComparisonCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (!isNeutral)
-            Icon(
-              isUp ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-              size: 10,
-              color: color,
-            ),
-          if (!isNeutral) const SizedBox(width: 2),
           Flexible(
             child: Text(
               text,

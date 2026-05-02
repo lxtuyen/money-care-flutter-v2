@@ -1,3 +1,5 @@
+import 'package:money_care/core/utils/helper/helper_functions.dart';
+
 class AppValidator {
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) return "Email is required.";
@@ -92,17 +94,25 @@ class AppValidator {
     return null;
   }
 
-  static String? validateAmount(String? value) {
+  static String? validateAmount(String? value, {double minAmount = 0}) {
     if (value == null || value.trim().isEmpty) {
       return 'Vui lòng nhập số tiền';
     }
 
+    final cleanValue = value.trim();
+    if (RegExp(r'[a-zA-Z]').hasMatch(cleanValue)) {
+      return 'Số tiền chỉ được chứa số';
+    }
+
     final numVal = double.tryParse(
-      value.replaceAll(',', '').replaceAll('.', ''),
+      cleanValue.replaceAll(',', '').replaceAll('.', ''),
     );
 
     if (numVal == null) return 'Số tiền không hợp lệ';
     if (numVal <= 0) return 'Số tiền phải lớn hơn 0';
+    if (numVal < minAmount) {
+      return 'Số tiền tối thiểu là ${AppHelperFunction.formatAmount(minAmount)}';
+    }
     if (numVal > 100000000000) return 'Số tiền quá lớn';
 
     return null;

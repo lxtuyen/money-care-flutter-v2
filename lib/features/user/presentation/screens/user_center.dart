@@ -36,86 +36,70 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Dark mode toggle
-                    Obx(() => Container(
-                      margin: const EdgeInsets.only(bottom: 4),
-                      decoration: BoxDecoration(
-                        color: themeColors.surfaceBackground,
-                        borderRadius: BorderRadius.circular(14),
+                    Obx(() => ListTile(
+                      leading: Icon(
+                        appController.isDarkMode.value
+                            ? Icons.dark_mode_rounded
+                            : Icons.light_mode_rounded,
+                        color: AppColors.primary,
                       ),
-                      child: ListTile(
-                        leading: Icon(
-                          appController.isDarkMode.value
-                              ? Icons.dark_mode_rounded
-                              : Icons.light_mode_rounded,
-                          color: AppColors.primary,
-                        ),
-                        title: Text(
-                          'profile.darkMode'.tr,
-                          style: TextStyle(fontSize: 16, color: themeColors.textPrimary),
-                        ),
-                        trailing: Switch.adaptive(
-                          value: appController.isDarkMode.value,
-                          onChanged: (_) => appController.toggleDarkMode(),
-                          activeColor: AppColors.primary,
-                        ),
+                      title: Text(
+                        'profile.darkMode'.tr,
+                        style: TextStyle(fontSize: 16, color: themeColors.textPrimary),
+                      ),
+                      trailing: Switch.adaptive(
+                        value: appController.isDarkMode.value,
+                        onChanged: (_) => appController.toggleDarkMode(),
+                        activeColor: AppColors.primary,
                       ),
                     )),
                     const Divider(height: 1, thickness: 0.5),
 
-                    // Language toggle
-                    Obx(() => Container(
-                      margin: const EdgeInsets.only(bottom: 4),
-                      decoration: BoxDecoration(
-                        color: themeColors.surfaceBackground,
-                        borderRadius: BorderRadius.circular(14),
+                    Obx(() => ListTile(
+                      leading: const Icon(
+                        Icons.language_rounded,
+                        color: AppColors.primary,
                       ),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.language_rounded,
-                          color: AppColors.primary,
-                        ),
-                        title: Text(
-                          'profile.language'.tr,
-                          style: TextStyle(fontSize: 16, color: themeColors.textPrimary),
-                        ),
-                        trailing: GestureDetector(
-                          onTap: () => appController.toggleLocale(),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
-                              ),
+                      title: Text(
+                        'profile.language'.tr,
+                        style: TextStyle(fontSize: 16, color: themeColors.textPrimary),
+                      ),
+                      trailing: GestureDetector(
+                        onTap: () => appController.toggleLocale(),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.primary.withOpacity(0.3),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  appController.currentLocale.value == 'vi_VN' ? '🇻🇳' : '🇺🇸',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  appController.currentLocale.value == 'vi_VN'
-                                      ? 'VI'
-                                      : 'EN',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Icon(
-                                  Icons.swap_horiz_rounded,
-                                  size: 16,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                appController.currentLocale.value == 'vi_VN' ? '🇻🇳' : '🇺🇸',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                appController.currentLocale.value == 'vi_VN'
+                                    ? 'VI'
+                                    : 'EN',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
                                   color: AppColors.primary,
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.swap_horiz_rounded,
+                                size: 16,
+                                color: AppColors.primary,
+                              ),
+                            ],
                           ),
                         ),
                       ),

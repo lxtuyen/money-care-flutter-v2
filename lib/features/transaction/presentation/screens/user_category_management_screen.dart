@@ -7,6 +7,7 @@ import 'package:money_care/features/transaction/domain/entities/category_entity.
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_form_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
 
 class UserCategoryManagementScreen extends StatefulWidget {
   const UserCategoryManagementScreen({super.key});
@@ -38,33 +39,40 @@ class _UserCategoryManagementScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Quản lý danh mục',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.text4,
-          indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'Chi tiêu'),
-            Tab(text: 'Thu nhập'),
-            Tab(text: 'Khác'),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            AppHeader(
+              title: 'Quản lý danh mục',
+              showBackButton: true,
+              height: 180,
+              child: TabBar(
+                controller: _tabController,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withOpacity(0.7),
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+                indicatorSize: TabBarIndicatorSize.label,
+                tabs: const [
+                  Tab(text: 'Chi tiêu'),
+                  Tab(text: 'Thu nhập'),
+                  Tab(text: 'Khác'),
+                ],
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildCategoryList('expense'),
+                  _buildCategoryList('income'),
+                  _buildCategoryList('others'),
+                ],
+              ),
+            ),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildCategoryList('expense'),
-          _buildCategoryList('income'),
-          _buildCategoryList('others'),
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showFormDialog(),
@@ -87,7 +95,7 @@ class _UserCategoryManagementScreenState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('😞', style: const TextStyle(fontSize: 48)),
+              const Text('😞', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 16),
               Text(
                 type == 'others'
@@ -180,6 +188,10 @@ class _CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLocked = category.name == 'Khác' || 
+                         category.name == 'Mục khác' || 
+                         category.name == 'Chưa phân loại';
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -196,7 +208,6 @@ class _CategoryItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Icon
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -206,8 +217,6 @@ class _CategoryItem extends StatelessWidget {
             child: Text(category.icon, style: const TextStyle(fontSize: 24)),
           ),
           const SizedBox(width: 16),
-
-          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,29 +269,59 @@ class _CategoryItem extends StatelessWidget {
                           ),
                         ),
                       ),
+                    if (isLocked) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Hệ thống',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ],
             ),
           ),
 
-          // Actions
-          IconButton(
-            onPressed: onEdit,
-            icon: const Icon(
-              Icons.edit_outlined,
-              color: AppColors.primary,
-              size: 20,
+          if (!isLocked) ...[
+            IconButton(
+              onPressed: onEdit,
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: AppColors.primary,
+                size: 20,
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: onDelete,
-            icon: const Icon(
-              Icons.delete_outline,
-              color: AppColors.error,
-              size: 20,
+            IconButton(
+              onPressed: onDelete,
+              icon: const Icon(
+                Icons.delete_outline,
+                color: AppColors.error,
+                size: 20,
+              ),
             ),
-          ),
+          ] else
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Icon(
+                Icons.lock_outline,
+                color: AppColors.text4,
+                size: 20,
+              ),
+            ),
         ],
       ),
     );

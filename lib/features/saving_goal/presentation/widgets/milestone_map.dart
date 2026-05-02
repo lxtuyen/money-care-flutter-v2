@@ -54,9 +54,12 @@ class MilestoneMap extends StatelessWidget {
   }
 
   Widget _buildMilestoneNode(MilestoneModel milestone, bool isLast) {
+    final bool isFailed = !milestone.isCompleted &&
+        milestone.endDate.isBefore(DateTime.now());
+
     final color = milestone.isCompleted
-        ? AppColors.success
-        : AppColors.borderPrimary;
+        ? AppColors.income
+        : (isFailed ? AppColors.expense : AppColors.borderPrimary);
 
     return Column(
       children: [
@@ -64,13 +67,17 @@ class MilestoneMap extends StatelessWidget {
           width: 24,
           height: 24,
           decoration: BoxDecoration(
-            color: milestone.isCompleted ? AppColors.success : Colors.white,
+            color: milestone.isCompleted
+                ? AppColors.income
+                : (isFailed ? AppColors.expense : Colors.white),
             shape: BoxShape.circle,
             border: Border.all(color: color, width: 2),
           ),
           child: milestone.isCompleted
               ? const Icon(Icons.check, size: 14, color: Colors.white)
-              : null,
+              : (isFailed
+                  ? const Icon(Icons.close, size: 14, color: Colors.white)
+                  : null),
         ),
         if (!isLast)
           Expanded(child: Container(width: 2, color: color.withOpacity(0.5))),
@@ -87,13 +94,13 @@ class MilestoneMap extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: milestone.isCompleted
-              ? AppColors.success.withOpacity(0.3)
+              ? AppColors.income.withOpacity(0.3)
               : AppColors.borderSecondary,
         ),
         boxShadow: [
           if (milestone.isCompleted)
             BoxShadow(
-              color: AppColors.success.withOpacity(0.1),
+              color: AppColors.income.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -110,7 +117,7 @@ class MilestoneMap extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: milestone.isCompleted
-                      ? AppColors.success
+                      ? AppColors.income
                       : AppColors.text1,
                 ),
               ),
@@ -130,7 +137,7 @@ class MilestoneMap extends StatelessWidget {
                 milestone.actual,
                 isBold: true,
                 color: milestone.actual >= milestone.target
-                    ? AppColors.success
+                    ? AppColors.income
                     : AppColors.text1,
               ),
             ],
@@ -142,7 +149,7 @@ class MilestoneMap extends StatelessWidget {
               value: (milestone.actual / milestone.target).clamp(0.0, 1.0),
               backgroundColor: AppColors.backgroundSecondary,
               valueColor: AlwaysStoppedAnimation<Color>(
-                milestone.isCompleted ? AppColors.success : AppColors.primary,
+                milestone.isCompleted ? AppColors.income : AppColors.primary,
               ),
             ),
           ),

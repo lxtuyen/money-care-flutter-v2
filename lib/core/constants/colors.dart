@@ -32,6 +32,8 @@ class AppColors {
 
   static const Color error = Color(0xFFFF3E40);
   static const Color success = Color(0xFF52D113);
+  static const Color income = Color(0xFF27AE60);
+  static const Color expense = Color(0xFFE74C3C);
   static const Color warning = Color(0xFFFFAA00);
   static const Color info = Color(0xFF0D8BFF);
   static const Color disabled = Color(0xFFD5D5D6);

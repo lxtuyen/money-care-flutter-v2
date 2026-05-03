@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:money_care/app/bindings/app_binding.dart';
@@ -43,6 +44,15 @@ class MainApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: _parseLocale(storage.getLocale()),
       fallbackLocale: const Locale('vi', 'VN'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('vi', 'VN'),
+        Locale('en', 'US'),
+      ],
       getPages: appPages,
       initialRoute: RoutePath.splash,
       initialBinding: AppBinding(storage: storage),

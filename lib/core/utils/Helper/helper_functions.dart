@@ -245,7 +245,7 @@ class AppHelperFunction {
     String format = 'dd/MM/yyyy',
     String? locale,
   }) {
-    return DateFormat(format, locale).format(date);
+    return DateFormat(format, locale).format(date.toLocal());
   }
 
   static String formatDateTime(DateTime dateTime) {
@@ -257,12 +257,12 @@ class AppHelperFunction {
     } else if (diff.inDays == 1) {
       return 'common.yesterday'.tr;
     } else {
-      return DateFormat('dd/MM/yyyy').format(dateTime);
+      return DateFormat('dd/MM/yyyy').format(dateTime.toLocal());
     }
   }
 
   static String formatDayMonth(DateTime date) {
-    return DateFormat('dd/MM').format(date);
+    return DateFormat('dd/MM').format(date.toLocal());
   }
 
   static String formatAmount(double amount, {String currency = 'VND', String symbol = '₫'}) {

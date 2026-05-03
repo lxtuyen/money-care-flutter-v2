@@ -13,6 +13,7 @@ class SpendingSummary extends StatelessWidget {
     super.key,
     required this.incomeTotal,
     required this.expenseTotal,
+    this.totalBalance,
     this.isBalanceVisible = true,
     this.onToggleVisibility,
     this.onPressed,
@@ -20,13 +21,14 @@ class SpendingSummary extends StatelessWidget {
 
   final int incomeTotal;
   final int expenseTotal;
+  final int? totalBalance;
   final bool isBalanceVisible;
   final VoidCallback? onToggleVisibility;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final balance = incomeTotal - expenseTotal;
+    final balance = totalBalance ?? (incomeTotal - expenseTotal);
     final maskedText = '********';
 
     final isDark = Theme.of(context).brightness == Brightness.dark;

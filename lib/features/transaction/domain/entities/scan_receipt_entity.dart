@@ -8,6 +8,8 @@ class ScanReceiptEntity {
   final String categoryKey;
   final String categoryName;
 
+  final String? imagePath;
+
   const ScanReceiptEntity({
     required this.rawText,
     required this.merchantName,
@@ -17,5 +19,6 @@ class ScanReceiptEntity {
     required this.currency,
     required this.categoryKey,
     required this.categoryName,
+    this.imagePath,
   });
 }

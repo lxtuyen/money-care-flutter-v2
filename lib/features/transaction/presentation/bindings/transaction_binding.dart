@@ -6,7 +6,6 @@ import 'package:money_care/features/transaction/domain/usecases/scan_receipt_use
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 
-import 'package:money_care/features/transaction/presentation/controllers/photo_transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 
 import 'package:money_care/core/services/ocr_service.dart';
@@ -24,12 +23,6 @@ class TransactionBinding extends Bindings {
 
     Get.lazyPut(() => FilterController(), fenix: true);
     Get.lazyPut(() => TransactionFormController(), fenix: true);
-    Get.lazyPut(
-      () => PhotoTransactionController(
-        scanReceiptUseCase: ScanReceiptUseCase(repository),
-      ),
-      fenix: true,
-    );
 
     Get.lazyPut(
       () => ScanReceiptController(

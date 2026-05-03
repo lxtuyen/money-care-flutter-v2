@@ -174,24 +174,25 @@ class SavingGoalController extends GetxController {
     return isSuccess;
   }
 
-  Future<void> confirmSelectedGoal() async {
+  Future<void> saveSelection() async {
     final currentUserId = appController.userId.value ?? 0;
+    if (currentUserId == 0) return;
 
     if (selectedGoalIndex.value == -1) {
       await deselectGoal();
-      Get.toNamed(RoutePath.main);
-      return;
+    } else if (goals.isNotEmpty &&
+        selectedGoalIndex.value >= 0 &&
+        selectedGoalIndex.value < goals.length) {
+      final selectedGoal = goals[selectedGoalIndex.value];
+      if (currentGoal.value?.id != selectedGoal.id) {
+        await selectGoal(currentUserId, selectedGoal.id);
+      }
     }
+  }
 
-    if (goals.isEmpty || selectedGoalIndex.value < 0) return;
-
-    final selectedGoal = goals[selectedGoalIndex.value];
-    final isSuccess = await selectGoal(currentUserId, selectedGoal.id);
-    if (!isSuccess) {
-      return;
-    }
-
-    Get.toNamed(RoutePath.main);
+  Future<void> confirmSelectedGoal() async {
+    await saveSelection();
+    Get.back();
   }
 
   Future<void> deselectGoal() async {
@@ -277,7 +278,9 @@ class SavingGoalController extends GetxController {
 
   void _showError(String message) {
     errorMessage?.value = message;
-    AppHelperFunction.showErrorSnackBar(message);
+    // Sử dụng showSnackBar thay vì showErrorSnackBar để tự động nhận diện loại thông báo
+    // (VD: nếu message chứa "thành công" thì hiện màu xanh)
+    AppHelperFunction.showSnackBar(message);
   }
 
   int get currentGoalId => goalId.value;
@@ -341,12 +344,14 @@ class SavingGoalController extends GetxController {
     );
   }
 
-  Future<void> loadGoalReport(int id) async {
-    if (id <= 0) return;
+  Future<SavingGoalReportModel?> loadGoalReport(int id) async {
+    if (id <= 0) return null;
     isLoadingReport.value = true;
+    SavingGoalReportModel? resultReport;
     final result = await getSavingGoalReportUseCase(id);
     result.fold(_handleFailure, (report) {
       goalReport.value = report;
+      resultReport = report;
       if ((report.isCompleted || report.isTargetAchieved) &&
           !report.completionNotified &&
           !_notifiedGoalIds.contains(id) &&
@@ -356,6 +361,7 @@ class SavingGoalController extends GetxController {
       }
     });
     isLoadingReport.value = false;
+    return resultReport;
   }
 
   Future<void> completeGoalEarly(int id) async {

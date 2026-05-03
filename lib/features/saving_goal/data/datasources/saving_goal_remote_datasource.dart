@@ -32,14 +32,14 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       body: dto.toJsonCreate(),
       fromJsonT: (json) => SavingGoalModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
+    if (!res.success) {
       throw ServerException(
         res.message.isNotEmpty
             ? res.message
             : 'Không thể tạo mục tiêu tiết kiệm',
       );
     }
-    return res.data!;
+    return res.data ?? SavingGoalModel(id: 0, name: dto.name ?? '');
   }
 
   @override
@@ -84,14 +84,14 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       body: dto.toJsonUpdate(),
       fromJsonT: (json) => SavingGoalModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
+    if (!res.success) {
       throw ServerException(
         res.message.isNotEmpty
             ? res.message
             : 'Không thể cập nhật mục tiêu tiết kiệm',
       );
     }
-    return res.data!;
+    return res.data ?? SavingGoalModel(id: dto.id ?? 0, name: dto.name ?? '');
   }
 
   @override

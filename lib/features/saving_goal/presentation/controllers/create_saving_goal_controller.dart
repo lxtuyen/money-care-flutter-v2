@@ -27,6 +27,7 @@ class CreateSavingGoalController extends GetxController {
 
   final nameController = TextEditingController();
   final targetController = TextEditingController();
+  final walletNameController = TextEditingController();
 
   Rxn<double> target = Rxn<double>();
   Rxn<DateTime> startDate = Rxn<DateTime>();
@@ -38,6 +39,7 @@ class CreateSavingGoalController extends GetxController {
   void onClose() {
     nameController.dispose();
     targetController.dispose();
+    walletNameController.dispose();
     super.onClose();
   }
 
@@ -54,6 +56,7 @@ class CreateSavingGoalController extends GetxController {
       startDate.value = arg.startDate;
       endDate.value = arg.endDate;
       selectedWalletId.value = arg.wallet?.id;
+      walletNameController.text = arg.wallet?.name ?? '';
     } else {
       _resetForm();
       startDate.value = DateTime.now();
@@ -118,7 +121,8 @@ class CreateSavingGoalController extends GetxController {
     return result.fold(
       (failure) {
         isLoading.value = false;
-        AppHelperFunction.showErrorSnackBar(failure.message);
+        // Sử dụng auto-inferring snackbar
+        AppHelperFunction.showSnackBar(failure.message);
         return false;
       },
       (goal) {
@@ -131,13 +135,22 @@ class CreateSavingGoalController extends GetxController {
     );
   }
 
+  void setWallet(int? id, String? name) {
+    selectedWalletId.value = id;
+    walletNameController.text = name ?? '';
+    if (id != null) {
+      createNewWallet.value = false;
+    }
+  }
+
   void _resetForm() {
     nameController.clear();
     targetController.clear();
     target.value = null;
     startDate.value = DateTime.now();
-    endDate = Rxn<DateTime>();
+    endDate.value = null;
     selectedWalletId.value = null;
+    walletNameController.clear();
     createNewWallet.value = false;
     isEditMode.value = false;
   }

@@ -32,28 +32,6 @@ class CustomChoiceChip extends StatelessWidget {
         ),
         selected: isSelected,
         onSelected: onSelected,
-        avatar: isColor
-            ? Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary.withOpacity(0.22)
-                        : AppColors.borderSecondary,
-                  ),
-                ),
-                child: Center(
-                  child: AppCircularContainer(
-                    height: 12,
-                    width: 12,
-                    backgroundColor: color,
-                  ),
-                ),
-              )
-            : null,
         backgroundColor: Colors.white,
         selectedColor: AppColors.primary.withOpacity(0.12),
         surfaceTintColor: Colors.transparent,

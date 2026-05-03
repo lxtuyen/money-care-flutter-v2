@@ -55,7 +55,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
-    // Refresh statistics for the header
     statisticsController.refreshStatisticsData(userId);
 
     if (transactionController.transactionByfilter.value == null) {
@@ -272,7 +271,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         }
 
         return FilterDialog(
-          title: 'filter.byCategory'.tr,
+          title: 'filter.byCategory',
           categories: filteredCategories,
           onApply: (_) => _applyFilter(),
         );
@@ -293,51 +292,20 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   void _showWalletFilterDialog(BuildContext context) {
     final walletController = Get.find<WalletController>();
-    
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Chọn ví'),
-        content: Obx(() {
-          if (walletController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      builder: (context) => Obx(() {
+        if (walletController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          final wallets = walletController.wallets;
-          if (wallets.isEmpty) {
-            return const Text('Chưa có ví nào');
-          }
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.all_inclusive),
-                title: const Text('Tất cả ví'),
-                selected: filterController.walletId.value == null,
-                onTap: () {
-                  filterController.updateWallet(null);
-                  Navigator.pop(context);
-                  _applyFilter();
-                },
-              ),
-              const Divider(),
-              ...wallets.map((wallet) {
-                return ListTile(
-                  leading: Text(wallet.icon ?? '💰', style: const TextStyle(fontSize: 24)),
-                  title: Text(wallet.name),
-                  selected: filterController.walletId.value == wallet.id,
-                  onTap: () {
-                    filterController.updateWallet(wallet.id);
-                    Navigator.pop(context);
-                    _applyFilter();
-                  },
-                );
-              }).toList(),
-            ],
-          );
-        }),
-      ),
+        return FilterDialog(
+          title: 'filter.byWallet',
+          wallets: walletController.wallets,
+          onApply: (_) => _applyFilter(),
+        );
+      }),
     );
   }
 
@@ -381,7 +349,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               }
             }
 
-            String walletSubtitle = 'Tất cả ví';
+            String walletSubtitle = 'common.all'.tr;
             if (filterController.walletId.value != null) {
               final walletController = Get.find<WalletController>();
               final wallet = walletController.wallets.firstWhereOrNull(
@@ -453,40 +421,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary.withOpacity(0.12),
-                          AppColors.secondaryOrange.withOpacity(0.1),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.auto_awesome_rounded,
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            filterController.hasActiveFilters
-                                ? 'filter.activeCount'.tr.replaceAll('@count', '${filterController.activeFilterCount}')
-                                : 'filter.noActive'.tr,
-                            style: TextStyle(
-                              color: AppThemeColors.of(context).textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                   _buildFilterSheetTile(
                     icon: Icons.category_outlined,
                     title: 'filter.byCategory'.tr,
@@ -499,7 +433,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 12),
                   _buildFilterSheetTile(
                     icon: Icons.account_balance_wallet_outlined,
-                    title: 'Theo ví',
+                    title: 'filter.byWallet'.tr == 'filter.byWallet' ? 'Lọc theo ví' : 'filter.byWallet'.tr,
                     subtitle: walletSubtitle,
                     onTap: () {
                       Get.back();

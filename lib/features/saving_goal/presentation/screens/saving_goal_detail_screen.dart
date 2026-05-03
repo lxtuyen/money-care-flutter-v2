@@ -27,30 +27,13 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   final transactionController = Get.find<TransactionController>();
   
   late SavingGoalEntity goal;
-  final RxList<TransactionEntity> goalTransactions = <TransactionEntity>[].obs;
-  final RxBool isLoadingTransactions = false.obs;
-
   @override
   void initState() {
     super.initState();
     goal = Get.arguments as SavingGoalEntity;
-    _fetchTransactions();
-  }
-
-  Future<void> _fetchTransactions() async {
-    isLoadingTransactions.value = true;
-    try {
-      final allTransactions = transactionController.allTransactions;
-      final categoryIds = goal.categories.map((c) => c.id).toSet();
-      
-      final filtered = allTransactions.where((tx) {
-        return categoryIds.contains(tx.category?.id);
-      }).toList();
-      
-      goalTransactions.assignAll(filtered);
-    } finally {
-      isLoadingTransactions.value = false;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      savingGoalController.loadGoalReport(goal.id);
+    });
   }
 
   void _confirmDelete() {
@@ -113,14 +96,18 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  "Đã tiết kiệm: ${AppHelperFunction.formatAmount(goal.savedAmount)}",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Obx(() {
+                  final report = savingGoalController.goalReport.value;
+                  final displayAmount = report?.currentBalance ?? goal.savedAmount;
+                  return Text(
+                    "Đã tiết kiệm: ${AppHelperFunction.formatAmount(displayAmount)}",
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -154,9 +141,12 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
 
           Expanded(
             child: Obx(() {
-              if (isLoadingTransactions.value) {
+              if (savingGoalController.isLoadingReport.value) {
                 return const Center(child: CircularProgressIndicator());
               }
+
+              final report = savingGoalController.goalReport.value;
+              final transactions = report?.transactions.map((m) => m.toEntity()).toList() ?? [];
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,15 +177,15 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                   ),
                   
                   Expanded(
-                    child: goalTransactions.isEmpty
+                    child: transactions.isEmpty
                         ? const AppEmptyState(
                             message: "Chưa có giao dịch nào cho mục tiêu này",
                           )
                         : ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                            itemCount: goalTransactions.length,
+                            itemCount: transactions.length,
                             itemBuilder: (context, index) {
-                              final tx = goalTransactions[index];
+                              final tx = transactions[index];
                               return TransactionItem(
                                 item: tx,
                                 onTap: () {},
@@ -213,6 +203,10 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   }
 
   Widget _buildDetailCard(AppThemeColors colors) {
+    final report = savingGoalController.goalReport.value;
+    final currentAmount = report?.currentBalance ?? goal.savedAmount;
+    final isNegative = currentAmount < 0;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
@@ -238,16 +232,10 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
           ),
           const Divider(height: 32),
           _buildDetailRow(
-            "Còn lại", 
-            AppHelperFunction.formatAmount((goal.target ?? 0) - goal.savedAmount),
-            Icons.account_balance_wallet_rounded,
-            Colors.orange,
-            colors,
-          ),
-          const Divider(height: 32),
-          _buildDetailRow(
             "Ngày kết thúc", 
-            goal.endDate != null ? DateFormat('dd/MM/yyyy').format(goal.endDate!) : "Chưa đặt",
+            (report?.endDate ?? goal.endDate) != null 
+                ? DateFormat('dd/MM/yyyy').format(report?.endDate ?? goal.endDate!) 
+                : "Chưa đặt",
             Icons.calendar_today_rounded,
             Colors.blue,
             colors,
@@ -257,7 +245,14 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, IconData icon, Color iconColor, AppThemeColors colors) {
+  Widget _buildDetailRow(
+    String label, 
+    String value, 
+    IconData icon, 
+    Color iconColor, 
+    AppThemeColors colors, {
+    Color? valueColor,
+  }) {
     return Row(
       children: [
         Container(
@@ -280,7 +275,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
         Text(
           value,
           style: TextStyle(
-            color: colors.textPrimary,
+            color: valueColor ?? colors.textPrimary,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),

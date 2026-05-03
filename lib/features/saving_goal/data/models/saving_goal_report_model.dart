@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/core/utils/helper/num_parser.dart';
 
+import 'package:money_care/features/transaction/data/models/transaction_model.dart';
+
 part 'saving_goal_report_model.freezed.dart';
 part 'saving_goal_report_model.g.dart';
 
@@ -66,6 +68,7 @@ abstract class SavingGoalReportModel with _$SavingGoalReportModel {
     @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)
     @Default(0)
     double walletBalance,
+    @Default([]) List<TransactionModel> transactions,
   }) = _SavingGoalReportModel;
 
   factory SavingGoalReportModel.fromJson(Map<String, dynamic> json) =>

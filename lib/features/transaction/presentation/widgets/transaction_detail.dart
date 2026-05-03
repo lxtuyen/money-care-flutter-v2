@@ -143,6 +143,13 @@ class TransactionDetail extends StatelessWidget {
                       const Divider(height: 24),
                       _buildDetailRow(
                         context,
+                        icon: Icons.account_balance_wallet_outlined,
+                        label: 'transaction.walletLabel'.tr,
+                        value: item.walletName ?? 'Chưa xác định',
+                      ),
+                      const Divider(height: 24),
+                      _buildDetailRow(
+                        context,
                         icon: Icons.calendar_today_outlined,
                         label: 'transaction.timeLabel'.tr,
                         value: item.transactionDate != null

@@ -18,6 +18,7 @@ class TransactionEntity {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final CategoryEntity? category;
+  final int? walletId;
   final String? walletName;
 
   const TransactionEntity({
@@ -30,6 +31,7 @@ class TransactionEntity {
     this.createdAt,
     this.updatedAt,
     this.category,
+    this.walletId,
     this.walletName,
   });
 
@@ -39,6 +41,7 @@ class TransactionEntity {
       amount: map['amount'] ?? 0,
       type: map['type'] ?? 'expense',
       note: map['note'],
+      walletId: map['walletId'] is int ? map['walletId'] : null,
       walletName: map['walletName'],
       transactionDate: map['date'] != null
           ? DateTime.tryParse(map['date'].toString())

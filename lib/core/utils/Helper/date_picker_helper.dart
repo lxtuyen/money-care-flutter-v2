@@ -11,6 +11,7 @@ Future<DateTime?> showStyledDatePicker({
     initialDate: initialDate,
     firstDate: firstDate,
     lastDate: lastDate ?? DateTime(2100),
+    locale: const Locale('vi', 'VN'),
     builder: (context, child) {
       return Theme(
         data: Theme.of(context).copyWith(

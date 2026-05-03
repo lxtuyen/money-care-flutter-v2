@@ -14,6 +14,7 @@ class RoutePath {
   static const main = '/main';
   static const selectSavingGoal = '/select_saving_goal';
   static const createSavingGoal = '/create_saving_goal';
+  static const createTransaction = '/create_transaction';
   static const expense = '/expense';
   static const income = '/income';
   static const transactionWithImage = '/transaction_with_image';

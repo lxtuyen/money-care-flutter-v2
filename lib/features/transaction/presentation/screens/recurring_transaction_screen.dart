@@ -11,6 +11,8 @@ import 'package:money_care/features/transaction/domain/entities/category_entity.
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/recurring_transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
+import 'package:money_care/features/transaction/presentation/screens/create_transaction_screen.dart';
+import 'package:money_care/features/transaction/presentation/bindings/transaction_binding.dart';
 
 class RecurringTransactionScreen
     extends GetView<RecurringTransactionController> {
@@ -170,16 +172,15 @@ class RecurringTransactionScreen
 
   void _showAddRecurringDialog(BuildContext context) {
     Get.to(
-      () => TransactionForm(
-        title: 'Thêm giao dịch định kỳ',
-        transactionType: 'expense',
-        showCategory: true,
-        isRecurring: true,
-        showTypeSelector: true,
-        onRecurringSubmit: (dto) {
+      () => CreateTransactionScreen(),
+      arguments: {
+        'type': 'expense',
+        'isRecurring': true,
+        'onRecurringSubmit': (dto) {
           controller.createRecurringTransaction(dto);
         },
-      ),
+      },
+      binding: TransactionBinding(),
     );
   }
 }

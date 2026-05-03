@@ -211,8 +211,8 @@ class StatisticsController extends GetxController {
   Future<void> _loadGlobalTotalByType(int userId) async {
     try {
       final dto = TransactionTotalsDto(
-        startDate: currentStartDate.toIso8601String(),
-        endDate: currentEndDate.toIso8601String(),
+        startDate: currentStartDate.toUtc().toIso8601String(),
+        endDate: currentEndDate.toUtc().toIso8601String(),
       );
 
       globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
@@ -224,8 +224,8 @@ class StatisticsController extends GetxController {
   Future<void> _loadPreviousTotalByType(int userId) async {
     try {
       final dto = TransactionTotalsDto(
-        startDate: previousStartDate.toIso8601String(),
-        endDate: previousEndDate.toIso8601String(),
+        startDate: previousStartDate.toUtc().toIso8601String(),
+        endDate: previousEndDate.toUtc().toIso8601String(),
       );
       previousTotalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
@@ -305,8 +305,8 @@ class StatisticsController extends GetxController {
     isLoading.value = true;
     try {
       final totalsDto = TransactionTotalsDto(
-        startDate: startDate.toIso8601String(),
-        endDate: endDate.toIso8601String(),
+        startDate: startDate.toUtc().toIso8601String(),
+        endDate: endDate.toUtc().toIso8601String(),
       );
 
       await Future.wait([
@@ -361,13 +361,13 @@ class StatisticsController extends GetxController {
   Future<void> _loadMonthlyCategories(int userId) async {
     try {
       final expenseDto = TransactionTotalsDto(
-        startDate: currentStartDate.toIso8601String(),
-        endDate: currentEndDate.toIso8601String(),
+        startDate: currentStartDate.toUtc().toIso8601String(),
+        endDate: currentEndDate.toUtc().toIso8601String(),
         type: 'expense',
       );
       final incomeDto = TransactionTotalsDto(
-        startDate: currentStartDate.toIso8601String(),
-        endDate: currentEndDate.toIso8601String(),
+        startDate: currentStartDate.toUtc().toIso8601String(),
+        endDate: currentEndDate.toUtc().toIso8601String(),
         type: 'income',
       );
 
@@ -393,7 +393,7 @@ class StatisticsController extends GetxController {
 
   int _refreshCounter = 0;
 
-  Future<void> refreshStatisticsData(int userId) async {
+  Future<void> refreshStatisticsData(int userId, {bool skipMainTotals = false}) async {
     final int currentRefresh = ++_refreshCounter;
 
     if (totalByDate.value == null) {
@@ -406,23 +406,30 @@ class StatisticsController extends GetxController {
       final dtoRange = _createTotalsDto(currentStartDate, currentEndDate);
 
       if (periodType.value == 'hàng tháng') {
-        final List<Future> futures = [
-          _loadTotalByType(
-            userId,
-            startDate: currentStartDate,
-            endDate: currentEndDate,
-          ),
-          _loadGlobalTotalByType(userId),
+        final List<Future> futures = [];
+        
+        if (!skipMainTotals) {
+          futures.addAll([
+            _loadTotalByType(
+              userId,
+              startDate: currentStartDate,
+              endDate: currentEndDate,
+            ),
+            _loadGlobalTotalByType(userId),
+            _loadTotalByCate(
+              userId,
+              startDate: currentStartDate,
+              endDate: currentEndDate,
+            ),
+            _loadMonthlyCategories(userId),
+            _loadTotalByDate(userId, dtoRange),
+          ]);
+        }
+
+        futures.addAll([
           _loadPreviousTotalByType(userId),
-          _loadTotalByCate(
-            userId,
-            startDate: currentStartDate,
-            endDate: currentEndDate,
-          ),
-          _loadMonthlyCategories(userId),
-          _loadTotalByDate(userId, dtoRange),
           _loadStatisticsSummary(userId),
-        ];
+        ]);
 
         final activeGoalId = savingGoalController.goalId.value;
         if (activeGoalId > 0) {
@@ -437,22 +444,29 @@ class StatisticsController extends GetxController {
           _updateWidgetData();
         }
       } else {
-        final List<Future> futures = [
-          _loadTotalByType(
-            userId,
-            startDate: currentStartDate,
-            endDate: currentEndDate,
-          ),
-          _loadGlobalTotalByType(userId),
+        final List<Future> futures = [];
+        
+        if (!skipMainTotals) {
+          futures.addAll([
+            _loadTotalByType(
+              userId,
+              startDate: currentStartDate,
+              endDate: currentEndDate,
+            ),
+            _loadGlobalTotalByType(userId),
+            _loadTotalByCate(
+              userId,
+              startDate: currentStartDate,
+              endDate: currentEndDate,
+            ),
+            _loadDailyHourlyData(userId),
+          ]);
+        }
+
+        futures.addAll([
           _loadPreviousTotalByType(userId),
-          _loadTotalByCate(
-            userId,
-            startDate: currentStartDate,
-            endDate: currentEndDate,
-          ),
-          _loadDailyHourlyData(userId),
           _loadStatisticsSummary(userId),
-        ];
+        ]);
 
         final activeGoalId = savingGoalController.goalId.value;
         if (activeGoalId > 0) {
@@ -482,8 +496,8 @@ class StatisticsController extends GetxController {
   Future<void> _loadDailyHourlyData(int userId) async {
     try {
       final filterDto = TransactionFilterDto(
-        startDate: currentStartDate.toIso8601String(),
-        endDate: currentEndDate.toIso8601String(),
+        startDate: currentStartDate.toUtc().toIso8601String(),
+        endDate: currentEndDate.toUtc().toIso8601String(),
       );
 
       final result = await Get.find<TransactionController>()
@@ -596,9 +610,18 @@ class StatisticsController extends GetxController {
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
     final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
+    final now = DateTime.now();
+
+    // Check if it is the current month range (standard 1st to end of month)
+    final isCurrentMonth = start.year == now.year &&
+        start.month == now.month &&
+        start.day == 1 &&
+        end.year == now.year &&
+        end.month == now.month;
+
     return TransactionTotalsDto(
-      startDate: start.toIso8601String(),
-      endDate: end.toIso8601String(),
+      startDate: isCurrentMonth ? null : start.toUtc().toIso8601String(),
+      endDate: isCurrentMonth ? null : end.toUtc().toIso8601String(),
       type: backendType,
     );
   }
@@ -693,5 +716,116 @@ class StatisticsController extends GetxController {
       monthlyExpense: isVisible ? expense : null,
       remainingBudget: isVisible ? remaining : null,
     );
+  }
+
+  void updateStatsFromTransactions(TransactionByTypeEntity data) {
+    final income = data.incomeTransactions;
+    final expense = data.expenseTransactions;
+
+    // 1. Update Total By Type
+    double incomeTotal = income.fold(0.0, (sum, t) => sum + t.amount);
+    double expenseTotal = expense.fold(0.0, (sum, t) => sum + t.amount);
+
+    globalTotalByType.value = TotalByTypeEntity(
+      incomeTotal: incomeTotal.toInt(),
+      expenseTotal: expenseTotal.toInt(),
+      currentSaving: (incomeTotal - expenseTotal).toInt(),
+    );
+    totalByType.value = globalTotalByType.value;
+
+    // 2. Update Total By Date (for Chart)
+    final Map<DateTime, double> incomeByDay = {};
+    final Map<DateTime, double> expenseByDay = {};
+
+    for (var t in income) {
+      final date = _stripTime(t.transactionDate ?? DateTime.now());
+      incomeByDay[date] = (incomeByDay[date] ?? 0.0) + t.amount;
+    }
+    for (var t in expense) {
+      final date = _stripTime(t.transactionDate ?? DateTime.now());
+      expenseByDay[date] = (expenseByDay[date] ?? 0.0) + t.amount;
+    }
+
+    final List<TotalByDateEntity> incomeList = incomeByDay.entries
+        .map((e) => TotalByDateEntity(date: e.key, total: e.value.toInt()))
+        .toList();
+    final List<TotalByDateEntity> expenseList = expenseByDay.entries
+        .map((e) => TotalByDateEntity(date: e.key, total: e.value.toInt()))
+        .toList();
+
+    totalByDate.value = TotalsByDateEntity(
+      income: incomeList,
+      expense: expenseList,
+    );
+
+    // 3. Update Categories
+    final Map<int, TotalByCategoryEntity> expCatMap = {};
+    final Map<int, TotalByCategoryEntity> incCatMap = {};
+
+    final targetGoal = savingGoalController.currentGoal.value?.target ?? 0;
+
+    for (var t in expense) {
+      if (t.category == null || t.category!.id == null) continue;
+      final int id = t.category!.id!;
+      final existing = expCatMap[id];
+      if (existing == null) {
+        expCatMap[id] = TotalByCategoryEntity(
+          categoryId: id,
+          categoryName: t.category!.name,
+          categoryIcon: t.category!.icon ?? '',
+          total: t.amount.toInt(),
+          percentage: t.category!.percentage.toDouble(),
+          limit: (t.category!.percentage * targetGoal) / 100,
+          isEssential: t.category!.isEssential,
+        );
+      } else {
+        expCatMap[id] = TotalByCategoryEntity(
+          categoryId: id,
+          categoryName: existing.categoryName,
+          categoryIcon: existing.categoryIcon,
+          total: existing.total + t.amount.toInt(),
+          percentage: existing.percentage,
+          limit: existing.limit,
+          isEssential: existing.isEssential,
+        );
+      }
+    }
+
+    for (var t in income) {
+      if (t.category == null || t.category!.id == null) continue;
+      final int id = t.category!.id!;
+      final existing = incCatMap[id];
+      if (existing == null) {
+        incCatMap[id] = TotalByCategoryEntity(
+          categoryId: id,
+          categoryName: t.category!.name,
+          categoryIcon: t.category!.icon ?? '',
+          total: t.amount.toInt(),
+          percentage: t.category!.percentage.toDouble(),
+          limit: 0,
+          isEssential: t.category!.isEssential,
+        );
+      } else {
+        incCatMap[id] = TotalByCategoryEntity(
+          categoryId: id,
+          categoryName: existing.categoryName,
+          categoryIcon: existing.categoryIcon,
+          total: existing.total + t.amount.toInt(),
+          percentage: existing.percentage,
+          limit: existing.limit,
+          isEssential: existing.isEssential,
+        );
+      }
+    }
+
+    expenseCategories.assignAll(expCatMap.values.toList());
+    incomeCategories.assignAll(incCatMap.values.toList());
+
+    _processMonthlyData();
+    _updateWidgetData();
+  }
+
+  DateTime _stripTime(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
   }
 }

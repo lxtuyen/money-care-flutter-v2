@@ -17,9 +17,7 @@ import 'package:money_care/features/saving_goal/presentation/screens/create_savi
 import 'package:money_care/features/saving_goal/presentation/screens/select_saving_goal_screen.dart';
 import 'package:money_care/features/saving_goal/presentation/screens/expired_saving_goals_screen.dart';
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
-import 'package:money_care/features/transaction/presentation/screens/create_income_screen.dart';
-import 'package:money_care/features/transaction/presentation/screens/create_expense_screen.dart';
-import 'package:money_care/features/transaction/presentation/screens/create_photo_transaction_screen.dart';
+import 'package:money_care/features/transaction/presentation/screens/create_transaction_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
 import 'package:money_care/features/notification/presentation/screens/notification.dart';
 import 'package:money_care/features/transaction/presentation/screens/user_category_management_screen.dart';
@@ -104,19 +102,28 @@ final List<GetPage> appPages = [
     binding: SavingGoalBinding(),
   ),
   GetPage(
-    name: '/expense',
-    page: () => const CreateExpenseScreen(),
+    name: RoutePath.expense,
+    page: () => const CreateTransactionScreen(),
     binding: TransactionBinding(),
+    transition: Transition.rightToLeft,
   ),
   GetPage(
-    name: '/income',
-    page: () => const CreateIncomeScreen(),
+    name: RoutePath.income,
+    page: () => const CreateTransactionScreen(),
     binding: TransactionBinding(),
+    transition: Transition.rightToLeft,
   ),
   GetPage(
-    name: '/transaction_with_image',
-    page: () => const CreatePhotoTransactionScreen(),
+    name: RoutePath.transactionWithImage,
+    page: () => const CreateTransactionScreen(),
     binding: TransactionBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.createTransaction,
+    page: () => const CreateTransactionScreen(),
+    binding: TransactionBinding(),
+    transition: Transition.rightToLeft,
   ),
   GetPage(
     name: '/profile',

@@ -26,8 +26,19 @@ class ScanReceiptController extends GetxController {
       if (image == null) return null;
 
       final res = await scanReceiptUseCase(image);
-      scanResult.value = res;
-      return res;
+      final resWithPath = ScanReceiptEntity(
+        rawText: res.rawText,
+        merchantName: res.merchantName,
+        address: res.address,
+        date: res.date,
+        totalAmount: res.totalAmount,
+        currency: res.currency,
+        categoryKey: res.categoryKey,
+        categoryName: res.categoryName,
+        imagePath: image.path,
+      );
+      scanResult.value = resWithPath;
+      return resWithPath;
     } catch (e) {
       errorMessage.value = e.toString();
       scanResult.value = null;

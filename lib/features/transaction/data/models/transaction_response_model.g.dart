@@ -25,6 +25,9 @@ _TransactionModel _$TransactionModelFromJson(Map<String, dynamic> json) =>
       category: json['category'] == null
           ? null
           : CategoryModel.fromJson(json['category'] as Map<String, dynamic>),
+      wallet: json['wallet'] == null
+          ? null
+          : WalletModel.fromJson(json['wallet'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$TransactionModelToJson(_TransactionModel instance) =>
@@ -38,4 +41,5 @@ Map<String, dynamic> _$TransactionModelToJson(_TransactionModel instance) =>
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
       'category': instance.category,
+      'wallet': instance.wallet,
     };

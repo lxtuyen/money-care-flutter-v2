@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:money_care/core/utils/helper/num_parser.dart';
 import 'package:money_care/features/transaction/data/models/category_model.dart';
+import 'package:money_care/features/wallet/data/models/wallet_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 part 'transaction_response_model.freezed.dart';
@@ -23,6 +24,7 @@ abstract class TransactionModel with _$TransactionModel {
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
     CategoryModel? category,
+    WalletModel? wallet,
   }) = _TransactionModel;
 
   const TransactionModel._();
@@ -40,5 +42,7 @@ abstract class TransactionModel with _$TransactionModel {
     createdAt: createdAt,
     updatedAt: updatedAt,
     category: category?.toEntity(),
+    walletId: wallet?.id,
+    walletName: wallet?.name,
   );
 }

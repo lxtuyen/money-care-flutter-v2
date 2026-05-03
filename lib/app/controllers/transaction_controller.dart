@@ -60,17 +60,6 @@ class TransactionController extends GetxController {
       if (userId != null) {
         recentTransactions.value = null;
         transactionByfilter.value = null;
-
-        final goal = savingGoalController.currentGoal.value;
-        if (goal != null && goal.startDate != null && goal.endDate != null) {
-          Get.find<FilterController>().setGoalRange(
-            goal.startDate!,
-            goal.endDate!,
-            goal.name,
-          );
-        } else {
-          Get.find<FilterController>().clearAll();
-        }
         refreshAllData(userId);
       }
     });
@@ -135,7 +124,31 @@ class TransactionController extends GetxController {
     isLoading.value = true;
     _lastFilter = dto;
     try {
-      transactionByfilter.value = await filterTransactionsUseCase(userId, dto);
+      final result = await filterTransactionsUseCase(userId, dto);
+      transactionByfilter.value = result;
+
+      // REUSE: Derive recent transactions from the filtered result (top 5)
+      final allIncome = result.incomeTransactions;
+      final allExpense = result.expenseTransactions;
+
+      // Sort both by date DESC
+      final sortedIncome = [...allIncome]..sort((a, b) =>
+          (b.transactionDate ?? DateTime.now())
+              .compareTo(a.transactionDate ?? DateTime.now()));
+      final sortedExpense = [...allExpense]..sort((a, b) =>
+          (b.transactionDate ?? DateTime.now())
+              .compareTo(a.transactionDate ?? DateTime.now()));
+
+      recentTransactions.value = TransactionByTypeEntity(
+        incomeTransactions: sortedIncome.take(5).toList(),
+        expenseTransactions: sortedExpense.take(5).toList(),
+      );
+
+      // REUSE: Update statistics locally from this list
+      if (Get.isRegistered<StatisticsController>()) {
+        Get.find<StatisticsController>().updateStatsFromTransactions(result);
+      }
+
       errorMessage.value = null;
     } catch (e) {
       errorMessage.value = e.toString();
@@ -150,41 +163,14 @@ class TransactionController extends GetxController {
   ) async {
     await filterTransactions(userId, filterDto);
   }
-
   Future<void> refreshAllData(int userId) async {
-    final currentGoal = savingGoalController.currentGoal.value;
-
-    final rawStart = currentGoal?.startDate;
-    final rawEnd = currentGoal?.endDate;
-    final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
-    final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
-
-    final recentFilterDto = TransactionFilterDto(
-      startDate: clampedStart != null
-          ? _getStartOfDay(clampedStart).toIso8601String()
-          : null,
-      endDate: clampedEnd?.toIso8601String(),
-      limit: 5,
-    );
-
-    isRecentLoading.value = true;
-    try {
-      final recentRes = await filterTransactionsUseCase(
-        userId,
-        recentFilterDto,
-      );
-      recentTransactions.value = recentRes;
-    } finally {
-      isRecentLoading.value = false;
-    }
-
     await applyFilters(userId);
 
     if (Get.isRegistered<WalletController>()) {
       Get.find<WalletController>().refreshWallets();
     }
     if (Get.isRegistered<StatisticsController>()) {
-      Get.find<StatisticsController>().refreshStatisticsData(userId);
+      Get.find<StatisticsController>().refreshStatisticsData(userId, skipMainTotals: true);
     }
     final activeGoalId = savingGoalController.goalId.value;
     if (activeGoalId > 0) {
@@ -200,50 +186,28 @@ class TransactionController extends GetxController {
     final rawStart = filterController.startDate.value;
     final rawEnd = filterController.endDate.value;
 
-    final clampedStart = rawStart != null ? _clampToGoalStart(rawStart) : null;
-    final clampedEnd = rawEnd != null ? _clampToGoalEnd(rawEnd) : null;
-
     final dto = TransactionFilterDto(
       categoryId: filterController.categoryId.value,
       walletId: filterController.walletId.value,
-      startDate: clampedStart?.toIso8601String(),
-      endDate: clampedEnd?.toIso8601String(),
+      startDate: rawStart != null
+          ? _getStartOfDay(rawStart).toUtc().toIso8601String()
+          : null,
+      endDate: rawEnd != null
+          ? _getEndOfDay(rawEnd).toUtc().toIso8601String()
+          : null,
     );
+
+    print('>>> [FE] APPLY FILTERS: userId=$userId, cat=${dto.categoryId}, wallet=${dto.walletId}, start=${dto.startDate}, end=${dto.endDate}');
 
     await filterTransactions(userId, dto);
   }
 
-  DateTime _clampToGoalStart(DateTime date) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.startDate == null) return date;
-    if (date.isBefore(goal.startDate!)) return goal.startDate!;
-    return date;
-  }
-
-  DateTime _clampToGoalEnd(DateTime date) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.endDate == null) return date;
-    if (date.isAfter(goal.endDate!)) return goal.endDate!;
-    return date;
-  }
-
   DateTime _getStartOfDay(DateTime date) {
-    return DateTime(date.year, date.month, date.day);
+    return DateTime(date.year, date.month, date.day, 0, 0, 0);
   }
 
-  DateTime _clampToGoalRange(
-    DateTime date,
-    DateTime? goalStart,
-    DateTime? goalEnd, {
-    required bool isStart,
-  }) {
-    if (goalStart == null || goalEnd == null) return date;
-
-    if (isStart) {
-      return date.isBefore(goalStart) ? goalStart : date;
-    } else {
-      return date.isAfter(goalEnd) ? goalEnd : date;
-    }
+  DateTime _getEndOfDay(DateTime date) {
+    return DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
   }
 
   Future<void> exportReport(int userId, TransactionFilterDto dto, String format) async {

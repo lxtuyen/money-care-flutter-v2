@@ -92,6 +92,11 @@ _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   walletBalance: json['wallet_balance'] == null
       ? 0
       : NumParser.parseDouble(json['wallet_balance']),
+  transactions:
+      (json['transactions'] as List<dynamic>?)
+          ?.map((e) => TransactionModel.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$SavingGoalReportModelToJson(
@@ -119,4 +124,5 @@ Map<String, dynamic> _$SavingGoalReportModelToJson(
   'remainingBudget': instance.remainingBudget,
   'wallet_name': instance.walletName,
   'wallet_balance': instance.walletBalance,
+  'transactions': instance.transactions,
 };

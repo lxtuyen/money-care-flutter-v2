@@ -45,7 +45,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     TransactionFilterDto dto,
   ) async {
     final res = await api.get<TransactionByTypeModel>(
-      '${ApiRoutes.getTransactionsFilter}/$userId',
+      '${ApiRoutes.transaction}/$userId/filter',
       queryParameters: dto.toQueryParams(),
       fromJsonT: (json) => TransactionByTypeModel.fromJson(json),
     );
@@ -106,9 +106,13 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<TransactionModel> createTransaction(TransactionCreateDto dto) async {
+    print('>>> [FE] createTransaction DTO: ${dto.toString()}');
+    final jsonBody = dto.toJson();
+    print('>>> [FE] createTransaction JSON body: $jsonBody');
+    
     final res = await api.post<TransactionModel>(
       ApiRoutes.transaction,
-      body: dto.toJson(),
+      body: jsonBody,
       fromJsonT: (json) => TransactionModel.fromJson(json),
     );
     if (!res.success || res.data == null) throw Exception(res.message);
@@ -160,7 +164,6 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   ) async {
     final res = await api.get<StatisticsSummaryModel>(
       '${ApiRoutes.transaction}/$userId/statistics-summary',
-      queryParameters: dto.toJson(),
       fromJsonT: (json) => StatisticsSummaryModel.fromJson(json),
     );
     if (!res.success || res.data == null) throw Exception(res.message);

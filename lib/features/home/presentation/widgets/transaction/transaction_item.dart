@@ -54,9 +54,7 @@ class TransactionItem extends StatelessWidget {
         return _buildContent(context, isSavingMode: isSaving);
       });
     } else {
-      content = Obx(() {
-        return _buildContent(context, isSavingMode: false);
-      });
+      content = _buildContent(context, isSavingMode: false);
     }
 
     return GestureDetector(
@@ -71,9 +69,11 @@ class TransactionItem extends StatelessWidget {
     final Color typeColor =
         color ?? (isIncome ? AppColors.income : AppColors.expense);
     final bool showSkippableLabel =
-        isSavingMode && (item.category?.isEssential == false);
+        isSavingMode && !(item.category?.isEssential ?? true);
+    
+    final double amountValue = (item.amount ?? 0).toDouble();
     final String amountText =
-        '${showAmountSign ? (isIncome ? '+' : '-') : ''} ${AppHelperFunction.formatAmount(item.amount.toDouble(), currency: '')} ₫';
+        '${showAmountSign ? (isIncome ? '+' : '-') : ''} ${AppHelperFunction.formatAmount(amountValue, currency: '')} ₫';
 
     return Column(
       children: [

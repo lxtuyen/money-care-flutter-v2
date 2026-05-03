@@ -275,6 +275,7 @@ class HomeScreen extends GetView<HomeController> {
             return SpendingSummary(
               incomeTotal: 0,
               expenseTotal: 0,
+              totalBalance: controller.walletController.totalAssets.value.toInt(),
               isBalanceVisible: isVisible,
               onToggleVisibility: () =>
                   controller.appController.toggleBalanceVisibility(),
@@ -284,6 +285,7 @@ class HomeScreen extends GetView<HomeController> {
           return SpendingSummary(
             incomeTotal: totals.incomeTotal,
             expenseTotal: totals.expenseTotal,
+            totalBalance: controller.walletController.totalAssets.value.toInt(),
             isBalanceVisible: isVisible,
             onToggleVisibility: () =>
                 controller.appController.toggleBalanceVisibility(),

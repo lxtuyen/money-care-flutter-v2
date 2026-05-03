@@ -44,6 +44,8 @@ class _FilterDialogState extends State<FilterDialog> {
     if (isDateDialog) {
       selectedId = filterController.dateLabel.value;
       selectedDateLabel = filterController.dateLabel.value;
+    } else if (widget.wallets != null) {
+      selectedId = filterController.walletId.value?.toString();
     } else {
       selectedId = filterController.categoryId.value?.toString();
     }
@@ -101,7 +103,9 @@ class _FilterDialogState extends State<FilterDialog> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    widget.title,
+                    widget.title.tr == widget.title 
+                        ? (widget.title == 'filter.byWallet' ? 'Lọc theo ví' : (widget.title == 'filter.byCategory' ? 'Lọc theo phân loại' : widget.title)) 
+                        : widget.title.tr,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -111,7 +115,9 @@ class _FilterDialogState extends State<FilterDialog> {
                   Text(
                     isDateDialog
                         ? 'filter.dateDescription'.tr
-                        : 'filter.categoryDescription'.tr,
+                        : widget.wallets != null
+                            ? ('filter.walletDescription'.tr == 'filter.walletDescription' ? 'Chọn ví bạn muốn xem các giao dịch liên quan.' : 'filter.walletDescription'.tr)
+                            : 'filter.categoryDescription'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withOpacity(0.9),
                       height: 1.35,
@@ -276,6 +282,24 @@ class _FilterDialogState extends State<FilterDialog> {
           .cast<Widget>();
     }
 
+    if (widget.wallets != null) {
+      return widget.wallets!
+          .map((wallet) {
+            final isSelected = selectedId == wallet.id.toString();
+            return CustomChoiceChip(
+              text: wallet.name,
+              isSelected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  selectedId = selected ? wallet.id.toString() : null;
+                });
+              },
+            );
+          })
+          .toList()
+          .cast<Widget>();
+    }
+
     return widget.categories!
         .map((cat) {
           final isSelected = cat.id != null && selectedId == cat.id.toString();
@@ -301,18 +325,32 @@ class _FilterDialogState extends State<FilterDialog> {
           : 'filter.noDateSelected'.tr;
     }
 
-    if (selectedId != null && widget.categories != null) {
-      try {
-        final cat = widget.categories!.firstWhere(
-          (c) => c.id.toString() == selectedId,
-        );
-        return 'filter.selectedCategory'.tr.replaceAll('@name', cat.name);
-      } catch (_) {
-        return 'filter.selected1Type'.tr;
+    if (selectedId != null) {
+      if (widget.categories != null) {
+        try {
+          final cat = widget.categories!.firstWhere(
+            (c) => c.id.toString() == selectedId,
+          );
+          return 'filter.selectedCategory'.tr.replaceAll('@name', cat.name);
+        } catch (_) {
+          return 'filter.selected1Type'.tr;
+        }
+      } else if (widget.wallets != null) {
+        try {
+          final wallet = widget.wallets!.firstWhere(
+            (w) => w.id.toString() == selectedId,
+          );
+          final tr = 'filter.selectedWallet'.tr.replaceAll('@name', wallet.name);
+          return tr.contains('filter.selectedWallet') ? 'Đang chọn ví: ${wallet.name}' : tr;
+        } catch (_) {
+          return 'filter.selected1Category'.tr;
+        }
       }
     }
 
-    return 'filter.noCategorySelected'.tr;
+    return widget.wallets != null 
+        ? ('filter.noWalletSelected'.tr == 'filter.noWalletSelected' ? 'Chưa chọn ví' : 'filter.noWalletSelected'.tr)
+        : 'filter.noCategorySelected'.tr;
   }
 
   void _clearFilter() {
@@ -333,6 +371,10 @@ class _FilterDialogState extends State<FilterDialog> {
   void _applySelection() {
     if (widget.categories != null) {
       filterController.updateCategory(
+        selectedId != null ? int.tryParse(selectedId!) : null,
+      );
+    } else if (widget.wallets != null) {
+      filterController.updateWallet(
         selectedId != null ? int.tryParse(selectedId!) : null,
       );
     } else {

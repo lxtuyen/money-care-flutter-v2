@@ -10,6 +10,8 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
@@ -24,13 +26,19 @@ class TransactionFormController extends GetxController {
   final formKey = GlobalKey<FormState>();
   final amountController = TextEditingController();
   final categoryController = TextEditingController();
+  final walletNameController = TextEditingController();
+  final frequencyController = TextEditingController();
   final noteController = TextEditingController();
 
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final RxnInt selectedCategoryId = RxnInt();
   final RxnInt selectedWalletId = RxnInt();
+  final Rxn<CategoryEntity> _selectedCategory = Rxn<CategoryEntity>();
+  CategoryEntity? get selectedCategory => _selectedCategory.value;
+  set selectedCategory(CategoryEntity? value) => _selectedCategory.value = value;
 
-  CategoryEntity? selectedCategory;
+  final RxnString selectedImagePath = RxnString();
+  final RxBool isScanning = false.obs;
 
   bool showCategory = true;
   String transactionType = 'expense';
@@ -51,10 +59,13 @@ class TransactionFormController extends GetxController {
       categoryController.text = item.category?.name ?? '';
       noteController.text = item.note ?? '';
       selectedCategoryId.value = item.category?.id;
+      selectedWalletId.value = item.walletId;
+      walletNameController.text = item.walletName ?? '';
     } else {
       selectedDate.value = DateTime.now();
       if (walletController.selectedWallet.value != null) {
         selectedWalletId.value = walletController.selectedWallet.value!.id;
+        walletNameController.text = walletController.selectedWallet.value!.name;
       }
     }
   }
@@ -71,16 +82,56 @@ class TransactionFormController extends GetxController {
     }
   }
 
+  Future<void> scanReceipt(ImageSource source) async {
+    isScanning.value = true;
+    try {
+      final result = await scanReceiptController.scan(source);
+      if (result != null) {
+        if (result.totalAmount > 0) {
+          amountController.text = AppHelperFunction.formatAmount(result.totalAmount.toDouble());
+        }
+        if (result.merchantName.isNotEmpty) {
+          noteController.text = result.merchantName;
+        }
+        final parsedDate = DateTime.tryParse(result.date);
+        if (parsedDate != null) {
+          selectedDate.value = parsedDate;
+        }
+        selectedImagePath.value = scanReceiptController.scanResult.value?.imagePath;
+        AppHelperFunction.showSuccessSnackBar('Quét hóa đơn thành công');
+      }
+    } catch (e) {
+      AppHelperFunction.showErrorSnackBar('Lỗi quét hóa đơn: $e');
+    } finally {
+      isScanning.value = false;
+    }
+  }
+
+  void removeImage() {
+    selectedImagePath.value = null;
+  }
+
   TransactionCreateDto buildTransactionDto() {
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
+    final date = selectedDate.value ?? DateTime.now();
+    // Normalize to 12:00 to avoid timezone shifting issues (midnight being counted as previous day)
+    final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
+
+    print('>>> [FE] buildTransactionDto:');
+    print('  - selectedDate.value: ${selectedDate.value}');
+    print('  - date: $date');
+    print('  - normalizedDate: $normalizedDate');
+    print('  - normalizedDate.toIso8601String(): ${normalizedDate.toIso8601String()}');
+
     return TransactionCreateDto(
       amount: int.tryParse(rawValue) ?? 0,
       type: transactionType,
       note: noteController.text.trim(),
       categoryId: selectedCategoryId.value,
-      transactionDate: selectedDate.value,
+      transactionDate: normalizedDate,
       userId: appController.userId.value,
       walletId: selectedWalletId.value,
+      pictureUrl: selectedImagePath.value,
     );
   }
 
@@ -91,11 +142,14 @@ class TransactionFormController extends GetxController {
     }
 
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
+    final date = selectedDate.value ?? DateTime.now();
+    final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
+
     return CreateRecurringTransactionDto(
       amount: double.tryParse(rawValue) ?? 0,
       type: transactionType,
       frequency: frequency,
-      startDate: selectedDate.value ?? DateTime.now(),
+      startDate: normalizedDate,
       note: noteController.text.trim(),
       userId: userId,
       categoryId: selectedCategoryId.value,
@@ -106,6 +160,15 @@ class TransactionFormController extends GetxController {
     selectedCategoryId.value = category.id;
     categoryController.text = category.name;
     selectedCategory = category;
+  }
+
+  void setWallet(int id, String name) {
+    selectedWalletId.value = id;
+    walletNameController.text = name;
+  }
+
+  void setFrequency(String id, String label) {
+    frequencyController.text = label;
   }
 
   Future<void> submit() async {
@@ -157,6 +220,8 @@ class TransactionFormController extends GetxController {
   void onClose() {
     amountController.dispose();
     categoryController.dispose();
+    walletNameController.dispose();
+    frequencyController.dispose();
     noteController.dispose();
     super.onClose();
   }

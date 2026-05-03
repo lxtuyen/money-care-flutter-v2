@@ -64,7 +64,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppHeader(
-                title: 'transaction.title'.tr,
+                title: 'statistics.title'.tr,
                 actions: [
                   IconButton(
                     onPressed: () => _showExportDialog(),

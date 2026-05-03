@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -14,6 +16,7 @@ import 'package:money_care/features/transaction/presentation/controllers/transac
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/constants/colors.dart';
 
@@ -48,12 +51,60 @@ class _TransactionFormState extends State<TransactionForm> {
   late String selectedTransactionType;
   String selectedFrequency = 'monthly';
 
+  Future<void> _showImageSourceOptions(BuildContext context) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Chụp ảnh hóa đơn'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Chọn từ thư viện'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source != null) {
+      controller.scanReceipt(source);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     controller = Get.find<TransactionFormController>();
     selectedTransactionType = widget.transactionType;
     controller.init(widget.showCategory, widget.item, selectedTransactionType);
+
+    if (widget.isRecurring) {
+      selectedFrequency = 'monthly';
+      controller.frequencyController.text = 'transaction.freqMonthly'.tr;
+    }
   }
 
   @override
@@ -69,7 +120,7 @@ class _TransactionFormState extends State<TransactionForm> {
                   children: [
                     AppHeader(
                       title: widget.title,
-                      height: 165,
+                      height: 220,
                       showBackButton: true,
                       onBackTap: () {
                         if (Navigator.canPop(context)) {
@@ -78,6 +129,29 @@ class _TransactionFormState extends State<TransactionForm> {
                           Get.offAllNamed(RoutePath.main);
                         }
                       },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            _buildHeaderToggleCard(
+                              label: 'Tiền Chi',
+                              icon: Icons.remove_circle_outline,
+                              isActive: selectedTransactionType == 'expense',
+                              onTap: () => _onTypeChanged('expense'),
+                            ),
+                            const SizedBox(width: 12),
+                            _buildHeaderToggleCard(
+                              label: 'Tiền Thu',
+                              icon: Icons.add_circle_outline,
+                              isActive: selectedTransactionType == 'income',
+                              onTap: () => _onTypeChanged('income'),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     Center(
                       child: ConstrainedBox(
@@ -105,99 +179,207 @@ class _TransactionFormState extends State<TransactionForm> {
                                       AppValidator.validateAmount(v),
                                 ),
                                 const SizedBox(height: 20),
-                                Obx(() {
-                                  final wallets =
-                                      controller.walletController.wallets;
-                                  return DropdownButtonFormField<int>(
-                                    value: controller.selectedWalletId.value,
-                                    decoration: InputDecoration(
-                                      labelText: 'Ví / Tài khoản',
-                                      prefixIcon: const Icon(Icons.account_balance_wallet),
-                                      border: const OutlineInputBorder(),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.primary.withOpacity(0.3),
-                                        ),
+                                AppTextFormField(
+                                  controller: controller.walletNameController,
+                                  label: 'transaction.walletLabel'.tr,
+                                  icon: Icons.account_balance_wallet,
+                                  suffixIcon: const Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    color: AppColors.text3,
+                                  ),
+                                  hintText: 'transaction.walletHint'.tr,
+                                  readOnly: true,
+                                  validator: (v) => (v == null || v.isEmpty)
+                                      ? 'transaction.walletRequired'.tr
+                                      : null,
+                                  onTap: () {
+                                    final wallets =
+                                        controller.walletController.wallets;
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => SelectionDialog(
+                                        title:
+                                            'transaction.walletSelectionTitle',
+                                        description:
+                                            'transaction.walletSelectionDesc',
+                                        options: wallets
+                                            .map((w) => SelectionOption(
+                                                  id: w.id.toString(),
+                                                  label: w.name,
+                                                ))
+                                            .toList(),
+                                        initialSelectedId: controller
+                                            .selectedWalletId.value
+                                            ?.toString(),
+                                        onSelect: (id, label) {
+                                          if (id != null) {
+                                            final wallet = wallets.firstWhere(
+                                              (w) => w.id.toString() == id,
+                                            );
+                                            controller.setWallet(
+                                              wallet.id,
+                                              wallet.name,
+                                            );
+                                          }
+                                        },
                                       ),
-                                    ),
-                                    items: wallets.map((w) {
-                                      return DropdownMenuItem<int>(
-                                        value: w.id,
-                                        child: Text(w.name),
-                                      );
-                                    }).toList(),
-                                    onChanged: (v) {
-                                      controller.selectedWalletId.value = v;
-                                    },
-                                    validator: (v) => v == null ? 'Vui lòng chọn ví' : null,
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                Obx(() {
+                                  return Column(
+                                    children: [
+                                      if (controller.selectedImagePath.value !=
+                                          null) ...[
+                                        Stack(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => _showFullScreenImage(
+                                                context,
+                                                controller
+                                                    .selectedImagePath
+                                                    .value!,
+                                              ),
+                                              child: Container(
+                                                height: 150,
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  image: DecorationImage(
+                                                    image: FileImage(
+                                                      File(
+                                                        controller
+                                                            .selectedImagePath
+                                                            .value!,
+                                                      ),
+                                                    ),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 8,
+                                              right: 8,
+                                              child: GestureDetector(
+                                                onTap: controller.removeImage,
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.black54,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ] else ...[
+                                        GestureDetector(
+                                          onTap: () =>
+                                              _showImageSourceOptions(context),
+                                          child: Container(
+                                            height: 80,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color:
+                                                    AppColors.borderSecondary,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: AppColors
+                                                  .backgroundSecondary
+                                                  .withOpacity(0.5),
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.add_a_photo_outlined,
+                                                  color: AppColors.text3,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  'transaction.scanReceiptOrAddPhoto'.tr,
+                                                  style: TextStyle(
+                                                    color: AppColors.text3,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   );
                                 }),
-                                if (widget.showTypeSelector) ...[
-                                  const SizedBox(height: 20),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: RadioListTile<String>(
-                                          title: const Text('Chi'),
-                                          value: 'expense',
-                                          groupValue: selectedTransactionType,
-                                          onChanged: (v) {
-                                            if (v == null) return;
-                                            setState(() {
-                                              selectedTransactionType = v;
-                                              controller.transactionType = v;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: RadioListTile<String>(
-                                          title: const Text('Thu'),
-                                          value: 'income',
-                                          groupValue: selectedTransactionType,
-                                          onChanged: (v) {
-                                            if (v == null) return;
-                                            setState(() {
-                                              selectedTransactionType = v;
-                                              controller.transactionType = v;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
                                 if (widget.isRecurring) ...[
                                   const SizedBox(height: 20),
-                                  DropdownButtonFormField<String>(
-                                    value: selectedFrequency,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Tần suất',
-                                      border: OutlineInputBorder(),
+                                  AppTextFormField(
+                                    controller: controller.frequencyController,
+                                    label: 'transaction.frequencyLabel'.tr,
+                                    icon: Icons.repeat_rounded,
+                                    suffixIcon: const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: AppColors.text3,
                                     ),
-                                    items: const [
-                                      DropdownMenuItem(
-                                        value: 'daily',
-                                        child: Text('Hàng ngày'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'weekly',
-                                        child: Text('Hàng tuần'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'monthly',
-                                        child: Text('Hàng tháng'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'yearly',
-                                        child: Text('Hàng năm'),
-                                      ),
-                                    ],
-                                    onChanged: (v) {
-                                      if (v == null) return;
-                                      setState(() {
-                                        selectedFrequency = v;
-                                      });
+                                    readOnly: true,
+                                    onTap: () {
+                                      final options = [
+                                        SelectionOption(
+                                          id: 'daily',
+                                          label: 'transaction.freqDaily',
+                                        ),
+                                        SelectionOption(
+                                          id: 'weekly',
+                                          label: 'transaction.freqWeekly',
+                                        ),
+                                        SelectionOption(
+                                          id: 'monthly',
+                                          label: 'transaction.freqMonthly',
+                                        ),
+                                        SelectionOption(
+                                          id: 'yearly',
+                                          label: 'transaction.freqYearly',
+                                        ),
+                                      ];
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => SelectionDialog(
+                                          title:
+                                              'transaction.frequencySelectionTitle',
+                                          description:
+                                              'transaction.frequencySelectionDesc',
+                                          options: options,
+                                          initialSelectedId: selectedFrequency,
+                                          onSelect: (id, label) {
+                                            if (id != null) {
+                                              final option = options
+                                                  .firstWhere((o) => o.id == id);
+                                              setState(() {
+                                                selectedFrequency = id;
+                                              });
+                                              controller.setFrequency(
+                                                id,
+                                                option.label.tr,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      );
                                     },
                                   ),
                                 ],
@@ -367,6 +549,100 @@ class _TransactionFormState extends State<TransactionForm> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onTypeChanged(String type) {
+    setState(() {
+      selectedTransactionType = type;
+      controller.transactionType = type;
+      controller.selectedCategoryId.value = null;
+      controller.categoryController.clear();
+    });
+  }
+
+  Widget _buildHeaderToggleCard({
+    required String label,
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 70,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isActive
+                ? Colors.white.withOpacity(0.24)
+                : Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isActive
+                  ? Colors.white.withOpacity(0.4)
+                  : Colors.white.withOpacity(0.15),
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: isActive ? Colors.white : Colors.white70,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isActive ? Colors.white : Colors.white70,
+                  fontSize: 15,
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showFullScreenImage(BuildContext context, String imagePath) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black,
+                child: InteractiveViewer(
+                  panEnabled: true,
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  child: Center(child: Image.file(File(imagePath))),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
           ],

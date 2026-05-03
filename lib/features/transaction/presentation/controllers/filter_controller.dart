@@ -54,13 +54,13 @@ class FilterController extends GetxController {
   }
 
   void _setDefaultMonthRange() {
-    final now = DateTime.now();
-    startDate.value = DateTime(now.year, now.month, 1);
-    endDate.value = DateTime(now.year, now.month + 1, 1).subtract(const Duration(milliseconds: 1));
+    startDate.value = null;
+    endDate.value = null;
     dateLabel.value = defaultDateLabel;
   }
 
   bool _isCurrentMonthRange(DateTime? start, DateTime? end) {
+    if (start == null && end == null) return true;
     if (start == null || end == null) return false;
 
     final now = DateTime.now();

@@ -9,6 +9,7 @@ import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/app/widgets/text_field/app_dropdown_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/saving_goal/presentation/controllers/create_saving_goal_controller.dart';
+import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 
 import 'package:money_care/app/widgets/layout/app_header.dart';
 
@@ -89,57 +90,49 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                                 _controller.target.value = double.tryParse(value),
                           ),
                           const SizedBox(height: 16),
-                          Obx(() {
-                            final wallets = _controller.walletController.wallets;
-                            return AppDropdownField<int>(
-                              value: _controller.selectedWalletId.value,
-                              label: 'Ví liên kết (Tùy chọn)',
-                              icon: Icons.account_balance_wallet_rounded,
-                              items: wallets.map((w) {
-                                return DropdownMenuItem<int>(
-                                  value: w.id,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.wallet_rounded,
-                                          size: 20,
-                                          color: AppColors.secondaryNavyBlue,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          w.name,
-                                          style: const TextStyle(
-                                            color: AppColors.text1,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                              selectedItemBuilder: (context) {
-                                return wallets.map((w) {
-                                  return Text(
-                                    w.name,
-                                    style: const TextStyle(
-                                      color: AppColors.text1,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  );
-                                }).toList();
-                              },
-                              onChanged: (v) {
-                                _controller.selectedWalletId.value = v;
-                                if (v != null) {
-                                  _controller.createNewWallet.value = false;
-                                }
-                              },
-                            );
-                          }),
+                          AppTextFormField(
+                            controller: _controller.walletNameController,
+                            label: 'Ví liên kết (Tùy chọn)',
+                            icon: Icons.account_balance_wallet_rounded,
+                            suffixIcon: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: AppColors.text3,
+                            ),
+                            hintText: 'Chọn ví để tự động trích tiền',
+                            readOnly: true,
+                            onTap: () {
+                              final wallets = _controller.walletController.wallets;
+                              showDialog(
+                                context: context,
+                                builder: (context) => SelectionDialog(
+                                  title: 'transaction.walletSelectionTitle',
+                                  description: 'transaction.walletSelectionDesc',
+                                  options: wallets
+                                      .map((w) => SelectionOption(
+                                            id: w.id.toString(),
+                                            label: w.name,
+                                          ))
+                                      .toList(),
+                                  initialSelectedId: _controller
+                                      .selectedWalletId.value
+                                      ?.toString(),
+                                  onSelect: (id, label) {
+                                    if (id != null) {
+                                      final wallet = wallets.firstWhere(
+                                        (w) => w.id.toString() == id,
+                                      );
+                                      _controller.setWallet(
+                                        wallet.id,
+                                        wallet.name,
+                                      );
+                                    } else {
+                                      _controller.setWallet(null, null);
+                                    }
+                                  },
+                                ),
+                              );
+                            },
+                          ),
                           Obx(() => CheckboxListTile(
                                 value: _controller.createNewWallet.value,
                                 onChanged: _controller.selectedWalletId.value != null

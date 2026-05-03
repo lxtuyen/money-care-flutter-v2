@@ -274,7 +274,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                           ),
                           Expanded(
                             child: _SmallStat(
-                              label: 'Còn lại',
+                              label: 'Hiện tại',
                               value: AppHelperFunction.formatAmount(
                                 r.remainingBudget,
                                 currency: 'VND',
@@ -317,7 +317,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                   Expanded(
                     child: _QuickStat(
                       icon: Icons.calendar_month_rounded,
-                      label: 'Còn lại',
+                      label: 'Hiện tại',
                       value: AppHelperFunction.formatAmount(
                         r.remainingBudget,
                         currency: 'VND',

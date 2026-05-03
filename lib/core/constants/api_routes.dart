@@ -17,7 +17,6 @@ class ApiRoutes {
   static const stats = 'users/admin/stats';
 
   static const transaction = 'transactions';
-  static const getTransactionsFilter = 'transactions/filter';
 
   static const wallets = 'wallets';
   static const totalAssets = 'wallets/total-assets';

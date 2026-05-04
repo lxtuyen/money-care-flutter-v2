@@ -78,14 +78,12 @@ class StreakCalendarController extends GetxController {
       dailyNet.assignAll(net);
       daysWithTx.assignAll(days);
 
-      // Reset selection or update it
       if (selectedDay.value > 0) {
         selectDay(selectedDay.value);
       } else if (isToday(DateTime.now().day)) {
         selectDay(DateTime.now().day);
       }
     } catch (e) {
-      print('[STREAK_CALENDAR] Error: $e');
     } finally {
       isLoading.value = false;
     }

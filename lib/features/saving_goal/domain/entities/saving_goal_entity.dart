@@ -76,6 +76,7 @@ class SavingGoalEntity {
       status: json['status'],
       startDate: json['start_date'] != null ? DateTime.parse(json['start_date']) : null,
       endDate: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
+      wallet: json['wallet'] != null ? WalletEntity.fromJson(json['wallet']) : null,
     );
   }
 

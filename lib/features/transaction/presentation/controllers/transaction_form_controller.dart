@@ -114,14 +114,7 @@ class TransactionFormController extends GetxController {
   TransactionCreateDto buildTransactionDto() {
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     final date = selectedDate.value ?? DateTime.now();
-    // Normalize to 12:00 to avoid timezone shifting issues (midnight being counted as previous day)
     final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
-
-    print('>>> [FE] buildTransactionDto:');
-    print('  - selectedDate.value: ${selectedDate.value}');
-    print('  - date: $date');
-    print('  - normalizedDate: $normalizedDate');
-    print('  - normalizedDate.toIso8601String(): ${normalizedDate.toIso8601String()}');
 
     return TransactionCreateDto(
       amount: int.tryParse(rawValue) ?? 0,

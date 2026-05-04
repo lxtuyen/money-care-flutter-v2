@@ -233,11 +233,11 @@ return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.targ
 @JsonSerializable()
 
 class _SavingGoalModel extends SavingGoalModel {
-  const _SavingGoalModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, required this.name, @JsonKey(name: 'is_selected') this.isSelected, final  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable) this.target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) this.savedAmount = 0, @JsonKey(name: 'is_completed') this.isCompleted = false, @JsonKey(name: 'template_key') this.templateKey, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'updated_at') this.updatedAt, this.status, this.wallet}): _categories = categories,super._();
+  const _SavingGoalModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, this.name = '', @JsonKey(name: 'is_selected') this.isSelected, final  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable) this.target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) this.savedAmount = 0, @JsonKey(name: 'is_completed') this.isCompleted = false, @JsonKey(name: 'template_key') this.templateKey, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'updated_at') this.updatedAt, this.status, this.wallet}): _categories = categories,super._();
   factory _SavingGoalModel.fromJson(Map<String, dynamic> json) => _$SavingGoalModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseInt) final  int id;
-@override final  String name;
+@override@JsonKey() final  String name;
 @override@JsonKey(name: 'is_selected') final  bool? isSelected;
  final  List<CategoryModel>? _categories;
 @override List<CategoryModel>? get categories {

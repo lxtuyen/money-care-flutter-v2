@@ -12,7 +12,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
     @JsonKey(name: 'saved_amount') double? savedAmount,
     @JsonKey(name: 'start_date') DateTime? startDate,
     @JsonKey(name: 'end_date') DateTime? endDate,
-    List<int>? categoryIds,
+
     @JsonKey(name: 'is_completed') bool? isCompleted,
     int? walletId,
     @JsonKey(name: 'create_new_wallet') bool? createNewWallet,
@@ -28,7 +28,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
       'saved_amount': savedAmount,
       'start_date': startDate?.toIso8601String(),
       'end_date': endDate?.toIso8601String(),
-      'categoryIds': categoryIds,
+
       'walletId': walletId,
       'create_new_wallet': createNewWallet,
     };
@@ -43,7 +43,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
       'saved_amount': savedAmount,
       'start_date': startDate?.toIso8601String(),
       'end_date': endDate?.toIso8601String(),
-      'categoryIds': categoryIds,
+
       'is_completed': isCompleted,
       'walletId': walletId,
     };

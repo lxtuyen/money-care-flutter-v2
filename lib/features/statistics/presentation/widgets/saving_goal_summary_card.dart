@@ -10,6 +10,8 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
+import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 class SavingGoalSummaryCard extends StatelessWidget {
   final SavingGoalEntity fund;
@@ -267,24 +269,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
                               context: context,
                             ),
                           ),
-                          VerticalDivider(
-                            width: 1,
-                            thickness: 0.5,
-                            color: AppThemeColors.of(context).textMuted.withOpacity(0.2),
-                          ),
-                          Expanded(
-                            child: _SmallStat(
-                              label: 'Hiện tại',
-                              value: AppHelperFunction.formatAmount(
-                                r.remainingBudget,
-                                currency: 'VND',
-                              ),
-                              valueColor: r.remainingBudget < 0
-                                  ? AppColors.expense
-                                  : AppColors.income,
-                              context: context,
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -349,14 +333,43 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     BoxShadow(
                       color: AppColors.success.withOpacity(0.2),
                       blurRadius: 12,
-                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    final controller = Get.find<SavingGoalController>();
-                    controller.completeGoalEarly(r.id);
+                    final walletController = Get.find<WalletController>();
+                    final options = walletController.wallets
+                        .where((w) => w.id != fund.wallet?.id)
+                        .map((w) => SelectionOption(id: w.id.toString(), label: w.name))
+                        .toList();
+
+                    if (options.isEmpty || fund.wallet == null) {
+                      final controller = Get.find<SavingGoalController>();
+                      controller.completeGoalEarly(r.id);
+                      return;
+                    }
+
+                    showDialog(
+                      context: context,
+                      builder: (context) => SelectionDialog(
+                        title: 'Chọn ví nhận tiền',
+                        description: 'Bạn đã hoàn thành mục tiêu! Chọn một ví chính để chuyển ${AppHelperFunction.formatAmount(r.walletBalance, currency: 'VND')} về nhé.',
+                        options: options,
+                        onSelect: (id, label) {
+                          if (id != null) {
+                            final destId = int.parse(id);
+                            final controller = Get.find<SavingGoalController>();
+                            controller.completeGoalWithTransfer(
+                              goalId: r.id,
+                              sourceWalletId: fund.wallet!.id,
+                              destinationWalletId: destId,
+                              amount: r.walletBalance,
+                            );
+                          }
+                        },
+                      ),
+                    );
                   },
                   icon: const Icon(
                     Icons.check_circle_outline_rounded,

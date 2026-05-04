@@ -103,7 +103,6 @@ class UserController extends GetxController {
   void _triggerBudgetSuggestion(int monthlyIncome) {
     final suggestedAmount = (monthlyIncome * 0.9).floor();
     // TODO: Implement actual budget suggestion logic (e.g., calling BudgetController)
-    debugPrint('Suggested monthly budget: $suggestedAmount');
   }
 
   void currentProfile(UserProfileEntity profile) {

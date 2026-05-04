@@ -48,9 +48,7 @@ class AuthController extends GetxController {
       user.value = cachedUser;
       try {
         Get.find<NotificationService>().syncToken();
-      } catch (e) {
-        print('NotificationService syncToken on restart error: $e');
-      }
+      } catch (e) {}
     }
 
     ever(user, (UserEntity? currentUser) {
@@ -58,9 +56,7 @@ class AuthController extends GetxController {
         try {
           Get.find<AppController>().setUserId(currentUser.id);
           Get.find<NotificationService>().syncToken();
-        } catch (e) {
-          print('AuthController error during user sync: $e');
-        }
+        } catch (e) {}
       }
     });
   }
@@ -129,9 +125,7 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       await Get.find<NotificationService>().removeTokenFromServer();
-    } catch (e) {
-      print('NotificationService error: $e');
-    }
+    } catch (e) {}
 
     if (isGoogleLogin.value) {
       await _googleSignIn.signOut();
@@ -140,7 +134,7 @@ class AuthController extends GetxController {
     user.value = null;
     try {
       Get.find<AppController>().clearUser();
-    } catch (_) {}
+    } catch (e) {}
     await logoutUseCase();
   }
 

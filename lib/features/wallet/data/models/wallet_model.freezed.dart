@@ -216,11 +216,11 @@ return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.i
 @JsonSerializable()
 
 class _WalletModel extends WalletModel {
-  const _WalletModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, required this.name, @JsonKey(fromJson: NumParser.parseDouble) this.balance = 0, this.icon, this.color, @JsonKey(name: 'is_active') this.isActive = true, this.type = 'regular', final  List<SavingGoalModel> savingGoals = const []}): _savingGoals = savingGoals,super._();
+  const _WalletModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, this.name = '', @JsonKey(fromJson: NumParser.parseDouble) this.balance = 0, this.icon, this.color, @JsonKey(name: 'is_active') this.isActive = true, this.type = 'regular', final  List<SavingGoalModel> savingGoals = const []}): _savingGoals = savingGoals,super._();
   factory _WalletModel.fromJson(Map<String, dynamic> json) => _$WalletModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseInt) final  int id;
-@override final  String name;
+@override@JsonKey() final  String name;
 @override@JsonKey(fromJson: NumParser.parseDouble) final  double balance;
 @override final  String? icon;
 @override final  String? color;

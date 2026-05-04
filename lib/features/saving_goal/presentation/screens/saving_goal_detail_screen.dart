@@ -232,11 +232,21 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
           ),
           const Divider(height: 32),
           _buildDetailRow(
+            "Ngày bắt đầu", 
+            (report?.startDate ?? goal.startDate) != null 
+                ? DateFormat('dd/MM/yyyy').format(report?.startDate ?? goal.startDate!) 
+                : "Chưa đặt",
+            Icons.calendar_today_rounded,
+            Colors.blue,
+            colors,
+          ),
+          const Divider(height: 32),
+          _buildDetailRow(
             "Ngày kết thúc", 
             (report?.endDate ?? goal.endDate) != null 
                 ? DateFormat('dd/MM/yyyy').format(report?.endDate ?? goal.endDate!) 
                 : "Chưa đặt",
-            Icons.calendar_today_rounded,
+            Icons.event_rounded,
             Colors.blue,
             colors,
           ),

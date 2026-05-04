@@ -90,66 +90,50 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                                 _controller.target.value = double.tryParse(value),
                           ),
                           const SizedBox(height: 16),
-                          AppTextFormField(
-                            controller: _controller.walletNameController,
-                            label: 'Ví liên kết (Tùy chọn)',
-                            icon: Icons.account_balance_wallet_rounded,
-                            suffixIcon: const Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: AppColors.text3,
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: AppColors.primary.withOpacity(0.1),
+                              ),
                             ),
-                            hintText: 'Chọn ví để tự động trích tiền',
-                            readOnly: true,
-                            onTap: () {
-                              final wallets = _controller.walletController.wallets;
-                              showDialog(
-                                context: context,
-                                builder: (context) => SelectionDialog(
-                                  title: 'transaction.walletSelectionTitle',
-                                  description: 'transaction.walletSelectionDesc',
-                                  options: wallets
-                                      .map((w) => SelectionOption(
-                                            id: w.id.toString(),
-                                            label: w.name,
-                                          ))
-                                      .toList(),
-                                  initialSelectedId: _controller
-                                      .selectedWalletId.value
-                                      ?.toString(),
-                                  onSelect: (id, label) {
-                                    if (id != null) {
-                                      final wallet = wallets.firstWhere(
-                                        (w) => w.id.toString() == id,
-                                      );
-                                      _controller.setWallet(
-                                        wallet.id,
-                                        wallet.name,
-                                      );
-                                    } else {
-                                      _controller.setWallet(null, null);
-                                    }
-                                  },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.account_balance_wallet_rounded,
+                                  color: AppColors.primary.withOpacity(0.8),
+                                  size: 24,
                                 ),
-                              );
-                            },
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Ví mục tiêu tự động',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: AppColors.text1,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Hệ thống sẽ tự động tạo một ví mới dành riêng cho mục tiêu này để dễ dàng theo dõi.',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.text3,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          Obx(() => CheckboxListTile(
-                                value: _controller.createNewWallet.value,
-                                onChanged: _controller.selectedWalletId.value != null
-                                    ? null
-                                    : (v) => _controller.createNewWallet.value = v ?? false,
-                                title: const Text(
-                                  'Tạo ví mới cho mục tiêu này',
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                subtitle: const Text(
-                                  'Hệ thống sẽ tự động tạo một ví riêng để theo dõi mục tiêu này',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                controlAffinity: ListTileControlAffinity.leading,
-                                contentPadding: EdgeInsets.zero,
-                                activeColor: AppColors.primary,
-                              )),
                           const SizedBox(height: 24),
                           const Text(
                             'Thời gian thực hiện',

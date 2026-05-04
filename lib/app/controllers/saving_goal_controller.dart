@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
@@ -393,5 +394,36 @@ class SavingGoalController extends GetxController {
         completedGoals.add(updated);
       }
     });
+  }
+
+  Future<void> completeGoalWithTransfer({
+    required int goalId,
+    required int sourceWalletId,
+    required int destinationWalletId,
+    required double amount,
+  }) async {
+    isLoadingCurrent.value = true;
+    try {
+      final walletController = Get.find<WalletController>();
+      if (amount > 0) {
+        await walletController.transfer(
+          sourceWalletId,
+          destinationWalletId,
+          amount,
+          note: 'Chuyển tiền hoàn thành mục tiêu',
+        );
+      }
+      
+      await completeGoalEarly(goalId);
+
+      await walletController.deleteWallet(sourceWalletId);
+
+      AppHelperFunction.showSuccessSnackBar(
+          'Đã chuyển tiền và đóng ví mục tiêu thành công');
+    } catch (e) {
+      AppHelperFunction.showErrorSnackBar('Lỗi khi hoàn thành mục tiêu: $e');
+    } finally {
+      isLoadingCurrent.value = false;
+    }
   }
 }

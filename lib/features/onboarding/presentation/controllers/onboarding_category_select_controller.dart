@@ -104,22 +104,15 @@ class OnboardingCategorySelectController extends GetxController {
           userId = authController.user.value?.id;
           if (userId != null) {
             appController.setUserId(userId);
-            print(
-              'OnboardingController: Sync userId to AppController: $userId',
-            );
           }
         } catch (_) {}
       }
 
-      print('OnboardingController: Finishing onboarding for userId: $userId');
       if (userId != null) {
         LocalStorage().setOnboardingDone(userId).then((_) {
           Get.offAllNamed(RoutePath.main);
         });
       } else {
-        print(
-          'OnboardingController Error: userId is still null, cannot save onboarding status!',
-        );
         Get.offAllNamed(RoutePath.main);
       }
     });

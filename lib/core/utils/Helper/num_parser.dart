@@ -23,8 +23,7 @@ class NumParser {
     if (value == null) return 0;
     if (value is num) return value.toInt();
     if (value is String) {
-      final cleaned = value.replaceAll(RegExp(r'[^0-9]'), '');
-      return int.tryParse(cleaned) ?? 0;
+      return double.tryParse(value)?.toInt() ?? 0;
     }
     return 0;
   }
@@ -33,8 +32,7 @@ class NumParser {
     if (value == null) return null;
     if (value is num) return value.toInt();
     if (value is String) {
-      final cleaned = value.replaceAll(RegExp(r'[^0-9]'), '');
-      return int.tryParse(cleaned);
+      return double.tryParse(value)?.toInt();
     }
     return null;
   }

@@ -50,9 +50,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
         all.sort((a, b) => (b.transactionDate ?? DateTime.now()).compareTo(a.transactionDate ?? DateTime.now()));
         walletTransactions.assignAll(all);
       }
-    } catch (e) {
-      print('Error fetching wallet transactions: $e');
-    } finally {
+    } catch (e) {} finally {
       isLoadingTransactions.value = false;
     }
   }

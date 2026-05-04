@@ -32,14 +32,12 @@ class CreateSavingGoalController extends GetxController {
   Rxn<double> target = Rxn<double>();
   Rxn<DateTime> startDate = Rxn<DateTime>();
   Rxn<DateTime> endDate = Rxn<DateTime>();
-  RxnInt selectedWalletId = RxnInt();
-  RxBool createNewWallet = false.obs;
+  RxBool createNewWallet = true.obs;
 
   @override
   void onClose() {
     nameController.dispose();
     targetController.dispose();
-    walletNameController.dispose();
     super.onClose();
   }
 
@@ -55,8 +53,7 @@ class CreateSavingGoalController extends GetxController {
       targetController.text = arg.target?.toInt().toString() ?? '';
       startDate.value = arg.startDate;
       endDate.value = arg.endDate;
-      selectedWalletId.value = arg.wallet?.id;
-      walletNameController.text = arg.wallet?.name ?? '';
+      createNewWallet.value = false;
     } else {
       _resetForm();
       startDate.value = DateTime.now();
@@ -98,6 +95,8 @@ class CreateSavingGoalController extends GetxController {
       return false;
     }
 
+
+
     final rawTarget = AppHelperFunction.unformatCurrency(targetController.text);
     final finalTarget = double.tryParse(rawTarget) ?? 0;
 
@@ -109,8 +108,8 @@ class CreateSavingGoalController extends GetxController {
       savedAmount: 0,
       startDate: startDate.value,
       endDate: endDate.value,
-      walletId: selectedWalletId.value,
-      createNewWallet: createNewWallet.value,
+      walletId: isEditMode.value ? null : null, // Not used, handled by createNewWallet or keeping existing wallet
+      createNewWallet: isEditMode.value ? false : true,
     );
 
     isLoading.value = true;
@@ -135,13 +134,7 @@ class CreateSavingGoalController extends GetxController {
     );
   }
 
-  void setWallet(int? id, String? name) {
-    selectedWalletId.value = id;
-    walletNameController.text = name ?? '';
-    if (id != null) {
-      createNewWallet.value = false;
-    }
-  }
+
 
   void _resetForm() {
     nameController.clear();
@@ -149,9 +142,7 @@ class CreateSavingGoalController extends GetxController {
     target.value = null;
     startDate.value = DateTime.now();
     endDate.value = null;
-    selectedWalletId.value = null;
-    walletNameController.clear();
-    createNewWallet.value = false;
+    createNewWallet.value = true;
     isEditMode.value = false;
   }
 }

@@ -44,9 +44,7 @@ class WalletController extends GetxController {
       if (wallets.isNotEmpty && selectedWallet.value == null) {
         selectedWallet.value = wallets.first;
       }
-    } catch (e) {
-      print('Error fetching wallets: $e');
-    } finally {
+    } catch (e) {} finally {
       isLoading.value = false;
     }
   }
@@ -54,27 +52,23 @@ class WalletController extends GetxController {
   Future<void> createWallet(String name, double balance, {String? icon, String? color}) async {
     isLoading.value = true;
     try {
-      print('Creating wallet: $name...');
       await repository.create({
         'name': name,
         'balance': balance,
         'icon': icon,
         'color': color,
       });
-      print('Wallet created successfully, refreshing...');
       await refreshWallets();
       wallets.refresh();
       AppHelperFunction.showSuccessSnackBar('Đã tạo $name thành công');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Không thể tạo ví: $e');
-      print('Error creating wallet: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> autoCreateNextWallet() async {
-    print('Auto creating next wallet...');
     final nextNumber = wallets.length + 1;
     final name = "Ví $nextNumber";
     await createWallet(name, 0.0, icon: "💰", color: "#4CAF50");
@@ -94,7 +88,6 @@ class WalletController extends GetxController {
       AppHelperFunction.showSuccessSnackBar('Cập nhật ví thành công');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Cập nhật thất bại: $e');
-      print('Error updating wallet: $e');
     } finally {
       isLoading.value = false;
     }
@@ -108,7 +101,6 @@ class WalletController extends GetxController {
       AppHelperFunction.showSuccessSnackBar('Đã xóa ví thành công');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Xóa ví thất bại: $e');
-      print('Error deleting wallet: $e');
     } finally {
       isLoading.value = false;
     }
@@ -126,7 +118,6 @@ class WalletController extends GetxController {
       });
       await refreshWallets();
     } catch (e) {
-      print('Error during transfer: $e');
       rethrow;
     } finally {
       isLoading.value = false;

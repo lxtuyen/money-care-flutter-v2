@@ -28,7 +28,7 @@ class ColorConverter implements JsonConverter<Color?, dynamic> {
 abstract class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
     @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
-    required String name,
+    @Default('') String name,
     @JsonKey(fromJson: NumParser.parseInt) @Default(0) int percentage,
     @Default('') String icon,
     @ColorConverter() Color? color,

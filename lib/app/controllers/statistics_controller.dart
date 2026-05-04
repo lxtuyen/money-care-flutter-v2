@@ -216,9 +216,7 @@ class StatisticsController extends GetxController {
       );
 
       globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
-    } catch (e) {
-      debugPrint('Error loading global totals: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> _loadPreviousTotalByType(int userId) async {
@@ -230,7 +228,6 @@ class StatisticsController extends GetxController {
       previousTotalByType.value = await getTotalByTypeUseCase(userId, dto);
     } catch (e) {
       previousTotalByType.value = null;
-      debugPrint('Error loading previous totals: $e');
     }
   }
 

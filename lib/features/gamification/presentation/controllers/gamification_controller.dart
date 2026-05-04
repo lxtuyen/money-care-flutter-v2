@@ -52,12 +52,8 @@ class GamificationController extends GetxController {
     });
 
     ever(showStreakDialogTrigger, (val) {
-      print('[STREAK] showStreakDialogTrigger changed to: $val');
       if (val) {
         Future.delayed(const Duration(milliseconds: 500), () {
-          print(
-            '[STREAK] EXECUTING StreakDialog.show(). Streak: ${currentStreak.value}',
-          );
           StreakDialog.show();
           showStreakDialogTrigger.value = false;
         });
@@ -108,17 +104,11 @@ class GamificationController extends GetxController {
     if (userId == null) return;
 
     isLoading.value = true;
-    print('[STREAK] checkStreakReset starting for user: $userId');
 
     final result = await _getGamificationUseCase(userId);
     result.fold(
-      (failure) {
-        print('[STREAK] checkStreakReset FETCH ERROR: $failure');
-      },
+      (failure) {},
       (entity) {
-        print(
-          '[STREAK] checkStreakReset fetched: Streak=${entity.currentStreak}, LastDate=${entity.lastTransactionDate}',
-        );
         _cachedEntity = entity;
         currentStreak.value = _computeEffectiveStreak(entity);
         badges.value = entity.badges;
@@ -153,16 +143,12 @@ class GamificationController extends GetxController {
     if (userId == null) return;
 
     final oldLastDate = _cachedEntity?.lastTransactionDate;
-    print('[STREAK] Old Last Date: $oldLastDate');
 
     final result = await _recordDailyTransactionUseCase(userId);
     await result.fold(
-      (failure) async {
-        print('[STREAK] Error recording transaction: $failure');
-      },
+      (failure) async {},
       (entity) async {
         final newDate = entity.lastTransactionDate;
-        print('[STREAK] New Last Date from Backend: $newDate');
 
         bool isNewDay = false;
         if (oldLastDate == null && newDate != null) {
@@ -186,7 +172,6 @@ class GamificationController extends GetxController {
         await checkAndAwardBadges();
 
         if (isNewDay) {
-          print('[STREAK] Triggering Streak Dialog...');
           showStreakDialogTrigger.value = true;
         }
       },

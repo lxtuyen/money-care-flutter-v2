@@ -11,7 +11,7 @@ part 'saving_goal_model.g.dart';
 abstract class SavingGoalModel with _$SavingGoalModel {
   const factory SavingGoalModel({
     @JsonKey(fromJson: NumParser.parseInt) required int id,
-    required String name,
+    @Default('') String name,
     @JsonKey(name: 'is_selected') bool? isSelected,
     List<CategoryModel>? categories,
 

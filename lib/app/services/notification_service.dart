@@ -6,9 +6,7 @@ import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/constants/route_path.dart';
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
-}
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
 
 class NotificationService extends GetxService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -26,9 +24,7 @@ class NotificationService extends GetxService {
 
     try {
       fcmToken = await _firebaseMessaging.getToken();
-    } catch (e) {
-      print('DEBUG: Lỗi khi lấy FCM token trong init: $e');
-    }
+    } catch (e) {}
 
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       fcmToken = newToken;
@@ -111,28 +107,20 @@ class NotificationService extends GetxService {
         body: {'token': token},
       );
       if (response.success) {
-        print('DEBUG: Đã gửi FCM token lên server thành công');
       } else {
-        print('DEBUG: Lỗi khi gửi FCM token: ${response.message}');
       }
-    } catch (e) {
-      print('Error sending FCM token exception: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> syncToken() async {
     try {
       fcmToken ??= await _firebaseMessaging.getToken();
-    } catch (e) {
-      print('DEBUG: Lỗi khi lấy FCM token trong syncToken: $e');
-    }
-    print('syncToken gọi: $fcmToken');
+    } catch (e) {}
     if (fcmToken != null) {
       await _sendTokenToServer(fcmToken!);
     }
   }
 
-  /// Hiển thị thông báo local ngay lập tức (dùng cho balance threshold, badge, v.v.)
   Future<void> showLocalNotification({
     required String title,
     required String body,
@@ -162,9 +150,7 @@ class NotificationService extends GetxService {
   Future<void> removeTokenFromServer() async {
     try {
       fcmToken ??= await _firebaseMessaging.getToken();
-    } catch (e) {
-      print('DEBUG: Lỗi khi lấy FCM token trong removeTokenFromServer: $e');
-    }
+    } catch (e) {}
     if (fcmToken != null) {
       try {
         final apiClient = Get.find<ApiClient>();
@@ -172,9 +158,7 @@ class NotificationService extends GetxService {
           'users/device-tokens',
           body: {'token': fcmToken},
         );
-      } catch (e) {
-        print('Error removing FCM token: $e');
-      }
+      } catch (e) {}
     }
   }
 }

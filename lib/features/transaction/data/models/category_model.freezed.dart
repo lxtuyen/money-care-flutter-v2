@@ -215,11 +215,11 @@ return $default(_that.id,_that.name,_that.percentage,_that.icon,_that.color,_tha
 @JsonSerializable()
 
 class _CategoryModel extends CategoryModel {
-  const _CategoryModel({@JsonKey(fromJson: NumParser.parseIntNullable) this.id, required this.name, @JsonKey(fromJson: NumParser.parseInt) this.percentage = 0, this.icon = '', @ColorConverter() this.color, this.isEssential = true, this.type}): super._();
+  const _CategoryModel({@JsonKey(fromJson: NumParser.parseIntNullable) this.id, this.name = '', @JsonKey(fromJson: NumParser.parseInt) this.percentage = 0, this.icon = '', @ColorConverter() this.color, this.isEssential = true, this.type}): super._();
   factory _CategoryModel.fromJson(Map<String, dynamic> json) => _$CategoryModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseIntNullable) final  int? id;
-@override final  String name;
+@override@JsonKey() final  String name;
 @override@JsonKey(fromJson: NumParser.parseInt) final  int percentage;
 @override@JsonKey() final  String icon;
 @override@ColorConverter() final  Color? color;

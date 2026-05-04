@@ -9,7 +9,7 @@ part of 'category_model.dart';
 _CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>
     _CategoryModel(
       id: NumParser.parseIntNullable(json['id']),
-      name: json['name'] as String,
+      name: json['name'] as String? ?? '',
       percentage: json['percentage'] == null
           ? 0
           : NumParser.parseInt(json['percentage']),

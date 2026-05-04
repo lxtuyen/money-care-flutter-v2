@@ -50,10 +50,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
       fromJsonT: (json) => TransactionByTypeModel.fromJson(json),
     );
 
-    if (res.success && res.data != null) {
-      print(
-          'Found ${res.data?.income.length} income and ${res.data?.expense.length} expense transactions');
-    }
+
 
     if (!res.success || res.data == null) throw Exception(res.message);
     return res.data!;
@@ -106,9 +103,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   @override
   Future<TransactionModel> createTransaction(TransactionCreateDto dto) async {
-    print('>>> [FE] createTransaction DTO: ${dto.toString()}');
     final jsonBody = dto.toJson();
-    print('>>> [FE] createTransaction JSON body: $jsonBody');
     
     final res = await api.post<TransactionModel>(
       ApiRoutes.transaction,

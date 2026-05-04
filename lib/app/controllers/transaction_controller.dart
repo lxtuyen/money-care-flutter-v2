@@ -197,8 +197,6 @@ class TransactionController extends GetxController {
           : null,
     );
 
-    print('>>> [FE] APPLY FILTERS: userId=$userId, cat=${dto.categoryId}, wallet=${dto.walletId}, start=${dto.startDate}, end=${dto.endDate}');
-
     await filterTransactions(userId, dto);
   }
 

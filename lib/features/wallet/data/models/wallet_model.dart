@@ -10,7 +10,7 @@ part 'wallet_model.g.dart';
 abstract class WalletModel with _$WalletModel {
   const factory WalletModel({
     @JsonKey(fromJson: NumParser.parseInt) required int id,
-    required String name,
+    @Default('') String name,
     @JsonKey(fromJson: NumParser.parseDouble) @Default(0) double balance,
     String? icon,
     String? color,

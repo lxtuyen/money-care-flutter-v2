@@ -199,6 +199,25 @@ class UserCategoryController extends GetxController {
     }
   }
 
+  Future<int?> getOrCreateTransferCategory() async {
+    // 1. Find existing
+    var transferCategory = categories.firstWhereOrNull(
+      (c) => c.name == 'Chuyển tiền',
+    );
+
+    if (transferCategory != null) return transferCategory.id;
+
+    // 2. Create if not exists
+    final success = await addCategory('Chuyển tiền', '🔄', 'others', true);
+    if (success) {
+      transferCategory = categories.firstWhereOrNull(
+        (c) => c.name == 'Chuyển tiền',
+      );
+      return transferCategory?.id;
+    }
+    return null;
+  }
+
   void _refreshStatistics(int userId) {
     if (Get.isRegistered<StatisticsController>()) {
       Get.find<StatisticsController>().refreshStatisticsData(userId);

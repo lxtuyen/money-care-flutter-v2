@@ -174,6 +174,7 @@ class _CategoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isLocked = category.name == 'Khác' || 
                          category.name == 'Mục khác' || 
+                         category.name == 'Chuyển tiền' ||
                          category.name == 'Chưa phân loại';
 
     return Container(

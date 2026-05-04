@@ -106,7 +106,7 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<void> transfer(int fromId, int toId, double amount, {double fee = 0, String? note}) async {
+  Future<void> transfer(int fromId, int toId, double amount, {double fee = 0, String? note, int? categoryId}) async {
     isLoading.value = true;
     try {
       await repository.transfer({
@@ -114,7 +114,8 @@ class WalletController extends GetxController {
         'toWalletId': toId,
         'amount': amount,
         'fee': fee,
-        'note': note,
+        if (note != null) 'note': note,
+        if (categoryId != null) 'categoryId': categoryId,
       });
       await refreshWallets();
     } catch (e) {

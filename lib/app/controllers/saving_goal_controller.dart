@@ -4,6 +4,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
@@ -405,12 +406,17 @@ class SavingGoalController extends GetxController {
     isLoadingCurrent.value = true;
     try {
       final walletController = Get.find<WalletController>();
+      final categoryController = Get.find<UserCategoryController>();
+      
       if (amount > 0) {
+        final categoryId = await categoryController.getOrCreateTransferCategory();
+
         await walletController.transfer(
           sourceWalletId,
           destinationWalletId,
           amount,
           note: 'Chuyển tiền hoàn thành mục tiêu',
+          categoryId: categoryId,
         );
       }
       

@@ -90,13 +90,6 @@ const Map<String, String> enUS = {
   'home.overview': 'Overview',
 
   'home.monthlySpending': 'This Month Spending',
-  'home.monthlySpendingSurvival': 'Essential Spending (Survival)',
-  'home.savingPlan': 'Saving Plan',
-  'home.savingPlanSubtitle': 'Keep spending under 80% of your limit',
-  'home.monthlyIncome': 'This Month Income',
-  'home.hiddenNonEssential':
-      'Hidden @count non-essential items',
-  'home.maxCutSpending': 'This Month Spending (Maximum Cut!)',
   'home.spentInMonth': 'Amount spent this month',
   'home.spentIn7Days': 'Amount spent in the last 7 days',
   'home.balance': 'Balance',
@@ -217,7 +210,6 @@ const Map<String, String> enUS = {
   'transaction.editTitle': 'Edit Category',
   'transaction.updateSuccess': 'Updated successfully',
   'transaction.selectCategoryTitle': 'Select Category',
-  'transaction.categorySurvivalDesc': 'Survival Mode: only essential categories are shown.',
   'transaction.categoryNormalDesc': 'Select an appropriate group for your transaction.',
   'transaction.noCategoryAvailable': 'No categories available.\nPlease check your fund settings.',
   'transaction.walletLabel': 'Wallet / Account',
@@ -336,7 +328,7 @@ const Map<String, String> enUS = {
   // ============ Dashboard Customization ============
   'dashboard.customizeTitle': 'Customize Dashboard',
   'dashboard.customizeDesc': 'Drag and drop to reorder or hide/show sections',
-  'dashboard.section.quickStatus': 'Quick Status (Streak, Finance Mode)',
+  'dashboard.section.quickStatus': 'Quick Status (Streak)',
   'dashboard.section.spendingSummary': 'Income/Expense Summary',
   'dashboard.section.recentTransactions': 'Recent Transactions',
   'dashboard.section.spendingOverview': 'Spending Chart',
@@ -356,9 +348,6 @@ const Map<String, String> enUS = {
 
   // ============ Recurring Transaction ============
   'recurring.title': 'Recurring Transactions',
-
-  // ============ Premium ============
-  'premium.unlock': 'Unlock Premium',
 
   // ============ Language ============
   'language.vietnamese': 'Tiếng Việt',

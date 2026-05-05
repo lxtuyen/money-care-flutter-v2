@@ -8,9 +8,7 @@ import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
 import 'package:money_care/app/widgets/icon/circular_icon.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
-import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
-import 'package:money_care/features/finance_mode/presentation/widgets/finance_mode_banner.dart';
-import 'package:money_care/features/finance_mode/presentation/widgets/days_until_income_widget.dart';
+import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -243,11 +241,7 @@ class HomeScreen extends GetView<HomeController> {
           physics: const BouncingScrollPhysics(),
           child: Row(
             children: [
-              const FinanceModeBanner(),
-              const SizedBox(width: 8),
               const StreakBadgeWidget(),
-              const SizedBox(width: 8),
-              const DaysUntilIncomeWidget(),
             ],
           ),
         ),
@@ -347,8 +341,8 @@ class HomeScreen extends GetView<HomeController> {
 
           if (totalsData == null || totalsData.expense.isEmpty) {
             return SpendingOverviewCard(
-              startDate: controller.startDate,
-              endDate: controller.endDate,
+            startDate: controller.statisticsController.weekStartDate,
+            endDate: controller.statisticsController.weekEndDate,
               totals: [],
               amountSpent: 0,
               isBalanceVisible:
@@ -360,8 +354,8 @@ class HomeScreen extends GetView<HomeController> {
           double totalSpent = totals.fold(0, (sum, t) => sum + t.total);
 
           return SpendingOverviewCard(
-            startDate: controller.startDate,
-            endDate: controller.endDate,
+            startDate: controller.statisticsController.weekStartDate,
+            endDate: controller.statisticsController.weekEndDate,
             totals: totals,
             amountSpent: totalSpent,
             isBalanceVisible: controller.appController.isBalanceVisible.value,
@@ -381,55 +375,13 @@ class HomeScreen extends GetView<HomeController> {
         );
       }
 
-      final mode = controller.financeModeController.currentMode.value;
       final categories = controller.statisticsController.expenseCategories;
 
-      List<TotalByCategoryEntity> filteredCategories;
-      if (mode == FinanceMode.survival) {
-        filteredCategories = categories
-            .where((TotalByCategoryEntity c) => c.isEssential)
-            .toList();
-      } else {
-        filteredCategories = categories.toList();
-      }
-
-      if (mode == FinanceMode.saving) {
-        filteredCategories.sort((
-          TotalByCategoryEntity a,
-          TotalByCategoryEntity b,
-        ) {
-          if (a.limit <= 0 && b.limit <= 0) return 0;
-          if (a.limit <= 0) return 1;
-          if (b.limit <= 0) return -1;
-          final aPercent = a.total / a.limit;
-          final bPercent = b.total / b.limit;
-          return bPercent.compareTo(aPercent);
-        });
-      }
-
-      if (filteredCategories.isEmpty) {
-        return mode == FinanceMode.survival
-            ? Column(
-                children: [
-                  AppSectionHeading(
-                    title: 'home.maxCutSpending'.tr,
-                    showActionButton: false,
-                  ),
-                  const SizedBox(height: AppSizes.defaultSpace),
-                ],
-              )
-            : const SizedBox.shrink();
+      if (categories.isEmpty) {
+         return const SizedBox.shrink();
       }
 
       String sectionTitle = 'home.monthlySpending'.tr;
-      String? sectionSubtitle;
-
-      if (mode == FinanceMode.survival) {
-        sectionTitle = 'home.monthlySpendingSurvival'.tr;
-      } else if (mode == FinanceMode.saving) {
-        sectionTitle = 'home.savingPlan'.tr;
-        sectionSubtitle = 'home.savingPlanSubtitle'.tr;
-      }
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,22 +390,8 @@ class HomeScreen extends GetView<HomeController> {
             title: sectionTitle,
             showActionButton: false,
           ),
-          if (sectionSubtitle != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 4, bottom: 12),
-              child: Text(
-                sectionSubtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.text4,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          SizedBox(
-            height: sectionSubtitle != null ? 0 : AppSizes.spaceBtwItems,
-          ),
-          ...filteredCategories.map((TotalByCategoryEntity category) {
+          const SizedBox(height: AppSizes.spaceBtwItems),
+          ...categories.map((TotalByCategoryEntity category) {
             return CategoryOverviewCard(
               title: category.categoryName,
               limit: category.limit,
@@ -464,21 +402,6 @@ class HomeScreen extends GetView<HomeController> {
                   controller.appController.isBalanceVisible.value,
             );
           }),
-          if (mode == FinanceMode.survival &&
-              categories.any(
-                (TotalByCategoryEntity c) => !c.isEssential && c.total > 0,
-              ))
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                'home.hiddenNonEssential'.tr.replaceAll('@count', '${categories.where((TotalByCategoryEntity c) => !c.isEssential).length}'),
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.error,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
           const SizedBox(height: AppSizes.defaultSpace),
         ],
       );

@@ -12,7 +12,6 @@ abstract class UserModel with _$UserModel {
     required int id,
     required String email,
     required String role,
-    bool? isVip,
     String? accessToken,
     required UserProfileModel profile,
     @JsonKey(name: 'savingGoal') SavingGoalModel? savingGoal,
@@ -24,7 +23,6 @@ abstract class UserModel with _$UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
-  /// Custom factory to handle token from external source (like login response)
   factory UserModel.fromAuthJson(Map<String, dynamic> json, String? token) {
     final model = UserModel.fromJson(json);
     return model.copyWith(accessToken: token);
@@ -37,7 +35,6 @@ abstract class UserModel with _$UserModel {
     id: id,
     email: email,
     role: role,
-    isVip: isVip ?? false,
     accessToken: accessToken,
     profile: profile.toEntity(),
     savingGoal: savingGoal?.toEntity(),

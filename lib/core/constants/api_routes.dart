@@ -14,7 +14,6 @@ class ApiRoutes {
 
   static const userProfile = 'user-profile/me';
   static const users = 'users';
-  static const stats = 'users/admin/stats';
 
   static const transaction = 'transactions';
 
@@ -30,10 +29,6 @@ class ApiRoutes {
 
   static const chatbot = 'ai/chat';
 
-  static const financeMode = 'finance-mode';
   static const splitSession = 'split-session';
   static const gamification = 'gamification';
-
-  static const paymentconfirm = 'vip-payments/confirm';
-  static const getMonthlyRevenue = 'vip-payments/monthly-revenue';
 }

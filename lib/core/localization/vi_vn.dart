@@ -90,13 +90,6 @@ const Map<String, String> viVN = {
   'home.overview': 'Tổng quan',
 
   'home.monthlySpending': 'Chi tiêu tháng này',
-  'home.monthlySpendingSurvival': 'Chi tiêu thiết yếu (Sinh tồn)',
-  'home.savingPlan': 'Kế hoạch tiết kiệm',
-  'home.savingPlanSubtitle': 'Duy trì chi tiêu dưới 80% hạn mức',
-  'home.monthlyIncome': 'Thu nhập tháng này',
-  'home.hiddenNonEssential':
-      'Đã ẩn @count mục không thiết yếu',
-  'home.maxCutSpending': 'Chi tiêu tháng này (Cắt giảm tối đa!)',
   'home.spentInMonth': 'Số tiền bạn chi trong tháng',
   'home.spentIn7Days': 'Số tiền đã chi tiêu trong 7 ngày gần đây',
   'home.balance': 'Số dư',
@@ -217,7 +210,6 @@ const Map<String, String> viVN = {
   'transaction.editTitle': 'Chỉnh sửa phân loại',
   'transaction.updateSuccess': 'Chỉnh sửa thành công',
   'transaction.selectCategoryTitle': 'Chọn phân loại',
-  'transaction.categorySurvivalDesc': 'Chế độ Sinh tồn: chỉ hiển thị danh mục thiết yếu.',
   'transaction.categoryNormalDesc': 'Chọn nhóm phù hợp cho giao dịch của bạn.',
   'transaction.noCategoryAvailable': 'Không có phân loại nào.\nVui lòng kiểm tra lại thiết lập quỹ.',
   'transaction.walletLabel': 'Ví / Tài khoản',
@@ -336,7 +328,7 @@ const Map<String, String> viVN = {
   // ============ Dashboard Customization ============
   'dashboard.customizeTitle': 'Tùy chỉnh Dashboard',
   'dashboard.customizeDesc': 'Kéo thả để sắp xếp hoặc ẩn/hiện các mục',
-  'dashboard.section.quickStatus': 'Trạng thái nhanh (Chuỗi ngày, Chế độ tài chính)',
+  'dashboard.section.quickStatus': 'Trạng thái nhanh (Chuỗi ngày)',
   'dashboard.section.spendingSummary': 'Tổng quan Thu/Chi',
   'dashboard.section.recentTransactions': 'Giao dịch gần đây',
   'dashboard.section.spendingOverview': 'Biểu đồ chi tiêu',
@@ -355,9 +347,6 @@ const Map<String, String> viVN = {
 
   // ============ Recurring Transaction ============
   'recurring.title': 'Giao dịch định kỳ',
-
-  // ============ Premium ============
-  'premium.unlock': 'Mở khóa Premium',
 
   // ============ Language ============
   'language.vietnamese': 'Tiếng Việt',

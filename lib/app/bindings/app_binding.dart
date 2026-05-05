@@ -21,11 +21,6 @@ import 'package:money_care/features/wallet/data/datasources/wallet_remote_dataso
 import 'package:money_care/features/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
-import 'package:money_care/features/finance_mode/data/datasources/finance_mode_local_datasource.dart';
-import 'package:money_care/features/finance_mode/data/datasources/finance_mode_remote_datasource.dart';
-import 'package:money_care/features/finance_mode/data/repositories/finance_mode_repository_impl.dart';
-import 'package:money_care/features/finance_mode/domain/usecases/usecases.dart';
-import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 
 import 'package:money_care/features/gamification/data/datasources/gamification_remote_datasource.dart';
 import 'package:money_care/features/gamification/data/repositories/gamification_repository_impl.dart';
@@ -77,25 +72,6 @@ class AppBinding extends Bindings {
 
     final appController = AppController(storage: storage);
     Get.put<AppController>(appController);
-
-    final financeModeLocalDs = FinanceModeLocalDatasourceImpl(storage: storage);
-    final financeModeRemoteDs = FinanceModeRemoteDatasourceImpl(
-      api: apiService,
-    );
-    final financeModeRepo = FinanceModeRepositoryImpl(
-      remoteDatasource: financeModeRemoteDs,
-      localDatasource: financeModeLocalDs,
-    );
-    Get.put<FinanceModeController>(
-      FinanceModeController(
-        getFinanceModeUseCase: GetFinanceModeUseCase(financeModeRepo),
-        switchFinanceModeUseCase: SwitchFinanceModeUseCase(financeModeRepo),
-        checkSuggestModeUseCase: CheckSuggestModeUseCase(financeModeRepo),
-        repository: financeModeRepo,
-        appController: appController,
-      ),
-      permanent: true,
-    );
 
     final gamificationRemoteDs = GamificationRemoteDatasourceImpl(
       api: apiService,

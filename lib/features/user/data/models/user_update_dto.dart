@@ -5,7 +5,7 @@ part 'user_update_dto.g.dart';
 
 @freezed
 abstract class UserUpdateDto with _$UserUpdateDto {
-  const factory UserUpdateDto({String? role, bool? isVip}) = _UserUpdateDto;
+  const factory UserUpdateDto({String? role}) = _UserUpdateDto;
 
   factory UserUpdateDto.fromJson(Map<String, dynamic> json) =>
       _$UserUpdateDtoFromJson(json);

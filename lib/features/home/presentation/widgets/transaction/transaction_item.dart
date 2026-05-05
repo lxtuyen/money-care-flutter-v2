@@ -4,8 +4,6 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
-import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class TransactionItem extends StatelessWidget {
@@ -40,36 +38,17 @@ class TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FinanceModeController? financeModeController =
-        Get.isRegistered<FinanceModeController>()
-            ? Get.find<FinanceModeController>()
-            : null;
-
-    Widget content;
-
-    if (financeModeController != null) {
-      content = Obx(() {
-        final isSaving =
-            financeModeController.currentMode.value == FinanceMode.saving;
-        return _buildContent(context, isSavingMode: isSaving);
-      });
-    } else {
-      content = _buildContent(context, isSavingMode: false);
-    }
-
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: content,
+      child: _buildContent(context),
     );
   }
 
-  Widget _buildContent(BuildContext context, {required bool isSavingMode}) {
+  Widget _buildContent(BuildContext context) {
     final bool isIncome = item.type == 'income' || item.type == 'thu';
     final Color typeColor =
         color ?? (isIncome ? AppColors.income : AppColors.expense);
-    final bool showSkippableLabel =
-        isSavingMode && !(item.category?.isEssential ?? true);
     
     final double amountValue = (item.amount ?? 0).toDouble();
     final String amountText =
@@ -123,10 +102,7 @@ class TransactionItem extends StatelessWidget {
                       const SizedBox(height: 4),
                       detail!,
                     ],
-                    if (showSkippableLabel) ...[
-                      const SizedBox(height: 4),
-                      _SkippableLabel(),
-                    ],
+
                   ],
                 ),
               ),
@@ -185,28 +161,6 @@ class TransactionItem extends StatelessWidget {
             indent: 56,
           ),
       ],
-    );
-  }
-}
-
-class _SkippableLabel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.warning.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.warning, width: 0.8),
-      ),
-      child: const Text(
-        'Có thể bỏ qua',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: AppColors.warning,
-        ),
-      ),
     );
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/features/finance_mode/domain/entities/finance_mode_entity.dart';
-import 'package:money_care/features/finance_mode/presentation/controllers/finance_mode_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_item.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -33,7 +31,7 @@ class _CategorySheetState extends State<CategorySheet> {
     selectedCategory = widget.selectedCategoryInit;
   }
 
-  List<CategoryEntity> _filteredCategories(FinanceMode mode) {
+  List<CategoryEntity> _filteredCategories() {
     var list = widget.categories.where((c) {
       if (c.type == 'others') return true;
 
@@ -43,20 +41,12 @@ class _CategorySheetState extends State<CategorySheet> {
       return true;
     }).toList();
 
-    if (mode == FinanceMode.survival) {
-      list = list.where((c) => c.isEssential).toList();
-    }
     return list;
   }
 
   @override
   Widget build(BuildContext context) {
-    final financeModeController = Get.find<FinanceModeController>();
-
-    return Obx(() {
-      final mode = financeModeController.currentMode.value;
-      final isSurvival = mode == FinanceMode.survival;
-      final displayCategories = _filteredCategories(mode);
+      final displayCategories = _filteredCategories();
 
       return DraggableScrollableSheet(
         expand: false,
@@ -103,14 +93,10 @@ class _CategorySheetState extends State<CategorySheet> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              isSurvival
-                                  ? 'transaction.categorySurvivalDesc'.tr
-                                  : 'transaction.categoryNormalDesc'.tr,
+                              'transaction.categoryNormalDesc'.tr,
                               style: TextStyle(
                                 fontSize: 13,
-                                color: isSurvival
-                                    ? AppColors.error
-                                    : AppThemeColors.of(context).textSecondary,
+                                color: AppThemeColors.of(context).textSecondary,
                               ),
                             ),
                           ],
@@ -191,6 +177,5 @@ class _CategorySheetState extends State<CategorySheet> {
           );
         },
       );
-    });
   }
 }

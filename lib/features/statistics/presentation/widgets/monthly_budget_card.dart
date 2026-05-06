@@ -7,9 +7,6 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 
-/// A premium card that tracks total monthly budget utilization.
-/// Shows circular progress, remaining budget, daily allowance,
-/// and a mini per-category breakdown.
 class MonthlyBudgetCard extends StatelessWidget {
   final double totalBudget;
   final double totalSpent;
@@ -49,7 +46,7 @@ class MonthlyBudgetCard extends StatelessWidget {
 
       // Get top categories with limits (max 4)
       final budgetedCategories = categories
-          .where((c) => c.limit > 0)
+          .where((c) => c.total > 0)
           .toList()
         ..sort((a, b) => b.total.compareTo(a.total));
       final topCategories = budgetedCategories.take(4).toList();
@@ -111,7 +108,6 @@ class MonthlyBudgetCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Status badge
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -142,10 +138,8 @@ class MonthlyBudgetCard extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                 child: Column(
                   children: [
-                    // Main row: Circular progress + budget info
                     Row(
                       children: [
-                        // Circular progress
                         SizedBox(
                           width: 100,
                           height: 100,
@@ -317,39 +311,6 @@ class MonthlyBudgetCard extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    // Category mini breakdown
-                    if (topCategories.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      Divider(
-                        height: 1,
-                        color: themeColors.borderSecondary,
-                      ),
-                      const SizedBox(height: 14),
-                      ...topCategories.map((cat) {
-                        final catPercent =
-                            cat.limit > 0 ? (cat.total / cat.limit) : 0.0;
-                        final catOverLimit = cat.total > cat.limit;
-                        final catColor = catOverLimit
-                            ? const Color(0xFFE53935)
-                            : catPercent >= 0.8
-                                ? const Color(0xFFFFA726)
-                                : const Color(0xFF43A047);
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: _buildCategoryRow(
-                            icon: cat.categoryIcon,
-                            name: cat.categoryName,
-                            spent: cat.total,
-                            limit: cat.limit,
-                            percent: catPercent,
-                            color: catColor,
-                            isVisible: isVisible,
-                            themeColors: themeColors,
-                          ),
-                        );
-                      }),
-                    ],
                   ],
                 ),
               ),

@@ -29,7 +29,6 @@ abstract class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
     @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
     @Default('') String name,
-    @JsonKey(fromJson: NumParser.parseInt) @Default(0) int percentage,
     @Default('') String icon,
     @ColorConverter() Color? color,
     @Default(true) bool isEssential,
@@ -44,7 +43,6 @@ abstract class CategoryModel with _$CategoryModel {
   CategoryEntity toEntity() => CategoryEntity(
     id: id,
     name: name,
-    percentage: percentage,
     icon: icon,
     color: color,
     isEssential: isEssential,

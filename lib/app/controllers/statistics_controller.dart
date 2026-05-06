@@ -37,14 +37,9 @@ class StatisticsController extends GetxController {
   RxList<String> chartLabels = <String>[].obs;
   var isSilentLoading = false.obs;
 
-  double get totalBudget =>
-      expenseCategories.fold(0.0, (sum, cat) => sum + cat.limit);
+  double get totalBudget => 0.0;
 
-  double get utilizationPercentage {
-    if (totalBudget <= 0) return 0.0;
-    final spent = totalByType.value?.expenseTotal.toDouble() ?? 0.0;
-    return spent / totalBudget;
-  }
+  double get utilizationPercentage => 0.0;
 
   final RxString selectedType = 'chi'.obs;
 
@@ -704,14 +699,10 @@ class StatisticsController extends GetxController {
     final expense = totals.expenseTotal.toDouble();
     final balance = income - expense;
 
-    // Remaining budget calculation
-    final spent = totals.expenseTotal.toDouble();
-    final remaining = totalBudget > 0 ? (totalBudget - spent) : 0.0;
-
     WidgetService.updateHomeWidget(
       balance: isVisible ? balance : null,
       monthlyExpense: isVisible ? expense : null,
-      remainingBudget: isVisible ? remaining : null,
+      remainingBudget: null,
     );
   }
 
@@ -771,8 +762,7 @@ class StatisticsController extends GetxController {
           categoryName: t.category!.name,
           categoryIcon: t.category!.icon ?? '',
           total: t.amount.toInt(),
-          percentage: t.category!.percentage.toDouble(),
-          limit: (t.category!.percentage * targetGoal) / 100,
+          spendingPercentage: 0,
           isEssential: t.category!.isEssential,
         );
       } else {
@@ -781,8 +771,7 @@ class StatisticsController extends GetxController {
           categoryName: existing.categoryName,
           categoryIcon: existing.categoryIcon,
           total: existing.total + t.amount.toInt(),
-          percentage: existing.percentage,
-          limit: existing.limit,
+          spendingPercentage: existing.spendingPercentage,
           isEssential: existing.isEssential,
         );
       }
@@ -798,8 +787,7 @@ class StatisticsController extends GetxController {
           categoryName: t.category!.name,
           categoryIcon: t.category!.icon ?? '',
           total: t.amount.toInt(),
-          percentage: t.category!.percentage.toDouble(),
-          limit: 0,
+          spendingPercentage: 0,
           isEssential: t.category!.isEssential,
         );
       } else {
@@ -808,8 +796,7 @@ class StatisticsController extends GetxController {
           categoryName: existing.categoryName,
           categoryIcon: existing.categoryIcon,
           total: existing.total + t.amount.toInt(),
-          percentage: existing.percentage,
-          limit: existing.limit,
+          spendingPercentage: existing.spendingPercentage,
           isEssential: existing.isEssential,
         );
       }

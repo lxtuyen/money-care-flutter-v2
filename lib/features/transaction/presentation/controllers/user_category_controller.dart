@@ -229,7 +229,6 @@ class UserCategoryController extends GetxController {
   Map<String, dynamic> _toJson(CategoryEntity c) => {
     'name': c.name,
     'icon': c.icon,
-    'percentage': c.percentage,
     'isEssential': c.isEssential,
     if (c.type != null) 'type': c.type,
   };
@@ -237,7 +236,6 @@ class UserCategoryController extends GetxController {
   CategoryEntity _fromJson(Map<String, dynamic> m) => CategoryEntity(
     id: m['id'] as int?,
     name: m['name'] as String,
-    percentage: (m['percentage'] as num?)?.toInt() ?? 0,
     icon: m['icon'] as String? ?? 'search',
     isEssential: m['isEssential'] as bool? ?? true,
     type: m['type'] as String?,

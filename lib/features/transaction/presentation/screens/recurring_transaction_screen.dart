@@ -122,7 +122,6 @@ class RecurringTransactionScreen
           : CategoryEntity(
               id: item.category!.id,
               name: item.category!.name,
-              percentage: item.category!.percentage,
               icon: item.category!.icon,
               color: item.category!.color,
               isEssential: item.category!.isEssential,

@@ -9,7 +9,7 @@ abstract class TransactionCreateDto with _$TransactionCreateDto {
     int? amount,
     String? type,
     String? note,
-    @JsonKey(name: 'pictuteURL') String? pictureUrl,
+    @JsonKey(name: 'pictureURL') String? pictureUrl,
     DateTime? transactionDate,
     int? categoryId,
     int? userId,

@@ -261,7 +261,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       return CategoryEntity(
                         id: 0,
                         name: item.categoryName,
-                        percentage: item.spendingPercentage.toInt(),
+                        spendingPercentage: item.spendingPercentage,
                         icon: item.categoryIcon,
                         color: AppHelperFunction.getChartColorByIndex(index),
                       );

@@ -7,7 +7,6 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class CategoryOverviewCard extends StatelessWidget {
   final String title;
-  final double limit;
   final int spent;
   final String iconPath;
   final bool isIncome;
@@ -16,7 +15,6 @@ class CategoryOverviewCard extends StatelessWidget {
   const CategoryOverviewCard({
     super.key,
     required this.title,
-    required this.limit,
     required this.spent,
     required this.iconPath,
     this.isIncome = false,
@@ -25,33 +23,21 @@ class CategoryOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String limitText = AppHelperFunction.formatAmount(limit, currency: 'VND');
-    final String spentText = AppHelperFunction.formatAmount(spent.toDouble(), currency: 'VND');
-
-    final bool isOverLimit = limit > 0 && spent >= limit;
-    final bool isNearLimit =
-        limit > 0 && spent >= (limit * 0.8) && !isOverLimit;
+    final String spentText =
+        AppHelperFunction.formatAmount(spent.toDouble(), currency: 'VND');
 
     Color themeColor = isIncome ? AppColors.success : AppColors.error;
-    if (!isIncome) {
-      if (isNearLimit) {
-        themeColor = AppColors.warning;
-      } else if (isOverLimit) {
-        themeColor = AppColors.error;
-      }
-    }
 
     final String spentLabel = isIncome ? "Đã nhận:" : "Đã tiêu:";
-    final bool showLimit = limit > 0;
 
     return GestureDetector(
       onTap: () => showDialog(
         context: context,
         builder: (context) => BudgetDetailDialog(
           title: title,
-          limit: limitText,
+          limit: "0",
           spent: spentText,
-          isOverLimit: isOverLimit,
+          isOverLimit: false,
           isIncome: isIncome,
         ),
       ),
@@ -102,28 +88,6 @@ class CategoryOverviewCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  if (showLimit)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Hạn mức:",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.text4,
-                          ),
-                        ),
-                        Text(
-                          limitText,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.text2,
-                          ),
-                        ),
-                      ],
-                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -140,7 +104,7 @@ class CategoryOverviewCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: isOverLimit ? AppColors.error : themeColor,
+                          color: themeColor,
                         ),
                       ),
                     ],

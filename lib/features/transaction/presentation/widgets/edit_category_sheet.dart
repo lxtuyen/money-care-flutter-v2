@@ -81,13 +81,6 @@ class EditCategorySheet extends StatelessWidget {
                                     fontSize: 15,
                                   ),
                                 ),
-                                Text(
-                                  item.percentage.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey,
-                                  ),
-                                ),
                               ],
                             ),
                           ),
@@ -98,7 +91,6 @@ class EditCategorySheet extends StatelessWidget {
                                 isScrollControlled: true,
                                 builder: (context) => EditCategory(
                                   namecategory: item.name,
-                                  percent: item.percentage.toString(),
                                 ),
                               );
                             },

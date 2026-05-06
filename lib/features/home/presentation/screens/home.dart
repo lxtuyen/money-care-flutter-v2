@@ -394,7 +394,6 @@ class HomeScreen extends GetView<HomeController> {
           ...categories.map((TotalByCategoryEntity category) {
             return CategoryOverviewCard(
               title: category.categoryName,
-              limit: category.limit,
               spent: category.total,
               iconPath: category.categoryIcon,
               isIncome: false,
@@ -431,7 +430,6 @@ class HomeScreen extends GetView<HomeController> {
           ) {
             return CategoryOverviewCard(
               title: category.categoryName,
-              limit: category.limit,
               spent: category.total,
               iconPath: category.categoryIcon,
               isIncome: true,

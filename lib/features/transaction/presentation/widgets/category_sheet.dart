@@ -164,7 +164,6 @@ class _CategorySheetState extends State<CategorySheet> {
                               },
                               child: CategoryItem(
                                 title: item.name,
-                                percentage: item.percentage,
                                 icon: item.icon,
                                 isSelected: isSelected,
                               ),

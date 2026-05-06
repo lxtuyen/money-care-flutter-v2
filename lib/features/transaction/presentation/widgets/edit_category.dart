@@ -5,11 +5,9 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class EditCategory extends StatefulWidget {
   final String namecategory;
-  final String percent;
   const EditCategory({
     super.key,
     required this.namecategory,
-    required this.percent,
   });
 
   @override
@@ -18,12 +16,10 @@ class EditCategory extends StatefulWidget {
 
 class _EditCategoryState extends State<EditCategory> {
   late TextEditingController namecategorycontroller;
-  late TextEditingController percentcontroller;
   @override
   void initState() {
     super.initState();
     namecategorycontroller = TextEditingController(text: widget.namecategory);
-    percentcontroller = TextEditingController(text: widget.percent);
   }
 
   @override

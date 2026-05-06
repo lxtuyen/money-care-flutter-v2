@@ -18,7 +18,7 @@ class CategoryShareChip extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            '${category.percentage.toStringAsFixed(1)}%',
+            '${category.spendingPercentage.toStringAsFixed(1)}%',
             style: TextStyle(
               color: category.color,
               fontSize: 13,

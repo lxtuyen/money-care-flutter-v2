@@ -5,14 +5,12 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class CategoryItem extends StatelessWidget {
   final String title;
-  final int percentage;
   final String icon;
   final bool isSelected;
 
   const CategoryItem({
     super.key,
     required this.title,
-    required this.percentage,
     required this.icon,
     this.isSelected = false,
   });

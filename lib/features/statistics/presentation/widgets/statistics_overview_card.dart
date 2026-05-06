@@ -89,7 +89,7 @@ class StatisticsOverviewCard extends StatelessWidget {
                                   .map(
                                     (e) => PieChartSectionData(
                                       color: e.color,
-                                      value: e.percentage.toDouble(),
+                                      value: e.spendingPercentage,
                                       title: '',
                                       radius: 22,
                                     ),

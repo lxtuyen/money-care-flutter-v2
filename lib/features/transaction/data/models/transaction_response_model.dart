@@ -8,7 +8,7 @@ part 'transaction_response_model.freezed.dart';
 part 'transaction_response_model.g.dart';
 
 Object? _readPictureUrl(Map json, String key) {
-  return json['pictureURL'] ?? json['pictuteURL'];
+  return json['pictureURL'];
 }
 
 @freezed

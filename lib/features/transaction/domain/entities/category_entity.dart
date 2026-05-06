@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 class CategoryEntity {
   final int? id;
   final String name;
-  final int percentage;
   final String icon;
   final Color? color;
   final bool isEssential;
   final String? type;
+  final double spendingPercentage;
 
   const CategoryEntity({
     this.id,
     required this.name,
-    this.percentage = 0,
     required this.icon,
     this.color,
     this.isEssential = true,
     this.type,
+    this.spendingPercentage = 0,
   });
 
   @override

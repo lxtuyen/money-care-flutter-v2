@@ -12,11 +12,9 @@ abstract class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
     int? categoryId,
     @Default('') String categoryName,
     @Default('') String categoryIcon,
-    @JsonKey(fromJson: NumParser.parseDouble) @Default(0.0) double percentage,
     @JsonKey(fromJson: NumParser.parseDouble)
     @Default(0.0)
     double spendingPercentage,
-    @JsonKey(fromJson: NumParser.parseDouble) @Default(0.0) double limit,
     @JsonKey(fromJson: NumParser.parseInt) @Default(0) int total,
     @Default(true) bool isEssential,
   }) = _TotalByCategoryEntityModel;
@@ -31,9 +29,7 @@ abstract class TotalByCategoryEntityModel with _$TotalByCategoryEntityModel {
     categoryName: categoryName,
     total: total,
     categoryIcon: categoryIcon,
-    percentage: percentage,
     spendingPercentage: spendingPercentage,
-    limit: limit,
     isEssential: isEssential,
     color: null,
   );

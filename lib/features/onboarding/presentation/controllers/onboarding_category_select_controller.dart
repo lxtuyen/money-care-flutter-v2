@@ -53,7 +53,6 @@ class OnboardingCategorySelectController extends GetxController {
             (c) => CategoryEntity(
               name: c.name,
               icon: c.emoji,
-              percentage: 0,
               type: 'expense',
               isEssential: c.isEssential,
             ),
@@ -64,7 +63,6 @@ class OnboardingCategorySelectController extends GetxController {
             (c) => CategoryEntity(
               name: c.name,
               icon: c.emoji,
-              percentage: 0,
               type: 'income',
               isEssential: c.isEssential,
             ),
@@ -77,14 +75,12 @@ class OnboardingCategorySelectController extends GetxController {
         const CategoryEntity(
           name: uncategorizedName,
           icon: '❓',
-          percentage: 0,
           type: 'others',
           isEssential: true,
         ),
       );
     }
 
-    // Chờ quá trình lưu danh mục hoàn tất thành công
     userCategoryController.saveCategories(selected).then((success) {
       if (!success) {
         AppHelperFunction.showErrorSnackBar(
@@ -93,11 +89,9 @@ class OnboardingCategorySelectController extends GetxController {
         return;
       }
 
-      // Đánh dấu onboarding đã hoàn thành cho user này sau khi đã lưu xong
       final appController = Get.find<AppController>();
       int? userId = appController.userId.value;
 
-      // Fallback nếu appController chưa kịp sync
       if (userId == null) {
         try {
           final authController = Get.find<AuthController>();

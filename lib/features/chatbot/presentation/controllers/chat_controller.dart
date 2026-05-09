@@ -160,16 +160,12 @@ class ChatController extends GetxController {
 
       final recognizedText = await _ocrService.processImage(image.path);
       
-      // LOG OCR RESULTS
-      print('========== OCR RAW TEXT ==========');
-      print(recognizedText.text);
-      print('==================================');
+      if (!_ocrService.checkIfReceipt(recognizedText) || recognizedText.text.length < 20) {
+        replaceLastBotMessage('chatbot.imageTooBlurry'.tr);
+        return;
+      }
 
       final lines = ReceiptParser.extractLines(recognizedText);
-      print('Extracted ${lines.length} lines for AI refinement');
-      for (var i = 0; i < lines.length; i++) {
-        print('Line $i: ${lines[i].text} (x: ${lines[i].x}, y: ${lines[i].y})');
-      }
 
       final ocrText = recognizedText.text;
       final ocrLinesJson = jsonEncode(lines.map((l) => l.toJson()).toList());

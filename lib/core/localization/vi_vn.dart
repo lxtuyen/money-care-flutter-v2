@@ -321,6 +321,7 @@ const Map<String, String> viVN = {
   'chatbot.categoryCreated': 'Đã tạo hạng mục mới thành công!',
   'chatbot.connectionError': 'Lỗi kết nối: @error',
   'chatbot.sendingReceipt': 'Đang xử lý hóa đơn...',
+  'chatbot.imageTooBlurry': 'Ảnh có vẻ không phải hóa đơn hoặc quá mờ để nhận diện. Bạn hãy thử chụp lại rõ nét hơn hoặc gửi tấm ảnh khác nhé!',
 
   // ============ Notification ============
   'notification.title': 'Thông báo',

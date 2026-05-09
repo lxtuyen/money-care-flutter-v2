@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:money_care/core/constants/text_string.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/scan_receipt_entity.dart';
 
 class ReceiptOcrLine {
@@ -192,7 +193,7 @@ class ReceiptParser {
   }
 
   static bool _isUsefulReceiptLine(String line) {
-    final normalized = _normalize(line);
+    final normalized = AppHelperFunction.normalizeVietnamese(line);
     if (normalized.length < 3) return false;
     if (normalized.contains('.jpg') ||
         normalized.contains('.png') ||
@@ -228,7 +229,7 @@ class ReceiptParser {
     ];
 
     for (final line in lines.take(min(lines.length, 8))) {
-      final normalized = _normalize(line);
+      final normalized = AppHelperFunction.normalizeVietnamese(line);
       final isHeader = ignoredHeaders.any(
         (keyword) => normalized.contains(keyword),
       );
@@ -272,7 +273,7 @@ class ReceiptParser {
 
     for (var i = 0; i < lines.length; i++) {
       final line = lines[i];
-      final normalized = _normalize(line);
+      final normalized = AppHelperFunction.normalizeVietnamese(line);
       if (negativeKeywords.any((keyword) => normalized.contains(keyword))) {
         continue;
       }
@@ -374,83 +375,6 @@ class ReceiptParser {
     if (date == null) return false;
     final now = DateTime.now();
     return date.year >= 2000 && date.isBefore(now.add(const Duration(days: 2)));
-  }
-
-  static String _normalize(String input) {
-    var text = input.toLowerCase();
-    const replacements = {
-      'à': 'a',
-      'á': 'a',
-      'ạ': 'a',
-      'ả': 'a',
-      'ã': 'a',
-      'â': 'a',
-      'ầ': 'a',
-      'ấ': 'a',
-      'ậ': 'a',
-      'ẩ': 'a',
-      'ẫ': 'a',
-      'ă': 'a',
-      'ằ': 'a',
-      'ắ': 'a',
-      'ặ': 'a',
-      'ẳ': 'a',
-      'ẵ': 'a',
-      'è': 'e',
-      'é': 'e',
-      'ẹ': 'e',
-      'ẻ': 'e',
-      'ẽ': 'e',
-      'ê': 'e',
-      'ề': 'e',
-      'ế': 'e',
-      'ệ': 'e',
-      'ể': 'e',
-      'ễ': 'e',
-      'ì': 'i',
-      'í': 'i',
-      'ị': 'i',
-      'ỉ': 'i',
-      'ĩ': 'i',
-      'ò': 'o',
-      'ó': 'o',
-      'ọ': 'o',
-      'ỏ': 'o',
-      'õ': 'o',
-      'ô': 'o',
-      'ồ': 'o',
-      'ố': 'o',
-      'ộ': 'o',
-      'ổ': 'o',
-      'ỗ': 'o',
-      'ơ': 'o',
-      'ờ': 'o',
-      'ớ': 'o',
-      'ợ': 'o',
-      'ở': 'o',
-      'ỡ': 'o',
-      'ù': 'u',
-      'ú': 'u',
-      'ụ': 'u',
-      'ủ': 'u',
-      'ũ': 'u',
-      'ư': 'u',
-      'ừ': 'u',
-      'ứ': 'u',
-      'ự': 'u',
-      'ử': 'u',
-      'ữ': 'u',
-      'ỳ': 'y',
-      'ý': 'y',
-      'ỵ': 'y',
-      'ỷ': 'y',
-      'ỹ': 'y',
-      'đ': 'd',
-    };
-    replacements.forEach((source, target) {
-      text = text.replaceAll(source, target);
-    });
-    return text;
   }
 }
 

@@ -320,6 +320,7 @@ const Map<String, String> viVN = {
   'chatbot.categoryListError': 'Không thể hiển thị danh sách hạng mục.',
   'chatbot.categoryCreated': 'Đã tạo hạng mục mới thành công!',
   'chatbot.connectionError': 'Lỗi kết nối: @error',
+  'chatbot.sendingReceipt': 'Đang xử lý hóa đơn...',
 
   // ============ Notification ============
   'notification.title': 'Thông báo',

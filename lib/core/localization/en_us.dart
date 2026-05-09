@@ -320,6 +320,7 @@ const Map<String, String> enUS = {
   'chatbot.categoryListError': 'Cannot display category list.',
   'chatbot.categoryCreated': '✅ New category created successfully!',
   'chatbot.connectionError': 'Connection error: @error',
+  'chatbot.sendingReceipt': 'Processing receipt...',
 
   // ============ Notification ============
   'notification.title': 'Notifications',

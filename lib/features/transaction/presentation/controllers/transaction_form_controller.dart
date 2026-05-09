@@ -18,8 +18,6 @@ class TransactionFormController extends GetxController {
       Get.find<TransactionController>();
   final SavingGoalController savingGoalController =
       Get.find<SavingGoalController>();
-  final ScanReceiptController scanReceiptController =
-      Get.find<ScanReceiptController>();
   final WalletController walletController = Get.find<WalletController>();
   final AppController appController = Get.find<AppController>();
 
@@ -37,8 +35,6 @@ class TransactionFormController extends GetxController {
   CategoryEntity? get selectedCategory => _selectedCategory.value;
   set selectedCategory(CategoryEntity? value) => _selectedCategory.value = value;
 
-  final RxnString selectedImagePath = RxnString();
-  final RxBool isScanning = false.obs;
 
   bool showCategory = true;
   String transactionType = 'expense';
@@ -82,34 +78,6 @@ class TransactionFormController extends GetxController {
     }
   }
 
-  Future<void> scanReceipt(ImageSource source) async {
-    isScanning.value = true;
-    try {
-      final result = await scanReceiptController.scan(source);
-      if (result != null) {
-        if (result.totalAmount > 0) {
-          amountController.text = AppHelperFunction.formatAmount(result.totalAmount.toDouble());
-        }
-        if (result.merchantName.isNotEmpty) {
-          noteController.text = result.merchantName;
-        }
-        final parsedDate = DateTime.tryParse(result.date);
-        if (parsedDate != null) {
-          selectedDate.value = parsedDate;
-        }
-        selectedImagePath.value = scanReceiptController.scanResult.value?.imagePath;
-        AppHelperFunction.showSuccessSnackBar('Quét hóa đơn thành công');
-      }
-    } catch (e) {
-      AppHelperFunction.showErrorSnackBar('Lỗi quét hóa đơn: $e');
-    } finally {
-      isScanning.value = false;
-    }
-  }
-
-  void removeImage() {
-    selectedImagePath.value = null;
-  }
 
   TransactionCreateDto buildTransactionDto() {
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
@@ -124,7 +92,6 @@ class TransactionFormController extends GetxController {
       transactionDate: normalizedDate,
       userId: appController.userId.value,
       walletId: selectedWalletId.value,
-      pictureUrl: selectedImagePath.value,
     );
   }
 

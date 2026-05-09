@@ -76,13 +76,30 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Future<ScanReceiptEntity> scanReceipt(XFile image) async {
+    ReceiptParseResult? localResult;
+
     try {
       final recognizedText = await ocrService.processImage(image.path);
-      return ReceiptParser.parse(recognizedText);
+      localResult = ReceiptParser.parse(recognizedText);
+
+      if (!localResult.shouldUseAiRefinement) {
+        return localResult.entity;
+      }
     } catch (e) {
-      // Fallback to remote if local fails (optional, but good for reliability)
-      final model = await remoteDatasource.scanReceipt(image);
-      return model.toEntity();
+      localResult = null;
+    }
+
+    try {
+      final model = await remoteDatasource.scanReceipt(
+        image,
+        localResult: localResult,
+      );
+      final aiResult = model.toEntity();
+      if (localResult == null) return aiResult;
+      return ReceiptParser.mergeWithAiResult(localResult, aiResult);
+    } catch (e) {
+      if (localResult != null) return localResult.entity;
+      throw Exception('Receipt scan failed: $e');
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/transaction/data/models/scan_receipt_model.dart';
 import 'package:money_care/features/transaction/data/models/statistics_summary_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
+import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
 
 abstract class TransactionRemoteDatasource {
   Future<TransactionByTypeModel> findAllByFilter(
@@ -22,7 +23,10 @@ abstract class TransactionRemoteDatasource {
   Future<TransactionModel> createTransaction(TransactionCreateDto dto);
   Future<TransactionModel> updateTransaction(TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
-  Future<ScanReceiptModel> scanReceipt(XFile image);
+  Future<ScanReceiptModel> scanReceipt(
+    XFile image, {
+    ReceiptParseResult? localResult,
+  });
   Future<StatisticsSummaryModel> getStatisticsSummary(
     int userId,
     TransactionTotalsDto dto,
@@ -49,8 +53,6 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
       queryParameters: dto.toQueryParams(),
       fromJsonT: (json) => TransactionByTypeModel.fromJson(json),
     );
-
-
 
     if (!res.success || res.data == null) throw Exception(res.message);
     return res.data!;
@@ -104,7 +106,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   @override
   Future<TransactionModel> createTransaction(TransactionCreateDto dto) async {
     final jsonBody = dto.toJson();
-    
+
     final res = await api.post<TransactionModel>(
       ApiRoutes.transaction,
       body: jsonBody,
@@ -135,11 +137,15 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   }
 
   @override
-  Future<ScanReceiptModel> scanReceipt(XFile image) async {
+  Future<ScanReceiptModel> scanReceipt(
+    XFile image, {
+    ReceiptParseResult? localResult,
+  }) async {
     try {
       final res = await api.postMultipart<ScanReceiptModel>(
         ApiRoutes.scanReceipt,
         file: image,
+        fields: localResult?.toAiFields(),
         fromJsonT: (json) => ScanReceiptModel.fromJson(json),
       );
 

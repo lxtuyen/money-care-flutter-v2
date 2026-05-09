@@ -111,7 +111,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
             return AnalysisBubble(metadata: m.metadata!);
           }
-          return Bubble(isUser: m.isUser, text: m.text);
+          return Bubble(isUser: m.isUser, text: m.text, imagePath: m.imagePath);
         },
       );
     });
@@ -147,6 +147,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
           ),
           const SizedBox(width: 8),
+          IconButton(
+            onPressed: () => controller.pickAndScanReceipt(userId ?? 0),
+            icon: const Icon(Icons.camera_alt_rounded, color: Colors.blueAccent),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.blue.withValues(alpha: 0.05),
+            ),
+          ),
+          const SizedBox(width: 4),
           _buildMicButton(),
           const SizedBox(width: 4),
           _buildSendButton(),

@@ -17,6 +17,9 @@ import 'package:money_care/features/transaction/presentation/widgets/transaction
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:image_picker/image_picker.dart';
+import 'package:money_care/core/services/ocr_service.dart';
+import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
 
 class ChatController extends GetxController {
   final SendToChatbotUseCase sendToChatbotUseCase;
@@ -33,6 +36,9 @@ class ChatController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = RxnString();
   final RxList<ChatMessageEntity> messages = <ChatMessageEntity>[].obs;
+
+  final OCRService _ocrService = OCRService();
+  final ImagePicker _picker = ImagePicker();
 
   List<Map<String, dynamic>> get options => [
     {
@@ -115,20 +121,93 @@ class ChatController extends GetxController {
     await send(userId);
   }
 
-  Future<void> send(int userId) async {
-    final text = textController.text.trim();
-    if (text.isEmpty || isLoading.value) return;
+  Future<void> pickAndScanReceipt(int userId) async {
+    final source = await Get.bottomSheet<ImageSource>(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Chụp ảnh hóa đơn'),
+              onTap: () => Get.back(result: ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Chọn từ thư viện'),
+              onTap: () => Get.back(result: ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    final image = await _picker.pickImage(source: source, imageQuality: 80);
+    if (image == null) return;
 
     try {
-      textController.clear();
-      addUserMessage(text);
+      isLoading.value = true;
+      addUserMessage('chatbot.sendingReceipt'.tr, imagePath: image.path); 
       addBotMessage('...');
       scrollToBottom();
+
+      final recognizedText = await _ocrService.processImage(image.path);
+      
+      // LOG OCR RESULTS
+      print('========== OCR RAW TEXT ==========');
+      print(recognizedText.text);
+      print('==================================');
+
+      final lines = ReceiptParser.extractLines(recognizedText);
+      print('Extracted ${lines.length} lines for AI refinement');
+      for (var i = 0; i < lines.length; i++) {
+        print('Line $i: ${lines[i].text} (x: ${lines[i].x}, y: ${lines[i].y})');
+      }
+
+      final ocrText = recognizedText.text;
+      final ocrLinesJson = jsonEncode(lines.map((l) => l.toJson()).toList());
+
+      await send(userId, ocrText: ocrText, ocrLines: ocrLinesJson);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      replaceLastBotMessage('Lỗi xử lý hóa đơn: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> send(int userId, {String? ocrText, String? ocrLines}) async {
+    final text = textController.text.trim();
+    final isOcr = ocrText != null;
+    
+    // Prevent double sending for text messages, but allow OCR flow which already managed isLoading
+    if (!isOcr && (text.isEmpty || isLoading.value)) return;
+    if (isOcr && ocrText.isEmpty) return;
+
+    try {
+      if (ocrText == null) {
+        textController.clear();
+        addUserMessage(text);
+        addBotMessage('...');
+        scrollToBottom();
+      }
 
       isLoading.value = true;
       errorMessage.value = null;
 
-      final dto = ChatDto(message: text, userId: userId);
+      final dto = ChatDto(
+        message: text.isNotEmpty ? text : null,
+        userId: userId,
+        ocrText: ocrText,
+        ocrLines: ocrLines,
+      );
       final reply = await sendToChatbotUseCase(dto);
 
       if (reply.startsWith('__STRUCTURED_ANALYSIS__')) {
@@ -235,8 +314,8 @@ class ChatController extends GetxController {
     });
   }
 
-  void addUserMessage(String text) {
-    messages.add(ChatMessageEntity(isUser: true, text: text));
+  void addUserMessage(String text, {String? imagePath}) {
+    messages.add(ChatMessageEntity(isUser: true, text: text, imagePath: imagePath));
   }
 
   void addBotMessage(String text) {

@@ -17,30 +17,105 @@ class OCRService {
   bool checkIfReceipt(RecognizedText recognizedText) {
     if (recognizedText.text.isEmpty) return false;
 
-    final text = recognizedText.text.toLowerCase();
+    final text = _normalize(recognizedText.text);
     final keywords = [
-      'tổng',
-      'thanh toán',
-      'hóa đơn',
+      'tong',
+      'thanh toan',
+      'hoa don',
       'total',
       'bill',
       'receipt',
       'vnd',
-      'đ',
-      'thành tiền',
+      'thanh tien',
+      'can thanh toan',
     ];
 
-    int count = 0;
-    for (var kw in keywords) {
-      if (text.contains(kw)) count++;
+    var count = 0;
+    for (final keyword in keywords) {
+      if (text.contains(keyword)) count++;
     }
 
-    // Heuristic: If we see at least 2 keywords, it's likely a receipt
-    // Or if there's a lot of text lines (more than 5)
     return count >= 2 || recognizedText.blocks.length > 5;
   }
 
   void dispose() {
     _textRecognizer.close();
+  }
+
+  String _normalize(String input) {
+    var text = input.toLowerCase();
+    const replacements = {
+      'à': 'a',
+      'á': 'a',
+      'ạ': 'a',
+      'ả': 'a',
+      'ã': 'a',
+      'â': 'a',
+      'ầ': 'a',
+      'ấ': 'a',
+      'ậ': 'a',
+      'ẩ': 'a',
+      'ẫ': 'a',
+      'ă': 'a',
+      'ằ': 'a',
+      'ắ': 'a',
+      'ặ': 'a',
+      'ẳ': 'a',
+      'ẵ': 'a',
+      'è': 'e',
+      'é': 'e',
+      'ẹ': 'e',
+      'ẻ': 'e',
+      'ẽ': 'e',
+      'ê': 'e',
+      'ề': 'e',
+      'ế': 'e',
+      'ệ': 'e',
+      'ể': 'e',
+      'ễ': 'e',
+      'ì': 'i',
+      'í': 'i',
+      'ị': 'i',
+      'ỉ': 'i',
+      'ĩ': 'i',
+      'ò': 'o',
+      'ó': 'o',
+      'ọ': 'o',
+      'ỏ': 'o',
+      'õ': 'o',
+      'ô': 'o',
+      'ồ': 'o',
+      'ố': 'o',
+      'ộ': 'o',
+      'ổ': 'o',
+      'ỗ': 'o',
+      'ơ': 'o',
+      'ờ': 'o',
+      'ớ': 'o',
+      'ợ': 'o',
+      'ở': 'o',
+      'ỡ': 'o',
+      'ù': 'u',
+      'ú': 'u',
+      'ụ': 'u',
+      'ủ': 'u',
+      'ũ': 'u',
+      'ư': 'u',
+      'ừ': 'u',
+      'ứ': 'u',
+      'ự': 'u',
+      'ử': 'u',
+      'ữ': 'u',
+      'ỳ': 'y',
+      'ý': 'y',
+      'ỵ': 'y',
+      'ỷ': 'y',
+      'ỹ': 'y',
+      'đ': 'd',
+    };
+    replacements.forEach((source, target) {
+      text = text.replaceAll(source, target);
+    });
+    return text;
   }
 }

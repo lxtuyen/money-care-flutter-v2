@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TotalByCategoryEntityModel {
 
-@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? get categoryId; String get categoryName; String get categoryIcon;@JsonKey(fromJson: NumParser.parseDouble) double get percentage;@JsonKey(fromJson: NumParser.parseDouble) double get spendingPercentage;@JsonKey(fromJson: NumParser.parseDouble) double get limit;@JsonKey(fromJson: NumParser.parseInt) int get total; bool get isEssential;
+@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? get categoryId; String get categoryName; String get categoryIcon;@JsonKey(fromJson: NumParser.parseDouble) double get spendingPercentage;@JsonKey(fromJson: NumParser.parseInt) int get total; bool get isEssential;
 /// Create a copy of TotalByCategoryEntityModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $TotalByCategoryEntityModelCopyWith<TotalByCategoryEntityModel> get copyWith => 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TotalByCategoryEntityModel&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categoryIcon, categoryIcon) || other.categoryIcon == categoryIcon)&&(identical(other.percentage, percentage) || other.percentage == percentage)&&(identical(other.spendingPercentage, spendingPercentage) || other.spendingPercentage == spendingPercentage)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.total, total) || other.total == total)&&(identical(other.isEssential, isEssential) || other.isEssential == isEssential));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TotalByCategoryEntityModel&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categoryIcon, categoryIcon) || other.categoryIcon == categoryIcon)&&(identical(other.spendingPercentage, spendingPercentage) || other.spendingPercentage == spendingPercentage)&&(identical(other.total, total) || other.total == total)&&(identical(other.isEssential, isEssential) || other.isEssential == isEssential));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,categoryId,categoryName,categoryIcon,percentage,spendingPercentage,limit,total,isEssential);
+int get hashCode => Object.hash(runtimeType,categoryId,categoryName,categoryIcon,spendingPercentage,total,isEssential);
 
 @override
 String toString() {
-  return 'TotalByCategoryEntityModel(categoryId: $categoryId, categoryName: $categoryName, categoryIcon: $categoryIcon, percentage: $percentage, spendingPercentage: $spendingPercentage, limit: $limit, total: $total, isEssential: $isEssential)';
+  return 'TotalByCategoryEntityModel(categoryId: $categoryId, categoryName: $categoryName, categoryIcon: $categoryIcon, spendingPercentage: $spendingPercentage, total: $total, isEssential: $isEssential)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $TotalByCategoryEntityModelCopyWith<$Res>  {
   factory $TotalByCategoryEntityModelCopyWith(TotalByCategoryEntityModel value, $Res Function(TotalByCategoryEntityModel) _then) = _$TotalByCategoryEntityModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? categoryId, String categoryName, String categoryIcon,@JsonKey(fromJson: NumParser.parseDouble) double percentage,@JsonKey(fromJson: NumParser.parseDouble) double spendingPercentage,@JsonKey(fromJson: NumParser.parseDouble) double limit,@JsonKey(fromJson: NumParser.parseInt) int total, bool isEssential
+@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? categoryId, String categoryName, String categoryIcon,@JsonKey(fromJson: NumParser.parseDouble) double spendingPercentage,@JsonKey(fromJson: NumParser.parseInt) int total, bool isEssential
 });
 
 
@@ -65,14 +65,12 @@ class _$TotalByCategoryEntityModelCopyWithImpl<$Res>
 
 /// Create a copy of TotalByCategoryEntityModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? categoryId = freezed,Object? categoryName = null,Object? categoryIcon = null,Object? percentage = null,Object? spendingPercentage = null,Object? limit = null,Object? total = null,Object? isEssential = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? categoryId = freezed,Object? categoryName = null,Object? categoryIcon = null,Object? spendingPercentage = null,Object? total = null,Object? isEssential = null,}) {
   return _then(_self.copyWith(
 categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as int?,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
 as String,categoryIcon: null == categoryIcon ? _self.categoryIcon : categoryIcon // ignore: cast_nullable_to_non_nullable
-as String,percentage: null == percentage ? _self.percentage : percentage // ignore: cast_nullable_to_non_nullable
-as double,spendingPercentage: null == spendingPercentage ? _self.spendingPercentage : spendingPercentage // ignore: cast_nullable_to_non_nullable
-as double,limit: null == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as String,spendingPercentage: null == spendingPercentage ? _self.spendingPercentage : spendingPercentage // ignore: cast_nullable_to_non_nullable
 as double,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,isEssential: null == isEssential ? _self.isEssential : isEssential // ignore: cast_nullable_to_non_nullable
 as bool,
@@ -160,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double percentage, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseDouble)  double limit, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TotalByCategoryEntityModel() when $default != null:
-return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.percentage,_that.spendingPercentage,_that.limit,_that.total,_that.isEssential);case _:
+return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.spendingPercentage,_that.total,_that.isEssential);case _:
   return orElse();
 
 }
@@ -181,10 +179,10 @@ return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.per
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double percentage, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseDouble)  double limit, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)  $default,) {final _that = this;
 switch (_that) {
 case _TotalByCategoryEntityModel():
-return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.percentage,_that.spendingPercentage,_that.limit,_that.total,_that.isEssential);case _:
+return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.spendingPercentage,_that.total,_that.isEssential);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +199,10 @@ return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.per
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double percentage, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseDouble)  double limit, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable)  int? categoryId,  String categoryName,  String categoryIcon, @JsonKey(fromJson: NumParser.parseDouble)  double spendingPercentage, @JsonKey(fromJson: NumParser.parseInt)  int total,  bool isEssential)?  $default,) {final _that = this;
 switch (_that) {
 case _TotalByCategoryEntityModel() when $default != null:
-return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.percentage,_that.spendingPercentage,_that.limit,_that.total,_that.isEssential);case _:
+return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.spendingPercentage,_that.total,_that.isEssential);case _:
   return null;
 
 }
@@ -216,15 +214,13 @@ return $default(_that.categoryId,_that.categoryName,_that.categoryIcon,_that.per
 @JsonSerializable()
 
 class _TotalByCategoryEntityModel extends TotalByCategoryEntityModel {
-  const _TotalByCategoryEntityModel({@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) this.categoryId, this.categoryName = '', this.categoryIcon = '', @JsonKey(fromJson: NumParser.parseDouble) this.percentage = 0.0, @JsonKey(fromJson: NumParser.parseDouble) this.spendingPercentage = 0.0, @JsonKey(fromJson: NumParser.parseDouble) this.limit = 0.0, @JsonKey(fromJson: NumParser.parseInt) this.total = 0, this.isEssential = true}): super._();
+  const _TotalByCategoryEntityModel({@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) this.categoryId, this.categoryName = '', this.categoryIcon = '', @JsonKey(fromJson: NumParser.parseDouble) this.spendingPercentage = 0.0, @JsonKey(fromJson: NumParser.parseInt) this.total = 0, this.isEssential = true}): super._();
   factory _TotalByCategoryEntityModel.fromJson(Map<String, dynamic> json) => _$TotalByCategoryEntityModelFromJson(json);
 
 @override@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) final  int? categoryId;
 @override@JsonKey() final  String categoryName;
 @override@JsonKey() final  String categoryIcon;
-@override@JsonKey(fromJson: NumParser.parseDouble) final  double percentage;
 @override@JsonKey(fromJson: NumParser.parseDouble) final  double spendingPercentage;
-@override@JsonKey(fromJson: NumParser.parseDouble) final  double limit;
 @override@JsonKey(fromJson: NumParser.parseInt) final  int total;
 @override@JsonKey() final  bool isEssential;
 
@@ -241,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TotalByCategoryEntityModel&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categoryIcon, categoryIcon) || other.categoryIcon == categoryIcon)&&(identical(other.percentage, percentage) || other.percentage == percentage)&&(identical(other.spendingPercentage, spendingPercentage) || other.spendingPercentage == spendingPercentage)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.total, total) || other.total == total)&&(identical(other.isEssential, isEssential) || other.isEssential == isEssential));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TotalByCategoryEntityModel&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categoryIcon, categoryIcon) || other.categoryIcon == categoryIcon)&&(identical(other.spendingPercentage, spendingPercentage) || other.spendingPercentage == spendingPercentage)&&(identical(other.total, total) || other.total == total)&&(identical(other.isEssential, isEssential) || other.isEssential == isEssential));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,categoryId,categoryName,categoryIcon,percentage,spendingPercentage,limit,total,isEssential);
+int get hashCode => Object.hash(runtimeType,categoryId,categoryName,categoryIcon,spendingPercentage,total,isEssential);
 
 @override
 String toString() {
-  return 'TotalByCategoryEntityModel(categoryId: $categoryId, categoryName: $categoryName, categoryIcon: $categoryIcon, percentage: $percentage, spendingPercentage: $spendingPercentage, limit: $limit, total: $total, isEssential: $isEssential)';
+  return 'TotalByCategoryEntityModel(categoryId: $categoryId, categoryName: $categoryName, categoryIcon: $categoryIcon, spendingPercentage: $spendingPercentage, total: $total, isEssential: $isEssential)';
 }
 
 
@@ -261,7 +257,7 @@ abstract mixin class _$TotalByCategoryEntityModelCopyWith<$Res> implements $Tota
   factory _$TotalByCategoryEntityModelCopyWith(_TotalByCategoryEntityModel value, $Res Function(_TotalByCategoryEntityModel) _then) = __$TotalByCategoryEntityModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? categoryId, String categoryName, String categoryIcon,@JsonKey(fromJson: NumParser.parseDouble) double percentage,@JsonKey(fromJson: NumParser.parseDouble) double spendingPercentage,@JsonKey(fromJson: NumParser.parseDouble) double limit,@JsonKey(fromJson: NumParser.parseInt) int total, bool isEssential
+@JsonKey(name: 'category_id', fromJson: NumParser.parseIntNullable) int? categoryId, String categoryName, String categoryIcon,@JsonKey(fromJson: NumParser.parseDouble) double spendingPercentage,@JsonKey(fromJson: NumParser.parseInt) int total, bool isEssential
 });
 
 
@@ -278,14 +274,12 @@ class __$TotalByCategoryEntityModelCopyWithImpl<$Res>
 
 /// Create a copy of TotalByCategoryEntityModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? categoryId = freezed,Object? categoryName = null,Object? categoryIcon = null,Object? percentage = null,Object? spendingPercentage = null,Object? limit = null,Object? total = null,Object? isEssential = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? categoryId = freezed,Object? categoryName = null,Object? categoryIcon = null,Object? spendingPercentage = null,Object? total = null,Object? isEssential = null,}) {
   return _then(_TotalByCategoryEntityModel(
 categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as int?,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
 as String,categoryIcon: null == categoryIcon ? _self.categoryIcon : categoryIcon // ignore: cast_nullable_to_non_nullable
-as String,percentage: null == percentage ? _self.percentage : percentage // ignore: cast_nullable_to_non_nullable
-as double,spendingPercentage: null == spendingPercentage ? _self.spendingPercentage : spendingPercentage // ignore: cast_nullable_to_non_nullable
-as double,limit: null == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as String,spendingPercentage: null == spendingPercentage ? _self.spendingPercentage : spendingPercentage // ignore: cast_nullable_to_non_nullable
 as double,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,isEssential: null == isEssential ? _self.isEssential : isEssential // ignore: cast_nullable_to_non_nullable
 as bool,

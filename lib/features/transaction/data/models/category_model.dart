@@ -33,6 +33,7 @@ abstract class CategoryModel with _$CategoryModel {
     @ColorConverter() Color? color,
     @Default(true) bool isEssential,
     String? type,
+    @JsonKey(name: 'is_system') @Default(false) bool isSystem,
   }) = _CategoryModel;
 
   const CategoryModel._();
@@ -41,11 +42,12 @@ abstract class CategoryModel with _$CategoryModel {
       _$CategoryModelFromJson(json);
 
   CategoryEntity toEntity() => CategoryEntity(
-    id: id,
-    name: name,
-    icon: icon,
-    color: color,
-    isEssential: isEssential,
-    type: type,
-  );
+        id: id,
+        name: name,
+        icon: icon,
+        color: color,
+        isEssential: isEssential,
+        type: type,
+        isSystem: isSystem,
+      );
 }

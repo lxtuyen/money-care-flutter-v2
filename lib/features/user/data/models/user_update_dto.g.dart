@@ -7,10 +7,7 @@ part of 'user_update_dto.dart';
 // **************************************************************************
 
 _UserUpdateDto _$UserUpdateDtoFromJson(Map<String, dynamic> json) =>
-    _UserUpdateDto(
-      role: json['role'] as String?,
-      isVip: json['isVip'] as bool?,
-    );
+    _UserUpdateDto(role: json['role'] as String?);
 
 Map<String, dynamic> _$UserUpdateDtoToJson(_UserUpdateDto instance) =>
-    <String, dynamic>{'role': instance.role, 'isVip': instance.isVip};
+    <String, dynamic>{'role': instance.role};

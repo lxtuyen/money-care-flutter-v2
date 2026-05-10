@@ -8,6 +8,7 @@ class CategoryEntity {
   final bool isEssential;
   final String? type;
   final double spendingPercentage;
+  final bool isSystem;
 
   const CategoryEntity({
     this.id,
@@ -17,6 +18,7 @@ class CategoryEntity {
     this.isEssential = true,
     this.type,
     this.spendingPercentage = 0,
+    this.isSystem = false,
   });
 
   @override

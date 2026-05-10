@@ -72,7 +72,7 @@ class UserCategoryController extends GetxController {
 
     isLoading.value = true;
     try {
-      final body = cats.map(_toJson).toList();
+      final body = cats.where((c) => !c.isSystem).map(_toJson).toList();
       final res = await apiClient.post<List<dynamic>>(
         '${ApiRoutes.userCategories}/$userId',
         bodyList: body,
@@ -239,5 +239,6 @@ class UserCategoryController extends GetxController {
     icon: m['icon'] as String? ?? 'search',
     isEssential: m['isEssential'] as bool? ?? true,
     type: m['type'] as String?,
+    isSystem: m['is_system'] as bool? ?? false,
   );
 }

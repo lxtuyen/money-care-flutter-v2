@@ -12,7 +12,7 @@ _TransactionCreateDto _$TransactionCreateDtoFromJson(
   amount: (json['amount'] as num?)?.toInt(),
   type: json['type'] as String?,
   note: json['note'] as String?,
-  pictureUrl: json['pictuteURL'] as String?,
+  pictureUrl: json['pictureURL'] as String?,
   transactionDate: json['transactionDate'] == null
       ? null
       : DateTime.parse(json['transactionDate'] as String),
@@ -27,7 +27,7 @@ Map<String, dynamic> _$TransactionCreateDtoToJson(
   'amount': instance.amount,
   'type': instance.type,
   'note': instance.note,
-  'pictuteURL': instance.pictureUrl,
+  'pictureURL': instance.pictureUrl,
   'transactionDate': instance.transactionDate?.toIso8601String(),
   'categoryId': instance.categoryId,
   'userId': instance.userId,

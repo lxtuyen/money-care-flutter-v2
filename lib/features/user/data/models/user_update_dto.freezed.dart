@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserUpdateDto {
 
- String? get role; bool? get isVip;
+ String? get role;
 /// Create a copy of UserUpdateDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserUpdateDtoCopyWith<UserUpdateDto> get copyWith => _$UserUpdateDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserUpdateDto&&(identical(other.role, role) || other.role == role)&&(identical(other.isVip, isVip) || other.isVip == isVip));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserUpdateDto&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,role,isVip);
+int get hashCode => Object.hash(runtimeType,role);
 
 @override
 String toString() {
-  return 'UserUpdateDto(role: $role, isVip: $isVip)';
+  return 'UserUpdateDto(role: $role)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserUpdateDtoCopyWith<$Res>  {
   factory $UserUpdateDtoCopyWith(UserUpdateDto value, $Res Function(UserUpdateDto) _then) = _$UserUpdateDtoCopyWithImpl;
 @useResult
 $Res call({
- String? role, bool? isVip
+ String? role
 });
 
 
@@ -65,11 +65,10 @@ class _$UserUpdateDtoCopyWithImpl<$Res>
 
 /// Create a copy of UserUpdateDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? role = freezed,Object? isVip = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? role = freezed,}) {
   return _then(_self.copyWith(
 role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String?,isVip: freezed == isVip ? _self.isVip : isVip // ignore: cast_nullable_to_non_nullable
-as bool?,
+as String?,
   ));
 }
 
@@ -154,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? role,  bool? isVip)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? role)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserUpdateDto() when $default != null:
-return $default(_that.role,_that.isVip);case _:
+return $default(_that.role);case _:
   return orElse();
 
 }
@@ -175,10 +174,10 @@ return $default(_that.role,_that.isVip);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? role,  bool? isVip)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? role)  $default,) {final _that = this;
 switch (_that) {
 case _UserUpdateDto():
-return $default(_that.role,_that.isVip);case _:
+return $default(_that.role);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +194,10 @@ return $default(_that.role,_that.isVip);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? role,  bool? isVip)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? role)?  $default,) {final _that = this;
 switch (_that) {
 case _UserUpdateDto() when $default != null:
-return $default(_that.role,_that.isVip);case _:
+return $default(_that.role);case _:
   return null;
 
 }
@@ -210,11 +209,10 @@ return $default(_that.role,_that.isVip);case _:
 @JsonSerializable()
 
 class _UserUpdateDto implements UserUpdateDto {
-  const _UserUpdateDto({this.role, this.isVip});
+  const _UserUpdateDto({this.role});
   factory _UserUpdateDto.fromJson(Map<String, dynamic> json) => _$UserUpdateDtoFromJson(json);
 
 @override final  String? role;
-@override final  bool? isVip;
 
 /// Create a copy of UserUpdateDto
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +227,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserUpdateDto&&(identical(other.role, role) || other.role == role)&&(identical(other.isVip, isVip) || other.isVip == isVip));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserUpdateDto&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,role,isVip);
+int get hashCode => Object.hash(runtimeType,role);
 
 @override
 String toString() {
-  return 'UserUpdateDto(role: $role, isVip: $isVip)';
+  return 'UserUpdateDto(role: $role)';
 }
 
 
@@ -249,7 +247,7 @@ abstract mixin class _$UserUpdateDtoCopyWith<$Res> implements $UserUpdateDtoCopy
   factory _$UserUpdateDtoCopyWith(_UserUpdateDto value, $Res Function(_UserUpdateDto) _then) = __$UserUpdateDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String? role, bool? isVip
+ String? role
 });
 
 
@@ -266,11 +264,10 @@ class __$UserUpdateDtoCopyWithImpl<$Res>
 
 /// Create a copy of UserUpdateDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? role = freezed,Object? isVip = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? role = freezed,}) {
   return _then(_UserUpdateDto(
 role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String?,isVip: freezed == isVip ? _self.isVip : isVip // ignore: cast_nullable_to_non_nullable
-as bool?,
+as String?,
   ));
 }
 

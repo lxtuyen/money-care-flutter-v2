@@ -90,6 +90,7 @@ const Map<String, String> enUS = {
   'home.overview': 'Overview',
 
   'home.monthlySpending': 'This Month Spending',
+  'home.monthlyIncome': 'This Month Income',
   'home.spentInMonth': 'Amount spent this month',
   'home.spentIn7Days': 'Amount spent in the last 7 days',
   'home.balance': 'Balance',

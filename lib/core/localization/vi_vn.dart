@@ -90,6 +90,7 @@ const Map<String, String> viVN = {
   'home.overview': 'Tổng quan',
 
   'home.monthlySpending': 'Chi tiêu tháng này',
+  'home.monthlyIncome': 'Thu nhập tháng này',
   'home.spentInMonth': 'Số tiền bạn chi trong tháng',
   'home.spentIn7Days': 'Số tiền đã chi tiêu trong 7 ngày gần đây',
   'home.balance': 'Số dư',

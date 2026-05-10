@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionCreateDto {
 
- int? get amount; String? get type; String? get note;@JsonKey(name: 'pictuteURL') String? get pictureUrl; DateTime? get transactionDate; int? get categoryId; int? get userId; int? get walletId;
+ int? get amount; String? get type; String? get note;@JsonKey(name: 'pictureURL') String? get pictureUrl; DateTime? get transactionDate; int? get categoryId; int? get userId; int? get walletId;
 /// Create a copy of TransactionCreateDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TransactionCreateDtoCopyWith<$Res>  {
   factory $TransactionCreateDtoCopyWith(TransactionCreateDto value, $Res Function(TransactionCreateDto) _then) = _$TransactionCreateDtoCopyWithImpl;
 @useResult
 $Res call({
- int? amount, String? type, String? note,@JsonKey(name: 'pictuteURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId, int? walletId
+ int? amount, String? type, String? note,@JsonKey(name: 'pictureURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId, int? walletId
 });
 
 
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictureURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionCreateDto() when $default != null:
 return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId,_that.walletId);case _:
@@ -181,7 +181,7 @@ return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictureURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionCreateDto():
 return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId,_that.walletId);case _:
@@ -201,7 +201,7 @@ return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictuteURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? amount,  String? type,  String? note, @JsonKey(name: 'pictureURL')  String? pictureUrl,  DateTime? transactionDate,  int? categoryId,  int? userId,  int? walletId)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionCreateDto() when $default != null:
 return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transactionDate,_that.categoryId,_that.userId,_that.walletId);case _:
@@ -216,13 +216,13 @@ return $default(_that.amount,_that.type,_that.note,_that.pictureUrl,_that.transa
 @JsonSerializable()
 
 class _TransactionCreateDto implements TransactionCreateDto {
-  const _TransactionCreateDto({this.amount, this.type, this.note, @JsonKey(name: 'pictuteURL') this.pictureUrl, this.transactionDate, this.categoryId, this.userId, this.walletId});
+  const _TransactionCreateDto({this.amount, this.type, this.note, @JsonKey(name: 'pictureURL') this.pictureUrl, this.transactionDate, this.categoryId, this.userId, this.walletId});
   factory _TransactionCreateDto.fromJson(Map<String, dynamic> json) => _$TransactionCreateDtoFromJson(json);
 
 @override final  int? amount;
 @override final  String? type;
 @override final  String? note;
-@override@JsonKey(name: 'pictuteURL') final  String? pictureUrl;
+@override@JsonKey(name: 'pictureURL') final  String? pictureUrl;
 @override final  DateTime? transactionDate;
 @override final  int? categoryId;
 @override final  int? userId;
@@ -261,7 +261,7 @@ abstract mixin class _$TransactionCreateDtoCopyWith<$Res> implements $Transactio
   factory _$TransactionCreateDtoCopyWith(_TransactionCreateDto value, $Res Function(_TransactionCreateDto) _then) = __$TransactionCreateDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int? amount, String? type, String? note,@JsonKey(name: 'pictuteURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId, int? walletId
+ int? amount, String? type, String? note,@JsonKey(name: 'pictureURL') String? pictureUrl, DateTime? transactionDate, int? categoryId, int? userId, int? walletId
 });
 
 

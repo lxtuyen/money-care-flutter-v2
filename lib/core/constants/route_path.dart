@@ -27,6 +27,7 @@ class RoutePath {
   static const photoTransactionHistory = '/photo_transaction_history';
   static const expiredSavingGoals = '/expired_saving_goals';
   static const categoryManagement = '/category_management';
+  static const checkinPlaces = '/checkin_places';
   static const streakCalendar = '/streak_calendar';
   static const wallets = '/wallets';
   static const walletTransfer = '/wallet_transfer';

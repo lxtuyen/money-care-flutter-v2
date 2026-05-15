@@ -12,6 +12,10 @@ import 'package:money_care/core/services/ocr_service.dart';
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
 import 'package:money_care/features/onboarding/presentation/bindings/onboarding_binding.dart';
+import 'package:money_care/features/recommendation/presentation/controllers/recommendation_controller.dart';
+import 'package:money_care/features/recommendation/presentation/services/checkin_prompt_service.dart';
+import 'package:money_care/features/recommendation/presentation/services/place_checkin_service.dart';
+import 'package:money_care/features/recommendation/presentation/services/recommendation_service.dart';
 import 'package:money_care/features/transaction/presentation/bindings/transaction_binding.dart';
 import 'package:money_care/features/saving_goal/presentation/bindings/saving_goal_binding.dart';
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
@@ -20,7 +24,6 @@ import 'package:money_care/features/notification/presentation/bindings/notificat
 import 'package:money_care/features/wallet/data/datasources/wallet_remote_datasource.dart';
 import 'package:money_care/features/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
-
 
 import 'package:money_care/features/gamification/data/datasources/gamification_remote_datasource.dart';
 import 'package:money_care/features/gamification/data/repositories/gamification_repository_impl.dart';
@@ -72,6 +75,11 @@ class AppBinding extends Bindings {
 
     final appController = AppController(storage: storage);
     Get.put<AppController>(appController);
+
+    Get.put<RecommendationService>(RecommendationService());
+    Get.put<PlaceCheckinService>(PlaceCheckinService());
+    Get.put<CheckinPromptService>(CheckinPromptService(storage: storage));
+    Get.put<RecommendationController>(RecommendationController());
 
     final gamificationRemoteDs = GamificationRemoteDatasourceImpl(
       api: apiService,
@@ -148,17 +156,27 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final recurringRemoteDs = RecurringTransactionRemoteDataSourceImpl(api: apiService);
-    final recurringRepo = RecurringTransactionRepositoryImpl(remoteDataSource: recurringRemoteDs);
+    final recurringRemoteDs = RecurringTransactionRemoteDataSourceImpl(
+      api: apiService,
+    );
+    final recurringRepo = RecurringTransactionRepositoryImpl(
+      remoteDataSource: recurringRemoteDs,
+    );
     Get.put<RecurringTransactionController>(
       RecurringTransactionController(
-        getRecurringTransactionsUseCase: GetRecurringTransactionsUseCase(recurringRepo),
-        createRecurringTransactionUseCase: CreateRecurringTransactionUseCase(recurringRepo),
-        deleteRecurringTransactionUseCase: DeleteRecurringTransactionUseCase(recurringRepo),
+        getRecurringTransactionsUseCase: GetRecurringTransactionsUseCase(
+          recurringRepo,
+        ),
+        createRecurringTransactionUseCase: CreateRecurringTransactionUseCase(
+          recurringRepo,
+        ),
+        deleteRecurringTransactionUseCase: DeleteRecurringTransactionUseCase(
+          recurringRepo,
+        ),
       ),
       permanent: true,
     );
-    
+
     final walletRemoteDs = WalletRemoteDatasourceImpl(api: apiService);
     final walletRepo = WalletRepositoryImpl(remoteDatasource: walletRemoteDs);
     Get.put<WalletController>(

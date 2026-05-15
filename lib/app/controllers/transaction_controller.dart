@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -6,7 +5,6 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
@@ -71,10 +69,10 @@ class TransactionController extends GetxController {
     });
   }
 
-  Future<void> createTransaction(TransactionCreateDto dto) async {
+  Future<TransactionEntity> createTransaction(TransactionCreateDto dto) async {
     isLoading.value = true;
     try {
-      await createTransactionUseCase(dto);
+      final transaction = await createTransactionUseCase(dto);
       await refreshAllData(dto.userId!);
 
       if (Get.isRegistered<GamificationController>()) {
@@ -84,6 +82,7 @@ class TransactionController extends GetxController {
       }
 
       errorMessage.value = null;
+      return transaction;
     } catch (e) {
       errorMessage.value = e.toString();
       rethrow;

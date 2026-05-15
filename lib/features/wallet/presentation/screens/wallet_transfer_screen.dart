@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
-import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';

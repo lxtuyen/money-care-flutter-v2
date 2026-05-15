@@ -1,5 +1,4 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
@@ -8,7 +7,6 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/entities.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/widget_service.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 
 class StatisticsController extends GetxController {
@@ -105,20 +103,6 @@ class StatisticsController extends GetxController {
             59,
             59,
           );
-  }
-
-  DateTime _clampToGoalStart(DateTime date) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.startDate == null) return date;
-    if (date.isBefore(goal.startDate!)) return goal.startDate!;
-    return date;
-  }
-
-  DateTime _clampToGoalEnd(DateTime date) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.endDate == null) return date;
-    if (date.isAfter(goal.endDate!)) return goal.endDate!;
-    return date;
   }
 
   DateTime get previousStartDate {
@@ -750,8 +734,6 @@ class StatisticsController extends GetxController {
     final Map<int, TotalByCategoryEntity> expCatMap = {};
     final Map<int, TotalByCategoryEntity> incCatMap = {};
 
-    final targetGoal = savingGoalController.currentGoal.value?.target ?? 0;
-
     for (var t in expense) {
       if (t.category == null || t.category!.id == null) continue;
       final int id = t.category!.id!;
@@ -760,7 +742,7 @@ class StatisticsController extends GetxController {
         expCatMap[id] = TotalByCategoryEntity(
           categoryId: id,
           categoryName: t.category!.name,
-          categoryIcon: t.category!.icon ?? '',
+          categoryIcon: t.category!.icon,
           total: t.amount.toInt(),
           spendingPercentage: 0,
           isEssential: t.category!.isEssential,
@@ -785,7 +767,7 @@ class StatisticsController extends GetxController {
         incCatMap[id] = TotalByCategoryEntity(
           categoryId: id,
           categoryName: t.category!.name,
-          categoryIcon: t.category!.icon ?? '',
+          categoryIcon: t.category!.icon,
           total: t.amount.toInt(),
           spendingPercentage: 0,
           isEssential: t.category!.isEssential,

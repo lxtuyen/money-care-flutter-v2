@@ -199,9 +199,6 @@ class PeriodComparisonCard extends StatelessWidget {
   }) {
     final bool isUp = changePercent > 0;
     final bool isNeutral = changePercent == 0;
-    final bool isGood = isNeutral
-        ? true
-        : (isPositiveGood ? isUp : !isUp);
 
     final Color changeColor = isNeutral
         ? themeColors.textMuted

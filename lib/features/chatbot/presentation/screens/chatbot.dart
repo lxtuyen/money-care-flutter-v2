@@ -10,6 +10,7 @@ import 'package:money_care/features/chatbot/presentation/widgets/transaction_sav
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_list_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/category_list_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/category_created_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/recommendation_list_bubble.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -107,6 +108,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             }
             if (m.metadata!['__type'] == 'category_created') {
               return CategoryCreatedBubble(metadata: m.metadata!);
+            }
+            if (m.metadata!['__type'] == 'recommendation_list') {
+              return RecommendationListBubble(metadata: m.metadata!);
             }
 
             return AnalysisBubble(metadata: m.metadata!);

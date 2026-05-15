@@ -20,6 +20,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/services/ocr_service.dart';
 import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
+import 'package:geolocator/geolocator.dart';
 
 class ChatController extends GetxController {
   final SendToChatbotUseCase sendToChatbotUseCase;
@@ -198,11 +199,31 @@ class ChatController extends GetxController {
       isLoading.value = true;
       errorMessage.value = null;
 
+      // Get location if possible with better accuracy and longer timeout
+      Position? position;
+      try {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        
+        if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+          position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+            timeLimit: const Duration(seconds: 10),
+          );
+        }
+      } catch (e) {
+        debugPrint('Location error in ChatController: $e');
+      }
+
       final dto = ChatDto(
         message: text.isNotEmpty ? text : null,
         userId: userId,
         ocrText: ocrText,
         ocrLines: ocrLines,
+        latitude: position?.latitude,
+        longitude: position?.longitude,
       );
       final reply = await sendToChatbotUseCase(dto);
 
@@ -285,6 +306,15 @@ class ChatController extends GetxController {
           }
         } catch (e) {
           replaceLastBotMessage('chatbot.categoryCreated'.tr);
+        }
+      } else if (reply.startsWith('__RECOMMENDATION_LIST__')) {
+        final jsonStr = reply.replaceFirst('__RECOMMENDATION_LIST__', '');
+        try {
+          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+          data['__type'] = 'recommendation_list';
+          replaceLastBotMessageWithMetadata('', data);
+        } catch (e) {
+          replaceLastBotMessage('Không thể hiển thị danh sách địa điểm.');
         }
       } else {
         replaceLastBotMessage(reply);

@@ -34,7 +34,7 @@ import 'package:money_care/features/saving_goal/presentation/bindings/saving_goa
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
-
+import 'package:money_care/features/recommendation/presentation/screens/checkin_place_management_screen.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -157,6 +157,11 @@ final List<GetPage> appPages = [
     page: () => const UserCategoryManagementScreen(),
     transition: Transition.rightToLeft,
     binding: TransactionBinding(),
+  ),
+  GetPage(
+    name: RoutePath.checkinPlaces,
+    page: () => const CheckinPlaceManagementScreen(),
+    transition: Transition.rightToLeft,
   ),
   GetPage(
     name: '/streak_calendar',

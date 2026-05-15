@@ -79,10 +79,10 @@ class WalletController extends GetxController {
     try {
       await repository.update(id, {
         'name': name,
-        if (icon != null) 'icon': icon,
-        if (color != null) 'color': color,
-        if (isActive != null) 'is_active': isActive,
-        if (isPrimary != null) 'is_primary': isPrimary,
+        'icon': ?icon,
+        'color': ?color,
+        'is_active': ?isActive,
+        'is_primary': ?isPrimary,
       });
       await refreshWallets();
       AppHelperFunction.showSuccessSnackBar('Cập nhật ví thành công');

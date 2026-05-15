@@ -7,11 +7,9 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/recommendation/presentation/services/checkin_prompt_service.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
@@ -20,6 +18,8 @@ class TransactionFormController extends GetxController {
       Get.find<SavingGoalController>();
   final WalletController walletController = Get.find<WalletController>();
   final AppController appController = Get.find<AppController>();
+  final CheckinPromptService checkinPromptService =
+      Get.find<CheckinPromptService>();
 
   final formKey = GlobalKey<FormState>();
   final amountController = TextEditingController();
@@ -33,8 +33,8 @@ class TransactionFormController extends GetxController {
   final RxnInt selectedWalletId = RxnInt();
   final Rxn<CategoryEntity> _selectedCategory = Rxn<CategoryEntity>();
   CategoryEntity? get selectedCategory => _selectedCategory.value;
-  set selectedCategory(CategoryEntity? value) => _selectedCategory.value = value;
-
+  set selectedCategory(CategoryEntity? value) =>
+      _selectedCategory.value = value;
 
   bool showCategory = true;
   String transactionType = 'expense';
@@ -78,11 +78,17 @@ class TransactionFormController extends GetxController {
     }
   }
 
-
   TransactionCreateDto buildTransactionDto() {
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     final date = selectedDate.value ?? DateTime.now();
-    final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
+    final normalizedDate = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      12,
+      0,
+      0,
+    ).toUtc();
 
     return TransactionCreateDto(
       amount: int.tryParse(rawValue) ?? 0,
@@ -103,7 +109,14 @@ class TransactionFormController extends GetxController {
 
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     final date = selectedDate.value ?? DateTime.now();
-    final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
+    final normalizedDate = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      12,
+      0,
+      0,
+    ).toUtc();
 
     return CreateRecurringTransactionDto(
       amount: double.tryParse(rawValue) ?? 0,
@@ -150,9 +163,23 @@ class TransactionFormController extends GetxController {
     }
     try {
       final dto = buildTransactionDto();
-      await transactionController.createTransaction(dto);
-      Get.back();
+      final transaction = await transactionController.createTransaction(dto);
+      final checkinTransaction = TransactionEntity(
+        id: transaction.id,
+        amount: transaction.amount,
+        type: transaction.type,
+        pictureUrl: transaction.pictureUrl,
+        transactionDate: transaction.transactionDate,
+        note: transaction.note,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt,
+        category: transaction.category ?? selectedCategory,
+        walletId: transaction.walletId,
+        walletName: transaction.walletName,
+      );
       AppHelperFunction.showSuccessSnackBar('Tao giao dich thanh cong');
+      await checkinPromptService.promptForExpense(checkinTransaction);
+      Get.back();
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
     }

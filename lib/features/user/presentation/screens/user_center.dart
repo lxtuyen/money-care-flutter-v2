@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/user/presentation/widgets/user_menu_item.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -107,7 +106,6 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     )),
                     const Divider(height: 1, thickness: 0.5),
                     */
-
                     UserMenuItem(
                       icon: Icons.person_outline,
                       title: 'profile.info'.tr,
@@ -130,6 +128,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       icon: Icons.category_rounded,
                       title: 'profile.categoryManagement'.tr,
                       onTap: () => Get.toNamed(RoutePath.categoryManagement),
+                    ),
+                    UserMenuItem(
+                      icon: Icons.place_outlined,
+                      title: 'Quản lý địa điểm check-in',
+                      onTap: () => Get.toNamed(RoutePath.checkinPlaces),
                     ),
                     UserMenuItem(
                       icon: Icons.account_balance_wallet_outlined,

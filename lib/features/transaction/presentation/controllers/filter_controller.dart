@@ -65,7 +65,6 @@ class FilterController extends GetxController {
 
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month, 1);
-    final nextMonthStart = DateTime(now.year, now.month + 1, 1);
 
     // Check if start is first day of current month
     final isStartMatch = start.year == monthStart.year &&

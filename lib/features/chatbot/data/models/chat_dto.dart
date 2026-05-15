@@ -3,12 +3,16 @@ class ChatDto {
   final int userId;
   final String? ocrText;
   final String? ocrLines;
+  final double? latitude;
+  final double? longitude;
 
   ChatDto({
     this.message,
     required this.userId,
     this.ocrText,
     this.ocrLines,
+    this.latitude,
+    this.longitude,
   });
 
   Map<String, dynamic> toJson() {
@@ -17,6 +21,8 @@ class ChatDto {
       'userId': userId,
       'ocrText': ocrText,
       'ocrLines': ocrLines,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }

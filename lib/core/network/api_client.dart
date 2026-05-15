@@ -19,6 +19,16 @@ class ApiClient {
     };
   }
 
+  Uri _uri(String path, {Map<String, dynamic>? queryParameters}) {
+    final normalizedBaseUrl = baseUrl.replaceFirst(RegExp(r'/+$'), '');
+    final normalizedPath = path.replaceFirst(RegExp(r'^/+'), '');
+    return Uri.parse('$normalizedBaseUrl/$normalizedPath').replace(
+      queryParameters: queryParameters?.map(
+        (key, value) => MapEntry(key, value.toString()),
+      ),
+    );
+  }
+
   Future<ApiResponse<T>> post<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -26,11 +36,7 @@ class ApiClient {
     List<dynamic>? bodyList,
     T Function(dynamic)? fromJsonT,
   }) async {
-    final uri = Uri.parse('$baseUrl/$path').replace(
-      queryParameters: queryParameters?.map(
-        (key, value) => MapEntry(key, value.toString()),
-      ),
-    );
+    final uri = _uri(path, queryParameters: queryParameters);
     final response = await http.post(
       uri,
       headers: _headers(),
@@ -46,7 +52,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final token = _storage.getToken();
-    final uri = Uri.parse('$baseUrl/$path');
+    final uri = _uri(path);
     final request = http.MultipartRequest('POST', uri);
 
     final headers = {'Accept': 'application/json'};
@@ -77,11 +83,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     T Function(dynamic)? fromJsonT,
   }) async {
-    final uri = Uri.parse('$baseUrl/$path').replace(
-      queryParameters: queryParameters?.map(
-        (key, value) => MapEntry(key, value.toString()),
-      ),
-    );
+    final uri = _uri(path, queryParameters: queryParameters);
     final response = await http.get(uri, headers: _headers());
     return _handleResponse(response, fromJsonT);
   }
@@ -92,7 +94,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/$path'),
+      _uri(path),
       headers: _headers(),
       body: jsonEncode(body ?? {}),
     );
@@ -105,7 +107,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/$path'),
+      _uri(path),
       headers: _headers(),
       body: body != null ? jsonEncode(body) : null,
     );
@@ -118,7 +120,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.patch(
-      Uri.parse('$baseUrl/$path'),
+      _uri(path),
       headers: _headers(),
       body: jsonEncode(body ?? {}),
     );

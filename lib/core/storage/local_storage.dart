@@ -52,6 +52,7 @@ class LocalStorage {
   static const String keyLocale = 'app_locale';
   static const String keyStartDayOfMonth = 'start_day_of_month';
   static const String keyWidgetBalanceVisible = 'widget_balance_visible';
+  static const String keyCheckinPromptEnabled = 'checkin_prompt_enabled';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -129,12 +130,19 @@ class LocalStorage {
     return readInt(keyStartDayOfMonth) ?? 1;
   }
 
-
   Future<void> saveWidgetBalanceVisibility(bool visible) async {
     await writeBool(keyWidgetBalanceVisible, visible);
   }
 
   bool getWidgetBalanceVisibility() {
     return readBool(keyWidgetBalanceVisible) ?? true;
+  }
+
+  Future<void> saveCheckinPromptEnabled(bool enabled) async {
+    await writeBool(keyCheckinPromptEnabled, enabled);
+  }
+
+  bool getCheckinPromptEnabled() {
+    return readBool(keyCheckinPromptEnabled) ?? true;
   }
 }

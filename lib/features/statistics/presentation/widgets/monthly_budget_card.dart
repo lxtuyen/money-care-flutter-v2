@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 
 class MonthlyBudgetCard extends StatelessWidget {
@@ -26,10 +25,8 @@ class MonthlyBudgetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeColors = AppThemeColors.of(context);
-    final appController = Get.find<AppController>();
 
     return Obx(() {
-      final isVisible = appController.isBalanceVisible.value;
       final remaining = totalBudget - totalSpent;
       final dailyAllowance =
           daysRemaining > 0 ? remaining / daysRemaining : 0.0;
@@ -43,13 +40,6 @@ class MonthlyBudgetCard extends StatelessWidget {
           : isNearLimit
               ? const Color(0xFFFFA726)
               : const Color(0xFF43A047);
-
-      // Get top categories with limits (max 4)
-      final budgetedCategories = categories
-          .where((c) => c.total > 0)
-          .toList()
-        ..sort((a, b) => b.total.compareTo(a.total));
-      final topCategories = budgetedCategories.take(4).toList();
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -348,63 +338,6 @@ class MonthlyBudgetCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
-              color: color,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCategoryRow({
-    required String icon,
-    required String name,
-    required int spent,
-    required double limit,
-    required double percent,
-    required Color color,
-    required bool isVisible,
-    required AppThemeColors themeColors,
-  }) {
-    return Row(
-      children: [
-        Text(icon, style: const TextStyle(fontSize: 18)),
-        const SizedBox(width: 8),
-        Expanded(
-          flex: 3,
-          child: Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: themeColors.textSecondary,
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          flex: 4,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: percent.clamp(0.0, 1.0),
-              minHeight: 6,
-              backgroundColor: themeColors.borderSecondary,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 42,
-          child: Text(
-            '${(percent * 100).clamp(0, 999).toStringAsFixed(0)}%',
-            textAlign: TextAlign.end,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
               color: color,
             ),
           ),

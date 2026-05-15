@@ -41,7 +41,7 @@ class CategoryWrap extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
             ),
             Text(
-              '${cat.percentage}%',
+              '${cat.spendingPercentage.toStringAsFixed(0)}%',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
             ),
           ],

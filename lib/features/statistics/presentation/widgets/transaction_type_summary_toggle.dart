@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:get/get.dart';
 
 class TransactionTypeSummaryToggle extends StatelessWidget {
   final String selected;

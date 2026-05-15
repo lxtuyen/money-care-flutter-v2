@@ -4,11 +4,10 @@ import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/app/widgets/appbar/appbar.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/features/recommendation/presentation/services/checkin_prompt_service.dart';
 
 import 'package:money_care/app/widgets/layout/app_header.dart';
 
@@ -22,6 +21,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final userController = Get.find<UserController>();
+  final checkinPromptService = Get.find<CheckinPromptService>();
 
   Future<void> onUpdateProfile() async {
     if (_formKey.currentState!.validate()) {
@@ -64,28 +64,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Column(
                                 children: [
                                   Obx(() {
-                                    final profile = userController.userProfile.value;
+                                    final profile =
+                                        userController.userProfile.value;
                                     return Container(
                                       width: 100,
                                       height: 100,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: AppColors.primary.withOpacity(0.1),
-                                        image: profile?.avatar != null &&
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        image:
+                                            profile?.avatar != null &&
                                                 profile!.avatar!.isNotEmpty
                                             ? DecorationImage(
-                                                image: NetworkImage(profile.avatar!),
+                                                image: NetworkImage(
+                                                  profile.avatar!,
+                                                ),
                                                 fit: BoxFit.cover,
                                               )
                                             : null,
                                       ),
-                                      child: profile?.avatar == null ||
+                                      child:
+                                          profile?.avatar == null ||
                                               profile!.avatar!.isEmpty
                                           ? Center(
                                               child: Text(
-                                                (profile?.firstName?.isNotEmpty == true)
+                                                (profile
+                                                            ?.firstName
+                                                            ?.isNotEmpty ==
+                                                        true)
                                                     ? profile!.firstName![0]
-                                                        .toUpperCase()
+                                                          .toUpperCase()
                                                     : "U",
                                                 style: const TextStyle(
                                                   fontSize: 40,
@@ -131,7 +141,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               label: 'auth.firstName'.tr,
                               icon: Icons.person,
                               hintText: 'profile.nameHint'.tr,
-                              validator: (v) => AppValidator.validateFirstName(v),
+                              validator: (v) =>
+                                  AppValidator.validateFirstName(v),
                             ),
                             const SizedBox(height: 16),
                             AppTextFormField(
@@ -139,7 +150,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               label: 'auth.lastName'.tr,
                               icon: Icons.person,
                               hintText: 'profile.lastNameHint'.tr,
-                              validator: (v) => AppValidator.validateLastName(v),
+                              validator: (v) =>
+                                  AppValidator.validateLastName(v),
                             ),
                             const SizedBox(height: 32),
                             Text(
@@ -152,7 +164,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                             AppCurrencyFormField(
-                              controller: userController.monthlyIncomeController,
+                              controller:
+                                  userController.monthlyIncomeController,
                               label: 'profile.monthlyIncomeLabel'.tr,
                               icon: Icons.attach_money_outlined,
                               hintText: 'profile.monthlyIncomeHint'.tr,
@@ -161,7 +174,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Obx(
                               () => _IncomeDateField(
                                 incomeDate: userController.incomeDate.value,
-                                onTap: () => userController.pickIncomeDay(context),
+                                onTap: () =>
+                                    userController.pickIncomeDay(context),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Cai dat',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.text1,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Obx(
+                              () => SwitchListTile(
+                                contentPadding: EdgeInsets.zero,
+                                value: checkinPromptService.promptEnabled.value,
+                                onChanged:
+                                    checkinPromptService.setPromptEnabled,
+                                title: const Text(
+                                  'Goi y check-in sau khi tao chi tieu',
+                                ),
                               ),
                             ),
                             const SizedBox(height: 32),

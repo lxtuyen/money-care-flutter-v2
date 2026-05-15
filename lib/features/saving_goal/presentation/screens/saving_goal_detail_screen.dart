@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
@@ -11,7 +10,6 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
@@ -204,8 +202,6 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
 
   Widget _buildDetailCard(AppThemeColors colors) {
     final report = savingGoalController.goalReport.value;
-    final currentAmount = report?.currentBalance ?? goal.savedAmount;
-    final isNegative = currentAmount < 0;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),

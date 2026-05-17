@@ -43,6 +43,30 @@ Map<String, dynamic> _$CategorySpendingModelToJson(
   'total': instance.total,
 };
 
+_ProjectionModel _$ProjectionModelFromJson(Map<String, dynamic> json) =>
+    _ProjectionModel(
+      monthlySavingCapacity: json['monthlySavingCapacity'] == null
+          ? 0
+          : NumParser.parseDouble(json['monthlySavingCapacity']),
+      monthsRemaining: NumParser.parseIntNullable(json['monthsRemaining']),
+      projectedDate: json['projectedDate'] == null
+          ? null
+          : DateTime.parse(json['projectedDate'] as String),
+      isOnTrack: json['isOnTrack'] as bool?,
+      monthsDiff: NumParser.parseIntNullable(json['monthsDiff']),
+      hasPlan: json['hasPlan'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$ProjectionModelToJson(_ProjectionModel instance) =>
+    <String, dynamic>{
+      'monthlySavingCapacity': instance.monthlySavingCapacity,
+      'monthsRemaining': instance.monthsRemaining,
+      'projectedDate': instance.projectedDate?.toIso8601String(),
+      'isOnTrack': instance.isOnTrack,
+      'monthsDiff': instance.monthsDiff,
+      'hasPlan': instance.hasPlan,
+    };
+
 _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   Map<String, dynamic> json,
 ) => _SavingGoalReportModel(
@@ -92,6 +116,9 @@ _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   walletBalance: json['wallet_balance'] == null
       ? 0
       : NumParser.parseDouble(json['wallet_balance']),
+  projection: json['projection'] == null
+      ? null
+      : ProjectionModel.fromJson(json['projection'] as Map<String, dynamic>),
   transactions:
       (json['transactions'] as List<dynamic>?)
           ?.map((e) => TransactionModel.fromJson(e as Map<String, dynamic>))
@@ -124,5 +151,6 @@ Map<String, dynamic> _$SavingGoalReportModelToJson(
   'remainingBudget': instance.remainingBudget,
   'wallet_name': instance.walletName,
   'wallet_balance': instance.walletBalance,
+  'projection': instance.projection,
   'transactions': instance.transactions,
 };

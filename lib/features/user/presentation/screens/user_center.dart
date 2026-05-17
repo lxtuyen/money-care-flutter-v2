@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/user/presentation/widgets/user_menu_item.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -107,7 +106,6 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     )),
                     const Divider(height: 1, thickness: 0.5),
                     */
-
                     UserMenuItem(
                       icon: Icons.person_outline,
                       title: 'profile.info'.tr,
@@ -118,6 +116,12 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       icon: Icons.track_changes_outlined,
                       title: 'profile.savingGoals'.tr,
                       onTap: () => Get.toNamed(RoutePath.selectSavingGoal),
+                    ),
+
+                    UserMenuItem(
+                      icon: Icons.fact_check_outlined,
+                      title: 'Kế hoạch chi tiêu',
+                      onTap: () => Get.toNamed(RoutePath.spendingPlanList),
                     ),
 
                     UserMenuItem(

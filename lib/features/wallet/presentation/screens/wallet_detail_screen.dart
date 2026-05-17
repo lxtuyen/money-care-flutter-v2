@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -185,22 +186,20 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: _ActionButton(
+                  child: AppActionButton(
                     onTap: _showEditDialog,
                     icon: Icons.edit_outlined,
                     label: "Chỉnh sửa",
                     color: AppColors.primary,
-                    context: context,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _ActionButton(
+                  child: AppActionButton(
                     onTap: _confirmDelete,
                     icon: Icons.delete_outline_rounded,
                     label: "Xóa ví",
                     color: Colors.redAccent,
-                    context: context,
                   ),
                 ),
               ],
@@ -257,54 +256,3 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final VoidCallback onTap;
-  final IconData icon;
-  final String label;
-  final Color color;
-  final BuildContext context;
-
-  const _ActionButton({
-    required this.onTap,
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.context,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    
-    return Material(
-      color: colors.cardBackground,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withOpacity(0.2)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

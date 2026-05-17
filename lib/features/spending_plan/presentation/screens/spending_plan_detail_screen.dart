@@ -1,0 +1,212 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:money_care/app/widgets/layout/app_header.dart';
+import 'package:money_care/app/widgets/button/app_action_button.dart';
+import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_item.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_summary_card.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_detail.dart';
+
+class SpendingPlanDetailScreen extends StatefulWidget {
+  const SpendingPlanDetailScreen({super.key});
+
+  @override
+  State<SpendingPlanDetailScreen> createState() =>
+      _SpendingPlanDetailScreenState();
+}
+
+class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
+  final SpendingPlanController controller = Get.find<SpendingPlanController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final argument = Get.arguments;
+      if (argument is int) {
+        controller.loadPlan(argument);
+      } else if (argument is SpendingPlanEntity) {
+        controller.selectedPlan.value = argument;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            const AppHeader(
+              title: 'Chi tiết kế hoạch',
+              showBackButton: true,
+              height: 140,
+            ),
+            Expanded(
+              child: Obx(() {
+                final plan = controller.selectedPlan.value;
+                if (controller.isLoading.value && plan == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (plan == null) {
+                  return const Center(child: Text('Không tìm thấy kế hoạch'));
+                }
+
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    SpendingPlanSummaryCard(plan: plan),
+                    const SizedBox(height: 12),
+                    _PlanActions(plan: plan, controller: controller),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Chi phí cố định',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (plan.fixedExpenses.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text('Chưa có khoản cố định.'),
+                      )
+                    else
+                      ...plan.fixedExpenses.map(
+                        (expense) => FixedExpenseItem(
+                          expense: expense,
+                          onTap: () => FixedExpenseDetail.show(
+                            context,
+                            plan: plan,
+                            expense: expense,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: Obx(() {
+        final plan = controller.selectedPlan.value;
+        if (plan == null || plan.isArchived) {
+          return const SizedBox.shrink();
+        }
+        return FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => FixedExpenseEditSheet(plan: plan),
+            );
+          },
+          backgroundColor: AppColors.primary,
+          child: const Icon(Icons.add, color: Colors.white),
+        );
+      }),
+      bottomNavigationBar: SafeArea(
+        child: Obx(() {
+          final plan = controller.selectedPlan.value;
+          if (plan == null || plan.isArchived) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              onPressed: controller.isSaving.value || plan.isActive
+                  ? null
+                  : () => controller.activatePlan(plan.id),
+              icon: const Icon(Icons.check_circle_outline),
+              label: Text(plan.isActive ? 'Đang áp dụng' : 'Áp dụng kế hoạch'),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class _PlanActions extends StatelessWidget {
+  final SpendingPlanEntity plan;
+  final SpendingPlanController controller;
+
+  const _PlanActions({required this.plan, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: AppActionButton(
+            onTap: plan.isArchived
+                ? null
+                : () => Get.toNamed(
+                    RoutePath.createSpendingPlan,
+                    arguments: plan,
+                  ),
+            icon: Icons.edit_outlined,
+            label: 'Cập nhật',
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: AppActionButton(
+            onTap: () => _confirmDelete(context),
+            icon: Icons.delete_outline_rounded,
+            label: 'Xóa',
+            color: Colors.redAccent,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xóa kế hoạch chi tiêu?'),
+        content: const Text(
+          'Kế hoạch và các chi phí cố định bên trong sẽ bị xóa. Thao tác này không thể hoàn tác.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Hủy'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Xóa'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+    final success = await controller.deletePlan(plan.id);
+    if (success) {
+      Get.back();
+    }
+  }
+}
+
+

@@ -21,7 +21,6 @@ import 'package:money_care/features/wallet/data/datasources/wallet_remote_dataso
 import 'package:money_care/features/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
-
 import 'package:money_care/features/gamification/data/datasources/gamification_remote_datasource.dart';
 import 'package:money_care/features/gamification/data/repositories/gamification_repository_impl.dart';
 import 'package:money_care/features/gamification/domain/usecases/usecases.dart';
@@ -51,6 +50,10 @@ import 'package:money_care/features/user/data/repositories/user_repository_impl.
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
+import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource.dart';
+import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
+import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 
 class AppBinding extends Bindings {
   final LocalStorage storage;
@@ -148,21 +151,57 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final recurringRemoteDs = RecurringTransactionRemoteDataSourceImpl(api: apiService);
-    final recurringRepo = RecurringTransactionRepositoryImpl(remoteDataSource: recurringRemoteDs);
+    final recurringRemoteDs = RecurringTransactionRemoteDataSourceImpl(
+      api: apiService,
+    );
+    final recurringRepo = RecurringTransactionRepositoryImpl(
+      remoteDataSource: recurringRemoteDs,
+    );
     Get.put<RecurringTransactionController>(
       RecurringTransactionController(
-        getRecurringTransactionsUseCase: GetRecurringTransactionsUseCase(recurringRepo),
-        createRecurringTransactionUseCase: CreateRecurringTransactionUseCase(recurringRepo),
-        deleteRecurringTransactionUseCase: DeleteRecurringTransactionUseCase(recurringRepo),
+        getRecurringTransactionsUseCase: GetRecurringTransactionsUseCase(
+          recurringRepo,
+        ),
+        createRecurringTransactionUseCase: CreateRecurringTransactionUseCase(
+          recurringRepo,
+        ),
+        deleteRecurringTransactionUseCase: DeleteRecurringTransactionUseCase(
+          recurringRepo,
+        ),
       ),
       permanent: true,
     );
-    
+
     final walletRemoteDs = WalletRemoteDatasourceImpl(api: apiService);
     final walletRepo = WalletRepositoryImpl(remoteDatasource: walletRemoteDs);
     Get.put<WalletController>(
       WalletController(repository: walletRepo),
+      permanent: true,
+    );
+
+    final spendingPlanRemoteDs = SpendingPlanRemoteDatasourceImpl(
+      api: apiService,
+    );
+    final spendingPlanRepo = SpendingPlanRepositoryImpl(
+      remoteDatasource: spendingPlanRemoteDs,
+    );
+    Get.put<SpendingPlanController>(
+      SpendingPlanController(
+        getSpendingPlansUseCase: GetSpendingPlansUseCase(spendingPlanRepo),
+        getActiveSpendingPlanUseCase: GetActiveSpendingPlanUseCase(
+          spendingPlanRepo,
+        ),
+        getSpendingPlanUseCase: GetSpendingPlanUseCase(spendingPlanRepo),
+        createSpendingPlanUseCase: CreateSpendingPlanUseCase(spendingPlanRepo),
+        updateSpendingPlanUseCase: UpdateSpendingPlanUseCase(spendingPlanRepo),
+        deleteSpendingPlanUseCase: DeleteSpendingPlanUseCase(spendingPlanRepo),
+        activateSpendingPlanUseCase: ActivateSpendingPlanUseCase(
+          spendingPlanRepo,
+        ),
+        archiveSpendingPlanUseCase: ArchiveSpendingPlanUseCase(
+          spendingPlanRepo,
+        ),
+      ),
       permanent: true,
     );
 

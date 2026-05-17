@@ -26,6 +26,10 @@ import 'package:money_care/features/wallet/presentation/screens/wallet_list_scre
 import 'package:money_care/features/wallet/presentation/screens/wallet_transfer_screen.dart';
 import 'package:money_care/features/wallet/presentation/screens/wallet_detail_screen.dart';
 import 'package:money_care/features/saving_goal/presentation/screens/saving_goal_detail_screen.dart';
+import 'package:money_care/features/spending_plan/presentation/bindings/spending_plan_binding.dart';
+import 'package:money_care/features/spending_plan/presentation/screens/create_spending_plan_screen.dart';
+import 'package:money_care/features/spending_plan/presentation/screens/spending_plan_detail_screen.dart';
+import 'package:money_care/features/spending_plan/presentation/screens/spending_plan_list_screen.dart';
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
 import 'package:money_care/features/onboarding/presentation/bindings/onboarding_binding.dart';
@@ -34,7 +38,6 @@ import 'package:money_care/features/saving_goal/presentation/bindings/saving_goa
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
-
 
 final List<GetPage> appPages = [
   GetPage(
@@ -181,6 +184,24 @@ final List<GetPage> appPages = [
   GetPage(
     name: RoutePath.savingGoalDetail,
     page: () => const SavingGoalDetailScreen(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.spendingPlanList,
+    page: () => const SpendingPlanListScreen(),
+    binding: SpendingPlanBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.createSpendingPlan,
+    page: () => const CreateSpendingPlanScreen(),
+    binding: SpendingPlanBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.spendingPlanDetail,
+    page: () => const SpendingPlanDetailScreen(),
+    binding: SpendingPlanBinding(),
     transition: Transition.rightToLeft,
   ),
 ];

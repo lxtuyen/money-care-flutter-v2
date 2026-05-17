@@ -34,6 +34,21 @@ abstract class CategorySpendingModel with _$CategorySpendingModel {
 }
 
 @freezed
+abstract class ProjectionModel with _$ProjectionModel {
+  const factory ProjectionModel({
+    @JsonKey(fromJson: NumParser.parseDouble) @Default(0) double monthlySavingCapacity,
+    @JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining,
+    DateTime? projectedDate,
+    bool? isOnTrack,
+    @JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff,
+    @Default(false) bool hasPlan,
+  }) = _ProjectionModel;
+
+  factory ProjectionModel.fromJson(Map<String, dynamic> json) =>
+      _$ProjectionModelFromJson(json);
+}
+
+@freezed
 abstract class SavingGoalReportModel with _$SavingGoalReportModel {
   const factory SavingGoalReportModel({
     @JsonKey(fromJson: NumParser.parseInt) required int id,
@@ -68,6 +83,7 @@ abstract class SavingGoalReportModel with _$SavingGoalReportModel {
     @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)
     @Default(0)
     double walletBalance,
+    ProjectionModel? projection,
     @Default([]) List<TransactionModel> transactions,
   }) = _SavingGoalReportModel;
 

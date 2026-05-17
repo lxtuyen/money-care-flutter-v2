@@ -154,13 +154,14 @@ class ChatController extends GetxController {
 
     try {
       isLoading.value = true;
-      addUserMessage('chatbot.sendingReceipt'.tr, imagePath: image.path); 
+      addUserMessage('chatbot.sendingReceipt'.tr, imagePath: image.path);
       addBotMessage('...');
       scrollToBottom();
 
       final recognizedText = await _ocrService.processImage(image.path);
-      
-      if (!_ocrService.checkIfReceipt(recognizedText) || recognizedText.text.length < 20) {
+
+      if (!_ocrService.checkIfReceipt(recognizedText) ||
+          recognizedText.text.length < 20) {
         replaceLastBotMessage('chatbot.imageTooBlurry'.tr);
         return;
       }
@@ -182,8 +183,7 @@ class ChatController extends GetxController {
   Future<void> send(int userId, {String? ocrText, String? ocrLines}) async {
     final text = textController.text.trim();
     final isOcr = ocrText != null;
-    
-    // Prevent double sending for text messages, but allow OCR flow which already managed isLoading
+
     if (!isOcr && (text.isEmpty || isLoading.value)) return;
     if (isOcr && ocrText.isEmpty) return;
 
@@ -206,96 +206,125 @@ class ChatController extends GetxController {
       );
       final reply = await sendToChatbotUseCase(dto);
 
-      if (reply.startsWith('__STRUCTURED_ANALYSIS__')) {
-        final jsonStr = reply.replaceFirst('__STRUCTURED_ANALYSIS__', '');
-        try {
-          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          final summary = data['summary'] ?? 'chatbot.financialAnalysis'.tr;
-          replaceLastBotMessageWithMetadata(summary, data);
-        } catch (e) {
-          replaceLastBotMessage(
-            reply.replaceFirst('__STRUCTURED_ANALYSIS__', ''),
-          );
-        }
-
-      } else if (reply.startsWith('__TRANSACTION_SAVED__')) {
-        final jsonStr = reply.replaceFirst('__TRANSACTION_SAVED__', '');
-        try {
-          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          data['__type'] = 'transaction_saved';
-          replaceLastBotMessageWithMetadata('', data);
-        } catch (e) {
-          replaceLastBotMessage('chatbot.transactionSaved'.tr);
-        }
-        try {
-          await transactionController.refreshAllData(userId);
-          
-          // Refresh Wallet balances
-          if (Get.isRegistered<WalletController>()) {
-            Get.find<WalletController>().refreshWallets();
-          }
-
-          // Refresh current Saving Goal progress
-          if (savingGoalController.goalId.value > 0) {
-            savingGoalController.loadGoalById();
-          }
-
-          // Refresh Statistics
-          if (Get.isRegistered<StatisticsController>()) {
-            Get.find<StatisticsController>().refreshStatisticsData(userId);
-          }
-
-          if (Get.isRegistered<GamificationController>()) {
-            Future.delayed(const Duration(milliseconds: 300), () {
-              Get.find<GamificationController>().recordDailyTransaction();
-            });
-          }
-        } catch (_) {}
-      } else if (reply.startsWith('__TRANSACTION_LIST__')) {
-        final jsonStr = reply.replaceFirst('__TRANSACTION_LIST__', '');
-        try {
-          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          data['__type'] = 'transaction_list';
-          replaceLastBotMessageWithMetadata('', data);
-        } catch (e) {
-          replaceLastBotMessage('chatbot.transactionListError'.tr);
-        }
-      } else if (reply.startsWith('__CATEGORY_LIST__')) {
-        final jsonStr = reply.replaceFirst('__CATEGORY_LIST__', '');
-        try {
-          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          data['__type'] = 'category_list';
-          replaceLastBotMessageWithMetadata('', data);
-        } catch (e) {
-          replaceLastBotMessage('chatbot.categoryListError'.tr);
-        }
-      } else if (reply.startsWith('__CATEGORY_CREATED__')) {
-        final jsonStr = reply.replaceFirst('__CATEGORY_CREATED__', '');
-        try {
-          final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-          data['__type'] = 'category_created';
-          replaceLastBotMessageWithMetadata('', data);
-
-          // Refresh categories and statistics in the app
-          if (Get.isRegistered<UserCategoryController>()) {
-            Get.find<UserCategoryController>().loadCategories(userId);
-          }
-          if (Get.isRegistered<StatisticsController>()) {
-            Get.find<StatisticsController>().refreshStatisticsData(userId);
-          }
-        } catch (e) {
-          replaceLastBotMessage('chatbot.categoryCreated'.tr);
-        }
-      } else {
-        replaceLastBotMessage(reply);
-      }
-      scrollToBottom();
+      _handleBotReply(reply, userId);
     } catch (e) {
       errorMessage.value = e.toString();
-      replaceLastBotMessage('chatbot.connectionError'.tr.replaceAll('@error', e.toString()));
+      replaceLastBotMessage(
+        'chatbot.connectionError'.tr.replaceAll('@error', e.toString()),
+      );
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> sendCustomMessage(
+    String displayMsg,
+    String payloadMsg,
+    int userId,
+  ) async {
+    if (isLoading.value) return;
+
+    try {
+      addUserMessage(displayMsg);
+      addBotMessage('...');
+      scrollToBottom();
+
+      isLoading.value = true;
+      errorMessage.value = null;
+
+      final dto = ChatDto(message: payloadMsg, userId: userId);
+      final reply = await sendToChatbotUseCase(dto);
+
+      _handleBotReply(reply, userId);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      replaceLastBotMessage('Có lỗi xảy ra: $e');
+    } finally {
+      isLoading.value = false;
+      scrollToBottom();
+    }
+  }
+
+  void _handleBotReply(String reply, int userId) {
+    if (reply.startsWith('__STRUCTURED_ANALYSIS__')) {
+      final jsonStr = reply.replaceFirst('__STRUCTURED_ANALYSIS__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        final summary = data['summary'] ?? 'chatbot.financialAnalysis'.tr;
+        replaceLastBotMessageWithMetadata(summary, data);
+      } catch (e) {
+        replaceLastBotMessage(
+          reply.replaceFirst('__STRUCTURED_ANALYSIS__', ''),
+        );
+      }
+    } else if (reply.startsWith('__TRANSACTION_SAVED__')) {
+      final jsonStr = reply.replaceFirst('__TRANSACTION_SAVED__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'transaction_saved';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage('chatbot.transactionSaved'.tr);
+      }
+      try {
+        transactionController.refreshAllData(userId);
+
+        if (Get.isRegistered<WalletController>()) {
+          Get.find<WalletController>().refreshWallets();
+        }
+
+        if (savingGoalController.goalId.value > 0) {
+          savingGoalController.loadGoalById();
+        }
+
+        if (Get.isRegistered<StatisticsController>()) {
+          Get.find<StatisticsController>().refreshStatisticsData(userId);
+        }
+
+        if (Get.isRegistered<GamificationController>()) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            Get.find<GamificationController>().recordDailyTransaction();
+          });
+        }
+      } catch (_) {}
+    } else if (reply.startsWith('__TRANSACTION_LIST__')) {
+      final jsonStr = reply.replaceFirst('__TRANSACTION_LIST__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'transaction_list';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage('chatbot.transactionListError'.tr);
+      }
+    } else if (reply.startsWith('__SAVING_GOAL_PROPOSAL__')) {
+      final jsonStr = reply.replaceFirst('__SAVING_GOAL_PROPOSAL__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'saving_goal_proposal';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage('Tôi đã ghi nhận đề xuất tích lũy của bạn!');
+      }
+    } else if (reply.startsWith('__SAVING_GOAL_CREATED__')) {
+      final jsonStr = reply.replaceFirst('__SAVING_GOAL_CREATED__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'saving_goal_created';
+        _finalizeSavingGoalProposals(data);
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage('Đã tạo mục tiêu tiết kiệm thành công!');
+      }
+      try {
+        final userId = appController.userId.value;
+        if (userId != null) {
+          savingGoalController.loadGoals(userId);
+        }
+      } catch (_) {}
+    } else {
+      replaceLastBotMessage(reply);
+    }
+    scrollToBottom();
   }
 
   void scrollToBottom() {
@@ -311,7 +340,9 @@ class ChatController extends GetxController {
   }
 
   void addUserMessage(String text, {String? imagePath}) {
-    messages.add(ChatMessageEntity(isUser: true, text: text, imagePath: imagePath));
+    messages.add(
+      ChatMessageEntity(isUser: true, text: text, imagePath: imagePath),
+    );
   }
 
   void addBotMessage(String text) {
@@ -336,6 +367,37 @@ class ChatController extends GetxController {
         isUser: false,
         text: text,
         metadata: metadata,
+      );
+    }
+  }
+
+  void _finalizeSavingGoalProposals(Map<String, dynamic> createdGoal) {
+    final createdName = createdGoal['name']?.toString();
+    final createdTarget = (createdGoal['target'] as num?)?.toDouble();
+
+    for (var i = 0; i < messages.length; i++) {
+      final metadata = messages[i].metadata;
+      if (metadata == null || metadata['__type'] != 'saving_goal_proposal') {
+        continue;
+      }
+
+      final proposalName = metadata['name']?.toString();
+      final proposalTarget = (metadata['target'] as num?)?.toDouble();
+      final isSameGoal =
+          (createdName == null || proposalName == createdName) &&
+          (createdTarget == null || proposalTarget == createdTarget);
+
+      if (!isSameGoal) continue;
+
+      final updatedMetadata = Map<String, dynamic>.from(metadata);
+      updatedMetadata['isFinalized'] = true;
+      updatedMetadata['finalizedLabel'] = 'Mục tiêu này đã được tạo';
+
+      messages[i] = ChatMessageEntity(
+        isUser: messages[i].isUser,
+        text: messages[i].text,
+        imagePath: messages[i].imagePath,
+        metadata: updatedMetadata,
       );
     }
   }

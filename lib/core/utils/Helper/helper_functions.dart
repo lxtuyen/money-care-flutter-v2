@@ -110,28 +110,26 @@ class AppHelperFunction {
     String? title,
     Duration? duration,
   }) {
-    final context = Get.overlayContext ?? Get.context;
-    if (context == null) return;
-
     final resolvedType = type ?? _inferSnackBarType(message);
-    final messenger = ScaffoldMessenger.of(context);
 
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
+    Get.closeAllSnackbars();
+    
+    Future.delayed(const Duration(milliseconds: 10), () {
+      Get.showSnackbar(
+        GetSnackBar(
           backgroundColor: Colors.transparent,
-          elevation: 0,
           duration: duration ?? _defaultDurationFor(resolvedType),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-          content: _SnackBarContent(
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          padding: EdgeInsets.zero,
+          snackPosition: SnackPosition.TOP,
+          messageText: _SnackBarContent(
             title: title ?? _defaultTitleFor(resolvedType),
             message: message,
             type: resolvedType,
           ),
         ),
       );
+    });
   }
 
   static void showSuccessSnackBar(

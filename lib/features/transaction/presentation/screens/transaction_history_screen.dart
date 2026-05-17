@@ -14,7 +14,6 @@ import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/filter_dialog.dart';
 import 'package:money_care/features/transaction/presentation/widgets/search_filter.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
-import 'package:money_care/features/transaction/presentation/screens/recurring_transaction_screen.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
@@ -70,13 +69,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         children: [
           AppHeader(
             title: 'transaction.title'.tr,
-            actions: [
-              IconButton(
-                onPressed: () => Get.to(() => const RecurringTransactionScreen()),
-                icon: const Icon(Icons.history_toggle_off_rounded, color: Colors.white),
-                tooltip: 'transaction.recurring'.tr,
-              ),
-            ],
             child: Obx(() {
               final data = statisticsController.totalByType.value;
               final selectedType = statisticsController.selectedType.value;

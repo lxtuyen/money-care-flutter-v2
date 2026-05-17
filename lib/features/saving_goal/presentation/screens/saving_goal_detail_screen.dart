@@ -14,6 +14,7 @@ import 'package:money_care/features/home/presentation/widgets/transaction/transa
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_projection_card.dart';
 
 class SavingGoalDetailScreen extends StatefulWidget {
   const SavingGoalDetailScreen({super.key});
@@ -163,6 +164,16 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                     ),
                   ),
                   _buildDetailCard(colors),
+
+                  // Projection card
+                  if (report?.projection != null) ...[
+                    const SizedBox(height: 16),
+                    SavingGoalProjectionCard(
+                      projection: report!.projection!,
+                      target: report.target,
+                      currentBalance: report.currentBalance,
+                    ),
+                  ],
                   
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),

@@ -8,8 +8,9 @@ import 'package:money_care/features/chatbot/presentation/widgets/analysis_bubble
 
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_saved_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_list_bubble.dart';
-import 'package:money_care/features/chatbot/presentation/widgets/category_list_bubble.dart';
-import 'package:money_care/features/chatbot/presentation/widgets/category_created_bubble.dart';
+
+import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_created_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_proposal_bubble.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -102,11 +103,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             if (m.metadata!['__type'] == 'transaction_list') {
               return TransactionListBubble(metadata: m.metadata!);
             }
-            if (m.metadata!['__type'] == 'category_list') {
-              return CategoryListBubble(metadata: m.metadata!);
+
+            if (m.metadata!['__type'] == 'saving_goal_created') {
+              return SavingGoalCreatedBubble(metadata: m.metadata!);
             }
-            if (m.metadata!['__type'] == 'category_created') {
-              return CategoryCreatedBubble(metadata: m.metadata!);
+            if (m.metadata!['__type'] == 'saving_goal_proposal') {
+              return SavingGoalProposalBubble(metadata: m.metadata!);
             }
 
             return AnalysisBubble(metadata: m.metadata!);

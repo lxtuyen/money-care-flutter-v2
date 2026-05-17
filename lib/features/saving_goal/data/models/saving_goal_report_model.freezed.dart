@@ -560,9 +560,287 @@ as double,
 
 
 /// @nodoc
+mixin _$ProjectionModel {
+
+@JsonKey(fromJson: NumParser.parseDouble) double get monthlySavingCapacity;@JsonKey(fromJson: NumParser.parseIntNullable) int? get monthsRemaining; DateTime? get projectedDate; bool? get isOnTrack;@JsonKey(fromJson: NumParser.parseIntNullable) int? get monthsDiff; bool get hasPlan;
+/// Create a copy of ProjectionModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ProjectionModelCopyWith<ProjectionModel> get copyWith => _$ProjectionModelCopyWithImpl<ProjectionModel>(this as ProjectionModel, _$identity);
+
+  /// Serializes this ProjectionModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProjectionModel&&(identical(other.monthlySavingCapacity, monthlySavingCapacity) || other.monthlySavingCapacity == monthlySavingCapacity)&&(identical(other.monthsRemaining, monthsRemaining) || other.monthsRemaining == monthsRemaining)&&(identical(other.projectedDate, projectedDate) || other.projectedDate == projectedDate)&&(identical(other.isOnTrack, isOnTrack) || other.isOnTrack == isOnTrack)&&(identical(other.monthsDiff, monthsDiff) || other.monthsDiff == monthsDiff)&&(identical(other.hasPlan, hasPlan) || other.hasPlan == hasPlan));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,monthlySavingCapacity,monthsRemaining,projectedDate,isOnTrack,monthsDiff,hasPlan);
+
+@override
+String toString() {
+  return 'ProjectionModel(monthlySavingCapacity: $monthlySavingCapacity, monthsRemaining: $monthsRemaining, projectedDate: $projectedDate, isOnTrack: $isOnTrack, monthsDiff: $monthsDiff, hasPlan: $hasPlan)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ProjectionModelCopyWith<$Res>  {
+  factory $ProjectionModelCopyWith(ProjectionModel value, $Res Function(ProjectionModel) _then) = _$ProjectionModelCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(fromJson: NumParser.parseDouble) double monthlySavingCapacity,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining, DateTime? projectedDate, bool? isOnTrack,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff, bool hasPlan
+});
+
+
+
+
+}
+/// @nodoc
+class _$ProjectionModelCopyWithImpl<$Res>
+    implements $ProjectionModelCopyWith<$Res> {
+  _$ProjectionModelCopyWithImpl(this._self, this._then);
+
+  final ProjectionModel _self;
+  final $Res Function(ProjectionModel) _then;
+
+/// Create a copy of ProjectionModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? monthlySavingCapacity = null,Object? monthsRemaining = freezed,Object? projectedDate = freezed,Object? isOnTrack = freezed,Object? monthsDiff = freezed,Object? hasPlan = null,}) {
+  return _then(_self.copyWith(
+monthlySavingCapacity: null == monthlySavingCapacity ? _self.monthlySavingCapacity : monthlySavingCapacity // ignore: cast_nullable_to_non_nullable
+as double,monthsRemaining: freezed == monthsRemaining ? _self.monthsRemaining : monthsRemaining // ignore: cast_nullable_to_non_nullable
+as int?,projectedDate: freezed == projectedDate ? _self.projectedDate : projectedDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,isOnTrack: freezed == isOnTrack ? _self.isOnTrack : isOnTrack // ignore: cast_nullable_to_non_nullable
+as bool?,monthsDiff: freezed == monthsDiff ? _self.monthsDiff : monthsDiff // ignore: cast_nullable_to_non_nullable
+as int?,hasPlan: null == hasPlan ? _self.hasPlan : hasPlan // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ProjectionModel].
+extension ProjectionModelPatterns on ProjectionModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ProjectionModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ProjectionModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ProjectionModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _ProjectionModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ProjectionModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ProjectionModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ProjectionModel() when $default != null:
+return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)  $default,) {final _that = this;
+switch (_that) {
+case _ProjectionModel():
+return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,) {final _that = this;
+switch (_that) {
+case _ProjectionModel() when $default != null:
+return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ProjectionModel implements ProjectionModel {
+  const _ProjectionModel({@JsonKey(fromJson: NumParser.parseDouble) this.monthlySavingCapacity = 0, @JsonKey(fromJson: NumParser.parseIntNullable) this.monthsRemaining, this.projectedDate, this.isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable) this.monthsDiff, this.hasPlan = false});
+  factory _ProjectionModel.fromJson(Map<String, dynamic> json) => _$ProjectionModelFromJson(json);
+
+@override@JsonKey(fromJson: NumParser.parseDouble) final  double monthlySavingCapacity;
+@override@JsonKey(fromJson: NumParser.parseIntNullable) final  int? monthsRemaining;
+@override final  DateTime? projectedDate;
+@override final  bool? isOnTrack;
+@override@JsonKey(fromJson: NumParser.parseIntNullable) final  int? monthsDiff;
+@override@JsonKey() final  bool hasPlan;
+
+/// Create a copy of ProjectionModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ProjectionModelCopyWith<_ProjectionModel> get copyWith => __$ProjectionModelCopyWithImpl<_ProjectionModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ProjectionModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProjectionModel&&(identical(other.monthlySavingCapacity, monthlySavingCapacity) || other.monthlySavingCapacity == monthlySavingCapacity)&&(identical(other.monthsRemaining, monthsRemaining) || other.monthsRemaining == monthsRemaining)&&(identical(other.projectedDate, projectedDate) || other.projectedDate == projectedDate)&&(identical(other.isOnTrack, isOnTrack) || other.isOnTrack == isOnTrack)&&(identical(other.monthsDiff, monthsDiff) || other.monthsDiff == monthsDiff)&&(identical(other.hasPlan, hasPlan) || other.hasPlan == hasPlan));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,monthlySavingCapacity,monthsRemaining,projectedDate,isOnTrack,monthsDiff,hasPlan);
+
+@override
+String toString() {
+  return 'ProjectionModel(monthlySavingCapacity: $monthlySavingCapacity, monthsRemaining: $monthsRemaining, projectedDate: $projectedDate, isOnTrack: $isOnTrack, monthsDiff: $monthsDiff, hasPlan: $hasPlan)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ProjectionModelCopyWith<$Res> implements $ProjectionModelCopyWith<$Res> {
+  factory _$ProjectionModelCopyWith(_ProjectionModel value, $Res Function(_ProjectionModel) _then) = __$ProjectionModelCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(fromJson: NumParser.parseDouble) double monthlySavingCapacity,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining, DateTime? projectedDate, bool? isOnTrack,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff, bool hasPlan
+});
+
+
+
+
+}
+/// @nodoc
+class __$ProjectionModelCopyWithImpl<$Res>
+    implements _$ProjectionModelCopyWith<$Res> {
+  __$ProjectionModelCopyWithImpl(this._self, this._then);
+
+  final _ProjectionModel _self;
+  final $Res Function(_ProjectionModel) _then;
+
+/// Create a copy of ProjectionModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? monthlySavingCapacity = null,Object? monthsRemaining = freezed,Object? projectedDate = freezed,Object? isOnTrack = freezed,Object? monthsDiff = freezed,Object? hasPlan = null,}) {
+  return _then(_ProjectionModel(
+monthlySavingCapacity: null == monthlySavingCapacity ? _self.monthlySavingCapacity : monthlySavingCapacity // ignore: cast_nullable_to_non_nullable
+as double,monthsRemaining: freezed == monthsRemaining ? _self.monthsRemaining : monthsRemaining // ignore: cast_nullable_to_non_nullable
+as int?,projectedDate: freezed == projectedDate ? _self.projectedDate : projectedDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,isOnTrack: freezed == isOnTrack ? _self.isOnTrack : isOnTrack // ignore: cast_nullable_to_non_nullable
+as bool?,monthsDiff: freezed == monthsDiff ? _self.monthsDiff : monthsDiff // ignore: cast_nullable_to_non_nullable
+as int?,hasPlan: null == hasPlan ? _self.hasPlan : hasPlan // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$SavingGoalReportModel {
 
-@JsonKey(fromJson: NumParser.parseInt) int get id; String get name;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(fromJson: NumParser.parseDouble) double get target;@JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) double get currentBalance;@JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) int get progressPercent;@JsonKey(name: 'is_completed') bool get isCompleted;@JsonKey(name: 'completion_notified') bool get completionNotified;@JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) int get currentMilestoneIndex; List<MilestoneModel> get milestones; int get balanceUsagePercentage; double get totalSpent; bool get isOverBudget; int get targetCompletionPercentage; bool get isTargetAchieved; List<CategorySpendingModel> get categoryBreakdown; int get totalTransactions; double get dailyAverageSpending; double get remainingBudget;@JsonKey(name: 'wallet_name') String? get walletName;@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) double get walletBalance; List<TransactionModel> get transactions;
+@JsonKey(fromJson: NumParser.parseInt) int get id; String get name;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(fromJson: NumParser.parseDouble) double get target;@JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) double get currentBalance;@JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) int get progressPercent;@JsonKey(name: 'is_completed') bool get isCompleted;@JsonKey(name: 'completion_notified') bool get completionNotified;@JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) int get currentMilestoneIndex; List<MilestoneModel> get milestones; int get balanceUsagePercentage; double get totalSpent; bool get isOverBudget; int get targetCompletionPercentage; bool get isTargetAchieved; List<CategorySpendingModel> get categoryBreakdown; int get totalTransactions; double get dailyAverageSpending; double get remainingBudget;@JsonKey(name: 'wallet_name') String? get walletName;@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) double get walletBalance; ProjectionModel? get projection; List<TransactionModel> get transactions;
 /// Create a copy of SavingGoalReportModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -575,16 +853,16 @@ $SavingGoalReportModelCopyWith<SavingGoalReportModel> get copyWith => _$SavingGo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalReportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.target, target) || other.target == target)&&(identical(other.currentBalance, currentBalance) || other.currentBalance == currentBalance)&&(identical(other.progressPercent, progressPercent) || other.progressPercent == progressPercent)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.completionNotified, completionNotified) || other.completionNotified == completionNotified)&&(identical(other.currentMilestoneIndex, currentMilestoneIndex) || other.currentMilestoneIndex == currentMilestoneIndex)&&const DeepCollectionEquality().equals(other.milestones, milestones)&&(identical(other.balanceUsagePercentage, balanceUsagePercentage) || other.balanceUsagePercentage == balanceUsagePercentage)&&(identical(other.totalSpent, totalSpent) || other.totalSpent == totalSpent)&&(identical(other.isOverBudget, isOverBudget) || other.isOverBudget == isOverBudget)&&(identical(other.targetCompletionPercentage, targetCompletionPercentage) || other.targetCompletionPercentage == targetCompletionPercentage)&&(identical(other.isTargetAchieved, isTargetAchieved) || other.isTargetAchieved == isTargetAchieved)&&const DeepCollectionEquality().equals(other.categoryBreakdown, categoryBreakdown)&&(identical(other.totalTransactions, totalTransactions) || other.totalTransactions == totalTransactions)&&(identical(other.dailyAverageSpending, dailyAverageSpending) || other.dailyAverageSpending == dailyAverageSpending)&&(identical(other.remainingBudget, remainingBudget) || other.remainingBudget == remainingBudget)&&(identical(other.walletName, walletName) || other.walletName == walletName)&&(identical(other.walletBalance, walletBalance) || other.walletBalance == walletBalance)&&const DeepCollectionEquality().equals(other.transactions, transactions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalReportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.target, target) || other.target == target)&&(identical(other.currentBalance, currentBalance) || other.currentBalance == currentBalance)&&(identical(other.progressPercent, progressPercent) || other.progressPercent == progressPercent)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.completionNotified, completionNotified) || other.completionNotified == completionNotified)&&(identical(other.currentMilestoneIndex, currentMilestoneIndex) || other.currentMilestoneIndex == currentMilestoneIndex)&&const DeepCollectionEquality().equals(other.milestones, milestones)&&(identical(other.balanceUsagePercentage, balanceUsagePercentage) || other.balanceUsagePercentage == balanceUsagePercentage)&&(identical(other.totalSpent, totalSpent) || other.totalSpent == totalSpent)&&(identical(other.isOverBudget, isOverBudget) || other.isOverBudget == isOverBudget)&&(identical(other.targetCompletionPercentage, targetCompletionPercentage) || other.targetCompletionPercentage == targetCompletionPercentage)&&(identical(other.isTargetAchieved, isTargetAchieved) || other.isTargetAchieved == isTargetAchieved)&&const DeepCollectionEquality().equals(other.categoryBreakdown, categoryBreakdown)&&(identical(other.totalTransactions, totalTransactions) || other.totalTransactions == totalTransactions)&&(identical(other.dailyAverageSpending, dailyAverageSpending) || other.dailyAverageSpending == dailyAverageSpending)&&(identical(other.remainingBudget, remainingBudget) || other.remainingBudget == remainingBudget)&&(identical(other.walletName, walletName) || other.walletName == walletName)&&(identical(other.walletBalance, walletBalance) || other.walletBalance == walletBalance)&&(identical(other.projection, projection) || other.projection == projection)&&const DeepCollectionEquality().equals(other.transactions, transactions));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,startDate,endDate,target,currentBalance,progressPercent,isCompleted,completionNotified,currentMilestoneIndex,const DeepCollectionEquality().hash(milestones),balanceUsagePercentage,totalSpent,isOverBudget,targetCompletionPercentage,isTargetAchieved,const DeepCollectionEquality().hash(categoryBreakdown),totalTransactions,dailyAverageSpending,remainingBudget,walletName,walletBalance,const DeepCollectionEquality().hash(transactions)]);
+int get hashCode => Object.hashAll([runtimeType,id,name,startDate,endDate,target,currentBalance,progressPercent,isCompleted,completionNotified,currentMilestoneIndex,const DeepCollectionEquality().hash(milestones),balanceUsagePercentage,totalSpent,isOverBudget,targetCompletionPercentage,isTargetAchieved,const DeepCollectionEquality().hash(categoryBreakdown),totalTransactions,dailyAverageSpending,remainingBudget,walletName,walletBalance,projection,const DeepCollectionEquality().hash(transactions)]);
 
 @override
 String toString() {
-  return 'SavingGoalReportModel(id: $id, name: $name, startDate: $startDate, endDate: $endDate, target: $target, currentBalance: $currentBalance, progressPercent: $progressPercent, isCompleted: $isCompleted, completionNotified: $completionNotified, currentMilestoneIndex: $currentMilestoneIndex, milestones: $milestones, balanceUsagePercentage: $balanceUsagePercentage, totalSpent: $totalSpent, isOverBudget: $isOverBudget, targetCompletionPercentage: $targetCompletionPercentage, isTargetAchieved: $isTargetAchieved, categoryBreakdown: $categoryBreakdown, totalTransactions: $totalTransactions, dailyAverageSpending: $dailyAverageSpending, remainingBudget: $remainingBudget, walletName: $walletName, walletBalance: $walletBalance, transactions: $transactions)';
+  return 'SavingGoalReportModel(id: $id, name: $name, startDate: $startDate, endDate: $endDate, target: $target, currentBalance: $currentBalance, progressPercent: $progressPercent, isCompleted: $isCompleted, completionNotified: $completionNotified, currentMilestoneIndex: $currentMilestoneIndex, milestones: $milestones, balanceUsagePercentage: $balanceUsagePercentage, totalSpent: $totalSpent, isOverBudget: $isOverBudget, targetCompletionPercentage: $targetCompletionPercentage, isTargetAchieved: $isTargetAchieved, categoryBreakdown: $categoryBreakdown, totalTransactions: $totalTransactions, dailyAverageSpending: $dailyAverageSpending, remainingBudget: $remainingBudget, walletName: $walletName, walletBalance: $walletBalance, projection: $projection, transactions: $transactions)';
 }
 
 
@@ -595,11 +873,11 @@ abstract mixin class $SavingGoalReportModelCopyWith<$Res>  {
   factory $SavingGoalReportModelCopyWith(SavingGoalReportModel value, $Res Function(SavingGoalReportModel) _then) = _$SavingGoalReportModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(fromJson: NumParser.parseDouble) double target,@JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) double currentBalance,@JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) int progressPercent,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'completion_notified') bool completionNotified,@JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) int currentMilestoneIndex, List<MilestoneModel> milestones, int balanceUsagePercentage, double totalSpent, bool isOverBudget, int targetCompletionPercentage, bool isTargetAchieved, List<CategorySpendingModel> categoryBreakdown, int totalTransactions, double dailyAverageSpending, double remainingBudget,@JsonKey(name: 'wallet_name') String? walletName,@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) double walletBalance, List<TransactionModel> transactions
+@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(fromJson: NumParser.parseDouble) double target,@JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) double currentBalance,@JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) int progressPercent,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'completion_notified') bool completionNotified,@JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) int currentMilestoneIndex, List<MilestoneModel> milestones, int balanceUsagePercentage, double totalSpent, bool isOverBudget, int targetCompletionPercentage, bool isTargetAchieved, List<CategorySpendingModel> categoryBreakdown, int totalTransactions, double dailyAverageSpending, double remainingBudget,@JsonKey(name: 'wallet_name') String? walletName,@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) double walletBalance, ProjectionModel? projection, List<TransactionModel> transactions
 });
 
 
-
+$ProjectionModelCopyWith<$Res>? get projection;
 
 }
 /// @nodoc
@@ -612,7 +890,7 @@ class _$SavingGoalReportModelCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalReportModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? startDate = freezed,Object? endDate = freezed,Object? target = null,Object? currentBalance = null,Object? progressPercent = null,Object? isCompleted = null,Object? completionNotified = null,Object? currentMilestoneIndex = null,Object? milestones = null,Object? balanceUsagePercentage = null,Object? totalSpent = null,Object? isOverBudget = null,Object? targetCompletionPercentage = null,Object? isTargetAchieved = null,Object? categoryBreakdown = null,Object? totalTransactions = null,Object? dailyAverageSpending = null,Object? remainingBudget = null,Object? walletName = freezed,Object? walletBalance = null,Object? transactions = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? startDate = freezed,Object? endDate = freezed,Object? target = null,Object? currentBalance = null,Object? progressPercent = null,Object? isCompleted = null,Object? completionNotified = null,Object? currentMilestoneIndex = null,Object? milestones = null,Object? balanceUsagePercentage = null,Object? totalSpent = null,Object? isOverBudget = null,Object? targetCompletionPercentage = null,Object? isTargetAchieved = null,Object? categoryBreakdown = null,Object? totalTransactions = null,Object? dailyAverageSpending = null,Object? remainingBudget = null,Object? walletName = freezed,Object? walletBalance = null,Object? projection = freezed,Object? transactions = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -636,11 +914,24 @@ as int,dailyAverageSpending: null == dailyAverageSpending ? _self.dailyAverageSp
 as double,remainingBudget: null == remainingBudget ? _self.remainingBudget : remainingBudget // ignore: cast_nullable_to_non_nullable
 as double,walletName: freezed == walletName ? _self.walletName : walletName // ignore: cast_nullable_to_non_nullable
 as String?,walletBalance: null == walletBalance ? _self.walletBalance : walletBalance // ignore: cast_nullable_to_non_nullable
-as double,transactions: null == transactions ? _self.transactions : transactions // ignore: cast_nullable_to_non_nullable
+as double,projection: freezed == projection ? _self.projection : projection // ignore: cast_nullable_to_non_nullable
+as ProjectionModel?,transactions: null == transactions ? _self.transactions : transactions // ignore: cast_nullable_to_non_nullable
 as List<TransactionModel>,
   ));
 }
+/// Create a copy of SavingGoalReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ProjectionModelCopyWith<$Res>? get projection {
+    if (_self.projection == null) {
+    return null;
+  }
 
+  return $ProjectionModelCopyWith<$Res>(_self.projection!, (value) {
+    return _then(_self.copyWith(projection: value));
+  });
+}
 }
 
 
@@ -722,10 +1013,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(fromJson: NumParser.parseDouble)  double target, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble)  double currentBalance, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt)  int progressPercent, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'completion_notified')  bool completionNotified, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)  int currentMilestoneIndex,  List<MilestoneModel> milestones,  int balanceUsagePercentage,  double totalSpent,  bool isOverBudget,  int targetCompletionPercentage,  bool isTargetAchieved,  List<CategorySpendingModel> categoryBreakdown,  int totalTransactions,  double dailyAverageSpending,  double remainingBudget, @JsonKey(name: 'wallet_name')  String? walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)  double walletBalance,  List<TransactionModel> transactions)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(fromJson: NumParser.parseDouble)  double target, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble)  double currentBalance, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt)  int progressPercent, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'completion_notified')  bool completionNotified, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)  int currentMilestoneIndex,  List<MilestoneModel> milestones,  int balanceUsagePercentage,  double totalSpent,  bool isOverBudget,  int targetCompletionPercentage,  bool isTargetAchieved,  List<CategorySpendingModel> categoryBreakdown,  int totalTransactions,  double dailyAverageSpending,  double remainingBudget, @JsonKey(name: 'wallet_name')  String? walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)  double walletBalance,  ProjectionModel? projection,  List<TransactionModel> transactions)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SavingGoalReportModel() when $default != null:
-return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_that.currentBalance,_that.progressPercent,_that.isCompleted,_that.completionNotified,_that.currentMilestoneIndex,_that.milestones,_that.balanceUsagePercentage,_that.totalSpent,_that.isOverBudget,_that.targetCompletionPercentage,_that.isTargetAchieved,_that.categoryBreakdown,_that.totalTransactions,_that.dailyAverageSpending,_that.remainingBudget,_that.walletName,_that.walletBalance,_that.transactions);case _:
+return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_that.currentBalance,_that.progressPercent,_that.isCompleted,_that.completionNotified,_that.currentMilestoneIndex,_that.milestones,_that.balanceUsagePercentage,_that.totalSpent,_that.isOverBudget,_that.targetCompletionPercentage,_that.isTargetAchieved,_that.categoryBreakdown,_that.totalTransactions,_that.dailyAverageSpending,_that.remainingBudget,_that.walletName,_that.walletBalance,_that.projection,_that.transactions);case _:
   return orElse();
 
 }
@@ -743,10 +1034,10 @@ return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(fromJson: NumParser.parseDouble)  double target, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble)  double currentBalance, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt)  int progressPercent, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'completion_notified')  bool completionNotified, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)  int currentMilestoneIndex,  List<MilestoneModel> milestones,  int balanceUsagePercentage,  double totalSpent,  bool isOverBudget,  int targetCompletionPercentage,  bool isTargetAchieved,  List<CategorySpendingModel> categoryBreakdown,  int totalTransactions,  double dailyAverageSpending,  double remainingBudget, @JsonKey(name: 'wallet_name')  String? walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)  double walletBalance,  List<TransactionModel> transactions)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(fromJson: NumParser.parseDouble)  double target, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble)  double currentBalance, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt)  int progressPercent, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'completion_notified')  bool completionNotified, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)  int currentMilestoneIndex,  List<MilestoneModel> milestones,  int balanceUsagePercentage,  double totalSpent,  bool isOverBudget,  int targetCompletionPercentage,  bool isTargetAchieved,  List<CategorySpendingModel> categoryBreakdown,  int totalTransactions,  double dailyAverageSpending,  double remainingBudget, @JsonKey(name: 'wallet_name')  String? walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)  double walletBalance,  ProjectionModel? projection,  List<TransactionModel> transactions)  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalReportModel():
-return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_that.currentBalance,_that.progressPercent,_that.isCompleted,_that.completionNotified,_that.currentMilestoneIndex,_that.milestones,_that.balanceUsagePercentage,_that.totalSpent,_that.isOverBudget,_that.targetCompletionPercentage,_that.isTargetAchieved,_that.categoryBreakdown,_that.totalTransactions,_that.dailyAverageSpending,_that.remainingBudget,_that.walletName,_that.walletBalance,_that.transactions);case _:
+return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_that.currentBalance,_that.progressPercent,_that.isCompleted,_that.completionNotified,_that.currentMilestoneIndex,_that.milestones,_that.balanceUsagePercentage,_that.totalSpent,_that.isOverBudget,_that.targetCompletionPercentage,_that.isTargetAchieved,_that.categoryBreakdown,_that.totalTransactions,_that.dailyAverageSpending,_that.remainingBudget,_that.walletName,_that.walletBalance,_that.projection,_that.transactions);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -763,10 +1054,10 @@ return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(fromJson: NumParser.parseDouble)  double target, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble)  double currentBalance, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt)  int progressPercent, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'completion_notified')  bool completionNotified, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)  int currentMilestoneIndex,  List<MilestoneModel> milestones,  int balanceUsagePercentage,  double totalSpent,  bool isOverBudget,  int targetCompletionPercentage,  bool isTargetAchieved,  List<CategorySpendingModel> categoryBreakdown,  int totalTransactions,  double dailyAverageSpending,  double remainingBudget, @JsonKey(name: 'wallet_name')  String? walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)  double walletBalance,  List<TransactionModel> transactions)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(fromJson: NumParser.parseDouble)  double target, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble)  double currentBalance, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt)  int progressPercent, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'completion_notified')  bool completionNotified, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt)  int currentMilestoneIndex,  List<MilestoneModel> milestones,  int balanceUsagePercentage,  double totalSpent,  bool isOverBudget,  int targetCompletionPercentage,  bool isTargetAchieved,  List<CategorySpendingModel> categoryBreakdown,  int totalTransactions,  double dailyAverageSpending,  double remainingBudget, @JsonKey(name: 'wallet_name')  String? walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble)  double walletBalance,  ProjectionModel? projection,  List<TransactionModel> transactions)?  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalReportModel() when $default != null:
-return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_that.currentBalance,_that.progressPercent,_that.isCompleted,_that.completionNotified,_that.currentMilestoneIndex,_that.milestones,_that.balanceUsagePercentage,_that.totalSpent,_that.isOverBudget,_that.targetCompletionPercentage,_that.isTargetAchieved,_that.categoryBreakdown,_that.totalTransactions,_that.dailyAverageSpending,_that.remainingBudget,_that.walletName,_that.walletBalance,_that.transactions);case _:
+return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_that.currentBalance,_that.progressPercent,_that.isCompleted,_that.completionNotified,_that.currentMilestoneIndex,_that.milestones,_that.balanceUsagePercentage,_that.totalSpent,_that.isOverBudget,_that.targetCompletionPercentage,_that.isTargetAchieved,_that.categoryBreakdown,_that.totalTransactions,_that.dailyAverageSpending,_that.remainingBudget,_that.walletName,_that.walletBalance,_that.projection,_that.transactions);case _:
   return null;
 
 }
@@ -778,7 +1069,7 @@ return $default(_that.id,_that.name,_that.startDate,_that.endDate,_that.target,_
 @JsonSerializable()
 
 class _SavingGoalReportModel implements SavingGoalReportModel {
-  const _SavingGoalReportModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, required this.name, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(fromJson: NumParser.parseDouble) this.target = 0, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) this.currentBalance = 0, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) this.progressPercent = 0, @JsonKey(name: 'is_completed') this.isCompleted = false, @JsonKey(name: 'completion_notified') this.completionNotified = false, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) this.currentMilestoneIndex = -1, final  List<MilestoneModel> milestones = const [], this.balanceUsagePercentage = 0, this.totalSpent = 0, this.isOverBudget = false, this.targetCompletionPercentage = 0, this.isTargetAchieved = false, final  List<CategorySpendingModel> categoryBreakdown = const [], this.totalTransactions = 0, this.dailyAverageSpending = 0, this.remainingBudget = 0, @JsonKey(name: 'wallet_name') this.walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) this.walletBalance = 0, final  List<TransactionModel> transactions = const []}): _milestones = milestones,_categoryBreakdown = categoryBreakdown,_transactions = transactions;
+  const _SavingGoalReportModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, required this.name, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(fromJson: NumParser.parseDouble) this.target = 0, @JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) this.currentBalance = 0, @JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) this.progressPercent = 0, @JsonKey(name: 'is_completed') this.isCompleted = false, @JsonKey(name: 'completion_notified') this.completionNotified = false, @JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) this.currentMilestoneIndex = -1, final  List<MilestoneModel> milestones = const [], this.balanceUsagePercentage = 0, this.totalSpent = 0, this.isOverBudget = false, this.targetCompletionPercentage = 0, this.isTargetAchieved = false, final  List<CategorySpendingModel> categoryBreakdown = const [], this.totalTransactions = 0, this.dailyAverageSpending = 0, this.remainingBudget = 0, @JsonKey(name: 'wallet_name') this.walletName, @JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) this.walletBalance = 0, this.projection, final  List<TransactionModel> transactions = const []}): _milestones = milestones,_categoryBreakdown = categoryBreakdown,_transactions = transactions;
   factory _SavingGoalReportModel.fromJson(Map<String, dynamic> json) => _$SavingGoalReportModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseInt) final  int id;
@@ -815,6 +1106,7 @@ class _SavingGoalReportModel implements SavingGoalReportModel {
 @override@JsonKey() final  double remainingBudget;
 @override@JsonKey(name: 'wallet_name') final  String? walletName;
 @override@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) final  double walletBalance;
+@override final  ProjectionModel? projection;
  final  List<TransactionModel> _transactions;
 @override@JsonKey() List<TransactionModel> get transactions {
   if (_transactions is EqualUnmodifiableListView) return _transactions;
@@ -836,16 +1128,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalReportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.target, target) || other.target == target)&&(identical(other.currentBalance, currentBalance) || other.currentBalance == currentBalance)&&(identical(other.progressPercent, progressPercent) || other.progressPercent == progressPercent)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.completionNotified, completionNotified) || other.completionNotified == completionNotified)&&(identical(other.currentMilestoneIndex, currentMilestoneIndex) || other.currentMilestoneIndex == currentMilestoneIndex)&&const DeepCollectionEquality().equals(other._milestones, _milestones)&&(identical(other.balanceUsagePercentage, balanceUsagePercentage) || other.balanceUsagePercentage == balanceUsagePercentage)&&(identical(other.totalSpent, totalSpent) || other.totalSpent == totalSpent)&&(identical(other.isOverBudget, isOverBudget) || other.isOverBudget == isOverBudget)&&(identical(other.targetCompletionPercentage, targetCompletionPercentage) || other.targetCompletionPercentage == targetCompletionPercentage)&&(identical(other.isTargetAchieved, isTargetAchieved) || other.isTargetAchieved == isTargetAchieved)&&const DeepCollectionEquality().equals(other._categoryBreakdown, _categoryBreakdown)&&(identical(other.totalTransactions, totalTransactions) || other.totalTransactions == totalTransactions)&&(identical(other.dailyAverageSpending, dailyAverageSpending) || other.dailyAverageSpending == dailyAverageSpending)&&(identical(other.remainingBudget, remainingBudget) || other.remainingBudget == remainingBudget)&&(identical(other.walletName, walletName) || other.walletName == walletName)&&(identical(other.walletBalance, walletBalance) || other.walletBalance == walletBalance)&&const DeepCollectionEquality().equals(other._transactions, _transactions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalReportModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.target, target) || other.target == target)&&(identical(other.currentBalance, currentBalance) || other.currentBalance == currentBalance)&&(identical(other.progressPercent, progressPercent) || other.progressPercent == progressPercent)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.completionNotified, completionNotified) || other.completionNotified == completionNotified)&&(identical(other.currentMilestoneIndex, currentMilestoneIndex) || other.currentMilestoneIndex == currentMilestoneIndex)&&const DeepCollectionEquality().equals(other._milestones, _milestones)&&(identical(other.balanceUsagePercentage, balanceUsagePercentage) || other.balanceUsagePercentage == balanceUsagePercentage)&&(identical(other.totalSpent, totalSpent) || other.totalSpent == totalSpent)&&(identical(other.isOverBudget, isOverBudget) || other.isOverBudget == isOverBudget)&&(identical(other.targetCompletionPercentage, targetCompletionPercentage) || other.targetCompletionPercentage == targetCompletionPercentage)&&(identical(other.isTargetAchieved, isTargetAchieved) || other.isTargetAchieved == isTargetAchieved)&&const DeepCollectionEquality().equals(other._categoryBreakdown, _categoryBreakdown)&&(identical(other.totalTransactions, totalTransactions) || other.totalTransactions == totalTransactions)&&(identical(other.dailyAverageSpending, dailyAverageSpending) || other.dailyAverageSpending == dailyAverageSpending)&&(identical(other.remainingBudget, remainingBudget) || other.remainingBudget == remainingBudget)&&(identical(other.walletName, walletName) || other.walletName == walletName)&&(identical(other.walletBalance, walletBalance) || other.walletBalance == walletBalance)&&(identical(other.projection, projection) || other.projection == projection)&&const DeepCollectionEquality().equals(other._transactions, _transactions));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,startDate,endDate,target,currentBalance,progressPercent,isCompleted,completionNotified,currentMilestoneIndex,const DeepCollectionEquality().hash(_milestones),balanceUsagePercentage,totalSpent,isOverBudget,targetCompletionPercentage,isTargetAchieved,const DeepCollectionEquality().hash(_categoryBreakdown),totalTransactions,dailyAverageSpending,remainingBudget,walletName,walletBalance,const DeepCollectionEquality().hash(_transactions)]);
+int get hashCode => Object.hashAll([runtimeType,id,name,startDate,endDate,target,currentBalance,progressPercent,isCompleted,completionNotified,currentMilestoneIndex,const DeepCollectionEquality().hash(_milestones),balanceUsagePercentage,totalSpent,isOverBudget,targetCompletionPercentage,isTargetAchieved,const DeepCollectionEquality().hash(_categoryBreakdown),totalTransactions,dailyAverageSpending,remainingBudget,walletName,walletBalance,projection,const DeepCollectionEquality().hash(_transactions)]);
 
 @override
 String toString() {
-  return 'SavingGoalReportModel(id: $id, name: $name, startDate: $startDate, endDate: $endDate, target: $target, currentBalance: $currentBalance, progressPercent: $progressPercent, isCompleted: $isCompleted, completionNotified: $completionNotified, currentMilestoneIndex: $currentMilestoneIndex, milestones: $milestones, balanceUsagePercentage: $balanceUsagePercentage, totalSpent: $totalSpent, isOverBudget: $isOverBudget, targetCompletionPercentage: $targetCompletionPercentage, isTargetAchieved: $isTargetAchieved, categoryBreakdown: $categoryBreakdown, totalTransactions: $totalTransactions, dailyAverageSpending: $dailyAverageSpending, remainingBudget: $remainingBudget, walletName: $walletName, walletBalance: $walletBalance, transactions: $transactions)';
+  return 'SavingGoalReportModel(id: $id, name: $name, startDate: $startDate, endDate: $endDate, target: $target, currentBalance: $currentBalance, progressPercent: $progressPercent, isCompleted: $isCompleted, completionNotified: $completionNotified, currentMilestoneIndex: $currentMilestoneIndex, milestones: $milestones, balanceUsagePercentage: $balanceUsagePercentage, totalSpent: $totalSpent, isOverBudget: $isOverBudget, targetCompletionPercentage: $targetCompletionPercentage, isTargetAchieved: $isTargetAchieved, categoryBreakdown: $categoryBreakdown, totalTransactions: $totalTransactions, dailyAverageSpending: $dailyAverageSpending, remainingBudget: $remainingBudget, walletName: $walletName, walletBalance: $walletBalance, projection: $projection, transactions: $transactions)';
 }
 
 
@@ -856,11 +1148,11 @@ abstract mixin class _$SavingGoalReportModelCopyWith<$Res> implements $SavingGoa
   factory _$SavingGoalReportModelCopyWith(_SavingGoalReportModel value, $Res Function(_SavingGoalReportModel) _then) = __$SavingGoalReportModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(fromJson: NumParser.parseDouble) double target,@JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) double currentBalance,@JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) int progressPercent,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'completion_notified') bool completionNotified,@JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) int currentMilestoneIndex, List<MilestoneModel> milestones, int balanceUsagePercentage, double totalSpent, bool isOverBudget, int targetCompletionPercentage, bool isTargetAchieved, List<CategorySpendingModel> categoryBreakdown, int totalTransactions, double dailyAverageSpending, double remainingBudget,@JsonKey(name: 'wallet_name') String? walletName,@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) double walletBalance, List<TransactionModel> transactions
+@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(fromJson: NumParser.parseDouble) double target,@JsonKey(name: 'current_balance', fromJson: NumParser.parseDouble) double currentBalance,@JsonKey(name: 'progress_percent', fromJson: NumParser.parseInt) int progressPercent,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'completion_notified') bool completionNotified,@JsonKey(name: 'current_milestone_index', fromJson: NumParser.parseInt) int currentMilestoneIndex, List<MilestoneModel> milestones, int balanceUsagePercentage, double totalSpent, bool isOverBudget, int targetCompletionPercentage, bool isTargetAchieved, List<CategorySpendingModel> categoryBreakdown, int totalTransactions, double dailyAverageSpending, double remainingBudget,@JsonKey(name: 'wallet_name') String? walletName,@JsonKey(name: 'wallet_balance', fromJson: NumParser.parseDouble) double walletBalance, ProjectionModel? projection, List<TransactionModel> transactions
 });
 
 
-
+@override $ProjectionModelCopyWith<$Res>? get projection;
 
 }
 /// @nodoc
@@ -873,7 +1165,7 @@ class __$SavingGoalReportModelCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalReportModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? startDate = freezed,Object? endDate = freezed,Object? target = null,Object? currentBalance = null,Object? progressPercent = null,Object? isCompleted = null,Object? completionNotified = null,Object? currentMilestoneIndex = null,Object? milestones = null,Object? balanceUsagePercentage = null,Object? totalSpent = null,Object? isOverBudget = null,Object? targetCompletionPercentage = null,Object? isTargetAchieved = null,Object? categoryBreakdown = null,Object? totalTransactions = null,Object? dailyAverageSpending = null,Object? remainingBudget = null,Object? walletName = freezed,Object? walletBalance = null,Object? transactions = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? startDate = freezed,Object? endDate = freezed,Object? target = null,Object? currentBalance = null,Object? progressPercent = null,Object? isCompleted = null,Object? completionNotified = null,Object? currentMilestoneIndex = null,Object? milestones = null,Object? balanceUsagePercentage = null,Object? totalSpent = null,Object? isOverBudget = null,Object? targetCompletionPercentage = null,Object? isTargetAchieved = null,Object? categoryBreakdown = null,Object? totalTransactions = null,Object? dailyAverageSpending = null,Object? remainingBudget = null,Object? walletName = freezed,Object? walletBalance = null,Object? projection = freezed,Object? transactions = null,}) {
   return _then(_SavingGoalReportModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -897,12 +1189,25 @@ as int,dailyAverageSpending: null == dailyAverageSpending ? _self.dailyAverageSp
 as double,remainingBudget: null == remainingBudget ? _self.remainingBudget : remainingBudget // ignore: cast_nullable_to_non_nullable
 as double,walletName: freezed == walletName ? _self.walletName : walletName // ignore: cast_nullable_to_non_nullable
 as String?,walletBalance: null == walletBalance ? _self.walletBalance : walletBalance // ignore: cast_nullable_to_non_nullable
-as double,transactions: null == transactions ? _self._transactions : transactions // ignore: cast_nullable_to_non_nullable
+as double,projection: freezed == projection ? _self.projection : projection // ignore: cast_nullable_to_non_nullable
+as ProjectionModel?,transactions: null == transactions ? _self._transactions : transactions // ignore: cast_nullable_to_non_nullable
 as List<TransactionModel>,
   ));
 }
 
+/// Create a copy of SavingGoalReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ProjectionModelCopyWith<$Res>? get projection {
+    if (_self.projection == null) {
+    return null;
+  }
 
+  return $ProjectionModelCopyWith<$Res>(_self.projection!, (value) {
+    return _then(_self.copyWith(projection: value));
+  });
+}
 }
 
 // dart format on

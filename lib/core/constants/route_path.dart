@@ -32,6 +32,9 @@ class RoutePath {
   static const walletTransfer = '/wallet_transfer';
   static const walletDetail = '/wallet_detail';
   static const savingGoalDetail = '/saving_goal_detail';
+  static const spendingPlanList = '/spending_plan';
+  static const createSpendingPlan = '/create_spending_plan';
+  static const spendingPlanDetail = '/spending_plan_detail';
 
   static const selectFund = selectSavingGoal;
   static const createFund = createSavingGoal;

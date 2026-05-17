@@ -11,6 +11,7 @@ class ApiRoutes {
   static const getSavingGoals = 'saving-goals/user';
   static const selectSavingGoal = 'saving-goals/select';
   static const checkExpiredSavingGoal = 'saving-goals/check-expired';
+  static const spendingPlans = 'spending-plans';
 
   static const userProfile = 'user-profile/me';
   static const users = 'users';

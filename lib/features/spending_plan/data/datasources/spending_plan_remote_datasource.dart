@@ -14,6 +14,7 @@ abstract class SpendingPlanRemoteDatasource {
   );
   Future<void> deletePlan(int id);
   Future<SpendingPlanModel> activatePlan(int id);
+  Future<SpendingPlanModel> pausePlan(int id);
   Future<SpendingPlanModel> archivePlan(int id);
   Future<SpendingPlanModel> clonePlan(int id, {int? month, int? year});
   Future<SpendingPlanModel> createFixedExpense(
@@ -31,6 +32,7 @@ abstract class SpendingPlanRemoteDatasource {
     int expenseId,
     bool isPaid,
   );
+  Future<SpendingPlanStatsModel?> getActivePlanStatistics();
 }
 
 class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
@@ -150,6 +152,22 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
   }
 
   @override
+  Future<SpendingPlanModel> pausePlan(int id) async {
+    final res = await api.patch<SpendingPlanModel>(
+      '${ApiRoutes.spendingPlans}/$id/pause',
+      fromJsonT: (json) => SpendingPlanModel.fromJson(json),
+    );
+    if (!res.success || res.data == null) {
+      throw ServerException(
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể tạm dừng kế hoạch',
+      );
+    }
+    return res.data!;
+  }
+
+  @override
   Future<SpendingPlanModel> archivePlan(int id) async {
     final res = await api.patch<SpendingPlanModel>(
       '${ApiRoutes.spendingPlans}/$id/archive',
@@ -255,5 +273,22 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       );
     }
     return res.data!;
+  }
+
+  @override
+  Future<SpendingPlanStatsModel?> getActivePlanStatistics() async {
+    final res = await api.get<SpendingPlanStatsModel?>(
+      '${ApiRoutes.spendingPlans}/active/statistics',
+      fromJsonT: (json) =>
+          json == null ? null : SpendingPlanStatsModel.fromJson(json),
+    );
+    if (!res.success) {
+      throw ServerException(
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể tải thống kê kế hoạch chi tiêu',
+      );
+    }
+    return res.data;
   }
 }

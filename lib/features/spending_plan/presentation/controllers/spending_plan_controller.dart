@@ -14,7 +14,10 @@ class SpendingPlanController extends GetxController {
   final UpdateSpendingPlanUseCase updateSpendingPlanUseCase;
   final DeleteSpendingPlanUseCase deleteSpendingPlanUseCase;
   final ActivateSpendingPlanUseCase activateSpendingPlanUseCase;
+  final PauseSpendingPlanUseCase pauseSpendingPlanUseCase;
   final ArchiveSpendingPlanUseCase archiveSpendingPlanUseCase;
+  final GetActiveSpendingPlanStatisticsUseCase
+  getActiveSpendingPlanStatisticsUseCase;
 
   SpendingPlanController({
     required this.getSpendingPlansUseCase,
@@ -24,15 +27,21 @@ class SpendingPlanController extends GetxController {
     required this.updateSpendingPlanUseCase,
     required this.deleteSpendingPlanUseCase,
     required this.activateSpendingPlanUseCase,
+    required this.pauseSpendingPlanUseCase,
     required this.archiveSpendingPlanUseCase,
+    required this.getActiveSpendingPlanStatisticsUseCase,
   });
 
   final plans = <SpendingPlanEntity>[].obs;
   final activePlan = Rxn<SpendingPlanEntity>();
   final selectedPlan = Rxn<SpendingPlanEntity>();
+  final statsSummary = Rxn<SpendingPlanStatsEntity>();
   final isLoading = false.obs;
+  final isLoadingStats = false.obs;
   final isSaving = false.obs;
   final errorMessage = ''.obs;
+  Future<void>? _activePlanRequest;
+  Future<void>? _statsSummaryRequest;
 
   @override
   void onInit() {
@@ -51,9 +60,67 @@ class SpendingPlanController extends GetxController {
   }
 
   Future<void> loadActivePlan() async {
-    final result = await getActiveSpendingPlanUseCase();
-    result.fold(_handleFailure, (plan) {
-      activePlan.value = plan;
+    await _loadActivePlanOnly();
+    await loadStatsSummary();
+  }
+
+  Future<void> _loadActivePlanOnly() {
+    final runningRequest = _activePlanRequest;
+    if (runningRequest != null) return runningRequest;
+
+    final request = () async {
+      final result = await getActiveSpendingPlanUseCase();
+      result.fold(
+        (failure) {
+          _handleFailure(failure);
+        },
+        (plan) {
+          activePlan.value = plan;
+        },
+      );
+    }();
+
+    _activePlanRequest = request;
+    request.whenComplete(() {
+      if (identical(_activePlanRequest, request)) {
+        _activePlanRequest = null;
+      }
+    });
+    return request;
+  }
+
+  Future<void> loadStatsSummary({bool loadActiveIfMissing = false}) async {
+    if (loadActiveIfMissing && activePlan.value == null) {
+      await _loadActivePlanOnly();
+    }
+
+    if (activePlan.value == null) {
+      statsSummary.value = null;
+      return;
+    }
+
+    final runningRequest = _statsSummaryRequest;
+    if (runningRequest != null) return runningRequest;
+
+    isLoadingStats.value = true;
+    final request = () async {
+      final result = await getActiveSpendingPlanStatisticsUseCase();
+      result.fold(
+        (failure) {
+          statsSummary.value = null;
+        },
+        (stats) {
+          statsSummary.value = stats;
+        },
+      );
+    }();
+
+    _statsSummaryRequest = request;
+    await request.whenComplete(() {
+      if (identical(_statsSummaryRequest, request)) {
+        _statsSummaryRequest = null;
+      }
+      isLoadingStats.value = false;
     });
   }
 
@@ -123,6 +190,7 @@ class SpendingPlanController extends GetxController {
         plans.removeWhere((item) => item.id == id);
         if (activePlan.value?.id == id) {
           activePlan.value = null;
+          statsSummary.value = null;
         }
         if (selectedPlan.value?.id == id) {
           selectedPlan.value = null;
@@ -150,22 +218,35 @@ class SpendingPlanController extends GetxController {
         for (var i = 0; i < plans.length; i++) {
           final item = plans[i];
           if (item.id != plan.id && item.status == 'active') {
-            plans[i] = SpendingPlanEntity(
-              id: item.id,
-              month: item.month,
-              year: item.year,
-              totalAmount: item.totalAmount,
-              savingTargetAmount: item.savingTargetAmount,
-              fixedExpenseTotal: item.fixedExpenseTotal,
-              availableSpendingAmount: item.availableSpendingAmount,
-              status: 'archived',
-              riskLevel: item.riskLevel,
-              fixedExpenses: item.fixedExpenses,
-            );
+            plans[i] = item.copyWith(status: 'paused');
           }
         }
         plans.refresh();
+        loadStatsSummary();
         AppHelperFunction.showSuccessSnackBar('Đã áp dụng kế hoạch');
+        return true;
+      },
+    );
+    isSaving.value = false;
+    return success;
+  }
+
+  Future<bool> pausePlan(int id) async {
+    isSaving.value = true;
+    final result = await pauseSpendingPlanUseCase(id);
+    final success = result.fold(
+      (failure) {
+        _handleFailure(failure);
+        return false;
+      },
+      (plan) {
+        _replacePlan(plan);
+        if (activePlan.value?.id == plan.id) {
+          activePlan.value = null;
+          statsSummary.value = null;
+        }
+        selectedPlan.value = plan;
+        AppHelperFunction.showSuccessSnackBar('Đã tạm dừng kế hoạch');
         return true;
       },
     );
@@ -185,6 +266,7 @@ class SpendingPlanController extends GetxController {
         _replacePlan(plan);
         if (activePlan.value?.id == plan.id) {
           activePlan.value = null;
+          statsSummary.value = null;
         }
         selectedPlan.value = plan;
         AppHelperFunction.showSuccessSnackBar('Đã lưu trữ kế hoạch');
@@ -209,6 +291,7 @@ class SpendingPlanController extends GetxController {
       _replacePlan(updatedPlan);
       if (activePlan.value?.id == planId) {
         activePlan.value = updatedPlan;
+        loadStatsSummary();
       }
       if (showSuccessMessage) {
         AppHelperFunction.showSuccessSnackBar(
@@ -243,6 +326,7 @@ class SpendingPlanController extends GetxController {
       _replacePlan(updatedPlan);
       if (activePlan.value?.id == planId) {
         activePlan.value = updatedPlan;
+        loadStatsSummary();
       }
       if (showSuccessMessage) {
         AppHelperFunction.showSuccessSnackBar('Đã cập nhật chi phí cố định');
@@ -266,6 +350,7 @@ class SpendingPlanController extends GetxController {
       _replacePlan(updatedPlan);
       if (activePlan.value?.id == planId) {
         activePlan.value = updatedPlan;
+        loadStatsSummary();
       }
       AppHelperFunction.showSuccessSnackBar('Đã xóa chi phí cố định');
       return true;
@@ -294,6 +379,7 @@ class SpendingPlanController extends GetxController {
       _replacePlan(updatedPlan);
       if (activePlan.value?.id == planId) {
         activePlan.value = updatedPlan;
+        loadStatsSummary();
       }
       AppHelperFunction.showSuccessSnackBar(
         isPaid ? 'Đã đánh dấu đã thanh toán' : 'Đã đánh dấu chưa thanh toán',

@@ -24,6 +24,7 @@ abstract class TransactionModel with _$TransactionModel {
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
     CategoryModel? category,
+    SubCategoryModel? subCategory,
     WalletModel? wallet,
   }) = _TransactionModel;
 
@@ -42,6 +43,7 @@ abstract class TransactionModel with _$TransactionModel {
     createdAt: createdAt,
     updatedAt: updatedAt,
     category: category?.toEntity(),
+    subCategory: subCategory?.toEntity(),
     walletId: wallet?.id,
     walletName: wallet?.name,
   );

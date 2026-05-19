@@ -106,14 +106,19 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = status == 'active';
+    final isPaused = status == 'paused';
     final isArchived = status == 'archived';
     final color = isActive
         ? AppColors.primary
+        : isPaused
+        ? Colors.blueGrey
         : isArchived
         ? Colors.grey
         : Colors.orange;
     final label = isActive
         ? 'Đang áp dụng'
+        : isPaused
+        ? 'Tạm dừng'
         : isArchived
         ? 'Đã lưu trữ'
         : 'Bản nháp';

@@ -8,6 +8,7 @@ import 'package:money_care/features/spending_plan/domain/entities/spending_plan_
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+import 'package:money_care/app/widgets/button/app_action_button.dart';
 
 class FixedExpenseDetail extends StatelessWidget {
   final SpendingPlanEntity plan;
@@ -155,29 +156,16 @@ class FixedExpenseDetail extends StatelessWidget {
                             : 'Chưa thanh toán',
                         valueColor: expense.isPaid ? Colors.green : Colors.grey,
                       ),
-                      if (expense.note != null && expense.note!.isNotEmpty) ...[
-                        const Divider(height: 24),
-                        _buildDetailRow(
-                          context,
-                          icon: Icons.notes_outlined,
-                          label: 'Ghi chú',
-                          value: expense.note!,
-                          isMultiLine: true,
-                        ),
-                      ],
-
                       const SizedBox(height: 32),
 
-                      // Action Buttons
                       Row(
                         children: [
                           Expanded(
-                            child: _buildActionButton(
-                              context,
+                            child: AppActionButton(
                               icon: Icons.edit_outlined,
                               label: 'Sửa',
-                              onPressed: () async {
-                                Get.back(); // close detail dialog
+                              onTap: () async {
+                                Get.back();
                                 showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,
@@ -193,12 +181,10 @@ class FixedExpenseDetail extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: _buildActionButton(
-                              context,
+                            child: AppActionButton(
                               icon: Icons.delete_outline_rounded,
                               label: 'Xóa',
-                              onPressed: () =>
-                                  _handleDelete(context, controller),
+                              onTap: () => _handleDelete(context, controller),
                               color: AppColors.expense,
                             ),
                           ),
@@ -231,10 +217,10 @@ class FixedExpenseDetail extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppThemeColors.of(context).surfaceBackground,
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 20, color: AppColors.text3),
+          child: Icon(icon, size: 20, color: AppColors.primary),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -264,34 +250,6 @@ class FixedExpenseDetail extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-    required Color color,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 20, color: color),
-      label: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color.withValues(alpha: 0.1),
-        foregroundColor: color,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
     );
   }
 

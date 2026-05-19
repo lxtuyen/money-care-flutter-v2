@@ -2,7 +2,17 @@ class FixedExpenseEntity {
   final int id;
   final String name;
   final String? category;
+  final int? categoryId;
+  final String? subCategory;
+  final int? subCategoryId;
+  final String trackingType;
   final double amount;
+  final double monthlyLimit;
+  final double? dailyLimit;
+  final double spentThisMonth;
+  final double todaySpent;
+  final double monthlyProgress;
+  final double dailyOverAmount;
   final String frequencyType;
   final int frequencyValue;
   final int? dueDay;
@@ -15,7 +25,17 @@ class FixedExpenseEntity {
     required this.id,
     required this.name,
     this.category,
+    this.categoryId,
+    this.subCategory,
+    this.subCategoryId,
+    this.trackingType = 'fixed_bill',
     required this.amount,
+    this.monthlyLimit = 0,
+    this.dailyLimit,
+    this.spentThisMonth = 0,
+    this.todaySpent = 0,
+    this.monthlyProgress = 0,
+    this.dailyOverAmount = 0,
     required this.frequencyType,
     required this.frequencyValue,
     this.dueDay,
@@ -52,5 +72,57 @@ class SpendingPlanEntity {
   });
 
   bool get isActive => status == 'active';
+  bool get isPaused => status == 'paused';
   bool get isArchived => status == 'archived';
+
+  SpendingPlanEntity copyWith({
+    int? id,
+    int? month,
+    int? year,
+    double? totalAmount,
+    double? savingTargetAmount,
+    double? fixedExpenseTotal,
+    double? availableSpendingAmount,
+    String? status,
+    String? riskLevel,
+    List<FixedExpenseEntity>? fixedExpenses,
+  }) {
+    return SpendingPlanEntity(
+      id: id ?? this.id,
+      month: month ?? this.month,
+      year: year ?? this.year,
+      totalAmount: totalAmount ?? this.totalAmount,
+      savingTargetAmount: savingTargetAmount ?? this.savingTargetAmount,
+      fixedExpenseTotal: fixedExpenseTotal ?? this.fixedExpenseTotal,
+      availableSpendingAmount:
+          availableSpendingAmount ?? this.availableSpendingAmount,
+      status: status ?? this.status,
+      riskLevel: riskLevel ?? this.riskLevel,
+      fixedExpenses: fixedExpenses ?? this.fixedExpenses,
+    );
+  }
+}
+
+class SpendingPlanStatsEntity {
+  final int planId;
+  final String planName;
+  final double availableSpendingAmount;
+  final double spentFlexibleAmount;
+  final double spentFixedAmount;
+  final double remainingAmount;
+  final int daysLeft;
+  final double projectedEndBalance;
+  final List<FixedExpenseEntity> fixedExpenses;
+
+  const SpendingPlanStatsEntity({
+    required this.planId,
+    required this.planName,
+    required this.availableSpendingAmount,
+    required this.spentFlexibleAmount,
+    required this.spentFixedAmount,
+    required this.remainingAmount,
+    required this.daysLeft,
+    required this.projectedEndBalance,
+    required this.fixedExpenses,
+  });
 }

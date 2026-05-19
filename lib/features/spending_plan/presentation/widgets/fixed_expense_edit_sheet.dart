@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -24,13 +25,13 @@ class FixedExpenseEditSheet extends StatefulWidget {
 class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
-  final _noteController = TextEditingController();
   final _frequencyValueController = TextEditingController(text: '1');
   final _dueDayController = TextEditingController(text: '1');
 
   String _frequencyType = 'monthly';
   bool _isReminderEnabled = false;
   CategoryEntity? _selectedCategory;
+  SubCategoryEntity? _selectedSubCategory;
   final _categoryController = Get.find<UserCategoryController>();
   final _spendingPlanController = Get.find<SpendingPlanController>();
 
@@ -47,7 +48,6 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
       if (widget.expense != null) {
         final exp = widget.expense!;
         _amountController.text = exp.amount.round().toString();
-        _noteController.text = exp.note ?? '';
         _frequencyValueController.text = exp.frequencyValue.toString();
         _dueDayController.text = (exp.dueDay ?? 1).toString();
         _frequencyType = exp.frequencyType;
@@ -58,6 +58,10 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
           _selectedCategory = _categoryController.categories.firstWhereOrNull(
             (c) => c.name.toLowerCase() == catName.toLowerCase(),
           );
+          if (_selectedCategory != null && exp.subCategory != null) {
+            _selectedSubCategory = _selectedCategory!.subCategories
+                .firstWhereOrNull((sub) => sub.name == exp.subCategory);
+          }
         }
       }
     });
@@ -66,7 +70,6 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
   @override
   void dispose() {
     _amountController.dispose();
-    _noteController.dispose();
     _frequencyValueController.dispose();
     _dueDayController.dispose();
     super.dispose();
@@ -94,13 +97,14 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
 
     final request = CreateFixedExpenseRequest(
       category: _selectedCategory!.name,
+      categoryId: _selectedCategory!.id,
+      subCategoryId: _selectedSubCategory?.id,
       amount: amount,
+      monthlyLimit: _monthlyLimitFor(amount, freqVal),
+      dailyLimit: _dailyLimitFor(amount, freqVal),
       frequencyType: _frequencyType,
       frequencyValue: freqVal,
       dueDay: dueDayVal,
-      note: _noteController.text.trim().isEmpty
-          ? null
-          : _noteController.text.trim(),
       isReminderEnabled: _isReminderEnabled,
     );
 
@@ -151,9 +155,112 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
 
     if (selected != null) {
       setState(() {
+        if (_selectedCategory?.id != selected.id) {
+          _selectedSubCategory = null;
+        }
         _selectedCategory = selected;
       });
     }
+  }
+
+  Widget _buildSubCategoryField() {
+    final subCategories = _selectedCategory?.subCategories ?? const [];
+    if (subCategories.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => _selectSubCategory(subCategories),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              Text(
+                _selectedSubCategory?.icon ?? '',
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  _selectedSubCategory?.name ?? 'Chọn danh mục con',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: _selectedSubCategory == null
+                        ? Colors.grey.shade600
+                        : Colors.black,
+                  ),
+                ),
+              ),
+              const Icon(Icons.keyboard_arrow_down_rounded),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectSubCategory(List<SubCategoryEntity> subCategories) async {
+    showDialog(
+      context: context,
+      builder: (context) => SelectionDialog(
+        title: 'Danh mục con',
+        description: 'Chọn nhóm chi tiết cho khoản chi này',
+        clearButtonText: 'Xóa',
+        options: subCategories
+            .where((item) => item.id != null)
+            .map(
+              (item) => SelectionOption(
+                id: item.id.toString(),
+                label:
+                    '${item.icon.isNotEmpty ? '${item.icon} ' : ''}${item.name}',
+              ),
+            )
+            .toList(),
+        initialSelectedId: _selectedSubCategory?.id?.toString(),
+        onSelect: (id, label) {
+          setState(() {
+            if (id == null) {
+              _selectedSubCategory = null;
+            } else {
+              _selectedSubCategory = subCategories.firstWhereOrNull(
+                (item) => item.id?.toString() == id,
+              );
+            }
+          });
+        },
+      ),
+    );
+  }
+
+  int get _daysInMonth =>
+      DateTime(widget.plan.year, widget.plan.month + 1, 0).day;
+
+  double _monthlyLimitFor(double amount, int frequencyValue) {
+    final safeFrequencyValue = frequencyValue <= 0 ? 1 : frequencyValue;
+    switch (_frequencyType) {
+      case 'daily':
+        return amount * safeFrequencyValue * _daysInMonth;
+      case 'weekly':
+        return amount * safeFrequencyValue * (_daysInMonth / 7);
+      case 'monthly':
+      default:
+        return amount * safeFrequencyValue;
+    }
+  }
+
+  double? _dailyLimitFor(double amount, int frequencyValue) {
+    if (_frequencyType != 'daily') return null;
+    final safeFrequencyValue = frequencyValue <= 0 ? 1 : frequencyValue;
+    return amount * safeFrequencyValue;
   }
 
   @override
@@ -233,6 +340,7 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
                 ),
               ),
               const SizedBox(height: 12),
+              _buildSubCategoryField(),
 
               Row(
                 children: [
@@ -341,18 +449,6 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
                   _frequencyType == 'weekly' ||
                   _frequencyType == 'daily')
                 const SizedBox(height: 12),
-
-              TextFormField(
-                controller: _noteController,
-                minLines: 1,
-                maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Ghi chú',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-              ),
-              const SizedBox(height: 12),
 
               SwitchListTile(
                 title: const Text('Nhắc nhở thanh toán'),

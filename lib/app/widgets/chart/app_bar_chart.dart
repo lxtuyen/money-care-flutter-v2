@@ -11,6 +11,8 @@ class AppBarChart extends StatelessWidget {
   final double minY;
   final BarChartAlignment alignment;
   final double? groupsSpace;
+  final double? limitLineY;
+  final String? limitLineLabel;
 
   const AppBarChart({
     super.key,
@@ -21,6 +23,8 @@ class AppBarChart extends StatelessWidget {
     this.minY = 0,
     this.alignment = BarChartAlignment.spaceAround,
     this.groupsSpace,
+    this.limitLineY,
+    this.limitLineLabel,
   });
 
   @override
@@ -37,11 +41,37 @@ class AppBarChart extends StatelessWidget {
     }
 
     double effectiveMaxY = maxY > 0 ? maxY : actualMaxY;
+    if (limitLineY != null && limitLineY! > effectiveMaxY) {
+      effectiveMaxY = limitLineY!;
+    }
     if (effectiveMaxY == 0) effectiveMaxY = 10000;
 
     double interval = chartHelper.calculateInterval(effectiveMaxY);
     final roundedMaxY = (effectiveMaxY / interval).ceil() * interval;
     final chartMaxY = roundedMaxY + interval * 2;
+
+    final extraLines = (limitLineY != null && limitLineY! > 0)
+        ? ExtraLinesData(
+            horizontalLines: [
+              HorizontalLine(
+                y: limitLineY!,
+                color: const Color(0xFFFF5722),
+                strokeWidth: 1.5,
+                dashArray: [4, 4],
+                label: HorizontalLineLabel(
+                  show: true,
+                  alignment: Alignment.topRight,
+                  style: const TextStyle(
+                    color: Color(0xFFFF5722),
+                    fontSize: 8,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  labelResolver: (line) => limitLineLabel ?? '',
+                ),
+              ),
+            ],
+          )
+        : null;
 
     return BarChart(
       BarChartData(
@@ -49,6 +79,7 @@ class AppBarChart extends StatelessWidget {
         groupsSpace: groupsSpace,
         minY: minY,
         maxY: chartMaxY,
+        extraLinesData: extraLines,
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,

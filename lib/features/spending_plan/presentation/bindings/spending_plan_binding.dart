@@ -9,7 +9,7 @@ class SpendingPlanBinding extends Bindings {
   @override
   void dependencies() {
     final apiClient = Get.find<ApiClient>();
-    
+
     if (!Get.isRegistered<SpendingPlanRemoteDatasource>()) {
       Get.lazyPut<SpendingPlanRemoteDatasource>(
         () => SpendingPlanRemoteDatasourceImpl(api: apiClient),
@@ -69,6 +69,19 @@ class SpendingPlanBinding extends Bindings {
         fenix: true,
       );
     }
+    if (!Get.isRegistered<PauseSpendingPlanUseCase>()) {
+      Get.lazyPut<PauseSpendingPlanUseCase>(
+        () => PauseSpendingPlanUseCase(repository),
+        fenix: true,
+      );
+    }
+
+    if (!Get.isRegistered<GetActiveSpendingPlanStatisticsUseCase>()) {
+      Get.lazyPut<GetActiveSpendingPlanStatisticsUseCase>(
+        () => GetActiveSpendingPlanStatisticsUseCase(repository),
+        fenix: true,
+      );
+    }
 
     if (!Get.isRegistered<SpendingPlanController>()) {
       Get.lazyPut<SpendingPlanController>(
@@ -81,7 +94,10 @@ class SpendingPlanBinding extends Bindings {
           updateSpendingPlanUseCase: Get.find<UpdateSpendingPlanUseCase>(),
           deleteSpendingPlanUseCase: Get.find<DeleteSpendingPlanUseCase>(),
           activateSpendingPlanUseCase: Get.find<ActivateSpendingPlanUseCase>(),
+          pauseSpendingPlanUseCase: Get.find<PauseSpendingPlanUseCase>(),
           archiveSpendingPlanUseCase: Get.find<ArchiveSpendingPlanUseCase>(),
+          getActiveSpendingPlanStatisticsUseCase:
+              Get.find<GetActiveSpendingPlanStatisticsUseCase>(),
         ),
         fenix: true,
       );

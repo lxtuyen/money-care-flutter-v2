@@ -5,10 +5,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class EditCategory extends StatefulWidget {
   final String namecategory;
-  const EditCategory({
-    super.key,
-    required this.namecategory,
-  });
+  const EditCategory({super.key, required this.namecategory});
 
   @override
   State<EditCategory> createState() => _EditCategoryState();

@@ -2,7 +2,8 @@ import 'package:money_care/features/transaction/data/datasources/recurring_trans
 import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/domain/repositories/recurring_transaction_repository.dart';
 
-class RecurringTransactionRepositoryImpl implements RecurringTransactionRepository {
+class RecurringTransactionRepositoryImpl
+    implements RecurringTransactionRepository {
   final RecurringTransactionRemoteDataSource remoteDataSource;
 
   RecurringTransactionRepositoryImpl({required this.remoteDataSource});

@@ -198,7 +198,13 @@ class AppBinding extends Bindings {
         activateSpendingPlanUseCase: ActivateSpendingPlanUseCase(
           spendingPlanRepo,
         ),
+        pauseSpendingPlanUseCase: PauseSpendingPlanUseCase(
+          spendingPlanRepo,
+        ),
         archiveSpendingPlanUseCase: ArchiveSpendingPlanUseCase(
+          spendingPlanRepo,
+        ),
+        getActiveSpendingPlanStatisticsUseCase: GetActiveSpendingPlanStatisticsUseCase(
           spendingPlanRepo,
         ),
       ),

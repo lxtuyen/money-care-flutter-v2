@@ -33,10 +33,14 @@ class RecurringTransactionModel {
       frequency: json['frequency'],
       startDate: DateTime.parse(json['startDate']),
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
-      lastExecutedDate: json['lastExecutedDate'] != null ? DateTime.parse(json['lastExecutedDate']) : null,
+      lastExecutedDate: json['lastExecutedDate'] != null
+          ? DateTime.parse(json['lastExecutedDate'])
+          : null,
       isActive: json['isActive'] ?? true,
       note: json['note'],
-      category: json['category'] != null ? CategoryModel.fromJson(json['category']) : null,
+      category: json['category'] != null
+          ? CategoryModel.fromJson(json['category'])
+          : null,
     );
   }
 

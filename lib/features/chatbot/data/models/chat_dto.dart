@@ -4,12 +4,7 @@ class ChatDto {
   final String? ocrText;
   final String? ocrLines;
 
-  ChatDto({
-    this.message,
-    required this.userId,
-    this.ocrText,
-    this.ocrLines,
-  });
+  ChatDto({this.message, required this.userId, this.ocrText, this.ocrLines});
 
   Map<String, dynamic> toJson() {
     return {

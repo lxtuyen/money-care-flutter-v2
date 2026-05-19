@@ -14,6 +14,11 @@ class TransactionSavedBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final transaction = TransactionEntity.fromMap(metadata);
     final isIncome = transaction.type == 'income';
+    final needsClarification = metadata['needsClarification'] == true;
+    final suggestions = (metadata['suggestedSubCategories'] as List? ?? [])
+        .map((item) => item.toString())
+        .where((item) => item.isNotEmpty)
+        .toList();
 
     String formattedDate = AppHelperFunction.getFormattedDate(DateTime.now());
     if (transaction.transactionDate != null) {
@@ -66,7 +71,9 @@ class TransactionSavedBubble extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        isIncome
+                        needsClarification
+                            ? 'Cần xác nhận danh mục'
+                            : isIncome
                             ? 'Đã ghi nhận thu nhập'
                             : 'Đã ghi nhận chi tiêu',
                         style: TextStyle(
@@ -81,10 +88,9 @@ class TransactionSavedBubble extends StatelessWidget {
                       Text(
                         formattedDate,
                         style: TextStyle(
-                          color: (isIncome
-                                  ? AppColors.income
-                                  : AppColors.expense)
-                              .withValues(alpha: 0.6),
+                          color:
+                              (isIncome ? AppColors.income : AppColors.expense)
+                                  .withValues(alpha: 0.6),
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                         ),
@@ -101,10 +107,11 @@ class TransactionSavedBubble extends StatelessWidget {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: (isIncome
-                                  ? const Color(0xFF43A047)
-                                  : const Color(0xFFE53935))
-                              .withValues(alpha: 0.08),
+                          color:
+                              (isIncome
+                                      ? const Color(0xFF43A047)
+                                      : const Color(0xFFE53935))
+                                  .withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
@@ -176,6 +183,30 @@ class TransactionSavedBubble extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (needsClarification && suggestions.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: suggestions.map((suggestion) {
+                        return ActionChip(
+                          label: Text(suggestion),
+                          onPressed: () {
+                            final controller = Get.find<ChatController>();
+                            final userId =
+                                controller.appController.userId.value;
+                            if (userId == null) return;
+                            controller.sendCustomMessage(
+                              suggestion,
+                              'Ghi giao dịch ${transaction.amount} ${transaction.category?.name ?? ''} $suggestion',
+                              userId,
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
               ],
             ),
           ),

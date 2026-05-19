@@ -12,7 +12,7 @@ class RoutePath {
   static const onboardingBudgetSetup = '/onboarding_balance_setup';
   static const onboardingCategorySelect = '/onboarding_category_select';
   static const main = '/main';
-  static const selectSavingGoal = '/select_saving_goal';
+  static const savingGoalManagement = '/saving_goal_management';
   static const createSavingGoal = '/create_saving_goal';
   static const createTransaction = '/create_transaction';
   static const expense = '/expense';
@@ -25,7 +25,6 @@ class RoutePath {
   static const payment = '/payment';
   static const notification = '/notification';
   static const photoTransactionHistory = '/photo_transaction_history';
-  static const expiredSavingGoals = '/expired_saving_goals';
   static const categoryManagement = '/category_management';
   static const streakCalendar = '/streak_calendar';
   static const wallets = '/wallets';
@@ -36,6 +35,5 @@ class RoutePath {
   static const createSpendingPlan = '/create_spending_plan';
   static const spendingPlanDetail = '/spending_plan_detail';
 
-  static const selectFund = selectSavingGoal;
   static const createFund = createSavingGoal;
 }

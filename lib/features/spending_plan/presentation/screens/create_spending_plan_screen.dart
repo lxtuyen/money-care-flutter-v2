@@ -11,6 +11,9 @@ import 'package:money_care/features/spending_plan/presentation/controllers/spend
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
+import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
+import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
+import 'package:money_care/app/widgets/text_field/app_dropdown_field.dart';
 
 class CreateSpendingPlanScreen extends StatefulWidget {
   const CreateSpendingPlanScreen({super.key});
@@ -30,6 +33,10 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
   SpendingPlanEntity? _editingPlan;
 
   int get _daysInMonth {
+    final plan = _editingPlan;
+    if (plan != null) {
+      return DateTime(plan.year, plan.month + 1, 0).day;
+    }
     final now = DateTime.now();
     return DateTime(now.year, now.month + 1, 0).day;
   }
@@ -46,7 +53,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
       if (expense.frequencyType == 'daily') {
         total += amount * val * _daysInMonth;
       } else if (expense.frequencyType == 'weekly') {
-        total += amount * val * 4.33; // 4.33 weeks per month
+        total += amount * val * (_daysInMonth / 7);
       } else {
         total += amount * val;
       }
@@ -81,7 +88,6 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
         draft.frequencyType = expense.frequencyType;
         draft.frequencyValue.text = expense.frequencyValue.toString();
         draft.dueDay.text = expense.dueDay?.toString() ?? '';
-        draft.note.text = expense.note ?? '';
         draft.isReminderEnabled = expense.isReminderEnabled;
         _fixedExpenses.add(draft);
       }
@@ -108,9 +114,16 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
         } else {
           setState(() {
             for (var i = 0; i < _editingPlan!.fixedExpenses.length; i++) {
-              final categoryName = _editingPlan!.fixedExpenses[i].category;
-              _fixedExpenses[i].selectedCategory = categoryController.categories
-                  .firstWhereOrNull((cat) => cat.name == categoryName);
+              final item = _editingPlan!.fixedExpenses[i];
+              final categoryName = item.category;
+              final cat = categoryController.categories.firstWhereOrNull(
+                (c) => c.name == categoryName,
+              );
+              _fixedExpenses[i].selectedCategory = cat;
+              if (cat != null && item.subCategory != null) {
+                _fixedExpenses[i].selectedSubCategory = cat.subCategories
+                    .firstWhereOrNull((sub) => sub.name == item.subCategory);
+              }
             }
           });
         }
@@ -216,13 +229,6 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: controller.isSaving.value ? null : _submit,
-              icon: controller.isSaving.value
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save_outlined),
               label: Text(
                 _editingPlan == null ? 'Lưu kế hoạch' : 'Cập nhật kế hoạch',
               ),
@@ -257,8 +263,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
       final hasAnyInput =
           expense.selectedCategory != null ||
           expense.amount.text.trim().isNotEmpty ||
-          expense.dueDay.text.trim().isNotEmpty ||
-          expense.note.text.trim().isNotEmpty;
+          expense.dueDay.text.trim().isNotEmpty;
       final isComplete =
           expense.selectedCategory != null &&
           _parseMoney(expense.amount.text) > 0;
@@ -306,17 +311,39 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
         .map(
           (expense) => CreateFixedExpenseRequest(
             category: expense.selectedCategory!.name,
+            categoryId: expense.selectedCategory!.id,
+            subCategoryId: expense.selectedSubCategory?.id,
             amount: _parseMoney(expense.amount.text),
+            monthlyLimit: _monthlyLimitFor(expense),
+            dailyLimit: _dailyLimitFor(expense),
             frequencyType: expense.frequencyType,
             frequencyValue: int.tryParse(expense.frequencyValue.text) ?? 1,
             dueDay: int.tryParse(expense.dueDay.text),
-            note: expense.note.text.trim().isEmpty
-                ? null
-                : expense.note.text.trim(),
             isReminderEnabled: expense.isReminderEnabled,
           ),
         )
         .toList();
+  }
+
+  double _monthlyLimitFor(_FixedExpenseDraft expense) {
+    final amount = _parseMoney(expense.amount.text);
+    final frequencyValue = int.tryParse(expense.frequencyValue.text) ?? 1;
+    switch (expense.frequencyType) {
+      case 'daily':
+        return amount * frequencyValue * _daysInMonth;
+      case 'weekly':
+        return amount * frequencyValue * (_daysInMonth / 7);
+      case 'monthly':
+      default:
+        return amount * frequencyValue;
+    }
+  }
+
+  double? _dailyLimitFor(_FixedExpenseDraft expense) {
+    if (expense.frequencyType != 'daily') return null;
+    final amount = _parseMoney(expense.amount.text);
+    final frequencyValue = int.tryParse(expense.frequencyValue.text) ?? 1;
+    return amount * frequencyValue;
   }
 
   String? _positiveNumber(String? value) {
@@ -460,16 +487,15 @@ class _PreviewRow extends StatelessWidget {
 class _FixedExpenseDraft {
   final amount = TextEditingController();
   final dueDay = TextEditingController();
-  final note = TextEditingController();
   final frequencyValue = TextEditingController(text: '1');
   String frequencyType = 'monthly';
   bool isReminderEnabled = false;
   CategoryEntity? selectedCategory;
+  SubCategoryEntity? selectedSubCategory;
 
   void dispose() {
     amount.dispose();
     dueDay.dispose();
-    note.dispose();
     frequencyValue.dispose();
   }
 }
@@ -491,63 +517,35 @@ class _FixedExpenseFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade200),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        border: Border.all(color: AppColors.borderSecondary),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: () => _selectCategory(context),
-                  child: Container(
-                    height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          draft.selectedCategory?.icon ?? '📁',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            draft.selectedCategory?.name ?? 'Chọn danh mục',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: draft.selectedCategory == null
-                                  ? Colors.grey.shade600
-                                  : Colors.black,
-                            ),
-                          ),
-                        ),
-                        const Icon(Icons.keyboard_arrow_down_rounded),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              Expanded(child: _buildCategoryField(context)),
               const SizedBox(width: 8),
               IconButton(
                 tooltip: 'Xóa khoản',
                 onPressed: onRemove,
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline, color: AppColors.error),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          _buildSubCategoryField(context),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -561,13 +559,9 @@ class _FixedExpenseFields extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  initialValue: draft.frequencyType,
-                  decoration: const InputDecoration(
-                    labelText: 'Tần suất',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                  ),
+                child: AppDropdownField<String>(
+                  value: draft.frequencyType,
+                  label: 'Tần suất',
                   items: const [
                     DropdownMenuItem(value: 'daily', child: Text('Hàng ngày')),
                     DropdownMenuItem(value: 'weekly', child: Text('Hàng tuần')),
@@ -595,92 +589,64 @@ class _FixedExpenseFields extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          if (draft.frequencyType == 'monthly' ||
+              draft.frequencyType == 'weekly' ||
+              draft.frequencyType == 'daily')
+            const SizedBox(height: 12),
           if (draft.frequencyType == 'monthly')
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: draft.dueDay,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Ngày trả (1 - 31)',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      prefixIcon: Icon(Icons.calendar_month_outlined),
-                    ),
-                    onChanged: (_) => onChanged(),
-                  ),
-                ),
-              ],
+            AppTextFormField(
+              controller: draft.dueDay,
+              keyboardType: TextInputType.number,
+              label: 'Ngày trả (1 - 31)',
+              icon: Icons.calendar_month_outlined,
+              onChanged: (_) => onChanged(),
             ),
           if (draft.frequencyType == 'weekly')
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    initialValue: int.tryParse(draft.dueDay.text) ?? 1,
-                    decoration: const InputDecoration(
-                      labelText: 'Chọn thứ',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      prefixIcon: Icon(Icons.today_outlined),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 1, child: Text('Thứ 2')),
-                      DropdownMenuItem(value: 2, child: Text('Thứ 3')),
-                      DropdownMenuItem(value: 3, child: Text('Thứ 4')),
-                      DropdownMenuItem(value: 4, child: Text('Thứ 5')),
-                      DropdownMenuItem(value: 5, child: Text('Thứ 6')),
-                      DropdownMenuItem(value: 6, child: Text('Thứ 7')),
-                      DropdownMenuItem(value: 7, child: Text('Chủ Nhật')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) {
-                        draft.dueDay.text = val.toString();
-                        onChanged();
-                      }
-                    },
-                  ),
-                ),
+            AppDropdownField<int>(
+              value: int.tryParse(draft.dueDay.text) ?? 1,
+              label: 'Chọn thứ',
+              icon: Icons.today_outlined,
+              items: const [
+                DropdownMenuItem(value: 1, child: Text('Thứ 2')),
+                DropdownMenuItem(value: 2, child: Text('Thứ 3')),
+                DropdownMenuItem(value: 3, child: Text('Thứ 4')),
+                DropdownMenuItem(value: 4, child: Text('Thứ 5')),
+                DropdownMenuItem(value: 5, child: Text('Thứ 6')),
+                DropdownMenuItem(value: 6, child: Text('Thứ 7')),
+                DropdownMenuItem(value: 7, child: Text('Chủ Nhật')),
               ],
+              onChanged: (val) {
+                if (val != null) {
+                  draft.dueDay.text = val.toString();
+                  onChanged();
+                }
+              },
             ),
           if (draft.frequencyType == 'daily')
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: draft.frequencyValue,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Số lần / ngày',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                      prefixIcon: Icon(Icons.repeat),
-                    ),
-                    onChanged: (_) => onChanged(),
-                  ),
-                ),
-              ],
+            AppTextFormField(
+              controller: draft.frequencyValue,
+              keyboardType: TextInputType.number,
+              label: 'Số lần / ngày',
+              icon: Icons.repeat,
+              onChanged: (_) => onChanged(),
             ),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: draft.note,
-            minLines: 1,
-            maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Ghi chú',
-              border: OutlineInputBorder(),
-              isDense: true,
-            ),
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           StatefulBuilder(
             builder: (context, setState) {
               return SwitchListTile(
-                title: const Text('Nhắc nhở thanh toán'),
-                subtitle: const Text('Gửi thông báo vào ngày hẹn trả'),
+                title: const Text(
+                  'Nhắc nhở thanh toán',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text1,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Gửi thông báo vào ngày hẹn trả',
+                  style: TextStyle(color: AppColors.text3),
+                ),
                 value: draft.isReminderEnabled,
+                activeThumbColor: AppColors.primary,
                 onChanged: (val) {
                   setState(() {
                     draft.isReminderEnabled = val;
@@ -693,6 +659,169 @@ class _FixedExpenseFields extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryField(BuildContext context) {
+    return InkWell(
+      onTap: () => _selectCategory(context),
+      borderRadius: BorderRadius.circular(18),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Danh mục',
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 16, right: 10),
+            child: Text(
+              draft.selectedCategory?.icon ?? '',
+              style: const TextStyle(fontSize: 22),
+            ),
+          ),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 0,
+            minHeight: 0,
+          ),
+          suffixIcon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppColors.text3,
+          ),
+          isDense: true,
+          filled: true,
+          fillColor: AppColors.backgroundSecondary,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: const BorderSide(
+              color: AppColors.borderSecondary,
+              width: 1.2,
+            ),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: const BorderSide(
+              color: AppColors.borderSecondary,
+              width: 1.2,
+            ),
+          ),
+        ),
+        child: Text(
+          draft.selectedCategory?.name ?? 'Chọn danh mục',
+          style: TextStyle(
+            color: draft.selectedCategory == null
+                ? AppColors.text4
+                : AppColors.text1,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubCategoryField(BuildContext context) {
+    final subCategories = draft.selectedCategory?.subCategories ?? const [];
+    if (subCategories.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        InkWell(
+          onTap: () => _selectSubCategory(context, subCategories),
+          borderRadius: BorderRadius.circular(18),
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Danh mục con',
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 10),
+                child: Text(
+                  draft.selectedSubCategory?.icon.isNotEmpty == true
+                      ? draft.selectedSubCategory!.icon
+                      : '',
+                  style: const TextStyle(fontSize: 22),
+                ),
+              ),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
+              suffixIcon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.text3,
+              ),
+              isDense: true,
+              filled: true,
+              fillColor: AppColors.backgroundSecondary,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: 16,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: const BorderSide(
+                  color: AppColors.borderSecondary,
+                  width: 1.2,
+                ),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: const BorderSide(
+                  color: AppColors.borderSecondary,
+                  width: 1.2,
+                ),
+              ),
+            ),
+            child: Text(
+              draft.selectedSubCategory?.name ?? 'Chọn danh mục con',
+              style: TextStyle(
+                color: draft.selectedSubCategory == null
+                    ? AppColors.text4
+                    : AppColors.text1,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _selectSubCategory(
+    BuildContext context,
+    List<SubCategoryEntity> subCategories,
+  ) async {
+    showDialog(
+      context: context,
+      builder: (context) => SelectionDialog(
+        title: 'Danh mục con',
+        description: 'Chọn nhóm chi tiết cho khoản chi này',
+        clearButtonText: 'Xóa',
+        options: subCategories
+            .where((item) => item.id != null)
+            .map(
+              (item) => SelectionOption(
+                id: item.id.toString(),
+                label:
+                    '${item.icon.isNotEmpty ? '${item.icon} ' : ''}${item.name}',
+              ),
+            )
+            .toList(),
+        initialSelectedId: draft.selectedSubCategory?.id?.toString(),
+        onSelect: (id, label) {
+          if (id == null) {
+            draft.selectedSubCategory = null;
+          } else {
+            draft.selectedSubCategory = subCategories.firstWhereOrNull(
+              (item) => item.id?.toString() == id,
+            );
+          }
+          onChanged();
+        },
       ),
     );
   }
@@ -712,7 +841,10 @@ class _FixedExpenseFields extends StatelessWidget {
     );
 
     if (selected != null) {
-      draft.selectedCategory = selected;
+      if (draft.selectedCategory?.id != selected.id) {
+        draft.selectedCategory = selected;
+        draft.selectedSubCategory = null;
+      }
       onChanged();
     }
   }

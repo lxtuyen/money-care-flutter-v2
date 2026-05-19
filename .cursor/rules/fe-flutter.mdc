@@ -1,0 +1,119 @@
+---
+description: Frontend rules for the Money Care Flutter app
+globs: fe/**
+alwaysApply: false
+---
+
+# Money Care FE Rules
+
+Apply these rules when changing files under `fe/`.
+
+## Project Context
+
+- This is a Flutter app named `money_care`.
+- Use Dart SDK constraints from `fe/pubspec.yaml`.
+- State management and routing are based on GetX.
+- The app uses Firebase, `flutter_dotenv`, `get_storage`, `fpdart`, `freezed`, `json_serializable`, `fl_chart`, `flutter_svg`, and `iconsax_flutter`.
+- The UI font family is `BeVietnamPro`.
+
+## Architecture
+
+- Keep the existing feature-first Clean Architecture shape:
+  - `features/<feature>/data/datasources`
+  - `features/<feature>/data/models`
+  - `features/<feature>/data/repositories`
+  - `features/<feature>/domain/entities`
+  - `features/<feature>/domain/repositories`
+  - `features/<feature>/domain/usecases`
+  - `features/<feature>/presentation/bindings`
+  - `features/<feature>/presentation/controllers`
+  - `features/<feature>/presentation/screens`
+  - `features/<feature>/presentation/widgets`
+- Put shared widgets in `lib/app/widgets`.
+- Put shared constants, services, networking, errors, storage, theme, and utilities in `lib/core`.
+- Do not move feature code into `core` or `app` unless it is genuinely reusable across features.
+- Keep domain entities free from Flutter widgets, GetX, HTTP, Firebase, and storage concerns.
+- Keep API DTO/model parsing in the data layer, not in screens or controllers.
+
+## State Management and DI
+
+- Use `GetxController` for presentation state and side effects.
+- Expose controller state with `.obs`, `Rxn<T>`, or `RxList<T>` following nearby controller style.
+- Register dependencies through `Bindings`, `AppBinding`, or feature bindings. Avoid constructing repositories, datasources, or controllers directly inside widgets.
+- Use `Get.find<T>()` only where this project already uses service locator access; prefer constructor injection for new controllers and use cases.
+- Keep async controller methods explicit about loading, saving, and error states.
+- Avoid overlapping requests when existing code already caches a running `Future`.
+
+## Networking and Errors
+
+- Use `core/network/api_client.dart` and `core/constants/api_routes.dart` for backend calls.
+- Datasources should throw `ServerException` or another `core/errors/exceptions.dart` exception when API responses fail.
+- Repositories should convert exceptions into `Either<Failure, T>` from `fpdart`.
+- Use `Right(value)` and `Left(ServerFailure(message))` consistently with existing repositories.
+- Do not leak raw API response maps into presentation code. Convert models to domain entities with `toEntity()`.
+- Keep JSON parsing tolerant of backend numeric/string differences when adjacent code does so.
+
+## Models and Generated Code
+
+- Prefer `freezed` and `json_serializable` for new immutable DTOs when the surrounding feature uses them.
+- Never edit generated files directly: `*.freezed.dart`, `*.g.dart`.
+- After changing freezed/json models, run:
+
+```powershell
+cd fe
+dart run build_runner build --delete-conflicting-outputs
+```
+
+- If a feature uses manual models, match that feature's existing style unless a broader refactor is requested.
+
+## Routing
+
+- Add app routes in `lib/app/router/app_router.dart`.
+- Add route names in `lib/core/constants/route_path.dart` when a route is reused or referenced from multiple places.
+- Attach feature bindings to `GetPage` entries when the screen needs feature-scoped dependencies.
+- Use existing `Transition` patterns for full-screen navigation.
+
+## UI and Widgets
+
+- Match the existing visual system: `AppTheme`, `AppColors`, `AppThemeColors`, `Sizes`, shared app widgets, and `BeVietnamPro`.
+- Prefer composing existing widgets from `lib/app/widgets` before creating new one-off UI.
+- Keep screens thin: layout and orchestration in screens, reusable pieces in `presentation/widgets`, business logic in controllers/use cases.
+- Use `const` constructors wherever possible.
+- Do not hardcode repeated spacing, colors, image paths, icon paths, route names, or API paths when a project constant exists.
+- Use `flutter_svg`/`AppSvgIcon` for SVG assets and `iconsax_flutter` when icon glyphs are needed.
+- Make mobile layouts responsive and avoid fixed heights that can clip Vietnamese text, keyboard overlays, or smaller screens.
+
+## Localization and Text
+
+- The app supports Vietnamese and English through `AppTranslations`.
+- Prefer translation keys for new user-facing text when the text belongs to normal product UI.
+- Add new keys to both `core/localization/vi_vn.dart` and `core/localization/en_us.dart`.
+- Keep backend error fallbacks concise and user-readable.
+- Preserve existing Vietnamese copy if only touching unrelated logic.
+
+## Assets and Environment
+
+- Add image/icon assets under `fe/assets/images` or `fe/assets/icons` and declare new asset folders/files in `pubspec.yaml` if needed.
+- Do not commit real secrets in `fe/.env`.
+- Read backend URLs through `flutter_dotenv` and the existing `API_BASE_URL` / `API_LOCALHOST_URL` pattern.
+
+## Quality Checks
+
+- Before finishing FE changes, run the narrowest useful checks from `fe/`:
+
+```powershell
+flutter analyze
+flutter test
+dart format lib test
+```
+
+- If generated models changed, run build_runner before analysis.
+- If platform code changed, validate on the affected platform when feasible.
+- Report any command that could not be run and why.
+
+## Code Style
+
+- Follow `flutter_lints` and existing local naming.
+- Use `package:money_care/...` imports for project code.
+- Keep comments rare and useful.
+- Keep edits scoped to the requested behavior. Do not refactor unrelated features while implementing a FE task.

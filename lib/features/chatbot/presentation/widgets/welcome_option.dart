@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/constants/image_string.dart';
+import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 
 class WelcomeOptions extends StatelessWidget {
-  final List<Map<String, dynamic>> options;
+  final List<QuickOption> options;
   final void Function(String template) onTapFill;
   final Future<void> Function(String template) onTapSend;
 
@@ -14,109 +17,71 @@ class WelcomeOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
+    return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Chào mừng bạn đến với trợ lý AI!',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: Colors.blueAccent,
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Tôi có thể giúp bạn ghi chép chi tiêu bằng giọng nói/tin nhắn hoặc phân tích xu hướng chi tiêu để đưa ra lời khuyên tài chính.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-                height: 1.5,
+              child: ClipOval(
+                child: Image.asset(
+                  AppImages.splash,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(height: 24),
             const Text(
-              'Gợi ý nhanh:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              'Money Care AI',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.text1,
+              ),
             ),
             const SizedBox(height: 12),
-            ...options.map(
-              (o) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Card(
-                  color: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          o['title'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          o['desc'] ?? '',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.blueAccent,
-                                  side: const BorderSide(
-                                    color: Colors.blueAccent,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: () => onTapFill(o['template'] ?? ''),
-                                child: const Text('Nhập mẫu'),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blueAccent,
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: () => onTapSend(o['template'] ?? ''),
-                                child: const Text('Gửi luôn'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+            const Text(
+              'Chào mừng bạn đến với trợ lý tài chính AI! Tôi có thể giúp bạn ghi chép chi tiêu cực nhanh, phân tích xu hướng chi tiêu hoặc đề xuất ngân sách thông minh.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.text3,
+                height: 1.6,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 16,
+                  color: AppColors.text5.withValues(alpha: 0.8),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Chọn một gợi ý nhanh bên dưới để bắt đầu',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.text5.withValues(alpha: 0.8),
                   ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 16,
+                  color: AppColors.text5.withValues(alpha: 0.8),
+                ),
+              ],
             ),
           ],
         ),

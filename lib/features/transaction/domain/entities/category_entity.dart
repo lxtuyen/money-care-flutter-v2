@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 
+class SubCategoryEntity {
+  final int? id;
+  final String name;
+  final String icon;
+  final String? type;
+  final bool isSystem;
+  final int? categoryId;
+
+  const SubCategoryEntity({
+    this.id,
+    required this.name,
+    required this.icon,
+    this.type,
+    this.isSystem = false,
+    this.categoryId,
+  });
+}
+
 class CategoryEntity {
   final int? id;
   final String name;
@@ -9,6 +27,7 @@ class CategoryEntity {
   final String? type;
   final double spendingPercentage;
   final bool isSystem;
+  final List<SubCategoryEntity> subCategories;
 
   const CategoryEntity({
     this.id,
@@ -19,6 +38,7 @@ class CategoryEntity {
     this.type,
     this.spendingPercentage = 0,
     this.isSystem = false,
+    this.subCategories = const [],
   });
 
   @override

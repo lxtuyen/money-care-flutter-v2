@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -15,7 +13,6 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
-import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -160,13 +157,16 @@ class _TransactionFormState extends State<TransactionForm> {
                                         description:
                                             'transaction.walletSelectionDesc',
                                         options: wallets
-                                            .map((w) => SelectionOption(
-                                                  id: w.id.toString(),
-                                                  label: w.name,
-                                                ))
+                                            .map(
+                                              (w) => SelectionOption(
+                                                id: w.id.toString(),
+                                                label: w.name,
+                                              ),
+                                            )
                                             .toList(),
                                         initialSelectedId: controller
-                                            .selectedWalletId.value
+                                            .selectedWalletId
+                                            .value
                                             ?.toString(),
                                         onSelect: (id, label) {
                                           if (id != null) {
@@ -225,8 +225,9 @@ class _TransactionFormState extends State<TransactionForm> {
                                           initialSelectedId: selectedFrequency,
                                           onSelect: (id, label) {
                                             if (id != null) {
-                                              final option = options
-                                                  .firstWhere((o) => o.id == id);
+                                              final option = options.firstWhere(
+                                                (o) => o.id == id,
+                                              );
                                               setState(() {
                                                 selectedFrequency = id;
                                               });
@@ -340,6 +341,7 @@ class _TransactionFormState extends State<TransactionForm> {
                                     },
                                     readOnly: true,
                                   ),
+                                  _buildSubCategoryField(),
                                 ],
                                 const SizedBox(height: 20),
                                 AppTextFormField(
@@ -420,7 +422,65 @@ class _TransactionFormState extends State<TransactionForm> {
       selectedTransactionType = type;
       controller.transactionType = type;
       controller.selectedCategoryId.value = null;
+      controller.selectedSubCategoryId.value = null;
+      controller.selectedCategory = null;
       controller.categoryController.clear();
+      controller.subCategoryController.clear();
+    });
+  }
+
+  Widget _buildSubCategoryField() {
+    return Obx(() {
+      final subCategories =
+          controller.selectedCategory?.subCategories ?? const [];
+      if (subCategories.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Column(
+        children: [
+          const SizedBox(height: 20),
+          AppTextFormField(
+            controller: controller.subCategoryController,
+            label: 'Danh mục con',
+            icon: Icons.account_tree_outlined,
+            suffixIcon: const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: AppColors.text3,
+            ),
+            hintText: 'Chọn danh mục con',
+            readOnly: true,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => SelectionDialog(
+                  title: 'Danh mục con',
+                  description: 'Chọn nhóm chi tiết cho giao dịch',
+                  clearButtonText: 'common.delete',
+                  options: subCategories
+                      .where((item) => item.id != null)
+                      .map(
+                        (item) => SelectionOption(
+                          id: item.id.toString(),
+                          label:
+                              '${item.icon.isNotEmpty ? '${item.icon} ' : ''}${item.name}',
+                        ),
+                      )
+                      .toList(),
+                  initialSelectedId: controller.selectedSubCategoryId.value
+                      ?.toString(),
+                  onSelect: (id, label) {
+                    final selected = subCategories.firstWhereOrNull(
+                      (item) => item.id?.toString() == id,
+                    );
+                    controller.setSubCategory(selected);
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      );
     });
   }
 
@@ -472,5 +532,4 @@ class _TransactionFormState extends State<TransactionForm> {
       ),
     );
   }
-
 }

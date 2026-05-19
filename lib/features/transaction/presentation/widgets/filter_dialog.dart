@@ -103,8 +103,12 @@ class _FilterDialogState extends State<FilterDialog> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    widget.title.tr == widget.title 
-                        ? (widget.title == 'filter.byWallet' ? 'Lọc theo ví' : (widget.title == 'filter.byCategory' ? 'Lọc theo phân loại' : widget.title)) 
+                    widget.title.tr == widget.title
+                        ? (widget.title == 'filter.byWallet'
+                              ? 'Lọc theo ví'
+                              : (widget.title == 'filter.byCategory'
+                                    ? 'Lọc theo phân loại'
+                                    : widget.title))
                         : widget.title.tr,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
@@ -116,8 +120,11 @@ class _FilterDialogState extends State<FilterDialog> {
                     isDateDialog
                         ? 'filter.dateDescription'.tr
                         : widget.wallets != null
-                            ? ('filter.walletDescription'.tr == 'filter.walletDescription' ? 'Chọn ví bạn muốn xem các giao dịch liên quan.' : 'filter.walletDescription'.tr)
-                            : 'filter.categoryDescription'.tr,
+                        ? ('filter.walletDescription'.tr ==
+                                  'filter.walletDescription'
+                              ? 'Chọn ví bạn muốn xem các giao dịch liên quan.'
+                              : 'filter.walletDescription'.tr)
+                        : 'filter.categoryDescription'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withOpacity(0.9),
                       height: 1.35,
@@ -141,11 +148,11 @@ class _FilterDialogState extends State<FilterDialog> {
                       ),
                       child: Text(
                         _buildSummaryText(),
-                      style: TextStyle(
-                        color: AppThemeColors.of(context).textSecondary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
+                        style: TextStyle(
+                          color: AppThemeColors.of(context).textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -340,16 +347,23 @@ class _FilterDialogState extends State<FilterDialog> {
           final wallet = widget.wallets!.firstWhere(
             (w) => w.id.toString() == selectedId,
           );
-          final tr = 'filter.selectedWallet'.tr.replaceAll('@name', wallet.name);
-          return tr.contains('filter.selectedWallet') ? 'Đang chọn ví: ${wallet.name}' : tr;
+          final tr = 'filter.selectedWallet'.tr.replaceAll(
+            '@name',
+            wallet.name,
+          );
+          return tr.contains('filter.selectedWallet')
+              ? 'Đang chọn ví: ${wallet.name}'
+              : tr;
         } catch (_) {
           return 'filter.selected1Category'.tr;
         }
       }
     }
 
-    return widget.wallets != null 
-        ? ('filter.noWalletSelected'.tr == 'filter.noWalletSelected' ? 'Chưa chọn ví' : 'filter.noWalletSelected'.tr)
+    return widget.wallets != null
+        ? ('filter.noWalletSelected'.tr == 'filter.noWalletSelected'
+              ? 'Chưa chọn ví'
+              : 'filter.noWalletSelected'.tr)
         : 'filter.noCategorySelected'.tr;
   }
 

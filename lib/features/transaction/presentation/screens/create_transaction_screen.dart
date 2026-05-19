@@ -13,10 +13,13 @@ class CreateTransactionScreen extends StatelessWidget {
     final String type = args?['type'] ?? 'expense';
     final TransactionEntity? item = args?['item'];
     final bool isRecurring = args?['isRecurring'] ?? false;
-    final void Function(CreateRecurringTransactionDto)? onRecurringSubmit = args?['onRecurringSubmit'];
+    final void Function(CreateRecurringTransactionDto)? onRecurringSubmit =
+        args?['onRecurringSubmit'];
 
     return TransactionForm(
-      title: item == null ? (type == 'expense' ? 'Thêm Tiền Chi' : 'Thêm Tiền Thu') : 'Chỉnh sửa giao dịch',
+      title: item == null
+          ? (type == 'expense' ? 'Thêm Tiền Chi' : 'Thêm Tiền Thu')
+          : 'Chỉnh sửa giao dịch',
       transactionType: type,
       showCategory: true,
       isRecurring: isRecurring,

@@ -12,6 +12,7 @@ abstract class TransactionCreateDto with _$TransactionCreateDto {
     @JsonKey(name: 'pictureURL') String? pictureUrl,
     DateTime? transactionDate,
     int? categoryId,
+    int? subCategoryId,
     int? userId,
     int? walletId,
   }) = _TransactionCreateDto;

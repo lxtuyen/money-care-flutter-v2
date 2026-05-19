@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/bubble.dart';
@@ -121,46 +123,119 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   Widget _buildInputArea() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: TextField(
-              controller: controller.textController,
-              minLines: 1,
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText: 'chatbot.hintText'.tr,
-                hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+          _buildSuggestionChips(),
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller.textController,
+                    minLines: 1,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      hintText: 'chatbot.hintText'.tr,
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onSubmitted: (_) => controller.send(userId ?? 0),
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade100,
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => controller.pickAndScanReceipt(userId ?? 0),
+                  icon: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: Colors.blueAccent,
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.blue.withValues(alpha: 0.05),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                _buildMicButton(),
+                const SizedBox(width: 4),
+                _buildSendButton(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
+  Widget _buildSuggestionChips() {
+    return Container(
+      height: 52,
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: controller.options.length,
+        itemBuilder: (context, index) {
+          final opt = controller.options[index];
+          final title = opt.title;
+          final template = opt.template;
+
+          return Container(
+            margin: const EdgeInsets.only(right: 8),
+            child: Material(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                onTap: () => controller.fillTemplate(template),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.borderSecondary),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.text1.withValues(alpha: 0.01),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.text2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              onSubmitted: (_) => controller.send(userId ?? 0),
             ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: () => controller.pickAndScanReceipt(userId ?? 0),
-            icon: const Icon(Icons.camera_alt_rounded, color: Colors.blueAccent),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.blue.withValues(alpha: 0.05),
-            ),
-          ),
-          const SizedBox(width: 4),
-          _buildMicButton(),
-          const SizedBox(width: 4),
-          _buildSendButton(),
-        ],
+          );
+        },
       ),
     );
   }

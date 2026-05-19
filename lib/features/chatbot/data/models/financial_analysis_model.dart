@@ -7,7 +7,9 @@ part 'financial_analysis_model.g.dart';
 abstract class FinancialAnalysisModel with _$FinancialAnalysisModel {
   const factory FinancialAnalysisModel({
     @Default('') String summary,
-    @JsonKey(name: 'budget_plan') @Default([]) List<BudgetGroupModel> budgetPlan,
+    @JsonKey(name: 'budget_plan')
+    @Default([])
+    List<BudgetGroupModel> budgetPlan,
   }) = _FinancialAnalysisModel;
 
   factory FinancialAnalysisModel.fromJson(Map<String, dynamic> json) =>

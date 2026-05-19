@@ -10,6 +10,9 @@ import 'package:money_care/app/widgets/icon/circular_icon.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
+import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_forecast_badge.dart';
 import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -151,14 +154,25 @@ class HomeScreen extends GetView<HomeController> {
                                           0.9,
                                       child: Obx(() {
                                         final recent = controller
-                                                .transactionController
-                                                .recentTransactions
-                                                .value;
-                                        final List<TransactionEntity> transactions = [
-                                          ...(recent?.expenseTransactions ?? []),
-                                          ...(recent?.incomeTransactions ?? []),
-                                        ]..sort((a, b) => (b.transactionDate ?? DateTime.now())
-                                            .compareTo(a.transactionDate ?? DateTime.now()));
+                                            .transactionController
+                                            .recentTransactions
+                                            .value;
+                                        final List<TransactionEntity>
+                                        transactions =
+                                            [
+                                              ...(recent?.expenseTransactions ??
+                                                  []),
+                                              ...(recent?.incomeTransactions ??
+                                                  []),
+                                            ]..sort(
+                                              (a, b) =>
+                                                  (b.transactionDate ??
+                                                          DateTime.now())
+                                                      .compareTo(
+                                                        a.transactionDate ??
+                                                            DateTime.now(),
+                                                      ),
+                                            );
 
                                         if (controller
                                             .transactionController
@@ -242,6 +256,16 @@ class HomeScreen extends GetView<HomeController> {
           child: Row(
             children: [
               const StreakBadgeWidget(),
+              Obx(() {
+                final showStreak = Get.find<GamificationController>().currentStreak.value > 0;
+                final showForecast = Get.find<SpendingPlanController>().activePlan.value != null &&
+                    Get.find<SpendingPlanController>().statsSummary.value != null;
+                if (showStreak && showForecast) {
+                  return const SizedBox(width: 8);
+                }
+                return const SizedBox.shrink();
+              }),
+              const SpendingPlanForecastBadge(),
             ],
           ),
         ),
@@ -269,7 +293,8 @@ class HomeScreen extends GetView<HomeController> {
             return SpendingSummary(
               incomeTotal: 0,
               expenseTotal: 0,
-              totalBalance: controller.walletController.totalAssets.value.toInt(),
+              totalBalance: controller.walletController.totalAssets.value
+                  .toInt(),
               isBalanceVisible: isVisible,
               onToggleVisibility: () =>
                   controller.appController.toggleBalanceVisibility(),
@@ -341,12 +366,11 @@ class HomeScreen extends GetView<HomeController> {
 
           if (totalsData == null || totalsData.expense.isEmpty) {
             return SpendingOverviewCard(
-            startDate: controller.statisticsController.weekStartDate,
-            endDate: controller.statisticsController.weekEndDate,
+              startDate: controller.statisticsController.weekStartDate,
+              endDate: controller.statisticsController.weekEndDate,
               totals: [],
               amountSpent: 0,
-              isBalanceVisible:
-                  controller.appController.isBalanceVisible.value,
+              isBalanceVisible: controller.appController.isBalanceVisible.value,
             );
           }
 
@@ -375,10 +399,12 @@ class HomeScreen extends GetView<HomeController> {
         );
       }
 
-      final categories = controller.statisticsController.expenseCategories;
+      final categories = controller.statisticsController.expenseCategories
+          .where((c) => c.total > 0)
+          .toList();
 
       if (categories.isEmpty) {
-         return const SizedBox.shrink();
+        return const SizedBox.shrink();
       }
 
       String sectionTitle = 'home.monthlySpending'.tr;
@@ -386,10 +412,7 @@ class HomeScreen extends GetView<HomeController> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppSectionHeading(
-            title: sectionTitle,
-            showActionButton: false,
-          ),
+          AppSectionHeading(title: sectionTitle, showActionButton: false),
           const SizedBox(height: AppSizes.spaceBtwItems),
           ...categories.map((TotalByCategoryEntity category) {
             return CategoryOverviewCard(
@@ -397,8 +420,7 @@ class HomeScreen extends GetView<HomeController> {
               spent: category.total,
               iconPath: category.categoryIcon,
               isIncome: false,
-              isBalanceVisible:
-                  controller.appController.isBalanceVisible.value,
+              isBalanceVisible: controller.appController.isBalanceVisible.value,
             );
           }),
           const SizedBox(height: AppSizes.defaultSpace),
@@ -415,9 +437,15 @@ class HomeScreen extends GetView<HomeController> {
           child: Center(child: CircularProgressIndicator()),
         );
       }
-      if (controller.statisticsController.incomeCategories.isEmpty) {
+
+      final categories = controller.statisticsController.incomeCategories
+          .where((c) => c.total > 0)
+          .toList();
+
+      if (categories.isEmpty) {
         return const SizedBox.shrink();
       }
+
       return Column(
         children: [
           AppSectionHeading(
@@ -425,16 +453,13 @@ class HomeScreen extends GetView<HomeController> {
             showActionButton: false,
           ),
           const SizedBox(height: AppSizes.spaceBtwItems),
-          ...controller.statisticsController.incomeCategories.map((
-            TotalByCategoryEntity category,
-          ) {
+          ...categories.map((TotalByCategoryEntity category) {
             return CategoryOverviewCard(
               title: category.categoryName,
               spent: category.total,
               iconPath: category.categoryIcon,
               isIncome: true,
-              isBalanceVisible:
-                  controller.appController.isBalanceVisible.value,
+              isBalanceVisible: controller.appController.isBalanceVisible.value,
             );
           }),
           const SizedBox(height: AppSizes.defaultSpace),

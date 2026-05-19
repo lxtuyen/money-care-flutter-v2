@@ -25,6 +25,32 @@ class ColorConverter implements JsonConverter<Color?, dynamic> {
 }
 
 @freezed
+abstract class SubCategoryModel with _$SubCategoryModel {
+  const factory SubCategoryModel({
+    @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
+    @Default('') String name,
+    @Default('') String icon,
+    String? type,
+    @JsonKey(name: 'is_system') @Default(false) bool isSystem,
+    @JsonKey(fromJson: NumParser.parseIntNullable) int? categoryId,
+  }) = _SubCategoryModel;
+
+  const SubCategoryModel._();
+
+  factory SubCategoryModel.fromJson(Map<String, dynamic> json) =>
+      _$SubCategoryModelFromJson(json);
+
+  SubCategoryEntity toEntity() => SubCategoryEntity(
+    id: id,
+    name: name,
+    icon: icon,
+    type: type,
+    isSystem: isSystem,
+    categoryId: categoryId,
+  );
+}
+
+@freezed
 abstract class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
     @JsonKey(fromJson: NumParser.parseIntNullable) int? id,
@@ -34,6 +60,7 @@ abstract class CategoryModel with _$CategoryModel {
     @Default(true) bool isEssential,
     String? type,
     @JsonKey(name: 'is_system') @Default(false) bool isSystem,
+    @Default([]) List<SubCategoryModel> subCategories,
   }) = _CategoryModel;
 
   const CategoryModel._();
@@ -42,12 +69,13 @@ abstract class CategoryModel with _$CategoryModel {
       _$CategoryModelFromJson(json);
 
   CategoryEntity toEntity() => CategoryEntity(
-        id: id,
-        name: name,
-        icon: icon,
-        color: color,
-        isEssential: isEssential,
-        type: type,
-        isSystem: isSystem,
-      );
+    id: id,
+    name: name,
+    icon: icon,
+    color: color,
+    isEssential: isEssential,
+    type: type,
+    isSystem: isSystem,
+    subCategories: subCategories.map((item) => item.toEntity()).toList(),
+  );
 }

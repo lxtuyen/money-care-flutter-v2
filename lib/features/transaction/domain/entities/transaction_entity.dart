@@ -18,6 +18,7 @@ class TransactionEntity {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final CategoryEntity? category;
+  final SubCategoryEntity? subCategory;
   final int? walletId;
   final String? walletName;
 
@@ -31,11 +32,21 @@ class TransactionEntity {
     this.createdAt,
     this.updatedAt,
     this.category,
+    this.subCategory,
     this.walletId,
     this.walletName,
   });
 
   factory TransactionEntity.fromMap(Map<String, dynamic> map) {
+    final categoryData = map['category'];
+    final subCategoryData = map['subCategory'];
+    final categoryName = categoryData is Map
+        ? categoryData['name']?.toString()
+        : categoryData?.toString();
+    final categoryIcon = categoryData is Map
+        ? categoryData['icon']?.toString()
+        : map['categoryIcon']?.toString();
+
     return TransactionEntity(
       id: map['id'] is int ? map['id'] : null,
       amount: map['amount'] ?? 0,
@@ -47,10 +58,29 @@ class TransactionEntity {
           ? DateTime.tryParse(map['date'].toString())
           : null,
       category: CategoryEntity(
-        name: map['category'] ?? 'Khác',
-        icon: map['categoryIcon'] ?? '💰',
+        id: categoryData is Map && categoryData['id'] is int
+            ? categoryData['id'] as int
+            : null,
+        name: categoryName ?? 'Khác',
+        icon: categoryIcon ?? '💰',
         type: map['type'],
       ),
+      subCategory: subCategoryData is Map
+          ? SubCategoryEntity(
+              id: subCategoryData['id'] is int
+                  ? subCategoryData['id'] as int
+                  : null,
+              name: subCategoryData['name']?.toString() ?? '',
+              icon: subCategoryData['icon']?.toString() ?? '',
+              type: map['type'],
+            )
+          : subCategoryData is String
+          ? SubCategoryEntity(
+              name: subCategoryData,
+              icon: map['subCategoryIcon']?.toString() ?? '',
+              type: map['type'],
+            )
+          : null,
     );
   }
 }

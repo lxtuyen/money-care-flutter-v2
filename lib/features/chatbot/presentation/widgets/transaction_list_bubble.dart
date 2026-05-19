@@ -23,8 +23,6 @@ class TransactionListBubble extends StatelessWidget {
     final String? startDate = query['startDate'] as String?;
     final String? endDate = query['endDate'] as String?;
 
-
-
     String periodLabel = _buildPeriodLabel(startDate, endDate);
     String typeLabel = _buildTypeLabel(type);
 
@@ -151,8 +149,9 @@ class TransactionListBubble extends StatelessWidget {
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () =>
-                          Get.find<ChatController>().onTransactionTap(transactionMaps[index] as Map<String, dynamic>),
+                      onTap: () => Get.find<ChatController>().onTransactionTap(
+                        transactionMaps[index] as Map<String, dynamic>,
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -186,7 +185,8 @@ class TransactionListBubble extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    transaction.category?.name ?? 'Chưa phân loại',
+                                    transaction.category?.name ??
+                                        'Chưa phân loại',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13,
@@ -238,8 +238,7 @@ class TransactionListBubble extends StatelessWidget {
               ),
 
             // Summary footer
-            if (transactions.isNotEmpty)
-              _buildSummaryFooter(transactions),
+            if (transactions.isNotEmpty) _buildSummaryFooter(transactions),
           ],
         ),
       ),
@@ -307,7 +306,6 @@ class TransactionListBubble extends StatelessWidget {
   String _buildPeriodLabel(String? startDate, String? endDate) {
     if (startDate == null && endDate == null) return '';
     try {
-
       final start = startDate != null ? DateTime.parse(startDate) : null;
       final end = endDate != null ? DateTime.parse(endDate) : null;
       if (start != null && end != null) {
@@ -316,8 +314,10 @@ class TransactionListBubble extends StatelessWidget {
         if (startStr == endStr) return startStr;
         return '$startStr - $endStr';
       }
-      if (start != null) return 'từ ${AppHelperFunction.formatDayMonth(start.toLocal())}';
-      if (end != null) return 'đến ${AppHelperFunction.formatDayMonth(end.toLocal())}';
+      if (start != null)
+        return 'từ ${AppHelperFunction.formatDayMonth(start.toLocal())}';
+      if (end != null)
+        return 'đến ${AppHelperFunction.formatDayMonth(end.toLocal())}';
     } catch (_) {}
     return '';
   }

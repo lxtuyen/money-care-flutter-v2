@@ -4,13 +4,15 @@ import 'package:money_care/features/transaction/domain/repositories/recurring_tr
 class GetRecurringTransactionsUseCase {
   final RecurringTransactionRepository repository;
   GetRecurringTransactionsUseCase(this.repository);
-  Future<List<RecurringTransactionModel>> call(int userId) => repository.findAllByUser(userId);
+  Future<List<RecurringTransactionModel>> call(int userId) =>
+      repository.findAllByUser(userId);
 }
 
 class CreateRecurringTransactionUseCase {
   final RecurringTransactionRepository repository;
   CreateRecurringTransactionUseCase(this.repository);
-  Future<RecurringTransactionModel> call(CreateRecurringTransactionDto dto) => repository.create(dto);
+  Future<RecurringTransactionModel> call(CreateRecurringTransactionDto dto) =>
+      repository.create(dto);
 }
 
 class DeleteRecurringTransactionUseCase {

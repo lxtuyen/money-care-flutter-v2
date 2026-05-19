@@ -26,8 +26,9 @@ class Bubble extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width * 0.78,
         ),
         child: Column(
-          crossAxisAlignment:
-              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isUser
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             if (imagePath != null)
               GestureDetector(
@@ -76,11 +77,7 @@ class Bubble extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ),
-        body: Center(
-          child: InteractiveViewer(
-            child: Image.file(File(path)),
-          ),
-        ),
+        body: Center(child: InteractiveViewer(child: Image.file(File(path)))),
       ),
       fullscreenDialog: true,
     );

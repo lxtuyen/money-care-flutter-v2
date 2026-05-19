@@ -7,11 +7,9 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/transaction/presentation/controllers/scan_receipt_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
@@ -24,17 +22,19 @@ class TransactionFormController extends GetxController {
   final formKey = GlobalKey<FormState>();
   final amountController = TextEditingController();
   final categoryController = TextEditingController();
+  final subCategoryController = TextEditingController();
   final walletNameController = TextEditingController();
   final frequencyController = TextEditingController();
   final noteController = TextEditingController();
 
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final RxnInt selectedCategoryId = RxnInt();
+  final RxnInt selectedSubCategoryId = RxnInt();
   final RxnInt selectedWalletId = RxnInt();
   final Rxn<CategoryEntity> _selectedCategory = Rxn<CategoryEntity>();
   CategoryEntity? get selectedCategory => _selectedCategory.value;
-  set selectedCategory(CategoryEntity? value) => _selectedCategory.value = value;
-
+  set selectedCategory(CategoryEntity? value) =>
+      _selectedCategory.value = value;
 
   bool showCategory = true;
   String transactionType = 'expense';
@@ -55,6 +55,9 @@ class TransactionFormController extends GetxController {
       categoryController.text = item.category?.name ?? '';
       noteController.text = item.note ?? '';
       selectedCategoryId.value = item.category?.id;
+      selectedSubCategoryId.value = item.subCategory?.id;
+      subCategoryController.text = item.subCategory?.name ?? '';
+      selectedCategory = _findLoadedCategory(item);
       selectedWalletId.value = item.walletId;
       walletNameController.text = item.walletName ?? '';
     } else {
@@ -64,6 +67,20 @@ class TransactionFormController extends GetxController {
         walletNameController.text = walletController.selectedWallet.value!.name;
       }
     }
+  }
+
+  CategoryEntity? _findLoadedCategory(TransactionEntity item) {
+    if (!Get.isRegistered<UserCategoryController>()) {
+      return item.category;
+    }
+
+    final categories = Get.find<UserCategoryController>().categories;
+    return categories.firstWhereOrNull(
+          (category) =>
+              (item.category?.id != null && category.id == item.category!.id) ||
+              category.name == item.category?.name,
+        ) ??
+        item.category;
   }
 
   Future<void> selectDate(BuildContext context) async {
@@ -78,17 +95,24 @@ class TransactionFormController extends GetxController {
     }
   }
 
-
   TransactionCreateDto buildTransactionDto() {
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     final date = selectedDate.value ?? DateTime.now();
-    final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
+    final normalizedDate = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      12,
+      0,
+      0,
+    ).toUtc();
 
     return TransactionCreateDto(
       amount: int.tryParse(rawValue) ?? 0,
       type: transactionType,
       note: noteController.text.trim(),
       categoryId: selectedCategoryId.value,
+      subCategoryId: selectedSubCategoryId.value,
       transactionDate: normalizedDate,
       userId: appController.userId.value,
       walletId: selectedWalletId.value,
@@ -103,7 +127,14 @@ class TransactionFormController extends GetxController {
 
     final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
     final date = selectedDate.value ?? DateTime.now();
-    final normalizedDate = DateTime(date.year, date.month, date.day, 12, 0, 0).toUtc();
+    final normalizedDate = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      12,
+      0,
+      0,
+    ).toUtc();
 
     return CreateRecurringTransactionDto(
       amount: double.tryParse(rawValue) ?? 0,
@@ -120,6 +151,18 @@ class TransactionFormController extends GetxController {
     selectedCategoryId.value = category.id;
     categoryController.text = category.name;
     selectedCategory = category;
+    selectedSubCategoryId.value = null;
+    subCategoryController.clear();
+  }
+
+  void setSubCategory(SubCategoryEntity? subCategory) {
+    if (subCategory == null) {
+      selectedSubCategoryId.value = null;
+      subCategoryController.clear();
+    } else {
+      selectedSubCategoryId.value = subCategory.id;
+      subCategoryController.text = subCategory.name;
+    }
   }
 
   void setWallet(int id, String name) {
@@ -180,6 +223,7 @@ class TransactionFormController extends GetxController {
   void onClose() {
     amountController.dispose();
     categoryController.dispose();
+    subCategoryController.dispose();
     walletNameController.dispose();
     frequencyController.dispose();
     noteController.dispose();

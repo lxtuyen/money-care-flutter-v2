@@ -67,9 +67,7 @@ class SavingGoalCreatedBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.income.withOpacity(0.06),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: AppColors.income.withOpacity(0.2),
-                ),
+                border: Border.all(color: AppColors.income.withOpacity(0.2)),
               ),
               child: Text(
                 model.aiMessage,
@@ -101,7 +99,9 @@ class SavingGoalCreatedBubble extends StatelessWidget {
               if (model.hasPlan && model.capacity > 0) ...[
                 const SizedBox(width: 8),
                 SavingGoalStatChip(
-                  label: AppHelperFunction.formatAmount(model.suggestedMonthlySaving),
+                  label: AppHelperFunction.formatAmount(
+                    model.suggestedMonthlySaving,
+                  ),
                   subtitle: "Đề xuất/tháng",
                   colors: colors,
                 ),
@@ -175,7 +175,8 @@ class SavingGoalCreatedModel {
       target: target,
       months: months,
       capacity: (map['monthlySavingCapacity'] as num?)?.toDouble() ?? 0,
-      suggestedMonthlySaving: (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
+      suggestedMonthlySaving:
+          (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
           (months > 0 ? target / months : 0),
       aiMessage: map['aiMessage'] ?? '',
       endDate: endDateStr != null ? DateTime.tryParse(endDateStr) : null,

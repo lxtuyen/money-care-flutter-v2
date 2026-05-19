@@ -7,7 +7,8 @@ abstract class RecurringTransactionRemoteDataSource {
   Future<bool> remove(int id);
 }
 
-class RecurringTransactionRemoteDataSourceImpl implements RecurringTransactionRemoteDataSource {
+class RecurringTransactionRemoteDataSourceImpl
+    implements RecurringTransactionRemoteDataSource {
   final ApiClient api;
 
   RecurringTransactionRemoteDataSourceImpl({required this.api});
@@ -26,7 +27,9 @@ class RecurringTransactionRemoteDataSourceImpl implements RecurringTransactionRe
   }
 
   @override
-  Future<RecurringTransactionModel> create(CreateRecurringTransactionDto dto) async {
+  Future<RecurringTransactionModel> create(
+    CreateRecurringTransactionDto dto,
+  ) async {
     final res = await api.post<RecurringTransactionModel>(
       'recurring-transactions',
       body: dto.toJson(),

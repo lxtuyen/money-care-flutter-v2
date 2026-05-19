@@ -41,7 +41,9 @@ class RecurringTransactionController extends GetxController {
     }
   }
 
-  Future<void> createRecurringTransaction(CreateRecurringTransactionDto dto) async {
+  Future<void> createRecurringTransaction(
+    CreateRecurringTransactionDto dto,
+  ) async {
     isLoading.value = true;
     try {
       await createRecurringTransactionUseCase(dto);

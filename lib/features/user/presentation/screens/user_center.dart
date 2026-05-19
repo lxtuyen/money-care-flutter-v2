@@ -115,19 +115,13 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     UserMenuItem(
                       icon: Icons.track_changes_outlined,
                       title: 'profile.savingGoals'.tr,
-                      onTap: () => Get.toNamed(RoutePath.selectSavingGoal),
+                      onTap: () => Get.toNamed(RoutePath.savingGoalManagement),
                     ),
 
                     UserMenuItem(
                       icon: Icons.fact_check_outlined,
                       title: 'Kế hoạch chi tiêu',
                       onTap: () => Get.toNamed(RoutePath.spendingPlanList),
-                    ),
-
-                    UserMenuItem(
-                      icon: Icons.timer_off_outlined,
-                      title: 'profile.expiredGoals'.tr,
-                      onTap: () => Get.toNamed(RoutePath.expiredSavingGoals),
                     ),
 
                     UserMenuItem(
@@ -144,8 +138,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     UserMenuItem(
                       icon: Icons.exit_to_app,
                       title: 'auth.logout'.tr,
-                      onTap: () {
-                        authController.logout();
+                      onTap: () async {
+                        await authController.logout();
                         Get.offAllNamed(RoutePath.loginOption);
                       },
                     ),

@@ -98,9 +98,7 @@ class _UserCategoryManagementScreenState
         separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final item = list[index];
-          return _CategoryItem(
-            category: item,
-          );
+          return _CategoryItem(category: item);
         },
       );
     });
@@ -110,9 +108,7 @@ class _UserCategoryManagementScreenState
 class _CategoryItem extends StatelessWidget {
   final CategoryEntity category;
 
-  const _CategoryItem({
-    required this.category,
-  });
+  const _CategoryItem({required this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -125,91 +121,111 @@ class _CategoryItem extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppThemeColors.of(context).cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppThemeColors.of(context).surfaceBackground,
-              borderRadius: BorderRadius.circular(12),
+        decoration: BoxDecoration(
+          color: AppThemeColors.of(context).cardBackground,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Text(category.icon, style: const TextStyle(fontSize: 24)),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  category.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppThemeColors.of(context).surfaceBackground,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(category.icon, style: const TextStyle(fontSize: 24)),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    if (category.isEssential)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'Thiết yếu',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      if (category.isEssential)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'Thiết yếu',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.text4.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'Không thiết yếu',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.text4,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      )
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.text4.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'Không thiết yếu',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.text4,
-                            fontWeight: FontWeight.w600,
+                      if (category.subCategories.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '${category.subCategories.length} danh mục con',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-
-                  ],
-                ),
-              ],
+                      ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

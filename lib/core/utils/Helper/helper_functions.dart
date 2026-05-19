@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/storage/local_storage.dart';
 
 enum AppSnackBarType { success, error, warning, info }
 
@@ -110,10 +112,12 @@ class AppHelperFunction {
     String? title,
     Duration? duration,
   }) {
+    if (_shouldSuppressAuthMessage(message)) return;
+
     final resolvedType = type ?? _inferSnackBarType(message);
 
     Get.closeAllSnackbars();
-    
+
     Future.delayed(const Duration(milliseconds: 10), () {
       Get.showSnackbar(
         GetSnackBar(
@@ -130,6 +134,27 @@ class AppHelperFunction {
         ),
       );
     });
+  }
+
+  static bool _shouldSuppressAuthMessage(String message) {
+    final normalized = message.trim().toLowerCase();
+    final isAuthMessage =
+        normalized == 'unauthorized' ||
+        normalized.contains('unauthorizedexception') ||
+        normalized.contains('401');
+    if (!isAuthMessage) return false;
+
+    final route = Get.currentRoute;
+    final isLoggedOut = LocalStorage().getToken() == null;
+    final isAuthRoute =
+        route == RoutePath.loginOption ||
+        route == RoutePath.login ||
+        route == RoutePath.register ||
+        route == RoutePath.forgotPassword ||
+        route == RoutePath.otp ||
+        route == RoutePath.resetPassword;
+
+    return isLoggedOut || isAuthRoute;
   }
 
   static void showSuccessSnackBar(
@@ -263,7 +288,11 @@ class AppHelperFunction {
     return DateFormat('dd/MM').format(date.toLocal());
   }
 
-  static String formatAmount(double amount, {String currency = 'VND', String symbol = '₫'}) {
+  static String formatAmount(
+    double amount, {
+    String currency = 'VND',
+    String symbol = '₫',
+  }) {
     final formatter = NumberFormat('#,###', 'vi_VN');
     if (currency == 'VND' && symbol == '₫') {
       return '${formatter.format(amount)} $symbol';
@@ -306,12 +335,72 @@ class AppHelperFunction {
   static String normalizeVietnamese(String input) {
     var text = input.toLowerCase();
     const replacements = {
-      'à': 'a', 'á': 'a', 'ạ': 'a', 'ả': 'a', 'ã': 'a', 'â': 'a', 'ầ': 'a', 'ấ': 'a', 'ậ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ặ': 'a', 'ẳ': 'a', 'ẵ': 'a',
-      'è': 'e', 'é': 'e', 'ẹ': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ê': 'e', 'ề': 'e', 'ế': 'e', 'ệ': 'e', 'ể': 'e', 'ễ': 'e',
-      'ì': 'i', 'í': 'i', 'ị': 'i', 'ỉ': 'i', 'ĩ': 'i',
-      'ò': 'o', 'ó': 'o', 'ọ': 'o', 'ỏ': 'o', 'õ': 'o', 'ô': 'o', 'ồ': 'o', 'ố': 'o', 'ộ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ơ': 'o', 'ờ': 'o', 'ớ': 'o', 'ợ': 'o', 'ở': 'o', 'ỡ': 'o',
-      'ù': 'u', 'ú': 'u', 'ụ': 'u', 'ủ': 'u', 'ũ': 'u', 'ư': 'u', 'ừ': 'u', 'ứ': 'u', 'ự': 'u', 'ử': 'u', 'ữ': 'u',
-      'ỳ': 'y', 'ý': 'y', 'ỵ': 'y', 'ỷ': 'y', 'ỹ': 'y',
+      'à': 'a',
+      'á': 'a',
+      'ạ': 'a',
+      'ả': 'a',
+      'ã': 'a',
+      'â': 'a',
+      'ầ': 'a',
+      'ấ': 'a',
+      'ậ': 'a',
+      'ẩ': 'a',
+      'ẫ': 'a',
+      'ă': 'a',
+      'ằ': 'a',
+      'ắ': 'a',
+      'ặ': 'a',
+      'ẳ': 'a',
+      'ẵ': 'a',
+      'è': 'e',
+      'é': 'e',
+      'ẹ': 'e',
+      'ẻ': 'e',
+      'ẽ': 'e',
+      'ê': 'e',
+      'ề': 'e',
+      'ế': 'e',
+      'ệ': 'e',
+      'ể': 'e',
+      'ễ': 'e',
+      'ì': 'i',
+      'í': 'i',
+      'ị': 'i',
+      'ỉ': 'i',
+      'ĩ': 'i',
+      'ò': 'o',
+      'ó': 'o',
+      'ọ': 'o',
+      'ỏ': 'o',
+      'õ': 'o',
+      'ô': 'o',
+      'ồ': 'o',
+      'ố': 'o',
+      'ộ': 'o',
+      'ổ': 'o',
+      'ỗ': 'o',
+      'ơ': 'o',
+      'ờ': 'o',
+      'ớ': 'o',
+      'ợ': 'o',
+      'ở': 'o',
+      'ỡ': 'o',
+      'ù': 'u',
+      'ú': 'u',
+      'ụ': 'u',
+      'ủ': 'u',
+      'ũ': 'u',
+      'ư': 'u',
+      'ừ': 'u',
+      'ứ': 'u',
+      'ự': 'u',
+      'ử': 'u',
+      'ữ': 'u',
+      'ỳ': 'y',
+      'ý': 'y',
+      'ỵ': 'y',
+      'ỷ': 'y',
+      'ỹ': 'y',
       'đ': 'd',
     };
     replacements.forEach((source, target) {

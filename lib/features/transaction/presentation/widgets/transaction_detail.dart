@@ -8,6 +8,7 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/widgets/button/app_action_button.dart';
 
 class TransactionDetail extends StatelessWidget {
   final TransactionEntity item;
@@ -43,9 +44,7 @@ class TransactionDetail extends StatelessWidget {
         Get.find<TransactionController>();
 
     final double screenWidth = MediaQuery.of(context).size.width;
-    final Color themeColor = isExpense
-        ? AppColors.expense // Standard Red
-        : AppColors.income; // Standard Green
+    final Color themeColor = isExpense ? AppColors.expense : AppColors.income;
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -69,7 +68,6 @@ class TransactionDetail extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header Section
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 32),
@@ -85,7 +83,6 @@ class TransactionDetail extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      // Category Icon Badge
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -100,12 +97,11 @@ class TransactionDetail extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          item.category?.icon ?? '💰',
+                          item.category?.icon ?? '',
                           style: const TextStyle(fontSize: 32),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // Amount
                       Text(
                         '${isExpense ? '-' : '+'} ${AppHelperFunction.formatAmount(item.amount.toDouble())}',
                         style: TextStyle(
@@ -117,7 +113,9 @@ class TransactionDetail extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isExpense ? 'transaction.expenseType'.tr : 'transaction.incomeType'.tr,
+                        isExpense
+                            ? 'transaction.expenseType'.tr
+                            : 'transaction.incomeType'.tr,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -129,7 +127,6 @@ class TransactionDetail extends StatelessWidget {
                   ),
                 ),
 
-                // Details Section
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                   child: Column(
@@ -169,7 +166,6 @@ class TransactionDetail extends StatelessWidget {
                         isMultiLine: true,
                       ),
 
-                      // Picture Section
                       if (item.pictureUrl != null &&
                           item.pictureUrl!.isNotEmpty) ...[
                         SizedBox(height: 24),
@@ -206,15 +202,13 @@ class TransactionDetail extends StatelessWidget {
 
                       const SizedBox(height: 32),
 
-                      // Action Buttons
                       Row(
                         children: [
                           Expanded(
-                            child: _buildActionButton(
-                              context,
+                            child: AppActionButton(
                               icon: Icons.edit_outlined,
                               label: 'common.edit'.tr,
-                              onPressed: () async {
+                              onTap: () async {
                                 Get.back();
                                 await Navigator.push(
                                   context,
@@ -237,11 +231,10 @@ class TransactionDetail extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: _buildActionButton(
-                              context,
+                            child: AppActionButton(
                               icon: Icons.delete_outline_rounded,
                               label: 'common.delete'.tr,
-                              onPressed: () =>
+                              onTap: () =>
                                   _handleDelete(context, transactionController),
                               color: AppColors.expense,
                             ),
@@ -274,10 +267,10 @@ class TransactionDetail extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppThemeColors.of(context).surfaceBackground,
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 20, color: AppColors.text3),
+          child: Icon(icon, size: 20, color: AppColors.primary),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -307,36 +300,6 @@ class TransactionDetail extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-    required Color color,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 20, color: color),
-      label: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color.withValues(alpha: 0.1),
-        foregroundColor: color,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-      ),
     );
   }
 

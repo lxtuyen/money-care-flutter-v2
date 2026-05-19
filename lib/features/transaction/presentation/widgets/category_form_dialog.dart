@@ -434,7 +434,9 @@ class _CategoryFormDialogState extends State<CategoryFormDialog> {
             : 'Đã thêm danh mục mới',
       );
     } else {
-      AppHelperFunction.showErrorSnackBar('Không thể lưu danh mục. Vui lòng thử lại.');
+      AppHelperFunction.showErrorSnackBar(
+        'Không thể lưu danh mục. Vui lòng thử lại.',
+      );
     }
   }
 }

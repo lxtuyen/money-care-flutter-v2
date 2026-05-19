@@ -42,9 +42,13 @@ class FilterController extends GetxController {
   bool get hasDateFilter =>
       dateLabel.value != defaultDateLabel ||
       !_isCurrentMonthRange(startDate.value, endDate.value);
-  bool get hasActiveFilters => hasKeyword || hasCategory || hasWallet || hasDateFilter;
+  bool get hasActiveFilters =>
+      hasKeyword || hasCategory || hasWallet || hasDateFilter;
   int get activeFilterCount =>
-      (hasKeyword ? 1 : 0) + (hasCategory ? 1 : 0) + (hasWallet ? 1 : 0) + (hasDateFilter ? 1 : 0);
+      (hasKeyword ? 1 : 0) +
+      (hasCategory ? 1 : 0) +
+      (hasWallet ? 1 : 0) +
+      (hasDateFilter ? 1 : 0);
 
   void clearAll() {
     categoryId.value = null;
@@ -68,7 +72,8 @@ class FilterController extends GetxController {
     final nextMonthStart = DateTime(now.year, now.month + 1, 1);
 
     // Check if start is first day of current month
-    final isStartMatch = start.year == monthStart.year &&
+    final isStartMatch =
+        start.year == monthStart.year &&
         start.month == monthStart.month &&
         start.day == 1;
 

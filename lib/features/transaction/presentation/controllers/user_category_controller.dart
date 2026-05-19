@@ -240,5 +240,18 @@ class UserCategoryController extends GetxController {
     isEssential: m['isEssential'] as bool? ?? true,
     type: m['type'] as String?,
     isSystem: m['is_system'] as bool? ?? false,
+    subCategories: (m['subCategories'] as List? ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map(
+          (item) => SubCategoryEntity(
+            id: item['id'] as int?,
+            name: item['name'] as String? ?? '',
+            icon: item['icon'] as String? ?? '',
+            type: item['type'] as String?,
+            isSystem: item['is_system'] as bool? ?? false,
+            categoryId: m['id'] as int?,
+          ),
+        )
+        .toList(),
   );
 }

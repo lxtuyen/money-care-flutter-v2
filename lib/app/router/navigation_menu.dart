@@ -415,14 +415,17 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 */
                 const SizedBox(height: 12),
                 _buildTransactionOptionTile(
-                  icon: Icons.add_a_photo_outlined,
-                  iconColor: AppColors.secondaryNavyBlue,
+                  icon: Icons.receipt_long_outlined,
+                  iconColor: AppColors.primary,
                   iconBackground: AppColors.primary.withOpacity(0.12),
-                  title: 'transaction.recordWithPhoto'.tr,
-                  subtitle: 'transaction.recordWithPhotoDesc'.tr,
+                  title: 'transaction.create'.tr,
+                  subtitle: 'Tạo giao dịch thu hoặc chi thủ công',
                   onTap: () {
                     Navigator.pop(context);
-                    Get.toNamed(RoutePath.transactionWithImage);
+                    Get.toNamed(
+                      RoutePath.createTransaction,
+                      arguments: {'type': 'expense'},
+                    );
                   },
                 ),
                 const SizedBox(height: 12),

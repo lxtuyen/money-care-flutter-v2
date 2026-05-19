@@ -130,7 +130,9 @@ class SavingGoalProposalBubble extends StatelessWidget {
               if (proposal.hasPlan && proposal.capacity > 0) ...[
                 const SizedBox(width: 8),
                 SavingGoalStatChip(
-                  label: AppHelperFunction.formatAmount(proposal.suggestedMonthlySaving),
+                  label: AppHelperFunction.formatAmount(
+                    proposal.suggestedMonthlySaving,
+                  ),
                   subtitle: "Đề xuất/tháng",
                   colors: colors,
                 ),
@@ -168,7 +170,9 @@ class SavingGoalProposalBubble extends StatelessWidget {
             ),
           ],
 
-          if (proposal.durationOptions.isNotEmpty && !proposal.isImpossible && !proposal.isWarning) ...[
+          if (proposal.durationOptions.isNotEmpty &&
+              !proposal.isImpossible &&
+              !proposal.isWarning) ...[
             const SizedBox(height: 14),
             _DurationOptions(
               options: proposal.durationOptions,
@@ -338,12 +342,8 @@ class _DurationOptions extends StatelessWidget {
                 "$label: $months tháng - cần ${AppHelperFunction.formatAmount(monthlySaving)}/tháng",
                 style: TextStyle(
                   fontSize: 12.2,
-                  fontWeight: isRecommended
-                      ? FontWeight.w800
-                      : FontWeight.w600,
-                  color: isRecommended
-                      ? AppColors.primary
-                      : colors.textPrimary,
+                  fontWeight: isRecommended ? FontWeight.w800 : FontWeight.w600,
+                  color: isRecommended ? AppColors.primary : colors.textPrimary,
                 ),
               ),
             ),
@@ -395,11 +395,13 @@ class SavingGoalProposal {
     if (rawOptions is List && rawOptions.isNotEmpty) {
       parsedOptions = rawOptions
           .whereType<Map>()
-          .map((option) => SavingGoalDurationOption.fromMap(
-                Map<String, dynamic>.from(option),
-                target,
-                months,
-              ))
+          .map(
+            (option) => SavingGoalDurationOption.fromMap(
+              Map<String, dynamic>.from(option),
+              target,
+              months,
+            ),
+          )
           .toList();
     } else if (target > 0 && months > 0) {
       final optionMonths = <int>{
@@ -436,7 +438,7 @@ class SavingGoalProposal {
       capacity: (map['monthlySavingCapacity'] as num?)?.toDouble() ?? 0,
       suggestedMonthlySaving:
           (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
-              (months > 0 ? target / months : 0),
+          (months > 0 ? target / months : 0),
       durationOptions: parsedOptions,
       aiMessage: map['aiMessage'] ?? '',
       endDate: endDateStr != null ? DateTime.tryParse(endDateStr) : null,
@@ -444,8 +446,8 @@ class SavingGoalProposal {
       isImpossible: map['isImpossible'] ?? false,
       isWarning: map['isWarning'] == true,
       isFinalized: map['isFinalized'] == true,
-      finalizedLabel: map['finalizedLabel']?.toString() ??
-          'Mục tiêu này đã được tạo',
+      finalizedLabel:
+          map['finalizedLabel']?.toString() ?? 'Mục tiêu này đã được tạo',
     );
   }
 }
@@ -475,9 +477,11 @@ class SavingGoalDurationOption {
       type: map['type']?.toString() ?? 'recommended',
       label: map['label']?.toString() ?? 'Khuyến nghị',
       months: m,
-      monthlySaving: (map['monthlySaving'] as num?)?.toDouble() ??
+      monthlySaving:
+          (map['monthlySaving'] as num?)?.toDouble() ??
           (m > 0 ? fallbackTarget / m : 0),
-      isRecommended: map['isRecommended'] == true ||
+      isRecommended:
+          map['isRecommended'] == true ||
           map['type'] == 'recommended' ||
           m == fallbackMonths,
     );

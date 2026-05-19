@@ -1,83 +1,175 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
+import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
-import 'package:money_care/app/controllers/saving_goal_controller.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_item_card.dart';
 
-class ExpiredSavingGoalsScreen extends StatefulWidget {
-  const ExpiredSavingGoalsScreen({super.key});
+class SavingGoalManagementScreen extends StatefulWidget {
+  final int initialTabIndex;
+
+  const SavingGoalManagementScreen({super.key, this.initialTabIndex = 0});
 
   @override
-  State<ExpiredSavingGoalsScreen> createState() =>
-      _ExpiredSavingGoalsScreenState();
+  State<SavingGoalManagementScreen> createState() =>
+      _SavingGoalManagementScreenState();
 }
 
-class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
+class _SavingGoalManagementScreenState extends State<SavingGoalManagementScreen>
+    with SingleTickerProviderStateMixin {
   final SavingGoalController controller = Get.find<SavingGoalController>();
-  final AppController appController = Get.find<AppController>();
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex.clamp(0, 1).toInt(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.initializeSelectGoal();
+    });
   }
 
-  Future<void> _load() async {
-    final userId = appController.userId.value;
-    if (userId != null) {
-      await controller.loadGoals(userId);
-    }
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
-      body: Column(
-        children: [
-          const AppHeader(
-            title: 'Lịch sử mục tiêu tiết kiệm',
-            showBackButton: true,
-            height: 130,
-          ),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoadingGoals.value) {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                );
-              }
-
-              final expired = controller.finishedSavingGoals;
-
-              if (expired.isEmpty) {
-                return const AppEmptyState(
-                  message: 'Không có mục tiêu hết hạn',
-                );
-              }
-
-              return RefreshIndicator(
-                onRefresh: _load,
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                  itemCount: expired.length,
-                  itemBuilder: (_, i) => _ExpiredGoalCard(
-                    goal: expired[i],
-                    onExtend: () => _extend(context, expired[i]),
-                  ),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          controller.saveSelection();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              AppHeader(
+                title: 'Mục tiêu tiết kiệm',
+                showBackButton: true,
+                height: 180,
+                child: TabBar(
+                  controller: _tabController,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+                  indicatorColor: Colors.white,
+                  indicatorWeight: 3,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  tabs: const [
+                    Tab(text: 'Đang theo dõi'),
+                    Tab(text: 'Lịch sử'),
+                  ],
                 ),
-              );
-            }),
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [_buildActiveGoalsTab(), _buildFinishedGoalsTab()],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: controller.goToCreateGoal,
+          backgroundColor: AppColors.primary,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
       ),
     );
+  }
+
+  Widget _buildActiveGoalsTab() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Obx(() {
+            if (controller.isLoadingGoals.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final activeGoals = controller.goals
+                .where((goal) => !goal.isExpired)
+                .toList(growable: false);
+
+            if (activeGoals.isEmpty) {
+              return const AppEmptyState(
+                message: 'Bạn chưa thiết lập mục tiêu nào.',
+              );
+            }
+
+            return ListView.builder(
+              itemCount: activeGoals.length,
+              itemBuilder: (context, index) {
+                final goal = activeGoals[index];
+                return Obx(() {
+                  final goalIndex = controller.goals.indexWhere(
+                    (item) => item.id == goal.id,
+                  );
+                  final isSelected =
+                      controller.selectedGoalIndex.value == goalIndex;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SavingGoalItemCard(
+                      fund: goal,
+                      isSelected: isSelected,
+                      onTap: () =>
+                          controller.updateSelectedGoalIndex(goalIndex),
+                      onDelete: () => _confirmDelete(context, goal),
+                      onUpdate: () => _handleUpdate(goal),
+                    ),
+                  );
+                });
+              },
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFinishedGoalsTab() {
+    return Obx(() {
+      if (controller.isLoadingGoals.value) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        );
+      }
+
+      final finishedGoals = controller.finishedSavingGoals;
+
+      if (finishedGoals.isEmpty) {
+        return const AppEmptyState(message: 'Không có mục tiêu hết hạn');
+      }
+
+      return RefreshIndicator(
+        onRefresh: controller.initializeSelectGoal,
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          itemCount: finishedGoals.length,
+          itemBuilder: (_, index) => _ExpiredGoalCard(
+            goal: finishedGoals[index],
+            onExtend: () => _extend(context, finishedGoals[index]),
+          ),
+        ),
+      );
+    });
   }
 
   Future<void> _extend(BuildContext context, SavingGoalEntity goal) async {
@@ -88,7 +180,36 @@ class _ExpiredSavingGoalsScreenState extends State<ExpiredSavingGoalsScreen> {
     );
     if (newEndDate == null) return;
     await controller.extendGoal(goal.id, newEndDate);
-    await _load();
+    await controller.initializeSelectGoal();
+  }
+
+  void _confirmDelete(BuildContext context, SavingGoalEntity goal) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Xác nhận xóa'),
+        content: Text(
+          'Bạn có chắc chắn muốn xóa mục tiêu "${goal.name}"?\nDữ liệu tiết kiệm của các danh mục liên kết vẫn sẽ được giữ lại.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () {
+              controller.deleteGoal(goal.id);
+              Get.back();
+            },
+            child: const Text(
+              'Xóa mục tiêu',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleUpdate(SavingGoalEntity goal) {
+    Get.toNamed(RoutePath.createSavingGoal, arguments: goal);
   }
 }
 
@@ -109,7 +230,7 @@ class _ExpiredGoalCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -123,7 +244,9 @@ class _ExpiredGoalCard extends StatelessWidget {
                 color: goal.isCompleted
                     ? const Color(0xFFE8F5E9)
                     : const Color(0xFFFFEBEE),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -146,10 +269,11 @@ class _ExpiredGoalCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: (goal.isCompleted
-                              ? AppColors.income
-                              : AppColors.expense)
-                          .withOpacity(0.15),
+                      color:
+                          (goal.isCompleted
+                                  ? AppColors.income
+                                  : AppColors.expense)
+                              .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -168,7 +292,6 @@ class _ExpiredGoalCard extends StatelessWidget {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -178,8 +301,10 @@ class _ExpiredGoalCard extends StatelessWidget {
                       _DateChip(
                         label: 'Bắt đầu',
                         value: goal.startDate != null
-                            ? AppHelperFunction.getFormattedDate(goal.startDate!)
-                            : '—',
+                            ? AppHelperFunction.getFormattedDate(
+                                goal.startDate!,
+                              )
+                            : '-',
                         color: AppColors.primary,
                       ),
                       const SizedBox(width: 8),
@@ -192,31 +317,34 @@ class _ExpiredGoalCard extends StatelessWidget {
                       _DateChip(
                         label: goal.isCompleted ? 'Hoàn thành' : 'Dự kiến',
                         value: (goal.isCompleted && goal.updatedAt != null)
-                            ? AppHelperFunction.getFormattedDate(goal.updatedAt!)
+                            ? AppHelperFunction.getFormattedDate(
+                                goal.updatedAt!,
+                              )
                             : (goal.endDate != null
                                   ? AppHelperFunction.getFormattedDate(
                                       goal.endDate!,
                                     )
-                                  : '—'),
+                                  : '-'),
                         color: goal.isCompleted
                             ? AppColors.income
                             : AppColors.expense,
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 14),
                   const Divider(color: AppColors.borderSecondary, height: 1),
                   const SizedBox(height: 14),
-
                   Row(
                     children: [
                       _StatItem(
                         icon: Icons.track_changes_rounded,
                         label: 'Mục tiêu',
                         value: goal.target != null
-                            ? AppHelperFunction.formatAmount(goal.target!, currency: 'VND')
-                            : '—',
+                            ? AppHelperFunction.formatAmount(
+                                goal.target!,
+                                currency: 'VND',
+                              )
+                            : '-',
                         color: AppColors.primary,
                       ),
                       const SizedBox(width: 24),
@@ -233,9 +361,7 @@ class _ExpiredGoalCard extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 16),
-
                   Row(
                     children: [
                       if (!goal.isCompleted)
@@ -284,33 +410,28 @@ class _DateChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.07),
+          color: color.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: color.withOpacity(0.8),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: color,
-                    ),
-                  ),
-                ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: color.withValues(alpha: 0.8),
+                fontWeight: FontWeight.w500,
               ),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -341,7 +462,7 @@ class _StatItem extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 18, color: color),

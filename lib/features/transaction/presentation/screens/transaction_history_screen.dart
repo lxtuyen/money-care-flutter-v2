@@ -276,7 +276,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       context: context,
       builder: (_) => FilterDialog(
         title: 'filter.byTime'.tr,
-        items: ['filter.timeToday'.tr, 'filter.timeWeek'.tr, 'filter.timeMonth'.tr, 'filter.timeCustom'.tr],
+        items: [
+          'filter.timeToday'.tr,
+          'filter.timeWeek'.tr,
+          'filter.timeMonth'.tr,
+          'filter.timeCustom'.tr,
+        ],
         onApply: (_) => _applyFilter(),
       ),
     );
@@ -335,7 +340,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 orElse: () => null,
               );
               if (cat != null) {
-                categorySubtitle = 'filter.selectedCategory'.tr.replaceAll('@name', cat.name);
+                categorySubtitle = 'filter.selectedCategory'.tr.replaceAll(
+                  '@name',
+                  cat.name,
+                );
               } else {
                 categorySubtitle = 'filter.selected1Category'.tr;
               }
@@ -355,7 +363,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             return Container(
               decoration: BoxDecoration(
                 color: AppThemeColors.of(context).cardBackground,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
               ),
               padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
               child: Column(
@@ -425,7 +435,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   const SizedBox(height: 12),
                   _buildFilterSheetTile(
                     icon: Icons.account_balance_wallet_outlined,
-                    title: 'filter.byWallet'.tr == 'filter.byWallet' ? 'Lọc theo ví' : 'filter.byWallet'.tr,
+                    title: 'filter.byWallet'.tr == 'filter.byWallet'
+                        ? 'Lọc theo ví'
+                        : 'filter.byWallet'.tr,
                     subtitle: walletSubtitle,
                     onTap: () {
                       Get.back();
@@ -491,7 +503,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           decoration: BoxDecoration(
             color: AppThemeColors.of(context).cardBackground,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppThemeColors.of(context).textMuted.withOpacity(0.2)),
+            border: Border.all(
+              color: AppThemeColors.of(context).textMuted.withOpacity(0.2),
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.text1.withOpacity(0.04),

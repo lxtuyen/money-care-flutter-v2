@@ -17,6 +17,7 @@ _TransactionCreateDto _$TransactionCreateDtoFromJson(
       ? null
       : DateTime.parse(json['transactionDate'] as String),
   categoryId: (json['categoryId'] as num?)?.toInt(),
+  subCategoryId: (json['subCategoryId'] as num?)?.toInt(),
   userId: (json['userId'] as num?)?.toInt(),
   walletId: (json['walletId'] as num?)?.toInt(),
 );
@@ -30,6 +31,7 @@ Map<String, dynamic> _$TransactionCreateDtoToJson(
   'pictureURL': instance.pictureUrl,
   'transactionDate': instance.transactionDate?.toIso8601String(),
   'categoryId': instance.categoryId,
+  'subCategoryId': instance.subCategoryId,
   'userId': instance.userId,
   'walletId': instance.walletId,
 };

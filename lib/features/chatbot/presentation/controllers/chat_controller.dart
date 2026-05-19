@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:money_care/features/chatbot/domain/entities/chat_message_entity.dart';
+import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 import 'package:money_care/features/chatbot/data/models/models.dart';
 
 import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
@@ -40,22 +40,27 @@ class ChatController extends GetxController {
   final OCRService _ocrService = OCRService();
   final ImagePicker _picker = ImagePicker();
 
-  List<Map<String, dynamic>> get options => [
-    {
-      'title': 'chatbot.analysisTitle'.tr,
-      'desc': 'chatbot.analysisDesc'.tr,
-      'template': 'chatbot.analysisTemplate'.tr,
-    },
-    {
-      'title': 'chatbot.budgetTitle'.tr,
-      'desc': 'chatbot.budgetDesc'.tr,
-      'template': 'chatbot.budgetTemplate'.tr,
-    },
-    {
-      'title': 'chatbot.quickRecordTitle'.tr,
-      'desc': 'chatbot.quickRecordDesc'.tr,
-      'template': 'chatbot.quickRecordTemplate'.tr,
-    },
+  List<QuickOption> get options => [
+    QuickOption(
+      title: 'chatbot.savingGoalTitle'.tr,
+      subtitle: 'chatbot.savingGoalDesc'.tr,
+      template: 'chatbot.savingGoalTemplate'.tr,
+    ),
+    QuickOption(
+      title: 'chatbot.quickRecordTitle'.tr,
+      subtitle: 'chatbot.quickRecordDesc'.tr,
+      template: 'chatbot.quickRecordTemplate'.tr,
+    ),
+    QuickOption(
+      title: 'chatbot.analysisTitle'.tr,
+      subtitle: 'chatbot.analysisDesc'.tr,
+      template: 'chatbot.analysisTemplate'.tr,
+    ),
+    QuickOption(
+      title: 'chatbot.budgetTitle'.tr,
+      subtitle: 'chatbot.budgetDesc'.tr,
+      template: 'chatbot.budgetTemplate'.tr,
+    ),
   ];
 
   final stt.SpeechToText _speech = stt.SpeechToText();

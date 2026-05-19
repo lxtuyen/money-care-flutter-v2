@@ -21,6 +21,7 @@ class SelectionDialog extends StatefulWidget {
     required this.onSelect,
     this.summaryPrefix = 'Đã chọn: ',
     this.noSelectionText = 'Chưa chọn mục nào',
+    this.clearButtonText,
   });
 
   final String title;
@@ -30,6 +31,7 @@ class SelectionDialog extends StatefulWidget {
   final void Function(String? id, String? label) onSelect;
   final String summaryPrefix;
   final String noSelectionText;
+  final String? clearButtonText;
 
   @override
   State<SelectionDialog> createState() => _SelectionDialogState();
@@ -173,15 +175,18 @@ class _SelectionDialogState extends State<SelectionDialog> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: Text('common.clearFilter'.tr),
+                      child: Text(
+                        (widget.clearButtonText ?? 'common.clearFilter').tr,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final selectedOption = widget.options
-                            .firstWhereOrNull((o) => o.id == selectedId);
+                        final selectedOption = widget.options.firstWhereOrNull(
+                          (o) => o.id == selectedId,
+                        );
                         widget.onSelect(selectedId, selectedOption?.label);
                         Get.back();
                       },

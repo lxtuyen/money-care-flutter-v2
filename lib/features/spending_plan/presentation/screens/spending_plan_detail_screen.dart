@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/button/app_action_button.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_item.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_budget_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_summary_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_detail.dart';
@@ -82,7 +83,8 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
                       )
                     else
                       ...plan.fixedExpenses.map(
-                        (expense) => FixedExpenseItem(
+                        (expense) => FixedExpenseBudgetCard(
+                          plan: plan,
                           expense: expense,
                           onTap: () => FixedExpenseDetail.show(
                             context,
@@ -125,16 +127,12 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
 
           return Padding(
             padding: const EdgeInsets.all(16),
-            child: FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: controller.isSaving.value || plan.isActive
-                  ? null
+            child: PrimaryButton(
+              label: plan.isActive ? 'Tạm dừng kế hoạch' : 'Áp dụng kế hoạch',
+              isLoading: controller.isSaving.value,
+              onPressed: plan.isActive
+                  ? () => controller.pausePlan(plan.id)
                   : () => controller.activatePlan(plan.id),
-              icon: const Icon(Icons.check_circle_outline),
-              label: Text(plan.isActive ? 'Đang áp dụng' : 'Áp dụng kế hoạch'),
             ),
           );
         }),
@@ -179,34 +177,19 @@ class _PlanActions extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context) async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xóa kế hoạch chi tiêu?'),
-        content: const Text(
+  void _confirmDelete(BuildContext context) {
+    AppConfirmDialog.show(
+      title: 'Xóa kế hoạch chi tiêu?',
+      message:
           'Kế hoạch và các chi phí cố định bên trong sẽ bị xóa. Thao tác này không thể hoàn tác.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Hủy'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Xóa'),
-          ),
-        ],
-      ),
+      confirmText: 'Xóa',
+      cancelText: 'Hủy',
+      onConfirm: () async {
+        final success = await controller.deletePlan(plan.id);
+        if (success) {
+          Get.back();
+        }
+      },
     );
-
-    if (shouldDelete != true) return;
-    final success = await controller.deletePlan(plan.id);
-    if (success) {
-      Get.back();
-    }
   }
 }
-
-

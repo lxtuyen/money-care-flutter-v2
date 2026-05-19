@@ -10,17 +10,19 @@ import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/period_comparison_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/monthly_budget_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -41,6 +43,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       Get.find<UserCategoryController>();
   final FilterController filterController = Get.find<FilterController>();
   final UserController userController = Get.find<UserController>();
+  final SpendingPlanController spendingPlanController =
+      Get.find<SpendingPlanController>();
 
   @override
   void initState() {
@@ -51,7 +55,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
-    await statisticsController.refreshStatisticsData(userId);
+    await Future.wait([
+      statisticsController.refreshStatisticsData(userId),
+      spendingPlanController.loadStatsSummary(loadActiveIfMissing: true),
+    ]);
   }
 
   @override
@@ -198,42 +205,67 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     );
                   }
 
+                  double? limitLineY;
+                  String? limitLineLabel;
+                  if (statisticsController.selectedType.value == 'chi' &&
+                      spendingPlanController.activePlan.value != null) {
+                    final activePlan = spendingPlanController.activePlan.value!;
+                    final isDaily =
+                        statisticsController.periodType.value != 'hàng tháng';
+
+                    double dailyFixedTotal = 0;
+                    double weeklyFixedTotal = 0;
+                    double monthlyFixedTotal = 0;
+
+                    for (var expense in activePlan.fixedExpenses) {
+                      final type = expense.frequencyType.toLowerCase();
+                      final val = expense.frequencyValue;
+                      final baseAmt = expense.amount;
+                      final totalAmt = baseAmt * val;
+
+                      if (type == 'daily') {
+                        dailyFixedTotal += totalAmt;
+                      } else if (type == 'weekly') {
+                        weeklyFixedTotal += totalAmt;
+                      } else if (type == 'monthly') {
+                        monthlyFixedTotal += totalAmt;
+                      }
+                    }
+
+                    if (isDaily) {
+                      limitLineY = dailyFixedTotal;
+                      if (limitLineY > 0) {
+                        limitLineLabel =
+                            'Hạn mức ngày: ${AppHelperFunction.formatCompactNumber(limitLineY)}';
+                      }
+                    } else {
+                      limitLineY =
+                          dailyFixedTotal +
+                          (weeklyFixedTotal / 7.0) +
+                          (monthlyFixedTotal / 30.0);
+                      if (limitLineY > 0) {
+                        limitLineLabel =
+                            'Định mức ngày: ${AppHelperFunction.formatCompactNumber(limitLineY)}';
+                      }
+                    }
+                  }
+
                   return SavingsBarChart(
                     key: ValueKey(
                       "${statisticsController.periodType.value}_${statisticsController.currentStartDate}",
                     ),
                     thisMonthSpots: spots,
                     xLabels: labels,
+                    limitLineY: limitLineY,
+                    limitLineLabel: limitLineLabel,
                   );
                 }),
               ),
 
               const SizedBox(height: 25),
 
-              Obx(() {
-                final current = statisticsController.totalByType.value;
-                final previous = statisticsController.previousTotalByType.value;
-
-                if (current == null) return const SizedBox.shrink();
-
-                final isMonthly =
-                    statisticsController.periodType.value == 'hàng tháng';
-
-                return PeriodComparisonCard(
-                  currentIncome: current.incomeTotal,
-                  currentExpense: current.expenseTotal,
-                  previousIncome: previous?.incomeTotal ?? 0,
-                  previousExpense: previous?.expenseTotal ?? 0,
-                  currentLabel: isMonthly
-                      ? 'comparison.currentMonth'.tr
-                      : 'comparison.currentDay'.tr,
-                  previousLabel: isMonthly
-                      ? 'comparison.previousMonth'.tr
-                      : 'comparison.previousDay'.tr,
-                );
-              }),
-
-              const SizedBox(height: 25),
+              // Tạm ẩn so sánh với kỳ trước theo yêu cầu của người dùng
+              const SizedBox.shrink(),
 
               Obx(
                 () => Padding(
@@ -288,7 +320,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 );
               }),
 
-              const SizedBox(height: 25),
+              Obx(() {
+                if (statisticsController.selectedType.value != 'chi') {
+                  return const SizedBox.shrink();
+                }
+                final stats = spendingPlanController.statsSummary.value;
+                if (stats == null) return const SizedBox.shrink();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: AppSectionHeading(
+                        title: 'Theo dõi ngân sách',
+                        showActionButton: false,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildBudgetTrackingSection(context, stats),
+                    const SizedBox(height: 25),
+                  ],
+                );
+              }),
 
               Obx(() {
                 if (statisticsController.periodType.value != 'hàng tháng') {
@@ -339,7 +393,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               Obx(() {
                 final fund = savingGoalController.currentGoal.value;
-                if (fund == null || fund.isCompleted) return const SizedBox.shrink();
+                if (fund == null || fund.isCompleted) {
+                  return const SizedBox.shrink();
+                }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -573,6 +629,215 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       userId,
       filterDto,
       format,
+    );
+  }
+
+  Widget _buildBudgetTrackingSection(
+    BuildContext context,
+    SpendingPlanStatsEntity stats,
+  ) {
+    final themeColors = AppThemeColors.of(context);
+    final selMonth = statisticsController.selectedMonth.value;
+    final daysInMonth = DateTime(selMonth.year, selMonth.month + 1, 0).day;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (stats.fixedExpenses.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: themeColors.cardBackground,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  'Chưa có khoản theo dõi ngân sách nào.',
+                  style: TextStyle(
+                    color: themeColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: themeColors.cardBackground,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...stats.fixedExpenses.map((expense) {
+                    final isBudget = expense.trackingType == 'budget';
+                    double plannedTotal = isBudget
+                        ? (expense.monthlyLimit > 0
+                              ? expense.monthlyLimit
+                              : expense.amount)
+                        : expense.amount * expense.frequencyValue;
+                    if (!isBudget &&
+                        expense.frequencyType.toLowerCase() == 'daily') {
+                      plannedTotal *= daysInMonth;
+                    } else if (!isBudget &&
+                        expense.frequencyType.toLowerCase() == 'weekly') {
+                      plannedTotal *= (daysInMonth / 7.0);
+                    }
+
+                    final actualPaid = expense.spentThisMonth;
+                    final progress = plannedTotal <= 0
+                        ? 0.0
+                        : (actualPaid / plannedTotal).clamp(0.0, 1.0);
+
+                    final isLast = expense == stats.fixedExpenses.last;
+
+                    final catName =
+                        expense.subCategory ?? expense.category ?? expense.name;
+                    final category = userCategoryController.categories
+                        .firstWhereOrNull(
+                          (item) =>
+                              item.name.toLowerCase() == catName.toLowerCase(),
+                        );
+                    final subCategory = category?.subCategories
+                        .firstWhereOrNull(
+                          (sub) =>
+                              sub.name.toLowerCase() == catName.toLowerCase(),
+                        );
+                    final catIcon = subCategory?.icon ?? category?.icon ?? '🧾';
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: AppColors.expense.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  catIcon,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      expense.name,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: themeColors.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      isBudget
+                                          ? 'Ngân sách dùng dần'
+                                          : 'Hóa đơn cố định',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: themeColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // Cost comparisons
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    AppHelperFunction.formatAmount(actualPaid),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: themeColors.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Kế hoạch: ${AppHelperFunction.formatAmount(plannedTotal)}',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: themeColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 7,
+                              backgroundColor: themeColors.textSecondary
+                                  .withOpacity(0.12),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                actualPaid > plannedTotal
+                                    ? Colors.red
+                                    : isBudget
+                                    ? AppColors.primary
+                                    : Colors.green,
+                              ),
+                            ),
+                          ),
+                          if (isBudget && expense.dailyLimit != null) ...[
+                            const SizedBox(height: 6),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                expense.dailyOverAmount > 0
+                                    ? 'Hôm nay: ${AppHelperFunction.formatAmount(expense.todaySpent)} / ${AppHelperFunction.formatAmount(expense.dailyLimit!)} - vượt ${AppHelperFunction.formatAmount(expense.dailyOverAmount)}'
+                                    : 'Hôm nay: ${AppHelperFunction.formatAmount(expense.todaySpent)} / ${AppHelperFunction.formatAmount(expense.dailyLimit!)}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: expense.dailyOverAmount > 0
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: expense.dailyOverAmount > 0
+                                      ? Colors.red
+                                      : themeColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (!isLast) ...[
+                            const SizedBox(height: 8),
+                            Divider(
+                              color: Colors.grey.withOpacity(0.15),
+                              height: 1,
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

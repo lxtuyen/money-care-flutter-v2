@@ -14,8 +14,7 @@ import 'package:money_care/features/onboarding/presentation/screens/onboarding_c
 
 import 'package:money_care/features/auth/presentation/screens/register.dart';
 import 'package:money_care/features/saving_goal/presentation/screens/create_saving_goal_screen.dart';
-import 'package:money_care/features/saving_goal/presentation/screens/select_saving_goal_screen.dart';
-import 'package:money_care/features/saving_goal/presentation/screens/expired_saving_goals_screen.dart';
+import 'package:money_care/features/saving_goal/presentation/screens/saving_goal_management_screen.dart';
 import 'package:money_care/features/splash/presentation/screens/splash.dart';
 import 'package:money_care/features/transaction/presentation/screens/create_transaction_screen.dart';
 import 'package:money_care/features/user/presentation/screens/profile.dart';
@@ -89,8 +88,8 @@ final List<GetPage> appPages = [
     binding: OnboardingBinding(),
   ),
   GetPage(
-    name: '/select_saving_goal',
-    page: () => const SelectSavingGoalScreen(),
+    name: RoutePath.savingGoalManagement,
+    page: () => const SavingGoalManagementScreen(),
     binding: SavingGoalBinding(),
   ),
   GetPage(
@@ -143,11 +142,6 @@ final List<GetPage> appPages = [
     name: '/notification',
     page: () => const NotificationScreen(),
     binding: NotificationBinding(),
-  ),
-  GetPage(
-    name: '/expired_saving_goals',
-    page: () => const ExpiredSavingGoalsScreen(),
-    binding: SavingGoalBinding(),
   ),
   GetPage(
     name: '/onboarding_category_select',

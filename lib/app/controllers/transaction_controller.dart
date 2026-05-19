@@ -11,6 +11,7 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 
 class TransactionController extends GetxController {
   final FilterTransactionsUseCase filterTransactionsUseCase;
@@ -171,6 +172,9 @@ class TransactionController extends GetxController {
     }
     if (Get.isRegistered<StatisticsController>()) {
       Get.find<StatisticsController>().refreshStatisticsData(userId, skipMainTotals: true);
+    }
+    if (Get.isRegistered<SpendingPlanController>()) {
+      Get.find<SpendingPlanController>().loadStatsSummary();
     }
     final activeGoalId = savingGoalController.goalId.value;
     if (activeGoalId > 0) {

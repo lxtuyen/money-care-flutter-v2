@@ -11,11 +11,15 @@ import 'package:money_care/app/widgets/chart/app_bar_chart.dart';
 class SavingsBarChart extends StatelessWidget {
   final List<FlSpot> thisMonthSpots;
   final List<String> xLabels;
+  final double? limitLineY;
+  final String? limitLineLabel;
 
   const SavingsBarChart({
     super.key,
     required this.thisMonthSpots,
     required this.xLabels,
+    this.limitLineY,
+    this.limitLineLabel,
   });
 
   @override
@@ -67,6 +71,8 @@ class SavingsBarChart extends StatelessWidget {
         ),
       child: AppBarChart(
         minY: 0,
+        limitLineY: limitLineY,
+        limitLineLabel: limitLineLabel,
         alignment: BarChartAlignment.start,
         groupsSpace: (xLabels.length <= 1)
             ? 0

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/wallet/domain/repositories/wallet_repository.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class WalletController extends GetxController {
@@ -118,6 +119,19 @@ class WalletController extends GetxController {
         if (categoryId != null) 'categoryId': categoryId,
       });
       await refreshWallets();
+      
+      // Auto refresh saving goals if SavingGoalController is registered
+      final appController = Get.find<AppController>();
+      final userId = appController.userId.value;
+      if (userId != null) {
+        if (Get.isRegistered<SavingGoalController>()) {
+          final savingGoalController = Get.find<SavingGoalController>();
+          await savingGoalController.loadGoals(userId);
+          if (savingGoalController.goalId.value > 0) {
+            await savingGoalController.loadGoalById();
+          }
+        }
+      }
     } catch (e) {
       rethrow;
     } finally {

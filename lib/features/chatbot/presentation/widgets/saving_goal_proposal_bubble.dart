@@ -142,31 +142,65 @@ class SavingGoalProposalBubble extends StatelessWidget {
 
           if (proposal.endDate != null && !proposal.isImpossible) ...[
             const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.calendar_month_rounded,
-                    size: 15,
-                    color: AppColors.primary,
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.calendar_month_rounded,
+                        size: 15,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Dự kiến hoàn thành: ${DateFormat('MM/yyyy').format(proposal.endDate!)}",
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (proposal.initFund > 0) ...[
                   const SizedBox(width: 8),
-                  Text(
-                    "Dự kiến hoàn thành: ${DateFormat('MM/yyyy').format(proposal.endDate!)}",
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.income.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.income.withOpacity(0.15)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          size: 15,
+                          color: AppColors.income,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Đã trích: ${AppHelperFunction.formatAmount(proposal.initFund)}",
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.income,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
           ],
 
@@ -184,6 +218,8 @@ class SavingGoalProposalBubble extends StatelessWidget {
               colors: colors,
               maxMonthlySaving: proposal.capacity,
               isDisabled: proposal.isFinalized,
+              initFund: proposal.initFund,
+              sourceWalletId: proposal.sourceWalletId,
             ),
           ],
 
@@ -228,7 +264,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
                     : () {
                         chatController.sendCustomMessage(
                           "Tôi đồng ý với đề xuất trên",
-                          '/confirm_saving_goal {"name": "${proposal.name}", "target": ${proposal.target}, "months": ${proposal.months}}',
+                          '/confirm_saving_goal {"name": "${proposal.name}", "target": ${proposal.target}, "months": ${proposal.months}, "initFund": ${proposal.initFund}, "sourceWalletId": ${proposal.sourceWalletId}}',
                           userId,
                         );
                       },
@@ -275,6 +311,8 @@ class _DurationOptions extends StatelessWidget {
   final AppThemeColors colors;
   final double maxMonthlySaving;
   final bool isDisabled;
+  final double initFund;
+  final int sourceWalletId;
 
   const _DurationOptions({
     required this.options,
@@ -286,6 +324,8 @@ class _DurationOptions extends StatelessWidget {
     required this.colors,
     required this.maxMonthlySaving,
     required this.isDisabled,
+    required this.initFund,
+    required this.sourceWalletId,
   });
 
   @override
@@ -309,7 +349,7 @@ class _DurationOptions extends StatelessWidget {
                     if (needsWarning) {
                       controller.sendCustomMessage(
                         "Tôi muốn hoàn thành trong $months tháng",
-                        '/change_saving_goal_duration {"name": "$name", "target": $target, "months": $months}',
+                        '/change_saving_goal_duration {"name": "$name", "target": $target, "months": $months, "initFund": $initFund, "sourceWalletId": $sourceWalletId}',
                         userId,
                       );
                       return;
@@ -317,7 +357,7 @@ class _DurationOptions extends StatelessWidget {
 
                     controller.sendCustomMessage(
                       "Tôi đồng ý tạo mục tiêu trong $months tháng",
-                      '/confirm_saving_goal {"name": "$name", "target": $target, "months": $months}',
+                      '/confirm_saving_goal {"name": "$name", "target": $target, "months": $months, "initFund": $initFund, "sourceWalletId": $sourceWalletId}',
                       userId,
                     );
                   },
@@ -368,6 +408,9 @@ class SavingGoalProposal {
   final bool isWarning;
   final bool isFinalized;
   final String finalizedLabel;
+  final double initFund;
+  final int sourceWalletId;
+  final double remainingTarget;
 
   SavingGoalProposal({
     required this.name,
@@ -383,6 +426,9 @@ class SavingGoalProposal {
     required this.isWarning,
     required this.isFinalized,
     required this.finalizedLabel,
+    required this.initFund,
+    required this.sourceWalletId,
+    required this.remainingTarget,
   });
 
   factory SavingGoalProposal.fromMap(Map<String, dynamic> map) {
@@ -390,6 +436,9 @@ class SavingGoalProposal {
     final target = (map['target'] as num?)?.toDouble() ?? 0;
     final endDateStr = map['endDate'];
     final rawOptions = map['durationOptions'];
+    final initFund = (map['initFund'] as num?)?.toDouble() ?? 0;
+    final sourceWalletId = (map['sourceWalletId'] as num?)?.toInt() ?? 0;
+    final remainingTarget = (map['remainingTarget'] as num?)?.toDouble() ?? target;
 
     List<SavingGoalDurationOption> parsedOptions = [];
     if (rawOptions is List && rawOptions.isNotEmpty) {
@@ -398,12 +447,12 @@ class SavingGoalProposal {
           .map(
             (option) => SavingGoalDurationOption.fromMap(
               Map<String, dynamic>.from(option),
-              target,
+              remainingTarget,
               months,
             ),
           )
           .toList();
-    } else if (target > 0 && months > 0) {
+    } else if (remainingTarget > 0 && months > 0) {
       final optionMonths = <int>{
         if (months > 1) months - 1,
         months,
@@ -425,7 +474,7 @@ class SavingGoalProposal {
               ? 'Khuyến nghị'
               : 'Thoải mái',
           months: m,
-          monthlySaving: (target / m).ceilToDouble(),
+          monthlySaving: (remainingTarget / m).ceilToDouble(),
           isRecommended: type == 'recommended',
         );
       }).toList();
@@ -438,7 +487,7 @@ class SavingGoalProposal {
       capacity: (map['monthlySavingCapacity'] as num?)?.toDouble() ?? 0,
       suggestedMonthlySaving:
           (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
-          (months > 0 ? target / months : 0),
+          (months > 0 ? remainingTarget / months : 0),
       durationOptions: parsedOptions,
       aiMessage: map['aiMessage'] ?? '',
       endDate: endDateStr != null ? DateTime.tryParse(endDateStr) : null,
@@ -448,6 +497,9 @@ class SavingGoalProposal {
       isFinalized: map['isFinalized'] == true,
       finalizedLabel:
           map['finalizedLabel']?.toString() ?? 'Mục tiêu này đã được tạo',
+      initFund: initFund,
+      sourceWalletId: sourceWalletId,
+      remainingTarget: remainingTarget,
     );
   }
 }

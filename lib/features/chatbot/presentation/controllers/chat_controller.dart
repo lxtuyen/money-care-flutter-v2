@@ -301,6 +301,15 @@ class ChatController extends GetxController {
       } catch (e) {
         replaceLastBotMessage('chatbot.transactionListError'.tr);
       }
+    } else if (reply.startsWith('__SAVING_GOAL_INITIAL_FUND_ASK__')) {
+      final jsonStr = reply.replaceFirst('__SAVING_GOAL_INITIAL_FUND_ASK__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'saving_goal_initial_fund_ask';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage('Tôi đã tìm thấy một số ví có sẵn của bạn để tích lũy ban đầu!');
+      }
     } else if (reply.startsWith('__SAVING_GOAL_PROPOSAL__')) {
       final jsonStr = reply.replaceFirst('__SAVING_GOAL_PROPOSAL__', '');
       try {
@@ -382,7 +391,10 @@ class ChatController extends GetxController {
 
     for (var i = 0; i < messages.length; i++) {
       final metadata = messages[i].metadata;
-      if (metadata == null || metadata['__type'] != 'saving_goal_proposal') {
+      if (metadata == null) continue;
+      
+      final type = metadata['__type'];
+      if (type != 'saving_goal_proposal' && type != 'saving_goal_initial_fund_ask') {
         continue;
       }
 

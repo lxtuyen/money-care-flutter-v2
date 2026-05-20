@@ -5,6 +5,9 @@ import 'package:money_care/features/transaction/data/datasources/transaction_rem
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/ocr_service.dart';
+import 'package:money_care/features/statistics/data/datasources/goal_plan_insight_remote_datasource.dart';
+import 'package:money_care/features/statistics/data/repositories/goal_plan_insight_repository_impl.dart';
+import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
 
 class StatisticsBinding extends Bindings {
   final ApiClient apiClient;
@@ -18,6 +21,12 @@ class StatisticsBinding extends Bindings {
       remoteDatasource: remoteDatasource,
       ocrService: Get.find<OCRService>(),
     );
+    final goalPlanInsightRemoteDs = GoalPlanInsightRemoteDatasourceImpl(
+      api: apiClient,
+    );
+    final goalPlanInsightRepo = GoalPlanInsightRepositoryImpl(
+      remoteDatasource: goalPlanInsightRemoteDs,
+    );
 
     Get.lazyPut(
       () => StatisticsController(
@@ -26,6 +35,9 @@ class StatisticsBinding extends Bindings {
         getTotalByDateEntityUseCase: GetTotalByDateEntityUseCase(repository),
         getStatisticsSummaryUseCase: GetStatisticsSummaryUseCase(
           repository: repository,
+        ),
+        getGoalPlanInsightUseCase: GetGoalPlanInsightUseCase(
+          goalPlanInsightRepo,
         ),
       ),
       fenix: true,

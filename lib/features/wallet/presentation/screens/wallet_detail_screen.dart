@@ -43,6 +43,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
       final filter = TransactionFilterDto(
         walletId: wallet.id,
         limit: 50,
+        includeTransfer: 'true',
       );
       final userId = Get.find<AppController>().userId.value;
       if (userId != null) {

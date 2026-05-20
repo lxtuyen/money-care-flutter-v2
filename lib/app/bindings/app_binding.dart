@@ -207,6 +207,7 @@ class AppBinding extends Bindings {
         getActiveSpendingPlanStatisticsUseCase: GetActiveSpendingPlanStatisticsUseCase(
           spendingPlanRepo,
         ),
+        cloneSpendingPlanUseCase: CloneSpendingPlanUseCase(spendingPlanRepo),
       ),
       permanent: true,
     );

@@ -9,6 +9,7 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_budget_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/fixed_expense_budget_group_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_summary_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_detail.dart';
@@ -81,18 +82,26 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
                         padding: EdgeInsets.symmetric(vertical: 12),
                         child: Text('Chưa có khoản cố định.'),
                       )
-                    else
-                      ...plan.fixedExpenses.map(
-                        (expense) => FixedExpenseBudgetCard(
-                          plan: plan,
-                          expense: expense,
-                          onTap: () => FixedExpenseDetail.show(
+                    else ...[
+                      ...FixedExpenseBudgetGroupCard.groupExpenses(
+                        plan.fixedExpenses,
+                      ).entries.map((entry) {
+                        return FixedExpenseBudgetGroupCard(
+                          categoryName: entry.key,
+                          daysInMonth: DateTime(
+                            plan.year,
+                            plan.month + 1,
+                            0,
+                          ).day,
+                          expenses: entry.value,
+                          onExpenseTap: (expense) => FixedExpenseDetail.show(
                             context,
                             plan: plan,
                             expense: expense,
                           ),
-                        ),
-                      ),
+                        );
+                      }),
+                    ],
                   ],
                 );
               }),
@@ -164,7 +173,24 @@ class _PlanActions extends StatelessWidget {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
+        Expanded(
+          child: AppActionButton(
+            onTap: plan.isArchived
+                ? null
+                : () => Get.toNamed(
+                    RoutePath.createSpendingPlan,
+                    arguments: {
+                      'isClone': true,
+                      'plan': plan,
+                    },
+                  ),
+            icon: Icons.copy_rounded,
+            label: 'Nhân bản',
+            color: Colors.blueAccent,
+          ),
+        ),
+        const SizedBox(width: 8),
         Expanded(
           child: AppActionButton(
             onTap: () => _confirmDelete(context),

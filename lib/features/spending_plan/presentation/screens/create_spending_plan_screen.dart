@@ -68,11 +68,16 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
     super.initState();
     _incomeController.addListener(_refreshPreview);
     final argument = Get.arguments;
+    SpendingPlanEntity? sourcePlan;
+
     if (argument is SpendingPlanEntity) {
       _editingPlan = argument;
+      sourcePlan = argument;
+    } else if (argument is Map && argument['isClone'] == true) {
+      sourcePlan = argument['plan'] as SpendingPlanEntity?;
     }
 
-    if (_editingPlan == null) {
+    if (sourcePlan == null) {
       // Auto-populate a default "Tiền ăn" daily expense
       final mealDraft = _FixedExpenseDraft();
       mealDraft.amount.addListener(_refreshPreview);
@@ -80,8 +85,8 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
       mealDraft.frequencyValue.text = '3';
       _fixedExpenses.add(mealDraft);
     } else {
-      _incomeController.text = _formatNumberInput(_editingPlan!.totalAmount);
-      for (final expense in _editingPlan!.fixedExpenses) {
+      _incomeController.text = _formatNumberInput(sourcePlan.totalAmount);
+      for (final expense in sourcePlan.fixedExpenses) {
         final draft = _FixedExpenseDraft();
         draft.amount.text = _formatNumberInput(expense.amount);
         draft.amount.addListener(_refreshPreview);
@@ -99,7 +104,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
         if (categoryController.categories.isEmpty) {
           await categoryController.loadCategories(userId);
         }
-        if (_editingPlan == null) {
+        if (sourcePlan == null) {
           // Auto-select "Ăn uống" category if available
           final foodCat = categoryController.categories.firstWhereOrNull(
             (cat) =>
@@ -113,8 +118,8 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
           }
         } else {
           setState(() {
-            for (var i = 0; i < _editingPlan!.fixedExpenses.length; i++) {
-              final item = _editingPlan!.fixedExpenses[i];
+            for (var i = 0; i < sourcePlan!.fixedExpenses.length; i++) {
+              final item = sourcePlan.fixedExpenses[i];
               final categoryName = item.category;
               final cat = categoryController.categories.firstWhereOrNull(
                 (c) => c.name == categoryName,

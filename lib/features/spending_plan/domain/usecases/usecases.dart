@@ -95,3 +95,15 @@ class GetActiveSpendingPlanStatisticsUseCase {
   Future<Either<Failure, SpendingPlanStatsEntity?>> call() =>
       repository.getActivePlanStatistics();
 }
+
+class CloneSpendingPlanUseCase {
+  final SpendingPlanRepository repository;
+
+  CloneSpendingPlanUseCase(this.repository);
+
+  Future<Either<Failure, SpendingPlanEntity>> call(
+    int id, {
+    int? month,
+    int? year,
+  }) => repository.clonePlan(id, month: month, year: year);
+}

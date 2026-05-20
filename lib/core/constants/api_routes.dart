@@ -29,6 +29,7 @@ class ApiRoutes {
   static const scanReceipt = 'ai/receipt/scan';
 
   static const chatbot = 'ai/chat';
+  static const goalPlanInsight = 'ai/goal-plan-insight';
 
   static const splitSession = 'split-session';
   static const gamification = 'gamification';

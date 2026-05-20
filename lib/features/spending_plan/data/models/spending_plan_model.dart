@@ -256,11 +256,15 @@ class CreateFixedExpenseRequest {
 }
 
 class CreateSpendingPlanRequest {
+  final int? month;
+  final int? year;
   final double totalAmount;
   final double savingTargetAmount;
   final List<CreateFixedExpenseRequest> fixedExpenses;
 
   const CreateSpendingPlanRequest({
+    this.month,
+    this.year,
     required this.totalAmount,
     required this.savingTargetAmount,
     required this.fixedExpenses,
@@ -268,6 +272,8 @@ class CreateSpendingPlanRequest {
 
   Map<String, dynamic> toJson() {
     return {
+      if (month != null) 'month': month,
+      if (year != null) 'year': year,
       'totalAmount': totalAmount,
       'savingTargetAmount': savingTargetAmount,
       'fixedExpenses': fixedExpenses

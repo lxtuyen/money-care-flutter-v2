@@ -11,6 +11,7 @@ abstract class TransactionFilterDto with _$TransactionFilterDto {
     @JsonKey(name: 'startDate') String? startDate,
     @JsonKey(name: 'endDate') String? endDate,
     @JsonKey(name: 'limit') int? limit,
+    @JsonKey(name: 'includeTransfer') String? includeTransfer,
   }) = _TransactionFilterDto;
 
   const TransactionFilterDto._();

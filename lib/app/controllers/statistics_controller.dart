@@ -1,5 +1,4 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
@@ -8,14 +7,17 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/entities.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/widget_service.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/statistics/data/models/goal_plan_insight_model.dart';
+import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
+import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 
 class StatisticsController extends GetxController {
   final GetTotalByTypeUseCase getTotalByTypeUseCase;
   final GetTotalByCateUseCase getTotalByCateUseCase;
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
+  final GetGoalPlanInsightUseCase? getGoalPlanInsightUseCase;
 
   SavingGoalController get savingGoalController =>
       Get.find<SavingGoalController>();
@@ -32,6 +34,10 @@ class StatisticsController extends GetxController {
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
   var statisticsSummary = Rxn<StatisticsSummaryEntity>();
+  final goalPlanInsight = Rxn<GoalPlanInsightModel>();
+  final isLoadingGoalPlanInsight = false.obs;
+  final goalPlanInsightError = ''.obs;
+  String? _goalPlanInsightKey;
 
   RxList<FlSpot> chartSpots = <FlSpot>[].obs;
   RxList<String> chartLabels = <String>[].obs;
@@ -55,8 +61,7 @@ class StatisticsController extends GetxController {
     DateTime.now().day,
   ).obs;
 
-  DateTime get monthStartDate =>
-      _getCycleDate(selectedMonth.value, 0);
+  DateTime get monthStartDate => _getCycleDate(selectedMonth.value, 0);
   DateTime get monthEndDate =>
       _getCycleDate(selectedMonth.value, 0, isEnd: true);
 
@@ -65,8 +70,11 @@ class StatisticsController extends GetxController {
     return DateTime(year, month, day > lastDay ? lastDay : day);
   }
 
-  DateTime _getCycleDate(DateTime baseMonth, int offsetMonths,
-      {bool isEnd = false}) {
+  DateTime _getCycleDate(
+    DateTime baseMonth,
+    int offsetMonths, {
+    bool isEnd = false,
+  }) {
     final appController = Get.find<AppController>();
     final startDay = appController.startDayOfMonth.value;
 
@@ -107,20 +115,6 @@ class StatisticsController extends GetxController {
           );
   }
 
-  DateTime _clampToGoalStart(DateTime date) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.startDate == null) return date;
-    if (date.isBefore(goal.startDate!)) return goal.startDate!;
-    return date;
-  }
-
-  DateTime _clampToGoalEnd(DateTime date) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.endDate == null) return date;
-    if (date.isAfter(goal.endDate!)) return goal.endDate!;
-    return date;
-  }
-
   DateTime get previousStartDate {
     if (periodType.value == 'hàng tháng') {
       return _getCycleDate(selectedMonth.value, -1);
@@ -150,7 +144,29 @@ class StatisticsController extends GetxController {
     required this.getTotalByCateUseCase,
     required this.getTotalByDateEntityUseCase,
     required this.getStatisticsSummaryUseCase,
+    this.getGoalPlanInsightUseCase,
   });
+
+  Future<void> loadGoalPlanInsight(GoalPlanInsightSnapshot snapshot) async {
+    final useCase = getGoalPlanInsightUseCase;
+    if (useCase == null) return;
+
+    final key = snapshot.toJson().toString();
+    if (_goalPlanInsightKey == key && goalPlanInsight.value != null) return;
+    _goalPlanInsightKey = key;
+    goalPlanInsight.value = null;
+    isLoadingGoalPlanInsight.value = true;
+    goalPlanInsightError.value = '';
+
+    try {
+      goalPlanInsight.value = await useCase(snapshot);
+    } catch (error) {
+      goalPlanInsight.value = null;
+      goalPlanInsightError.value = error.toString();
+    } finally {
+      isLoadingGoalPlanInsight.value = false;
+    }
+  }
 
   @override
   void onInit() {
@@ -385,7 +401,14 @@ class StatisticsController extends GetxController {
 
   int _refreshCounter = 0;
 
-  Future<void> refreshStatisticsData(int userId, {bool skipMainTotals = false}) async {
+  Future<void> refreshStatisticsData(
+    int userId, {
+    bool skipMainTotals = false,
+  }) async {
+    goalPlanInsight.value = null;
+    goalPlanInsightError.value = '';
+    _goalPlanInsightKey = null;
+
     final int currentRefresh = ++_refreshCounter;
 
     if (totalByDate.value == null) {
@@ -399,7 +422,7 @@ class StatisticsController extends GetxController {
 
       if (periodType.value == 'hàng tháng') {
         final List<Future> futures = [];
-        
+
         if (!skipMainTotals) {
           futures.addAll([
             _loadTotalByType(
@@ -425,9 +448,7 @@ class StatisticsController extends GetxController {
 
         final activeGoalId = savingGoalController.goalId.value;
         if (activeGoalId > 0) {
-          futures.add(
-            savingGoalController.loadGoalReport(activeGoalId),
-          );
+          futures.add(savingGoalController.loadGoalReport(activeGoalId));
         }
 
         await Future.wait(futures);
@@ -437,7 +458,7 @@ class StatisticsController extends GetxController {
         }
       } else {
         final List<Future> futures = [];
-        
+
         if (!skipMainTotals) {
           futures.addAll([
             _loadTotalByType(
@@ -462,9 +483,7 @@ class StatisticsController extends GetxController {
 
         final activeGoalId = savingGoalController.goalId.value;
         if (activeGoalId > 0) {
-          futures.add(
-            savingGoalController.loadGoalReport(activeGoalId),
-          );
+          futures.add(savingGoalController.loadGoalReport(activeGoalId));
         }
 
         await Future.wait(futures);
@@ -605,7 +624,8 @@ class StatisticsController extends GetxController {
     final now = DateTime.now();
 
     // Check if it is the current month range (standard 1st to end of month)
-    final isCurrentMonth = start.year == now.year &&
+    final isCurrentMonth =
+        start.year == now.year &&
         start.month == now.month &&
         start.day == 1 &&
         end.year == now.year &&
@@ -635,7 +655,8 @@ class StatisticsController extends GetxController {
   double calculateDailyAverage(List<TotalByDateEntity> list, DateTime endDate) {
     final Map<String, int> map = {
       for (var d in list)
-        "${d.date.toLocal().year}-${d.date.toLocal().month}-${d.date.toLocal().day}": d.total,
+        "${d.date.toLocal().year}-${d.date.toLocal().month}-${d.date.toLocal().day}":
+            d.total,
     };
 
     if (list.isEmpty) return 0;
@@ -673,7 +694,8 @@ class StatisticsController extends GetxController {
   ) {
     final Map<String, double> map = {
       for (var d in data)
-        "${d.date.toLocal().year}-${d.date.toLocal().month}-${d.date.toLocal().day}": d.total.toDouble(),
+        "${d.date.toLocal().year}-${d.date.toLocal().month}-${d.date.toLocal().day}":
+            d.total.toDouble(),
     };
 
     final List<FlSpot> spots = [];
@@ -750,8 +772,6 @@ class StatisticsController extends GetxController {
     final Map<int, TotalByCategoryEntity> expCatMap = {};
     final Map<int, TotalByCategoryEntity> incCatMap = {};
 
-    final targetGoal = savingGoalController.currentGoal.value?.target ?? 0;
-
     for (var t in expense) {
       if (t.category == null || t.category!.id == null) continue;
       final int id = t.category!.id!;
@@ -760,7 +780,7 @@ class StatisticsController extends GetxController {
         expCatMap[id] = TotalByCategoryEntity(
           categoryId: id,
           categoryName: t.category!.name,
-          categoryIcon: t.category!.icon ?? '',
+          categoryIcon: t.category!.icon,
           total: t.amount.toInt(),
           spendingPercentage: 0,
           isEssential: t.category!.isEssential,
@@ -785,7 +805,7 @@ class StatisticsController extends GetxController {
         incCatMap[id] = TotalByCategoryEntity(
           categoryId: id,
           categoryName: t.category!.name,
-          categoryIcon: t.category!.icon ?? '',
+          categoryIcon: t.category!.icon,
           total: t.amount.toInt(),
           spendingPercentage: 0,
           isEssential: t.category!.isEssential,

@@ -7,13 +7,13 @@ import 'package:money_care/features/spending_plan/domain/entities/spending_plan_
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
 class FixedExpenseBudgetCard extends StatelessWidget {
-  final SpendingPlanEntity plan;
+  final int daysInMonth;
   final FixedExpenseEntity expense;
   final VoidCallback? onTap;
 
   const FixedExpenseBudgetCard({
     super.key,
-    required this.plan,
+    required this.daysInMonth,
     required this.expense,
     this.onTap,
   });
@@ -186,7 +186,7 @@ class FixedExpenseBudgetCard extends StatelessWidget {
     return subCategory;
   }
 
-  int get _daysInMonth => DateTime(plan.year, plan.month + 1, 0).day;
+  int get _daysInMonth => daysInMonth;
 
   double get _monthlyLimit {
     if (expense.monthlyLimit > 0) return expense.monthlyLimit;

@@ -14,6 +14,7 @@ _TransactionFilterDto _$TransactionFilterDtoFromJson(
   startDate: json['startDate'] as String?,
   endDate: json['endDate'] as String?,
   limit: (json['limit'] as num?)?.toInt(),
+  includeTransfer: json['includeTransfer'] as String?,
 );
 
 Map<String, dynamic> _$TransactionFilterDtoToJson(
@@ -24,4 +25,5 @@ Map<String, dynamic> _$TransactionFilterDtoToJson(
   'startDate': instance.startDate,
   'endDate': instance.endDate,
   'limit': instance.limit,
+  'includeTransfer': instance.includeTransfer,
 };

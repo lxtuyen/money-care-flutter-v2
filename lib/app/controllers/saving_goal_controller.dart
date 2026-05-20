@@ -106,6 +106,16 @@ class SavingGoalController extends GetxController {
       goals.assignAll(list.where((g) => !g.isCompleted).toList());
       completedGoals.assignAll(list.where((g) => g.isCompleted).toList());
 
+      final activeGoal = goals.firstWhereOrNull((g) => g.isSelected ?? false);
+      if (activeGoal != null) {
+        _syncCurrentGoal(activeGoal);
+      } else if (goalId.value > 0) {
+        final matchingGoal = goals.firstWhereOrNull((g) => g.id == goalId.value);
+        if (matchingGoal != null) {
+          _syncCurrentGoal(matchingGoal);
+        }
+      }
+
       if (goalId.value > 0) {
         selectedGoalIndex.value = goals.indexWhere((f) => f.id == goalId.value);
       }

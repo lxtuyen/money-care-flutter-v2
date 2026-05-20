@@ -17,8 +17,8 @@ class OnboardingFinancialFreedomScreen extends StatelessWidget {
       description: AppTexts.onboardingFinancialDescription,
       indicatorIndex: 1,
       totalIndicators: 2,
-      onSkip: () => Get.toNamed(RoutePath.onboardingCategorySelect),
-      onNext: () => Get.toNamed(RoutePath.onboardingCategorySelect),
+      onSkip: () => Get.toNamed(RoutePath.onboardingBudgetSetup),
+      onNext: () => Get.toNamed(RoutePath.onboardingBudgetSetup),
     );
   }
 }

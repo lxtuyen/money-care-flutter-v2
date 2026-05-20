@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_form.dart';
 
@@ -12,9 +11,6 @@ class CreateTransactionScreen extends StatelessWidget {
     final args = Get.arguments as Map<String, dynamic>?;
     final String type = args?['type'] ?? 'expense';
     final TransactionEntity? item = args?['item'];
-    final bool isRecurring = args?['isRecurring'] ?? false;
-    final void Function(CreateRecurringTransactionDto)? onRecurringSubmit =
-        args?['onRecurringSubmit'];
 
     return TransactionForm(
       title: item == null
@@ -22,9 +18,7 @@ class CreateTransactionScreen extends StatelessWidget {
           : 'Chỉnh sửa giao dịch',
       transactionType: type,
       showCategory: true,
-      isRecurring: isRecurring,
       item: item,
-      onRecurringSubmit: onRecurringSubmit,
     );
   }
 }

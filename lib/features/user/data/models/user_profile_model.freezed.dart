@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProfileModel {
 
- int? get id;@JsonKey(name: 'first_name') String get firstName;@JsonKey(name: 'last_name') String get lastName;@JsonKey(name: 'monthly_income') int? get monthlyIncome;@JsonKey(name: 'income_date') DateTime? get incomeDate;
+ int? get id;@JsonKey(name: 'first_name') String get firstName;@JsonKey(name: 'last_name') String get lastName;
 /// Create a copy of UserProfileModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserProfileModelCopyWith<UserProfileModel> get copyWith => _$UserProfileModelCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfileModel&&(identical(other.id, id) || other.id == id)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.monthlyIncome, monthlyIncome) || other.monthlyIncome == monthlyIncome)&&(identical(other.incomeDate, incomeDate) || other.incomeDate == incomeDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfileModel&&(identical(other.id, id) || other.id == id)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,firstName,lastName,monthlyIncome,incomeDate);
+int get hashCode => Object.hash(runtimeType,id,firstName,lastName);
 
 @override
 String toString() {
-  return 'UserProfileModel(id: $id, firstName: $firstName, lastName: $lastName, monthlyIncome: $monthlyIncome, incomeDate: $incomeDate)';
+  return 'UserProfileModel(id: $id, firstName: $firstName, lastName: $lastName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserProfileModelCopyWith<$Res>  {
   factory $UserProfileModelCopyWith(UserProfileModel value, $Res Function(UserProfileModel) _then) = _$UserProfileModelCopyWithImpl;
 @useResult
 $Res call({
- int? id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'monthly_income') int? monthlyIncome,@JsonKey(name: 'income_date') DateTime? incomeDate
+ int? id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName
 });
 
 
@@ -65,14 +65,12 @@ class _$UserProfileModelCopyWithImpl<$Res>
 
 /// Create a copy of UserProfileModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? firstName = null,Object? lastName = null,Object? monthlyIncome = freezed,Object? incomeDate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? firstName = null,Object? lastName = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String,monthlyIncome: freezed == monthlyIncome ? _self.monthlyIncome : monthlyIncome // ignore: cast_nullable_to_non_nullable
-as int?,incomeDate: freezed == incomeDate ? _self.incomeDate : incomeDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as String,
   ));
 }
 
@@ -157,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'monthly_income')  int? monthlyIncome, @JsonKey(name: 'income_date')  DateTime? incomeDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfileModel() when $default != null:
-return $default(_that.id,_that.firstName,_that.lastName,_that.monthlyIncome,_that.incomeDate);case _:
+return $default(_that.id,_that.firstName,_that.lastName);case _:
   return orElse();
 
 }
@@ -178,10 +176,10 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.monthlyIncome,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'monthly_income')  int? monthlyIncome, @JsonKey(name: 'income_date')  DateTime? incomeDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfileModel():
-return $default(_that.id,_that.firstName,_that.lastName,_that.monthlyIncome,_that.incomeDate);case _:
+return $default(_that.id,_that.firstName,_that.lastName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +196,10 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.monthlyIncome,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName, @JsonKey(name: 'monthly_income')  int? monthlyIncome, @JsonKey(name: 'income_date')  DateTime? incomeDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id, @JsonKey(name: 'first_name')  String firstName, @JsonKey(name: 'last_name')  String lastName)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfileModel() when $default != null:
-return $default(_that.id,_that.firstName,_that.lastName,_that.monthlyIncome,_that.incomeDate);case _:
+return $default(_that.id,_that.firstName,_that.lastName);case _:
   return null;
 
 }
@@ -213,14 +211,12 @@ return $default(_that.id,_that.firstName,_that.lastName,_that.monthlyIncome,_tha
 @JsonSerializable()
 
 class _UserProfileModel extends UserProfileModel {
-  const _UserProfileModel({this.id, @JsonKey(name: 'first_name') required this.firstName, @JsonKey(name: 'last_name') required this.lastName, @JsonKey(name: 'monthly_income') this.monthlyIncome, @JsonKey(name: 'income_date') this.incomeDate}): super._();
+  const _UserProfileModel({this.id, @JsonKey(name: 'first_name') required this.firstName, @JsonKey(name: 'last_name') required this.lastName}): super._();
   factory _UserProfileModel.fromJson(Map<String, dynamic> json) => _$UserProfileModelFromJson(json);
 
 @override final  int? id;
 @override@JsonKey(name: 'first_name') final  String firstName;
 @override@JsonKey(name: 'last_name') final  String lastName;
-@override@JsonKey(name: 'monthly_income') final  int? monthlyIncome;
-@override@JsonKey(name: 'income_date') final  DateTime? incomeDate;
 
 /// Create a copy of UserProfileModel
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfileModel&&(identical(other.id, id) || other.id == id)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.monthlyIncome, monthlyIncome) || other.monthlyIncome == monthlyIncome)&&(identical(other.incomeDate, incomeDate) || other.incomeDate == incomeDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfileModel&&(identical(other.id, id) || other.id == id)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,firstName,lastName,monthlyIncome,incomeDate);
+int get hashCode => Object.hash(runtimeType,id,firstName,lastName);
 
 @override
 String toString() {
-  return 'UserProfileModel(id: $id, firstName: $firstName, lastName: $lastName, monthlyIncome: $monthlyIncome, incomeDate: $incomeDate)';
+  return 'UserProfileModel(id: $id, firstName: $firstName, lastName: $lastName)';
 }
 
 
@@ -255,7 +251,7 @@ abstract mixin class _$UserProfileModelCopyWith<$Res> implements $UserProfileMod
   factory _$UserProfileModelCopyWith(_UserProfileModel value, $Res Function(_UserProfileModel) _then) = __$UserProfileModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName,@JsonKey(name: 'monthly_income') int? monthlyIncome,@JsonKey(name: 'income_date') DateTime? incomeDate
+ int? id,@JsonKey(name: 'first_name') String firstName,@JsonKey(name: 'last_name') String lastName
 });
 
 
@@ -272,14 +268,12 @@ class __$UserProfileModelCopyWithImpl<$Res>
 
 /// Create a copy of UserProfileModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? firstName = null,Object? lastName = null,Object? monthlyIncome = freezed,Object? incomeDate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? firstName = null,Object? lastName = null,}) {
   return _then(_UserProfileModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String,monthlyIncome: freezed == monthlyIncome ? _self.monthlyIncome : monthlyIncome // ignore: cast_nullable_to_non_nullable
-as int?,incomeDate: freezed == incomeDate ? _self.incomeDate : incomeDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as String,
   ));
 }
 

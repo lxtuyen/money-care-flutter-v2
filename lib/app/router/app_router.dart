@@ -10,7 +10,6 @@ import 'package:money_care/features/auth/presentation/screens/forgot_password.da
 import 'package:money_care/features/auth/presentation/screens/login.dart';
 import 'package:money_care/features/auth/presentation/screens/login_option.dart';
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_welcome.dart';
-import 'package:money_care/features/onboarding/presentation/screens/onboarding_category_select_screen.dart';
 
 import 'package:money_care/features/auth/presentation/screens/register.dart';
 import 'package:money_care/features/saving_goal/presentation/screens/create_saving_goal_screen.dart';
@@ -142,12 +141,6 @@ final List<GetPage> appPages = [
     name: '/notification',
     page: () => const NotificationScreen(),
     binding: NotificationBinding(),
-  ),
-  GetPage(
-    name: '/onboarding_category_select',
-    page: () => const OnboardingCategorySelectScreen(),
-    transition: Transition.rightToLeft,
-    binding: OnboardingBinding(),
   ),
   GetPage(
     name: '/category_management',

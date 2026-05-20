@@ -109,17 +109,11 @@ const Map<String, String> viVN = {
   'profile.avatar': 'Ảnh đại diện',
   'profile.fixedCosts': 'Chi phí cố định',
   'profile.basicInfo': 'Thông tin cơ bản',
-  'profile.financialInfo': 'Thông tin tài chính',
   'profile.avatarLink': 'Link ảnh đại diện',
   'profile.avatarHint': 'Nhập URL ảnh của bạn',
   'profile.nameHint': 'VD: Văn A',
   'profile.lastNameHint': 'VD: Nguyễn',
-  'profile.monthlyIncomeLabel': 'Thu nhập hàng tháng (VNĐ)',
-  'profile.monthlyIncomeHint': 'VD: 15.000.000',
-  'profile.incomeDayLabel': 'Ngày nhận tiền hàng tháng',
-  'profile.selectDayHint': 'Chọn ngày',
   'profile.updateSuccess': 'Cập nhật thành công',
-  'profile.incomeDayValue': 'Ngày @day',
 
   // ============ Statistics ============
   'statistics.title': 'Thống kê',
@@ -175,14 +169,12 @@ const Map<String, String> viVN = {
   'transaction.retakePhoto': 'Chụp lại',
   'transaction.infoSection': 'Thông tin bản ghi',
   'transaction.classificationSection': 'Phân loại',
-  'transaction.incomeNoCategory':
-      'Bản ghi thu hiện không yêu cầu category.',
+  'transaction.incomeNoCategory': 'Bản ghi thu hiện không yêu cầu category.',
   'transaction.detail': 'Chi tiết giao dịch',
   'transaction.amount': 'Số tiền',
   'transaction.note': 'Ghi chú',
   'transaction.date': 'Ngày',
   'transaction.category': 'Phân loại',
-  'transaction.recurring': 'Giao dịch định kỳ',
   'transaction.noTransactions': 'Không có giao dịch phù hợp',
   'transaction.expenseType': 'Khoản chi tiêu',
   'transaction.incomeType': 'Khoản thu nhập',
@@ -195,7 +187,8 @@ const Map<String, String> viVN = {
   'transaction.editIncome': 'Chỉnh sửa thu',
   'transaction.selectTypeDesc': 'Chọn loại giao dịch bạn muốn tạo mới.',
   'transaction.recordWithPhoto': 'Bản ghi kèm ảnh',
-  'transaction.recordWithPhotoDesc': 'Chụp ảnh, nhập số tiền và lưu giao dịch nhanh',
+  'transaction.recordWithPhotoDesc':
+      'Chụp ảnh, nhập số tiền và lưu giao dịch nhanh',
   'transaction.noRecent': 'Không có giao dịch nào gần đây.',
   'transaction.deleteConfirm': 'Bạn có chắc chắn muốn xóa giao dịch này?',
   'transaction.deleteSuccess': 'Đã xóa giao dịch thành công',
@@ -212,26 +205,23 @@ const Map<String, String> viVN = {
   'transaction.updateSuccess': 'Chỉnh sửa thành công',
   'transaction.selectCategoryTitle': 'Chọn phân loại',
   'transaction.categoryNormalDesc': 'Chọn nhóm phù hợp cho giao dịch của bạn.',
-  'transaction.noCategoryAvailable': 'Không có phân loại nào.\nVui lòng kiểm tra lại thiết lập quỹ.',
+  'transaction.noCategoryAvailable':
+      'Không có phân loại nào.\nVui lòng kiểm tra lại thiết lập quỹ.',
   'transaction.walletLabel': 'Ví / Tài khoản',
   'transaction.walletSelectionTitle': 'Chọn ví / Tài khoản',
-  'transaction.walletSelectionDesc': 'Chọn ví bạn muốn sử dụng cho giao dịch này.',
-  'transaction.frequencySelectionTitle': 'Tần suất lặp lại',
-  'transaction.frequencySelectionDesc': 'Chọn chu kỳ lặp lại cho giao dịch định kỳ này.',
-  'transaction.freqDaily': 'Hàng ngày',
-  'transaction.freqWeekly': 'Hàng tuần',
-  'transaction.freqMonthly': 'Hàng tháng',
-  'transaction.freqYearly': 'Hàng năm',
+  'transaction.walletSelectionDesc':
+      'Chọn ví bạn muốn sử dụng cho giao dịch này.',
   'transaction.walletHint': 'Chọn ví sử dụng',
   'transaction.walletRequired': 'Vui lòng chọn ví',
   'transaction.scanReceiptOrAddPhoto': 'Quét hóa đơn / Thêm ảnh',
-  'transaction.frequencyLabel': 'Tần suất',
 
   // ============ Filter ============
   'filter.title': 'Bộ lọc giao dịch',
   'filter.description': 'Chọn cách bạn muốn thu hẹp danh sách giao dịch.',
-  'filter.dateDescription': 'Chọn mốc thời gian phù hợp để xem giao dịch chính xác hơn.',
-  'filter.categoryDescription': 'Thu hẹp danh sách giao dịch theo phân loại bạn muốn xem.',
+  'filter.dateDescription':
+      'Chọn mốc thời gian phù hợp để xem giao dịch chính xác hơn.',
+  'filter.categoryDescription':
+      'Thu hẹp danh sách giao dịch theo phân loại bạn muốn xem.',
   'filter.walletDescription': 'Chọn ví bạn muốn xem các giao dịch liên quan.',
   'filter.byCategory': 'Lọc theo phân loại',
   'filter.byCategorySubtitle': 'Chọn loại chi tiêu hoặc thu nhập cụ thể',
@@ -307,16 +297,22 @@ const Map<String, String> viVN = {
   'chatbot.desc': 'Nhờ trợ lý AI giúp bạn quản lý tài chính',
   'chatbot.hintText': 'Hỏi AI bất cứ điều gì...',
   'chatbot.analysisTitle': '📊 Phân tích chi tiêu',
-  'chatbot.analysisDesc': 'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',
-  'chatbot.analysisTemplate': 'Phân tích chi tiêu gần đây của tôi và cho tôi lời khuyên tiết kiệm.',
+  'chatbot.analysisDesc':
+      'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',
+  'chatbot.analysisTemplate':
+      'Phân tích chi tiêu gần đây của tôi và cho tôi lời khuyên tiết kiệm.',
   'chatbot.budgetTitle': '🎯 Gợi ý ngân sách',
-  'chatbot.budgetDesc': 'AI sẽ giúp bạn lên kế hoạch ngân sách thông minh cho tháng tới.',
-  'chatbot.budgetTemplate': 'Hãy gợi ý cho tôi một kế hoạch ngân sách dựa trên thói quen chi tiêu của tôi.',
+  'chatbot.budgetDesc':
+      'AI sẽ giúp bạn lên kế hoạch ngân sách thông minh cho tháng tới.',
+  'chatbot.budgetTemplate':
+      'Hãy gợi ý cho tôi một kế hoạch ngân sách dựa trên thói quen chi tiêu của tôi.',
   'chatbot.quickRecordTitle': '📝 Ghi nhanh chi tiêu',
-  'chatbot.quickRecordDesc': 'Ghi chép cực nhanh: "bún bò 35k sáng nay", "đổ xăng 50k"...',
+  'chatbot.quickRecordDesc':
+      'Ghi chép cực nhanh: "bún bò 35k sáng nay", "đổ xăng 50k"...',
   'chatbot.quickRecordTemplate': 'ăn sáng 35k hôm nay',
   'chatbot.savingGoalTitle': '🎯 Lên mục tiêu',
-  'chatbot.savingGoalDesc': 'AI sẽ giúp bạn thiết lập một mục tiêu tiết kiệm nhanh chóng.',
+  'chatbot.savingGoalDesc':
+      'AI sẽ giúp bạn thiết lập một mục tiêu tiết kiệm nhanh chóng.',
   'chatbot.savingGoalTemplate': 'tôi muốn tiết kiệm 500k đi du lịch',
   'chatbot.financialAnalysis': 'Phân tích tài chính',
   'chatbot.transactionSaved': 'Đã ghi nhận giao dịch thành công!',
@@ -325,7 +321,8 @@ const Map<String, String> viVN = {
   'chatbot.categoryCreated': 'Đã tạo hạng mục mới thành công!',
   'chatbot.connectionError': 'Lỗi kết nối: @error',
   'chatbot.sendingReceipt': 'Đang xử lý hóa đơn...',
-  'chatbot.imageTooBlurry': 'Ảnh có vẻ không phải hóa đơn hoặc quá mờ để nhận diện. Bạn hãy thử chụp lại rõ nét hơn hoặc gửi tấm ảnh khác nhé!',
+  'chatbot.imageTooBlurry':
+      'Ảnh có vẻ không phải hóa đơn hoặc quá mờ để nhận diện. Bạn hãy thử chụp lại rõ nét hơn hoặc gửi tấm ảnh khác nhé!',
 
   // ============ Notification ============
   'notification.title': 'Thông báo',
@@ -345,14 +342,12 @@ const Map<String, String> viVN = {
   // ============ Widget Settings ============
   'widget.settingTitle': 'Cài đặt Widget',
   'widget.showBalance': 'Hiển thị số dư trên Widget',
-  'widget.showBalanceDesc': 'Bật/Tắt để ẩn thông tin tài chính nhạy cảm ngoài màn hình chính',
+  'widget.showBalanceDesc':
+      'Bật/Tắt để ẩn thông tin tài chính nhạy cảm ngoài màn hình chính',
 
   // ============ Report ============
   'report.title': 'Báo cáo trong năm',
   'report.portfolio': 'Báo cáo danh mục trong năm',
-
-  // ============ Recurring Transaction ============
-  'recurring.title': 'Giao dịch định kỳ',
 
   // ============ Language ============
   'language.vietnamese': 'Tiếng Việt',

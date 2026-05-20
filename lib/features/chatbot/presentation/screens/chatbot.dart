@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/bubble.dart';
@@ -167,10 +166,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   onPressed: () => controller.pickAndScanReceipt(userId ?? 0),
                   icon: const Icon(
                     Icons.camera_alt_rounded,
-                    color: Colors.blueAccent,
+                    color: AppColors.primary,
                   ),
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.blue.withValues(alpha: 0.05),
+                    backgroundColor: AppColors.primary,
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -252,12 +251,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           controller.isListening.value ? Icons.mic : Icons.mic_none_rounded,
           color: controller.isListening.value
               ? Colors.redAccent
-              : Colors.blueAccent,
+              : AppColors.primary,
         ),
         style: IconButton.styleFrom(
           backgroundColor: controller.isListening.value
               ? Colors.red.withValues(alpha: 0.1)
-              : Colors.blue.withValues(alpha: 0.05),
+              : AppColors.primary,
         ),
       ),
     );

@@ -35,10 +35,6 @@ import 'package:money_care/features/transaction/domain/usecases/update_transacti
 import 'package:money_care/features/transaction/domain/usecases/export_report_usecase.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
-import 'package:money_care/features/transaction/data/datasources/recurring_transaction_remote_datasource.dart';
-import 'package:money_care/features/transaction/data/repositories/recurring_transaction_repository_impl.dart';
-import 'package:money_care/features/transaction/domain/usecases/recurring_transaction_usecases.dart';
-import 'package:money_care/features/transaction/presentation/controllers/recurring_transaction_controller.dart';
 
 import 'package:money_care/features/saving_goal/data/datasources/saving_goal_remote_datasource.dart';
 import 'package:money_care/features/saving_goal/data/repositories/saving_goal_repository_impl.dart';
@@ -151,27 +147,6 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final recurringRemoteDs = RecurringTransactionRemoteDataSourceImpl(
-      api: apiService,
-    );
-    final recurringRepo = RecurringTransactionRepositoryImpl(
-      remoteDataSource: recurringRemoteDs,
-    );
-    Get.put<RecurringTransactionController>(
-      RecurringTransactionController(
-        getRecurringTransactionsUseCase: GetRecurringTransactionsUseCase(
-          recurringRepo,
-        ),
-        createRecurringTransactionUseCase: CreateRecurringTransactionUseCase(
-          recurringRepo,
-        ),
-        deleteRecurringTransactionUseCase: DeleteRecurringTransactionUseCase(
-          recurringRepo,
-        ),
-      ),
-      permanent: true,
-    );
-
     final walletRemoteDs = WalletRemoteDatasourceImpl(api: apiService);
     final walletRepo = WalletRepositoryImpl(remoteDatasource: walletRemoteDs);
     Get.put<WalletController>(
@@ -198,15 +173,12 @@ class AppBinding extends Bindings {
         activateSpendingPlanUseCase: ActivateSpendingPlanUseCase(
           spendingPlanRepo,
         ),
-        pauseSpendingPlanUseCase: PauseSpendingPlanUseCase(
-          spendingPlanRepo,
-        ),
+        pauseSpendingPlanUseCase: PauseSpendingPlanUseCase(spendingPlanRepo),
         archiveSpendingPlanUseCase: ArchiveSpendingPlanUseCase(
           spendingPlanRepo,
         ),
-        getActiveSpendingPlanStatisticsUseCase: GetActiveSpendingPlanStatisticsUseCase(
-          spendingPlanRepo,
-        ),
+        getActiveSpendingPlanStatisticsUseCase:
+            GetActiveSpendingPlanStatisticsUseCase(spendingPlanRepo),
         cloneSpendingPlanUseCase: CloneSpendingPlanUseCase(spendingPlanRepo),
       ),
       permanent: true,

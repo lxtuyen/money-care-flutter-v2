@@ -10,8 +10,6 @@ abstract class UserProfileModel with _$UserProfileModel {
     int? id,
     @JsonKey(name: 'first_name') required String firstName,
     @JsonKey(name: 'last_name') required String lastName,
-    @JsonKey(name: 'monthly_income') int? monthlyIncome,
-    @JsonKey(name: 'income_date') DateTime? incomeDate,
   }) = _UserProfileModel;
 
   const UserProfileModel._();
@@ -23,7 +21,5 @@ abstract class UserProfileModel with _$UserProfileModel {
     id: id,
     firstName: firstName,
     lastName: lastName,
-    monthlyIncome: monthlyIncome,
-    incomeDate: incomeDate,
   );
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/widgets/appbar/appbar.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/gamification/presentation/controllers/streak_calendar_controller.dart';
-import 'package:money_care/core/theme/app_theme_colors.dart';
-import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/features/gamification/presentation/widgets/streak_calendar_grid.dart';
+import 'package:money_care/features/gamification/presentation/widgets/streak_calendar_legend.dart';
+import 'package:money_care/features/gamification/presentation/widgets/streak_day_transaction_list.dart';
+import 'package:money_care/features/gamification/presentation/widgets/streak_month_header.dart';
+import 'package:money_care/features/gamification/presentation/widgets/streak_weekday_row.dart';
 
 class StreakCalendarScreen extends StatelessWidget {
   const StreakCalendarScreen({super.key});
@@ -20,18 +22,11 @@ class StreakCalendarScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          color: AppColors.text1,
-          onPressed: () => Get.back(),
-        ),
+      appBar: AppbarCustom(
+        showBackArrow: true,
         title: Text(
           'streak.calendarTitle'.tr,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.text1,
             fontWeight: FontWeight.w700,
             fontSize: 17,
@@ -41,9 +36,9 @@ class StreakCalendarScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 16),
-          _buildMonthHeader(context, controller),
+          StreakMonthHeader(controller: controller),
           const SizedBox(height: 16),
-          _buildWeekdayRow(context),
+          const StreakWeekdayRow(),
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
@@ -52,15 +47,19 @@ class StreakCalendarScreen extends StatelessWidget {
                   child: CircularProgressIndicator(color: AppColors.primary),
                 );
               }
+
               return SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    _buildCalendarGrid(context, controller),
+                    StreakCalendarGrid(controller: controller),
                     const SizedBox(height: 16),
-                    _buildLegend(),
+                    const StreakCalendarLegend(),
                     const SizedBox(height: 24),
-                    _buildDayTransactionList(context, controller, appController),
+                    StreakDayTransactionList(
+                      controller: controller,
+                      appController: appController,
+                    ),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -69,440 +68,6 @@ class StreakCalendarScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildMonthHeader(BuildContext context, StreakCalendarController controller) {
-    return Obx(() {
-      final monthName = AppHelperFunction.getFormattedDate(
-        controller.focusedMonth.value,
-        format: 'MMMM yyyy',
-        locale: Get.locale?.toString(),
-      );
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _NavButton(
-              icon: Icons.chevron_left_rounded,
-              onTap: controller.prevMonth,
-            ),
-            Text(
-              monthName,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: AppThemeColors.of(context).textPrimary,
-              ),
-            ),
-            _NavButton(
-              icon: Icons.chevron_right_rounded,
-              onTap: controller.nextMonth,
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _buildWeekdayRow(BuildContext context) {
-    final labels = [
-      'streak.mon'.tr,
-      'streak.tue'.tr,
-      'streak.wed'.tr,
-      'streak.thu'.tr,
-      'streak.fri'.tr,
-      'streak.sat'.tr,
-      'streak.sun'.tr,
-    ];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: labels
-            .map(
-              (l) => Expanded(
-                child: Center(
-                  child: Text(
-                    l,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppThemeColors.of(context).textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildCalendarGrid(BuildContext context, StreakCalendarController controller) {
-    final focus = controller.focusedMonth.value;
-    final firstDay = DateTime(focus.year, focus.month, 1);
-    final daysInMonth = DateTime(focus.year, focus.month + 1, 0).day;
-    final startOffset = firstDay.weekday - 1; // Mon=0
-
-    final totalCells = startOffset + daysInMonth;
-    final rows = (totalCells / 7).ceil();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppThemeColors.of(context).cardBackground,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: GridView.builder(
-          padding: const EdgeInsets.all(12),
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7,
-            childAspectRatio: 0.68,
-          ),
-          itemCount: rows * 7,
-          itemBuilder: (context, index) {
-            final dayNum = index - startOffset + 1;
-            if (dayNum < 1 || dayNum > daysInMonth) {
-              return const SizedBox.shrink();
-            }
-
-            final hasTx = controller.daysWithTx.contains(dayNum);
-            final net = controller.dailyNet[dayNum] ?? 0;
-            final isToday = controller.isToday(dayNum);
-            final isSelected = controller.selectedDay.value == dayNum;
-
-            return _DayCell(
-              day: dayNum,
-              hasTx: hasTx,
-              net: net,
-              isToday: isToday,
-              isSelected: isSelected,
-              onTap: () => controller.selectDay(dayNum),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLegend() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _LegendItem(
-            color: const Color(0xFFFFF3E0),
-            borderColor: const Color(0xFFFFB300),
-            label: 'streak.hasTransaction'.tr,
-            icon: '🔥',
-          ),
-          const SizedBox(width: 24),
-          _LegendItem(
-            color: AppColors.primary,
-            label: 'streak.today'.tr,
-            isToday: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDayTransactionList(BuildContext context, StreakCalendarController controller, AppController appController) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Obx(() => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    controller.selectedDay.value == 0
-                        ? 'streak.selectDayDesc'.tr
-                        : 'streak.transactionOnDay'.trParams({'day': '${controller.selectedDay.value}'}),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.text1,
-                    ),
-                  ),
-                  if (controller.selectedDayTransactions.isNotEmpty)
-                    Text(
-                      'streak.transactionCount'.trParams({'count': '${controller.selectedDayTransactions.length}'}),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.text3,
-                      ),
-                    ),
-                ],
-              )),
-          const SizedBox(height: 16),
-          Obx(() {
-            if (controller.selectedDayTransactions.isEmpty) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 40),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Icon(Icons.receipt_long_outlined,
-                        size: 48, color: AppColors.text4.withOpacity(0.3)),
-                    const SizedBox(height: 12),
-                    Text(
-                      'streak.noTransactionOnDay'.tr,
-                      style: TextStyle(
-                        color: AppColors.text3.withOpacity(0.6),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: controller.selectedDayTransactions.length,
-                itemBuilder: (context, index) {
-                  final tx = controller.selectedDayTransactions[index];
-                  return TransactionItem(
-                    item: tx,
-                    isShowDate: false,
-                    isShowDivider:
-                        index < controller.selectedDayTransactions.length - 1,
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => TransactionDetail(
-                          item: tx,
-                          isExpense: tx.type == 'expense',
-                          userId: appController.userId.value ?? 0,
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _NavButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppThemeColors.of(context).surfaceBackground,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: AppThemeColors.of(context).textPrimary, size: 20),
-      ),
-    );
-  }
-}
-
-class _DayCell extends StatelessWidget {
-  final int day;
-  final bool hasTx;
-  final int net;
-  final bool isToday;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _DayCell({
-    required this.day,
-    required this.hasTx,
-    required this.net,
-    required this.isToday,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final formattedNet = AppHelperFunction.formatCompactNumber(net);
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 18,
-            child: hasTx
-                ? const Text('🔥', style: TextStyle(fontSize: 12))
-                : null,
-          ),
-          const SizedBox(height: 1),
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: isToday
-                  ? AppColors.primary
-                  : isSelected
-                      ? AppColors.primary.withOpacity(0.15)
-                      : hasTx
-                          ? const Color(0xFFFFF3E0)
-                          : Colors.transparent,
-              shape: BoxShape.circle,
-              border: isToday
-                  ? null
-                  : isSelected
-                      ? Border.all(color: AppColors.primary, width: 2)
-                      : hasTx
-                          ? Border.all(color: const Color(0xFFFFB300), width: 1.5)
-                          : null,
-            ),
-            child: Center(
-              child: Text(
-                '$day',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: isToday || hasTx || isSelected
-                      ? FontWeight.w700
-                      : FontWeight.w500,
-                  color: isToday
-                      ? Colors.white
-                      : isSelected
-                          ? AppColors.primary
-                          : hasTx
-                              ? const Color(0xFFE65100)
-                              : AppThemeColors.of(context).textSecondary,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 2),
-          SizedBox(
-            height: 13,
-            child: hasTx
-                ? Text(
-                    net >= 0
-                        ? '+$formattedNet'
-                        : formattedNet,
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w600,
-                      color: net >= 0
-                          ? const Color(0xFF27AE60)
-                          : const Color(0xFFE53935),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.clip,
-                  )
-                : null,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LegendItem extends StatelessWidget {
-  final Color color;
-  final Color? borderColor;
-  final String label;
-  final String? icon;
-  final bool isToday;
-
-  const _LegendItem({
-    required this.color,
-    required this.label,
-    this.borderColor,
-    this.icon,
-    this.isToday = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-            border: borderColor != null
-                ? Border.all(color: borderColor!, width: 1.5)
-                : null,
-          ),
-          child: icon != null
-              ? Center(child: Text(icon!, style: const TextStyle(fontSize: 11)))
-              : null,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppThemeColors.of(context).textSecondary,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
     );
   }
 }

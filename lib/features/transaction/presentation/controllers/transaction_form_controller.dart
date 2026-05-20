@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/saving_goal_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/app/controllers/saving_goal_controller.dart';
-import 'package:money_care/features/transaction/data/models/recurring_transaction_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
@@ -24,7 +23,6 @@ class TransactionFormController extends GetxController {
   final categoryController = TextEditingController();
   final subCategoryController = TextEditingController();
   final walletNameController = TextEditingController();
-  final frequencyController = TextEditingController();
   final noteController = TextEditingController();
 
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
@@ -119,34 +117,6 @@ class TransactionFormController extends GetxController {
     );
   }
 
-  CreateRecurringTransactionDto buildRecurringTransactionDto(String frequency) {
-    final userId = appController.userId.value;
-    if (userId == null) {
-      throw Exception('Không tìm thấy người dùng. Vui lòng đăng nhập lại.');
-    }
-
-    final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
-    final date = selectedDate.value ?? DateTime.now();
-    final normalizedDate = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      12,
-      0,
-      0,
-    ).toUtc();
-
-    return CreateRecurringTransactionDto(
-      amount: double.tryParse(rawValue) ?? 0,
-      type: transactionType,
-      frequency: frequency,
-      startDate: normalizedDate,
-      note: noteController.text.trim(),
-      userId: userId,
-      categoryId: selectedCategoryId.value,
-    );
-  }
-
   void setCategory(CategoryEntity category) {
     selectedCategoryId.value = category.id;
     categoryController.text = category.name;
@@ -168,10 +138,6 @@ class TransactionFormController extends GetxController {
   void setWallet(int id, String name) {
     selectedWalletId.value = id;
     walletNameController.text = name;
-  }
-
-  void setFrequency(String id, String label) {
-    frequencyController.text = label;
   }
 
   Future<void> submit() async {
@@ -225,7 +191,6 @@ class TransactionFormController extends GetxController {
     categoryController.dispose();
     subCategoryController.dispose();
     walletNameController.dispose();
-    frequencyController.dispose();
     noteController.dispose();
     super.onClose();
   }

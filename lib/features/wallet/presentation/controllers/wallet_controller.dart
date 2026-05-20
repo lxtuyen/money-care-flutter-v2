@@ -120,7 +120,6 @@ class WalletController extends GetxController {
       });
       await refreshWallets();
       
-      // Auto refresh saving goals if SavingGoalController is registered
       final appController = Get.find<AppController>();
       final userId = appController.userId.value;
       if (userId != null) {

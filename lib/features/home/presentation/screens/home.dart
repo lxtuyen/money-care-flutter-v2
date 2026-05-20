@@ -8,14 +8,11 @@ import 'package:money_care/features/home/presentation/widgets/widgets.dart';
 import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
 import 'package:money_care/app/widgets/icon/circular_icon.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
-import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_badge_widget.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_forecast_badge.dart';
-import 'package:money_care/features/transaction/domain/entities/total_by_category_entity.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class HomeScreen extends GetView<HomeController> {

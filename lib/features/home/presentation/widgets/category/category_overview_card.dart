@@ -27,7 +27,7 @@ class CategoryOverviewCard extends StatelessWidget {
       currency: 'VND',
     );
 
-    Color themeColor = isIncome ? AppColors.success : AppColors.error;
+    Color themeColor = isIncome ? AppColors.income : AppColors.expense;
 
     final String spentLabel = isIncome ? "Đã nhận:" : "Đã tiêu:";
 
@@ -48,7 +48,6 @@ class CategoryOverviewCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Category Icon (Matching TransactionItem)
           Container(
             width: 48,
             height: 48,

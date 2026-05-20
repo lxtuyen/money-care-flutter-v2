@@ -10,7 +10,6 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
-import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
@@ -333,6 +332,17 @@ class ChatController extends GetxController {
         final userId = appController.userId.value;
         if (userId != null) {
           savingGoalController.loadGoals(userId);
+          if (Get.isRegistered<WalletController>()) {
+            Get.find<WalletController>().refreshWallets();
+          }
+          if (Get.isRegistered<StatisticsController>()) {
+            Get.find<StatisticsController>().refreshStatisticsData(userId);
+          }
+          final activeGoalId = savingGoalController.goalId.value;
+          if (activeGoalId > 0) {
+            savingGoalController.loadGoalReport(activeGoalId);
+            savingGoalController.loadGoalById();
+          }
         }
       } catch (_) {}
     } else {

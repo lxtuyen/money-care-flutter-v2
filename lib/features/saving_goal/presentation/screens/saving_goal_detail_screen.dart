@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
@@ -11,7 +10,6 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_projection_card.dart';
@@ -59,7 +57,6 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    final percent = goal.progressPercent;
     
     return Scaffold(
       backgroundColor: colors.surfaceBackground,
@@ -69,48 +66,49 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
             title: goal.name,
             showBackButton: true,
             height: 220,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: CircularProgressIndicator(
-                        value: percent / 100,
-                        strokeWidth: 8,
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeCap: StrokeCap.round,
+            child: Obx(() {
+              final report = savingGoalController.goalReport.value;
+              final percent = report?.progressPercent.toDouble() ?? goal.progressPercent;
+              final displayAmount = report?.currentBalance ?? goal.savedAmount;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: CircularProgressIndicator(
+                          value: percent / 100,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                          strokeCap: StrokeCap.round,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "${percent.toInt()}%",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        "${percent.toInt()}%",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Obx(() {
-                  final report = savingGoalController.goalReport.value;
-                  final displayAmount = report?.currentBalance ?? goal.savedAmount;
-                  return Text(
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
                     "Đã tiết kiệm: ${AppHelperFunction.formatAmount(displayAmount)}",
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
-                  );
-                }),
-              ],
-            ),
+                  ),
+                ],
+              );
+            }),
           ),
           
           Padding(
@@ -215,8 +213,6 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
 
   Widget _buildDetailCard(AppThemeColors colors) {
     final report = savingGoalController.goalReport.value;
-    final currentAmount = report?.currentBalance ?? goal.savedAmount;
-    final isNegative = currentAmount < 0;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -236,7 +232,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
         children: [
           _buildDetailRow(
             "Mục tiêu", 
-            AppHelperFunction.formatAmount(goal.target ?? 0),
+            AppHelperFunction.formatAmount(report?.target ?? goal.target ?? 0),
             Icons.flag_rounded,
             AppColors.primary,
             colors,

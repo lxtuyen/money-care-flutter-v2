@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/sizes.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -50,7 +49,7 @@ class TransactionItem extends StatelessWidget {
     final Color typeColor =
         color ?? (isIncome ? AppColors.income : AppColors.expense);
     
-    final double amountValue = (item.amount ?? 0).toDouble();
+    final double amountValue = (item.amount).toDouble();
     final String amountText =
         '${showAmountSign ? (isIncome ? '+' : '-') : ''} ${AppHelperFunction.formatAmount(amountValue, currency: '')} ₫';
 

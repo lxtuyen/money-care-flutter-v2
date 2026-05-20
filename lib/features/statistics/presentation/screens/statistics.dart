@@ -16,7 +16,6 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/monthly_budget_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 import 'package:money_care/features/statistics/presentation/widgets/fixed_expense_budget_group_card.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
@@ -358,53 +357,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       stats,
                       groupedExpenses,
                       planImpact,
-                    ),
-                    const SizedBox(height: 25),
-                  ],
-                );
-              }),
-
-              Obx(() {
-                if (statisticsController.periodType.value != 'hàng tháng') {
-                  return const SizedBox.shrink();
-                }
-                if (statisticsController.selectedType.value != 'chi') {
-                  return const SizedBox.shrink();
-                }
-
-                final budget = statisticsController.totalBudget;
-                if (budget <= 0) return const SizedBox.shrink();
-
-                final spent =
-                    statisticsController.totalByType.value?.expenseTotal
-                        .toDouble() ??
-                    0.0;
-                final now = DateTime.now();
-                final sel = statisticsController.selectedMonth.value;
-                final lastDay = DateTime(sel.year, sel.month + 1, 0).day;
-                final isCurrentMonth =
-                    sel.year == now.year && sel.month == now.month;
-                final daysRemaining = isCurrentMonth
-                    ? (lastDay - now.day + 1)
-                    : lastDay;
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: AppSectionHeading(
-                        title: 'budget.monthlyTitle'.tr,
-                        showActionButton: false,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    MonthlyBudgetCard(
-                      totalBudget: budget,
-                      totalSpent: spent,
-                      daysRemaining: daysRemaining,
-                      totalDays: lastDay,
-                      categories: statisticsController.expenseCategories,
                     ),
                     const SizedBox(height: 25),
                   ],

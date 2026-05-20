@@ -8,8 +8,6 @@ abstract class ProfileUpdateDto with _$ProfileUpdateDto {
   const factory ProfileUpdateDto({
     @JsonKey(name: 'first_name') String? firstName,
     @JsonKey(name: 'last_name') String? lastName,
-    @JsonKey(name: 'monthlyIncome') int? monthlyIncome,
-    @JsonKey(name: 'incomeDate') DateTime? incomeDate,
     @JsonKey(name: 'avatar') String? avatar,
   }) = _ProfileUpdateDto;
 

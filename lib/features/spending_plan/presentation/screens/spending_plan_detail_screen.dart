@@ -8,7 +8,6 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_budget_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/fixed_expense_budget_group_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_summary_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';

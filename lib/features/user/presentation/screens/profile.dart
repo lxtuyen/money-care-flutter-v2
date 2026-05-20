@@ -4,11 +4,8 @@ import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/app/widgets/appbar/appbar.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
-import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 
 import 'package:money_care/app/widgets/layout/app_header.dart';
 
@@ -120,13 +117,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                             AppTextFormField(
-                              controller: userController.avatarController,
-                              label: 'profile.avatarLink'.tr,
-                              icon: Icons.link,
-                              hintText: 'profile.avatarHint'.tr,
-                            ),
-                            const SizedBox(height: 16),
-                            AppTextFormField(
                               controller: userController.firstNameController,
                               label: 'auth.firstName'.tr,
                               icon: Icons.person,
@@ -140,29 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: Icons.person,
                               hintText: 'profile.lastNameHint'.tr,
                               validator: (v) => AppValidator.validateLastName(v),
-                            ),
-                            const SizedBox(height: 32),
-                            Text(
-                              'profile.financialInfo'.tr,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.text1,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            AppCurrencyFormField(
-                              controller: userController.monthlyIncomeController,
-                              label: 'profile.monthlyIncomeLabel'.tr,
-                              icon: Icons.attach_money_outlined,
-                              hintText: 'profile.monthlyIncomeHint'.tr,
-                            ),
-                            const SizedBox(height: 16),
-                            Obx(
-                              () => _IncomeDateField(
-                                incomeDate: userController.incomeDate.value,
-                                onTap: () => userController.pickIncomeDay(context),
-                              ),
                             ),
                             const SizedBox(height: 32),
                             Obx(() {
@@ -184,36 +151,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _IncomeDateField extends StatelessWidget {
-  final DateTime? incomeDate;
-  final VoidCallback onTap;
-
-  const _IncomeDateField({required this.incomeDate, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final displayText = incomeDate != null
-        ? 'profile.incomeDayValue'.tr.replaceAll(
-            '@day',
-            incomeDate!.day.toString().padLeft(2, '0'),
-          )
-        : '';
-
-    return AppTextFormField(
-      label: 'profile.incomeDayLabel'.tr,
-      icon: Icons.event_outlined,
-      hintText: 'profile.selectDayHint'.tr,
-      controller: TextEditingController(text: displayText),
-      readOnly: true,
-      onTap: onTap,
-      suffixIcon: const Icon(
-        Icons.arrow_drop_down,
-        color: AppColors.secondaryNavyBlue,
       ),
     );
   }

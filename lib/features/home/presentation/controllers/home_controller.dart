@@ -1,11 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
-import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/core/constants/sizes.dart';
 
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';

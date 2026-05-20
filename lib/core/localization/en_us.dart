@@ -109,17 +109,11 @@ const Map<String, String> enUS = {
   'profile.avatar': 'Avatar',
   'profile.fixedCosts': 'Fixed Costs',
   'profile.basicInfo': 'Basic Info',
-  'profile.financialInfo': 'Financial Info',
   'profile.avatarLink': 'Avatar URL',
   'profile.avatarHint': 'Enter your avatar URL',
   'profile.nameHint': 'e.g., John Doe',
   'profile.lastNameHint': 'e.g., Smith',
-  'profile.monthlyIncomeLabel': 'Monthly Income (VND)',
-  'profile.monthlyIncomeHint': 'e.g., 15,000,000',
-  'profile.incomeDayLabel': 'Monthly Income Day',
-  'profile.selectDayHint': 'Select Day',
   'profile.updateSuccess': 'Updated successfully',
-  'profile.incomeDayValue': 'Day @day',
 
   // ============ Statistics ============
   'statistics.title': 'Statistics',
@@ -138,7 +132,8 @@ const Map<String, String> enUS = {
   'statistics.incomeOverview': 'Income Overview',
   'statistics.goalStats': 'Saving Goal Statistics',
   'statistics.exportTitle': 'Export Report',
-  'statistics.exportEmailNote': 'The report will be sent to your email (@email)',
+  'statistics.exportEmailNote':
+      'The report will be sent to your email (@email)',
   'statistics.monthly': 'monthly',
   'statistics.daily': 'daily',
 
@@ -168,21 +163,18 @@ const Map<String, String> enUS = {
   'transaction.selectCategory': 'Select Category',
   'transaction.noCategory': 'No categories available',
   'transaction.photoRequired': 'Please take or select a photo for the record.',
-  'transaction.userNotFound':
-      'Cannot identify user. Please login again.',
+  'transaction.userNotFound': 'Cannot identify user. Please login again.',
   'transaction.createSuccess': 'Photo record created successfully',
   'transaction.photoPreview': 'Transaction Photo',
   'transaction.retakePhoto': 'Retake',
   'transaction.infoSection': 'Record Info',
   'transaction.classificationSection': 'Classification',
-  'transaction.incomeNoCategory':
-      'Income records do not require a category.',
+  'transaction.incomeNoCategory': 'Income records do not require a category.',
   'transaction.detail': 'Transaction Detail',
   'transaction.amount': 'Amount',
   'transaction.note': 'Note',
   'transaction.date': 'Date',
   'transaction.category': 'Category',
-  'transaction.recurring': 'Recurring Transaction',
   'transaction.noTransactions': 'No matching transactions',
   'transaction.expenseType': 'Expense Item',
   'transaction.incomeType': 'Income Item',
@@ -193,11 +185,13 @@ const Map<String, String> enUS = {
   'transaction.evidencePhoto': 'Evidence Photo',
   'transaction.editExpense': 'Edit Expense',
   'transaction.editIncome': 'Edit Income',
-  'transaction.selectTypeDesc': 'Select the transaction type you want to create.',
+  'transaction.selectTypeDesc':
+      'Select the transaction type you want to create.',
   'transaction.recordWithPhoto': 'Record with Photo',
   'transaction.recordWithPhotoDesc': 'Take photo, enter amount and save fast',
   'transaction.noRecent': 'No recent transactions found.',
-  'transaction.deleteConfirm': 'Are you sure you want to delete this transaction?',
+  'transaction.deleteConfirm':
+      'Are you sure you want to delete this transaction?',
   'transaction.deleteSuccess': 'Transaction deleted successfully',
   'transaction.searchHint': 'Search transactions',
   'transaction.dateLabel': 'Transaction Date',
@@ -211,28 +205,27 @@ const Map<String, String> enUS = {
   'transaction.editTitle': 'Edit Category',
   'transaction.updateSuccess': 'Updated successfully',
   'transaction.selectCategoryTitle': 'Select Category',
-  'transaction.categoryNormalDesc': 'Select an appropriate group for your transaction.',
-  'transaction.noCategoryAvailable': 'No categories available.\nPlease check your fund settings.',
+  'transaction.categoryNormalDesc':
+      'Select an appropriate group for your transaction.',
+  'transaction.noCategoryAvailable':
+      'No categories available.\nPlease check your fund settings.',
   'transaction.walletLabel': 'Wallet / Account',
   'transaction.walletSelectionTitle': 'Select Wallet / Account',
-  'transaction.walletSelectionDesc': 'Select the wallet you want to use for this transaction.',
-  'transaction.frequencySelectionTitle': 'Recurrence Frequency',
-  'transaction.frequencySelectionDesc': 'Choose how often this transaction should repeat.',
-  'transaction.freqDaily': 'Daily',
-  'transaction.freqWeekly': 'Weekly',
-  'transaction.freqMonthly': 'Monthly',
-  'transaction.freqYearly': 'Yearly',
+  'transaction.walletSelectionDesc':
+      'Select the wallet you want to use for this transaction.',
   'transaction.walletHint': 'Select wallet to use',
   'transaction.walletRequired': 'Please select a wallet',
   'transaction.scanReceiptOrAddPhoto': 'Scan receipt / Add photo',
-  'transaction.frequencyLabel': 'Frequency',
 
   // ============ Filter ============
   'filter.title': 'Transaction Filter',
   'filter.description': 'Choose how to narrow down the transaction list.',
-  'filter.dateDescription': 'Select a time range to view transactions more accurately.',
-  'filter.categoryDescription': 'Narrow down the transaction list by a category you want to view.',
-  'filter.walletDescription': 'Select a wallet to view its associated transactions.',
+  'filter.dateDescription':
+      'Select a time range to view transactions more accurately.',
+  'filter.categoryDescription':
+      'Narrow down the transaction list by a category you want to view.',
+  'filter.walletDescription':
+      'Select a wallet to view its associated transactions.',
   'filter.byCategory': 'Filter by Category',
   'filter.byCategorySubtitle': 'Select a specific expense or income type',
   'filter.byTime': 'Filter by Time',
@@ -307,13 +300,17 @@ const Map<String, String> enUS = {
   'chatbot.desc': 'Let the AI assistant help you manage your finances',
   'chatbot.hintText': 'Ask AI anything...',
   'chatbot.analysisTitle': '📊 Spending Analysis',
-  'chatbot.analysisDesc': 'Get feedback and saving advice based on actual spending.',
-  'chatbot.analysisTemplate': 'Analyze my recent spending and give me saving advice.',
+  'chatbot.analysisDesc':
+      'Get feedback and saving advice based on actual spending.',
+  'chatbot.analysisTemplate':
+      'Analyze my recent spending and give me saving advice.',
   'chatbot.budgetTitle': '🎯 Budget Suggestions',
   'chatbot.budgetDesc': 'AI will help you plan a smart budget for next month.',
-  'chatbot.budgetTemplate': 'Suggest a budget plan based on my spending habits.',
+  'chatbot.budgetTemplate':
+      'Suggest a budget plan based on my spending habits.',
   'chatbot.quickRecordTitle': '📝 Quick Record',
-  'chatbot.quickRecordDesc': 'Record fast: "breakfast 35k this morning", "gas 50k"...',
+  'chatbot.quickRecordDesc':
+      'Record fast: "breakfast 35k this morning", "gas 50k"...',
   'chatbot.quickRecordTemplate': 'breakfast 35k today',
   'chatbot.savingGoalTitle': '🎯 Set Goal',
   'chatbot.savingGoalDesc': 'AI will help you set up a saving goal quickly.',
@@ -325,7 +322,8 @@ const Map<String, String> enUS = {
   'chatbot.categoryCreated': '✅ New category created successfully!',
   'chatbot.connectionError': 'Connection error: @error',
   'chatbot.sendingReceipt': 'Processing receipt...',
-  'chatbot.imageTooBlurry': 'The receipt image seems too blurry or lacks information. Please try capturing a clearer photo or send another one!',
+  'chatbot.imageTooBlurry':
+      'The receipt image seems too blurry or lacks information. Please try capturing a clearer photo or send another one!',
 
   // ============ Notification ============
   'notification.title': 'Notifications',
@@ -346,14 +344,12 @@ const Map<String, String> enUS = {
   // ============ Widget Settings ============
   'widget.settingTitle': 'Widget Settings',
   'widget.showBalance': 'Show balance on Widget',
-  'widget.showBalanceDesc': 'Toggle to hide sensitive financial info on the home screen',
+  'widget.showBalanceDesc':
+      'Toggle to hide sensitive financial info on the home screen',
 
   // ============ Report ============
   'report.title': 'Annual Report',
   'report.portfolio': 'Annual Portfolio Report',
-
-  // ============ Recurring Transaction ============
-  'recurring.title': 'Recurring Transactions',
 
   // ============ Language ============
   'language.vietnamese': 'Tiếng Việt',

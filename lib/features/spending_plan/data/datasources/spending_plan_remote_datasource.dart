@@ -16,21 +16,16 @@ abstract class SpendingPlanRemoteDatasource {
   Future<SpendingPlanModel> activatePlan(int id);
   Future<SpendingPlanModel> pausePlan(int id);
   Future<SpendingPlanModel> archivePlan(int id);
-  Future<SpendingPlanModel> createFixedExpense(
+  Future<SpendingPlanModel> createEstimatedExpense(
     int planId,
-    CreateFixedExpenseRequest request,
+    CreateEstimatedExpenseRequest request,
   );
-  Future<SpendingPlanModel> updateFixedExpense(
+  Future<SpendingPlanModel> updateEstimatedExpense(
     int planId,
     int expenseId,
     Map<String, dynamic> data,
   );
-  Future<SpendingPlanModel> deleteFixedExpense(int planId, int expenseId);
-  Future<SpendingPlanModel> markFixedExpensePaid(
-    int planId,
-    int expenseId,
-    bool isPaid,
-  );
+  Future<SpendingPlanModel> deleteEstimatedExpense(int planId, int expenseId);
   Future<SpendingPlanStatsModel?> getActivePlanStatistics();
 }
 
@@ -179,31 +174,33 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
   }
 
   @override
-  Future<SpendingPlanModel> createFixedExpense(
+  Future<SpendingPlanModel> createEstimatedExpense(
     int planId,
-    CreateFixedExpenseRequest request,
+    CreateEstimatedExpenseRequest request,
   ) async {
     final res = await api.post<SpendingPlanModel>(
-      '${ApiRoutes.spendingPlans}/$planId/fixed-expenses',
+      '${ApiRoutes.spendingPlans}/$planId/estimated-expenses',
       body: request.toJson(),
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể thêm chi phí cố định',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể thêm khoản chi dự kiến',
       );
     }
     return res.data!;
   }
 
   @override
-  Future<SpendingPlanModel> updateFixedExpense(
+  Future<SpendingPlanModel> updateEstimatedExpense(
     int planId,
     int expenseId,
     Map<String, dynamic> data,
   ) async {
     final res = await api.patch<SpendingPlanModel>(
-      '${ApiRoutes.spendingPlans}/$planId/fixed-expenses/$expenseId',
+      '${ApiRoutes.spendingPlans}/$planId/estimated-expenses/$expenseId',
       body: data,
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
@@ -211,43 +208,26 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       throw ServerException(
         res.message.isNotEmpty
             ? res.message
-            : 'Không thể cập nhật chi phí cố định',
+            : 'Không thể cập nhật khoản chi dự kiến',
       );
     }
     return res.data!;
   }
 
   @override
-  Future<SpendingPlanModel> deleteFixedExpense(
+  Future<SpendingPlanModel> deleteEstimatedExpense(
     int planId,
     int expenseId,
   ) async {
     final res = await api.delete<SpendingPlanModel>(
-      '${ApiRoutes.spendingPlans}/$planId/fixed-expenses/$expenseId',
+      '${ApiRoutes.spendingPlans}/$planId/estimated-expenses/$expenseId',
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể xóa chi phí cố định',
-      );
-    }
-    return res.data!;
-  }
-
-  @override
-  Future<SpendingPlanModel> markFixedExpensePaid(
-    int planId,
-    int expenseId,
-    bool isPaid,
-  ) async {
-    final res = await api.patch<SpendingPlanModel>(
-      '${ApiRoutes.spendingPlans}/$planId/fixed-expenses/$expenseId/pay',
-      body: {'isPaid': isPaid},
-      fromJsonT: (json) => SpendingPlanModel.fromJson(json),
-    );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể cập nhật trạng thái',
+        res.message.isNotEmpty
+            ? res.message
+            : 'Không thể xóa khoản chi dự kiến',
       );
     }
     return res.data!;

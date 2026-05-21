@@ -277,15 +277,18 @@ class SpendingPlanController extends GetxController {
     return success;
   }
 
-  Future<bool> createFixedExpense(
+  Future<bool> createEstimatedExpense(
     int planId,
-    CreateFixedExpenseRequest request, {
+    CreateEstimatedExpenseRequest request, {
     bool showSuccessMessage = true,
   }) async {
     isSaving.value = true;
     try {
       final remoteDs = Get.find<SpendingPlanRemoteDatasource>();
-      final updatedModel = await remoteDs.createFixedExpense(planId, request);
+      final updatedModel = await remoteDs.createEstimatedExpense(
+        planId,
+        request,
+      );
       final updatedPlan = updatedModel.toEntity();
       selectedPlan.value = updatedPlan;
       _replacePlan(updatedPlan);
@@ -295,7 +298,7 @@ class SpendingPlanController extends GetxController {
       }
       if (showSuccessMessage) {
         AppHelperFunction.showSuccessSnackBar(
-          'Đã thêm chi phí cố định thành công',
+          'Đã thêm khoản chi dự kiến thành công',
         );
       }
       return true;
@@ -307,7 +310,7 @@ class SpendingPlanController extends GetxController {
     }
   }
 
-  Future<bool> updateFixedExpense(
+  Future<bool> updateEstimatedExpense(
     int planId,
     int expenseId,
     Map<String, dynamic> data, {
@@ -316,7 +319,7 @@ class SpendingPlanController extends GetxController {
     isSaving.value = true;
     try {
       final remoteDs = Get.find<SpendingPlanRemoteDatasource>();
-      final updatedModel = await remoteDs.updateFixedExpense(
+      final updatedModel = await remoteDs.updateEstimatedExpense(
         planId,
         expenseId,
         data,
@@ -329,7 +332,7 @@ class SpendingPlanController extends GetxController {
         loadStatsSummary();
       }
       if (showSuccessMessage) {
-        AppHelperFunction.showSuccessSnackBar('Đã cập nhật chi phí cố định');
+        AppHelperFunction.showSuccessSnackBar('Đã cập nhật khoản chi dự kiến');
       }
       return true;
     } catch (e) {
@@ -340,11 +343,14 @@ class SpendingPlanController extends GetxController {
     }
   }
 
-  Future<bool> deleteFixedExpense(int planId, int expenseId) async {
+  Future<bool> deleteEstimatedExpense(int planId, int expenseId) async {
     isSaving.value = true;
     try {
       final remoteDs = Get.find<SpendingPlanRemoteDatasource>();
-      final updatedModel = await remoteDs.deleteFixedExpense(planId, expenseId);
+      final updatedModel = await remoteDs.deleteEstimatedExpense(
+        planId,
+        expenseId,
+      );
       final updatedPlan = updatedModel.toEntity();
       selectedPlan.value = updatedPlan;
       _replacePlan(updatedPlan);
@@ -352,42 +358,13 @@ class SpendingPlanController extends GetxController {
         activePlan.value = updatedPlan;
         loadStatsSummary();
       }
-      AppHelperFunction.showSuccessSnackBar('Đã xóa chi phí cố định');
+      AppHelperFunction.showSuccessSnackBar('Đã xóa khoản chi dự kiến');
       return true;
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
       return false;
     } finally {
       isSaving.value = false;
-    }
-  }
-
-  Future<bool> markFixedExpensePaid(
-    int planId,
-    int expenseId,
-    bool isPaid,
-  ) async {
-    try {
-      final remoteDs = Get.find<SpendingPlanRemoteDatasource>();
-      final updatedModel = await remoteDs.markFixedExpensePaid(
-        planId,
-        expenseId,
-        isPaid,
-      );
-      final updatedPlan = updatedModel.toEntity();
-      selectedPlan.value = updatedPlan;
-      _replacePlan(updatedPlan);
-      if (activePlan.value?.id == planId) {
-        activePlan.value = updatedPlan;
-        loadStatsSummary();
-      }
-      AppHelperFunction.showSuccessSnackBar(
-        isPaid ? 'Đã đánh dấu đã thanh toán' : 'Đã đánh dấu chưa thanh toán',
-      );
-      return true;
-    } catch (e) {
-      AppHelperFunction.showErrorSnackBar(e.toString());
-      return false;
     }
   }
 

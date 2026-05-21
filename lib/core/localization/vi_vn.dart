@@ -107,7 +107,7 @@ const Map<String, String> viVN = {
   'profile.targetTitle': 'Mục tiêu tiết kiệm',
   'profile.yourProfile': 'Hồ sơ của bạn',
   'profile.avatar': 'Ảnh đại diện',
-  'profile.fixedCosts': 'Chi phí cố định',
+  'profile.estimatedExpenses': 'Khoản chi dự kiến',
   'profile.basicInfo': 'Thông tin cơ bản',
   'profile.avatarLink': 'Link ảnh đại diện',
   'profile.avatarHint': 'Nhập URL ảnh của bạn',

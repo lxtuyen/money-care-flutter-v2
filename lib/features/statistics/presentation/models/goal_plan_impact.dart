@@ -96,7 +96,7 @@ class GoalPlanImpact {
     required SpendingPlanStatsEntity stats,
     SavingGoalReportModel? report,
     required DateTime selectedMonth,
-    required Map<String, List<FixedExpenseEntity>> groupedExpenses,
+    required Map<String, List<EstimatedExpenseEntity>> groupedExpenses,
     DateTime? now,
   }) {
     final target = report != null && report.target > 0
@@ -145,7 +145,7 @@ class GoalPlanImpact {
 
   static BudgetCategoryGoalImpact categoryImpactFor({
     required String name,
-    required List<FixedExpenseEntity> expenses,
+    required List<EstimatedExpenseEntity> expenses,
     required DateTime selectedMonth,
     DateTime? now,
   }) {
@@ -215,8 +215,11 @@ class GoalPlanImpact {
     return 1;
   }
 
-  static double _monthlyLimitFor(FixedExpenseEntity expense, int daysInMonth) {
-    if (expense.trackingType == 'budget' && expense.monthlyLimit > 0) {
+  static double _monthlyLimitFor(
+    EstimatedExpenseEntity expense,
+    int daysInMonth,
+  ) {
+    if (expense.monthlyLimit > 0) {
       return expense.monthlyLimit;
     }
     final frequencyValue = expense.frequencyValue <= 0

@@ -6,15 +6,15 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/estimated_expense_edit_sheet.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/app/widgets/button/app_action_button.dart';
 
-class FixedExpenseDetail extends StatelessWidget {
+class EstimatedExpenseDetail extends StatelessWidget {
   final SpendingPlanEntity plan;
-  final FixedExpenseEntity expense;
+  final EstimatedExpenseEntity expense;
 
-  const FixedExpenseDetail({
+  const EstimatedExpenseDetail({
     super.key,
     required this.plan,
     required this.expense,
@@ -23,11 +23,12 @@ class FixedExpenseDetail extends StatelessWidget {
   static Future<void> show(
     BuildContext context, {
     required SpendingPlanEntity plan,
-    required FixedExpenseEntity expense,
+    required EstimatedExpenseEntity expense,
   }) {
     return showDialog(
       context: context,
-      builder: (context) => FixedExpenseDetail(plan: plan, expense: expense),
+      builder: (context) =>
+          EstimatedExpenseDetail(plan: plan, expense: expense),
     );
   }
 
@@ -108,7 +109,7 @@ class FixedExpenseDetail extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'CHI PHÍ CỐ ĐỊNH',
+                        'KHOẢN CHI DỰ KIẾN',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -137,25 +138,6 @@ class FixedExpenseDetail extends StatelessWidget {
                         label: 'Tần suất',
                         value: _getFrequencyText(expense),
                       ),
-                      if (expense.dueDay != null) ...[
-                        const Divider(height: 24),
-                        _buildDetailRow(
-                          context,
-                          icon: Icons.calendar_today_outlined,
-                          label: 'Ngày thanh toán',
-                          value: _getDueDayText(expense),
-                        ),
-                      ],
-                      const Divider(height: 24),
-                      _buildDetailRow(
-                        context,
-                        icon: Icons.check_circle_outline,
-                        label: 'Trạng thái',
-                        value: expense.isPaid
-                            ? 'Đã thanh toán'
-                            : 'Chưa thanh toán',
-                        valueColor: expense.isPaid ? Colors.green : Colors.grey,
-                      ),
                       const SizedBox(height: 32),
 
                       Row(
@@ -170,7 +152,7 @@ class FixedExpenseDetail extends StatelessWidget {
                                   context: context,
                                   isScrollControlled: true,
                                   backgroundColor: Colors.transparent,
-                                  builder: (_) => FixedExpenseEditSheet(
+                                  builder: (_) => EstimatedExpenseEditSheet(
                                     plan: plan,
                                     expense: expense,
                                   ),
@@ -255,17 +237,18 @@ class FixedExpenseDetail extends StatelessWidget {
 
   void _handleDelete(BuildContext context, SpendingPlanController controller) {
     AppConfirmDialog.show(
-      message: 'Bạn có chắc chắn muốn xóa chi phí "${expense.name}" không?',
+      message:
+          'Bạn có chắc chắn muốn xóa chi phí "${expense.displayName}" không?',
       confirmText: 'Xóa',
       cancelText: 'Quay lại',
       onConfirm: () async {
         Get.back();
-        await controller.deleteFixedExpense(plan.id, expense.id);
+        await controller.deleteEstimatedExpense(plan.id, expense.id);
       },
     );
   }
 
-  String _getFrequencyText(FixedExpenseEntity expense) {
+  String _getFrequencyText(EstimatedExpenseEntity expense) {
     if (expense.frequencyType == 'once') return 'Một lần';
     final String unit = _getFrequencyLabel(expense.frequencyType);
     return '${expense.frequencyValue} lần / $unit';
@@ -284,23 +267,9 @@ class FixedExpenseDetail extends StatelessWidget {
     }
   }
 
-  String _getDueDayText(FixedExpenseEntity expense) {
-    if (expense.dueDay == null) return '';
-    if (expense.frequencyType == 'weekly') {
-      return 'Thứ ${_translateWeekday(expense.dueDay)}';
-    }
-    return 'Ngày ${expense.dueDay}';
-  }
-
-  String _translateWeekday(int? day) {
-    if (day == null) return '';
-    if (day == 7) return 'Chủ Nhật';
-    return (day + 1).toString();
-  }
-
   String _getCategoryIcon() {
     final catController = Get.find<UserCategoryController>();
-    final catName = expense.category ?? expense.name;
+    final catName = expense.category ?? expense.displayName;
     final cat = catController.categories.firstWhereOrNull(
       (c) => c.name.toLowerCase() == catName.toLowerCase(),
     );

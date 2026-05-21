@@ -17,7 +17,7 @@ import 'package:money_care/features/statistics/presentation/widgets/savings_bar_
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
-import 'package:money_care/features/statistics/presentation/widgets/fixed_expense_budget_group_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -216,36 +216,36 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     final isDaily =
                         statisticsController.periodType.value != 'hàng tháng';
 
-                    double dailyFixedTotal = 0;
-                    double weeklyFixedTotal = 0;
-                    double monthlyFixedTotal = 0;
+                    double dailyEstimatedTotal = 0;
+                    double weeklyEstimatedTotal = 0;
+                    double monthlyEstimatedTotal = 0;
 
-                    for (var expense in activePlan.fixedExpenses) {
+                    for (var expense in activePlan.estimatedExpenses) {
                       final type = expense.frequencyType.toLowerCase();
                       final val = expense.frequencyValue;
                       final baseAmt = expense.amount;
                       final totalAmt = baseAmt * val;
 
                       if (type == 'daily') {
-                        dailyFixedTotal += totalAmt;
+                        dailyEstimatedTotal += totalAmt;
                       } else if (type == 'weekly') {
-                        weeklyFixedTotal += totalAmt;
+                        weeklyEstimatedTotal += totalAmt;
                       } else if (type == 'monthly') {
-                        monthlyFixedTotal += totalAmt;
+                        monthlyEstimatedTotal += totalAmt;
                       }
                     }
 
                     if (isDaily) {
-                      limitLineY = dailyFixedTotal;
+                      limitLineY = dailyEstimatedTotal;
                       if (limitLineY > 0) {
                         limitLineLabel =
                             'Hạn mức ngày: ${AppHelperFunction.formatCompactNumber(limitLineY)}';
                       }
                     } else {
                       limitLineY =
-                          dailyFixedTotal +
-                          (weeklyFixedTotal / 7.0) +
-                          (monthlyFixedTotal / 30.0);
+                          dailyEstimatedTotal +
+                          (weeklyEstimatedTotal / 7.0) +
+                          (monthlyEstimatedTotal / 30.0);
                       if (limitLineY > 0) {
                         limitLineLabel =
                             'Định mức ngày: ${AppHelperFunction.formatCompactNumber(limitLineY)}';
@@ -330,8 +330,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 final stats = spendingPlanController.statsSummary.value;
                 if (stats == null) return const SizedBox.shrink();
                 final groupedExpenses =
-                    FixedExpenseBudgetGroupCard.groupExpenses(
-                      stats.fixedExpenses,
+                    EstimatedExpenseBudgetGroupCard.groupExpenses(
+                      stats.estimatedExpenses,
                     );
                 final planImpact = _buildGoalPlanImpact(stats, groupedExpenses);
 
@@ -342,7 +342,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: AppSectionHeading(
                         title: 'Theo dõi ngân sách',
-                        showActionButton: stats.fixedExpenses.length > 5,
+                        showActionButton: stats.estimatedExpenses.length > 5,
                         onPressed: () {
                           Get.toNamed(
                             RoutePath.spendingPlanDetail,
@@ -370,8 +370,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 }
                 final planImpact = _buildGoalPlanImpact(
                   spendingPlanController.statsSummary.value,
-                  FixedExpenseBudgetGroupCard.groupExpenses(
-                    spendingPlanController.statsSummary.value?.fixedExpenses ??
+                  EstimatedExpenseBudgetGroupCard.groupExpenses(
+                    spendingPlanController
+                            .statsSummary
+                            .value
+                            ?.estimatedExpenses ??
                         const [],
                   ),
                 );
@@ -620,7 +623,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget _buildBudgetTrackingSection(
     BuildContext context,
     SpendingPlanStatsEntity stats,
-    Map<String, List<FixedExpenseEntity>> groupedExpenses,
+    Map<String, List<EstimatedExpenseEntity>> groupedExpenses,
     GoalPlanImpact? planImpact,
   ) {
     final selMonth = statisticsController.selectedMonth.value;
@@ -631,13 +634,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (stats.fixedExpenses.isEmpty)
+          if (stats.estimatedExpenses.isEmpty)
             const AppEmptyState(
               message: 'Chưa có khoản theo dõi ngân sách nào.',
             )
           else ...[
             ...groupedExpenses.entries.map((entry) {
-              return FixedExpenseBudgetGroupCard(
+              return EstimatedExpenseBudgetGroupCard(
                 categoryName: entry.key,
                 daysInMonth: daysInMonth,
                 expenses: entry.value,
@@ -652,7 +655,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   GoalPlanImpact? _buildGoalPlanImpact(
     SpendingPlanStatsEntity? stats,
-    Map<String, List<FixedExpenseEntity>> groupedExpenses,
+    Map<String, List<EstimatedExpenseEntity>> groupedExpenses,
   ) {
     final goal = savingGoalController.currentGoal.value;
     if (goal == null || goal.isCompleted || stats == null) return null;

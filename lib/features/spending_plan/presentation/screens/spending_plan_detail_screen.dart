@@ -8,10 +8,10 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
-import 'package:money_care/features/statistics/presentation/widgets/fixed_expense_budget_group_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_summary_card.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_edit_sheet.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/fixed_expense_detail.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/estimated_expense_edit_sheet.dart';
+import 'package:money_care/features/spending_plan/presentation/widgets/estimated_expense_detail.dart';
 
 class SpendingPlanDetailScreen extends StatefulWidget {
   const SpendingPlanDetailScreen({super.key});
@@ -70,22 +70,22 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Chi phí cố định',
+                        'Khoản chi dự kiến',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    if (plan.fixedExpenses.isEmpty)
+                    if (plan.estimatedExpenses.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Chưa có khoản cố định.'),
+                        child: Text('Chưa có khoản chi dự kiến.'),
                       )
                     else ...[
-                      ...FixedExpenseBudgetGroupCard.groupExpenses(
-                        plan.fixedExpenses,
+                      ...EstimatedExpenseBudgetGroupCard.groupExpenses(
+                        plan.estimatedExpenses,
                       ).entries.map((entry) {
-                        return FixedExpenseBudgetGroupCard(
+                        return EstimatedExpenseBudgetGroupCard(
                           categoryName: entry.key,
                           daysInMonth: DateTime(
                             plan.year,
@@ -93,11 +93,12 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
                             0,
                           ).day,
                           expenses: entry.value,
-                          onExpenseTap: (expense) => FixedExpenseDetail.show(
-                            context,
-                            plan: plan,
-                            expense: expense,
-                          ),
+                          onExpenseTap: (expense) =>
+                              EstimatedExpenseDetail.show(
+                                context,
+                                plan: plan,
+                                expense: expense,
+                              ),
                         );
                       }),
                     ],
@@ -119,7 +120,7 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
               context: context,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
-              builder: (_) => FixedExpenseEditSheet(plan: plan),
+              builder: (_) => EstimatedExpenseEditSheet(plan: plan),
             );
           },
           backgroundColor: AppColors.primary,
@@ -203,7 +204,7 @@ class _PlanActions extends StatelessWidget {
     AppConfirmDialog.show(
       title: 'Xóa kế hoạch chi tiêu?',
       message:
-          'Kế hoạch và các chi phí cố định bên trong sẽ bị xóa. Thao tác này không thể hoàn tác.',
+          'Kế hoạch và các khoản chi dự kiến bên trong sẽ bị xóa. Thao tác này không thể hoàn tác.',
       confirmText: 'Xóa',
       cancelText: 'Hủy',
       onConfirm: () async {

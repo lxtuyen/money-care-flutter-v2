@@ -29,7 +29,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
       Get.find<UserCategoryController>();
   final _formKey = GlobalKey<FormState>();
   final _incomeController = TextEditingController();
-  final _fixedExpenses = <_FixedExpenseDraft>[];
+  final _estimatedExpenses = <_EstimatedExpenseDraft>[];
   SpendingPlanEntity? _editingPlan;
 
   int get _daysInMonth {
@@ -43,9 +43,9 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
 
   double get _income => _parseMoney(_incomeController.text);
 
-  double get _fixedExpensesTotal {
+  double get _estimatedExpensesTotal {
     double total = 0;
-    for (final expense in _fixedExpenses) {
+    for (final expense in _estimatedExpenses) {
       final amount = _parseMoney(expense.amount.text);
       if (amount <= 0) continue;
 
@@ -61,7 +61,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
     return total;
   }
 
-  double get _remaining => _income - _fixedExpensesTotal;
+  double get _remaining => _income - _estimatedExpensesTotal;
 
   @override
   void initState() {
@@ -79,22 +79,20 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
 
     if (sourcePlan == null) {
       // Auto-populate a default "Tiền ăn" daily expense
-      final mealDraft = _FixedExpenseDraft();
+      final mealDraft = _EstimatedExpenseDraft();
       mealDraft.amount.addListener(_refreshPreview);
       mealDraft.frequencyType = 'daily';
       mealDraft.frequencyValue.text = '3';
-      _fixedExpenses.add(mealDraft);
+      _estimatedExpenses.add(mealDraft);
     } else {
       _incomeController.text = _formatNumberInput(sourcePlan.totalAmount);
-      for (final expense in sourcePlan.fixedExpenses) {
-        final draft = _FixedExpenseDraft();
+      for (final expense in sourcePlan.estimatedExpenses) {
+        final draft = _EstimatedExpenseDraft();
         draft.amount.text = _formatNumberInput(expense.amount);
         draft.amount.addListener(_refreshPreview);
         draft.frequencyType = expense.frequencyType;
         draft.frequencyValue.text = expense.frequencyValue.toString();
-        draft.dueDay.text = expense.dueDay?.toString() ?? '';
-        draft.isReminderEnabled = expense.isReminderEnabled;
-        _fixedExpenses.add(draft);
+        _estimatedExpenses.add(draft);
       }
     }
 
@@ -111,22 +109,22 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
                 cat.name.toLowerCase().contains('ăn') ||
                 cat.name.toLowerCase().contains('food'),
           );
-          if (foodCat != null && _fixedExpenses.isNotEmpty) {
+          if (foodCat != null && _estimatedExpenses.isNotEmpty) {
             setState(() {
-              _fixedExpenses[0].selectedCategory = foodCat;
+              _estimatedExpenses[0].selectedCategory = foodCat;
             });
           }
         } else {
           setState(() {
-            for (var i = 0; i < sourcePlan!.fixedExpenses.length; i++) {
-              final item = sourcePlan.fixedExpenses[i];
+            for (var i = 0; i < sourcePlan!.estimatedExpenses.length; i++) {
+              final item = sourcePlan.estimatedExpenses[i];
               final categoryName = item.category;
               final cat = categoryController.categories.firstWhereOrNull(
                 (c) => c.name == categoryName,
               );
-              _fixedExpenses[i].selectedCategory = cat;
+              _estimatedExpenses[i].selectedCategory = cat;
               if (cat != null && item.subCategory != null) {
-                _fixedExpenses[i].selectedSubCategory = cat.subCategories
+                _estimatedExpenses[i].selectedSubCategory = cat.subCategories
                     .firstWhereOrNull((sub) => sub.name == item.subCategory);
               }
             }
@@ -139,7 +137,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
   @override
   void dispose() {
     _incomeController.dispose();
-    for (final expense in _fixedExpenses) {
+    for (final expense in _estimatedExpenses) {
       expense.dispose();
     }
     super.dispose();
@@ -176,7 +174,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
                     const SizedBox(height: 16),
                     _MonthlyPreviewCard(
                       income: _income,
-                      fixedCost: _fixedExpensesTotal,
+                      estimatedCost: _estimatedExpensesTotal,
                       remaining: _remaining,
                     ),
                     const SizedBox(height: 20),
@@ -184,14 +182,14 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Chi phí cố định',
+                            'Khoản chi dự kiến',
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                         ),
                         IconButton(
                           tooltip: 'Thêm khoản phí',
-                          onPressed: _addFixedExpense,
+                          onPressed: _addEstimatedExpense,
                           icon: const Icon(Icons.add_circle_outline),
                         ),
                       ],
@@ -199,18 +197,20 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
                     const SizedBox(height: 8),
                     Obx(() {
                       final categories = _expenseCategories;
-                      if (_fixedExpenses.isEmpty) {
+                      if (_estimatedExpenses.isEmpty) {
                         return Text(
-                          'Thêm các khoản chi phí cố định định kỳ như tiền ăn, tiền trọ, điện nước, internet hoặc học phí.',
+                          'Thêm các khoản chi tiêu dự tính (ước lượng) như ăn uống, đi lại, tiền nhà, điện nước, internet hoặc học phí.',
                           style: TextStyle(color: Colors.grey.shade700),
                         );
                       }
 
                       return Column(
-                        children: _fixedExpenses.asMap().entries.map((entry) {
-                          return _FixedExpenseFields(
+                        children: _estimatedExpenses.asMap().entries.map((
+                          entry,
+                        ) {
+                          return _EstimatedExpenseFields(
                             draft: entry.value,
-                            onRemove: () => _removeFixedExpense(entry.key),
+                            onRemove: () => _removeEstimatedExpense(entry.key),
                             onChanged: _refreshPreview,
                             categories: categories,
                           );
@@ -248,27 +248,26 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
     if (mounted) setState(() {});
   }
 
-  void _addFixedExpense() {
+  void _addEstimatedExpense() {
     setState(() {
-      final draft = _FixedExpenseDraft();
+      final draft = _EstimatedExpenseDraft();
       draft.amount.addListener(_refreshPreview);
-      _fixedExpenses.add(draft);
+      _estimatedExpenses.add(draft);
     });
   }
 
-  void _removeFixedExpense(int index) {
+  void _removeEstimatedExpense(int index) {
     setState(() {
-      _fixedExpenses.removeAt(index).dispose();
+      _estimatedExpenses.removeAt(index).dispose();
     });
   }
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final hasInvalidExtraFee = _fixedExpenses.any((expense) {
+    final hasInvalidExtraFee = _estimatedExpenses.any((expense) {
       final hasAnyInput =
           expense.selectedCategory != null ||
-          expense.amount.text.trim().isNotEmpty ||
-          expense.dueDay.text.trim().isNotEmpty;
+          expense.amount.text.trim().isNotEmpty;
       final isComplete =
           expense.selectedCategory != null &&
           _parseMoney(expense.amount.text) > 0;
@@ -282,13 +281,13 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
       return;
     }
 
-    final fixedExpenses = _buildFixedExpenseRequests();
+    final estimatedExpenses = _buildEstimatedExpenseRequests();
     final success = _editingPlan == null
         ? await controller.createPlan(
             CreateSpendingPlanRequest(
               totalAmount: _income,
               savingTargetAmount: 0,
-              fixedExpenses: fixedExpenses,
+              estimatedExpenses: estimatedExpenses,
             ),
           )
         : await controller.updatePlan(
@@ -296,7 +295,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
             UpdateSpendingPlanRequest(
               totalAmount: _income,
               savingTargetAmount: _editingPlan!.savingTargetAmount,
-              fixedExpenses: fixedExpenses,
+              estimatedExpenses: estimatedExpenses,
             ),
           );
     if (success) {
@@ -304,15 +303,15 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
     }
   }
 
-  List<CreateFixedExpenseRequest> _buildFixedExpenseRequests() {
-    return _fixedExpenses
+  List<CreateEstimatedExpenseRequest> _buildEstimatedExpenseRequests() {
+    return _estimatedExpenses
         .where(
           (expense) =>
               expense.selectedCategory != null &&
               _parseMoney(expense.amount.text) > 0,
         )
         .map(
-          (expense) => CreateFixedExpenseRequest(
+          (expense) => CreateEstimatedExpenseRequest(
             category: expense.selectedCategory!.name,
             categoryId: expense.selectedCategory!.id,
             subCategoryId: expense.selectedSubCategory?.id,
@@ -321,14 +320,12 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
             dailyLimit: _dailyLimitFor(expense),
             frequencyType: expense.frequencyType,
             frequencyValue: int.tryParse(expense.frequencyValue.text) ?? 1,
-            dueDay: int.tryParse(expense.dueDay.text),
-            isReminderEnabled: expense.isReminderEnabled,
           ),
         )
         .toList();
   }
 
-  double _monthlyLimitFor(_FixedExpenseDraft expense) {
+  double _monthlyLimitFor(_EstimatedExpenseDraft expense) {
     final amount = _parseMoney(expense.amount.text);
     final frequencyValue = int.tryParse(expense.frequencyValue.text) ?? 1;
     switch (expense.frequencyType) {
@@ -342,7 +339,7 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
     }
   }
 
-  double? _dailyLimitFor(_FixedExpenseDraft expense) {
+  double? _dailyLimitFor(_EstimatedExpenseDraft expense) {
     if (expense.frequencyType != 'daily') return null;
     final amount = _parseMoney(expense.amount.text);
     final frequencyValue = int.tryParse(expense.frequencyValue.text) ?? 1;
@@ -370,19 +367,19 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
 
 class _MonthlyPreviewCard extends StatelessWidget {
   final double income;
-  final double fixedCost;
+  final double estimatedCost;
   final double remaining;
 
   const _MonthlyPreviewCard({
     required this.income,
-    required this.fixedCost,
+    required this.estimatedCost,
     required this.remaining,
   });
 
   @override
   Widget build(BuildContext context) {
     final safeIncome = income <= 0 ? 1.0 : income;
-    final fixedRatio = (fixedCost / safeIncome).clamp(0.0, 1.0);
+    final estimatedRatio = (estimatedCost / safeIncome).clamp(0.0, 1.0);
     final remainingRatio = (remaining / safeIncome).clamp(0.0, 1.0);
     final isOver = remaining < 0;
 
@@ -416,9 +413,9 @@ class _MonthlyPreviewCard extends StatelessWidget {
               height: 14,
               child: Row(
                 children: [
-                  if (fixedRatio > 0)
+                  if (estimatedRatio > 0)
                     Expanded(
-                      flex: _ratioFlex(fixedRatio),
+                      flex: _ratioFlex(estimatedRatio),
                       child: Container(color: const Color(0xFFF59E0B)),
                     ),
                   if (remainingRatio > 0)
@@ -426,7 +423,7 @@ class _MonthlyPreviewCard extends StatelessWidget {
                       flex: _ratioFlex(remainingRatio),
                       child: Container(color: const Color(0xFF10B981)),
                     ),
-                  if (fixedRatio == 0 && remainingRatio == 0)
+                  if (estimatedRatio == 0 && remainingRatio == 0)
                     Expanded(child: Container(color: Colors.grey.shade200)),
                 ],
               ),
@@ -435,8 +432,8 @@ class _MonthlyPreviewCard extends StatelessWidget {
           const SizedBox(height: 12),
           _PreviewRow(
             color: const Color(0xFFF59E0B),
-            label: 'Chi phí cố định',
-            value: fixedCost,
+            label: 'Khoản chi dự kiến',
+            value: estimatedCost,
           ),
           _PreviewRow(
             color: isOver ? Colors.red : const Color(0xFF10B981),
@@ -487,29 +484,26 @@ class _PreviewRow extends StatelessWidget {
   }
 }
 
-class _FixedExpenseDraft {
+class _EstimatedExpenseDraft {
   final amount = TextEditingController();
-  final dueDay = TextEditingController();
   final frequencyValue = TextEditingController(text: '1');
   String frequencyType = 'monthly';
-  bool isReminderEnabled = false;
   CategoryEntity? selectedCategory;
   SubCategoryEntity? selectedSubCategory;
 
   void dispose() {
     amount.dispose();
-    dueDay.dispose();
     frequencyValue.dispose();
   }
 }
 
-class _FixedExpenseFields extends StatelessWidget {
-  final _FixedExpenseDraft draft;
+class _EstimatedExpenseFields extends StatelessWidget {
+  final _EstimatedExpenseDraft draft;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
   final List<CategoryEntity> categories;
 
-  const _FixedExpenseFields({
+  const _EstimatedExpenseFields({
     required this.draft,
     required this.onRemove,
     required this.onChanged,
@@ -576,13 +570,7 @@ class _FixedExpenseFields extends StatelessWidget {
                   onChanged: (val) {
                     if (val != null) {
                       draft.frequencyType = val;
-                      if (val == 'daily') {
-                        draft.dueDay.text = '';
-                      } else if (val == 'weekly') {
-                        draft.dueDay.text = '1';
-                        draft.frequencyValue.text = '1';
-                      } else {
-                        draft.dueDay.text = '1';
+                      if (val != 'daily') {
                         draft.frequencyValue.text = '1';
                       }
                       onChanged();
@@ -592,39 +580,6 @@ class _FixedExpenseFields extends StatelessWidget {
               ),
             ],
           ),
-          if (draft.frequencyType == 'monthly' ||
-              draft.frequencyType == 'weekly' ||
-              draft.frequencyType == 'daily')
-            const SizedBox(height: 12),
-          if (draft.frequencyType == 'monthly')
-            AppTextFormField(
-              controller: draft.dueDay,
-              keyboardType: TextInputType.number,
-              label: 'Ngày trả (1 - 31)',
-              icon: Icons.calendar_month_outlined,
-              onChanged: (_) => onChanged(),
-            ),
-          if (draft.frequencyType == 'weekly')
-            AppDropdownField<int>(
-              value: int.tryParse(draft.dueDay.text) ?? 1,
-              label: 'Chọn thứ',
-              icon: Icons.today_outlined,
-              items: const [
-                DropdownMenuItem(value: 1, child: Text('Thứ 2')),
-                DropdownMenuItem(value: 2, child: Text('Thứ 3')),
-                DropdownMenuItem(value: 3, child: Text('Thứ 4')),
-                DropdownMenuItem(value: 4, child: Text('Thứ 5')),
-                DropdownMenuItem(value: 5, child: Text('Thứ 6')),
-                DropdownMenuItem(value: 6, child: Text('Thứ 7')),
-                DropdownMenuItem(value: 7, child: Text('Chủ Nhật')),
-              ],
-              onChanged: (val) {
-                if (val != null) {
-                  draft.dueDay.text = val.toString();
-                  onChanged();
-                }
-              },
-            ),
           if (draft.frequencyType == 'daily')
             AppTextFormField(
               controller: draft.frequencyValue,
@@ -633,34 +588,7 @@ class _FixedExpenseFields extends StatelessWidget {
               icon: Icons.repeat,
               onChanged: (_) => onChanged(),
             ),
-          const SizedBox(height: 12),
-          StatefulBuilder(
-            builder: (context, setState) {
-              return SwitchListTile(
-                title: const Text(
-                  'Nhắc nhở thanh toán',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.text1,
-                  ),
-                ),
-                subtitle: const Text(
-                  'Gửi thông báo vào ngày hẹn trả',
-                  style: TextStyle(color: AppColors.text3),
-                ),
-                value: draft.isReminderEnabled,
-                activeThumbColor: AppColors.primary,
-                onChanged: (val) {
-                  setState(() {
-                    draft.isReminderEnabled = val;
-                  });
-                  onChanged();
-                },
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-              );
-            },
-          ),
+          if (draft.frequencyType == 'daily') const SizedBox(height: 12),
         ],
       ),
     );

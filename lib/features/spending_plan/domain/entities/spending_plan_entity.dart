@@ -1,11 +1,9 @@
-class FixedExpenseEntity {
+class EstimatedExpenseEntity {
   final int id;
-  final String name;
   final String? category;
   final int? categoryId;
   final String? subCategory;
   final int? subCategoryId;
-  final String trackingType;
   final double amount;
   final double monthlyLimit;
   final double? dailyLimit;
@@ -15,20 +13,13 @@ class FixedExpenseEntity {
   final double dailyOverAmount;
   final String frequencyType;
   final int frequencyValue;
-  final int? dueDay;
-  final String? note;
-  final bool isPaid;
-  final bool isReminderEnabled;
-  final int? linkedTransactionId;
 
-  const FixedExpenseEntity({
+  const EstimatedExpenseEntity({
     required this.id,
-    required this.name,
     this.category,
     this.categoryId,
     this.subCategory,
     this.subCategoryId,
-    this.trackingType = 'fixed_bill',
     required this.amount,
     this.monthlyLimit = 0,
     this.dailyLimit,
@@ -38,33 +29,40 @@ class FixedExpenseEntity {
     this.dailyOverAmount = 0,
     required this.frequencyType,
     required this.frequencyValue,
-    this.dueDay,
-    this.note,
-    required this.isPaid,
-    required this.isReminderEnabled,
-    this.linkedTransactionId,
   });
+
+  String get displayName {
+    final subCategoryName = subCategory?.trim();
+    if (subCategoryName != null && subCategoryName.isNotEmpty) {
+      return subCategoryName;
+    }
+    final categoryName = category?.trim();
+    if (categoryName != null && categoryName.isNotEmpty) {
+      return categoryName;
+    }
+    return 'Khoản chi dự kiến';
+  }
 }
 
 class SpendingPlanEntity {
   final int id;
   final double totalAmount;
   final double savingTargetAmount;
-  final double fixedExpenseTotal;
+  final double estimatedExpenseTotal;
   final double availableSpendingAmount;
   final String status;
   final String riskLevel;
-  final List<FixedExpenseEntity> fixedExpenses;
+  final List<EstimatedExpenseEntity> estimatedExpenses;
 
   const SpendingPlanEntity({
     required this.id,
     required this.totalAmount,
     required this.savingTargetAmount,
-    required this.fixedExpenseTotal,
+    required this.estimatedExpenseTotal,
     required this.availableSpendingAmount,
     required this.status,
     required this.riskLevel,
-    required this.fixedExpenses,
+    required this.estimatedExpenses,
   });
 
   bool get isActive => status == 'active';
@@ -77,22 +75,23 @@ class SpendingPlanEntity {
     int? id,
     double? totalAmount,
     double? savingTargetAmount,
-    double? fixedExpenseTotal,
+    double? estimatedExpenseTotal,
     double? availableSpendingAmount,
     String? status,
     String? riskLevel,
-    List<FixedExpenseEntity>? fixedExpenses,
+    List<EstimatedExpenseEntity>? estimatedExpenses,
   }) {
     return SpendingPlanEntity(
       id: id ?? this.id,
       totalAmount: totalAmount ?? this.totalAmount,
       savingTargetAmount: savingTargetAmount ?? this.savingTargetAmount,
-      fixedExpenseTotal: fixedExpenseTotal ?? this.fixedExpenseTotal,
+      estimatedExpenseTotal:
+          estimatedExpenseTotal ?? this.estimatedExpenseTotal,
       availableSpendingAmount:
           availableSpendingAmount ?? this.availableSpendingAmount,
       status: status ?? this.status,
       riskLevel: riskLevel ?? this.riskLevel,
-      fixedExpenses: fixedExpenses ?? this.fixedExpenses,
+      estimatedExpenses: estimatedExpenses ?? this.estimatedExpenses,
     );
   }
 }
@@ -102,21 +101,21 @@ class SpendingPlanStatsEntity {
   final String planName;
   final double availableSpendingAmount;
   final double spentFlexibleAmount;
-  final double spentFixedAmount;
+  final double spentEstimatedAmount;
   final double remainingAmount;
   final int daysLeft;
   final double projectedEndBalance;
-  final List<FixedExpenseEntity> fixedExpenses;
+  final List<EstimatedExpenseEntity> estimatedExpenses;
 
   const SpendingPlanStatsEntity({
     required this.planId,
     required this.planName,
     required this.availableSpendingAmount,
     required this.spentFlexibleAmount,
-    required this.spentFixedAmount,
+    required this.spentEstimatedAmount,
     required this.remainingAmount,
     required this.daysLeft,
     required this.projectedEndBalance,
-    required this.fixedExpenses,
+    required this.estimatedExpenses,
   });
 }

@@ -56,19 +56,19 @@ class SavingsBarChart extends StatelessWidget {
     final themeColors = AppThemeColors.of(context);
 
     return Container(
-        height: 220,
-        padding: const EdgeInsets.only(top: 12, right: 0, bottom: 12, left: 0),
-        decoration: BoxDecoration(
-          color: themeColors.cardBackground,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
+      height: 220,
+      padding: const EdgeInsets.only(top: 12, right: 0, bottom: 12, left: 0),
+      decoration: BoxDecoration(
+        color: themeColors.cardBackground,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: AppBarChart(
         minY: 0,
         limitLineY: limitLineY,
@@ -126,7 +126,10 @@ class SavingsBarChart extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: AppHelperFunction.formatAmount(rod.toY, currency: 'VND'),
+                  text: AppHelperFunction.formatAmount(
+                    rod.toY,
+                    currency: 'VND',
+                  ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,

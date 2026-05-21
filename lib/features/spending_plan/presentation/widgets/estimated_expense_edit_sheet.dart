@@ -12,24 +12,27 @@ import 'package:money_care/features/transaction/domain/entities/category_entity.
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
 
-class FixedExpenseEditSheet extends StatefulWidget {
+class EstimatedExpenseEditSheet extends StatefulWidget {
   final SpendingPlanEntity plan;
-  final FixedExpenseEntity? expense;
+  final EstimatedExpenseEntity? expense;
 
-  const FixedExpenseEditSheet({super.key, required this.plan, this.expense});
+  const EstimatedExpenseEditSheet({
+    super.key,
+    required this.plan,
+    this.expense,
+  });
 
   @override
-  State<FixedExpenseEditSheet> createState() => _FixedExpenseEditSheetState();
+  State<EstimatedExpenseEditSheet> createState() =>
+      _EstimatedExpenseEditSheetState();
 }
 
-class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
+class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _frequencyValueController = TextEditingController(text: '1');
-  final _dueDayController = TextEditingController(text: '1');
 
   String _frequencyType = 'monthly';
-  bool _isReminderEnabled = false;
   CategoryEntity? _selectedCategory;
   SubCategoryEntity? _selectedSubCategory;
   final _categoryController = Get.find<UserCategoryController>();
@@ -49,12 +52,10 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
         final exp = widget.expense!;
         _amountController.text = exp.amount.round().toString();
         _frequencyValueController.text = exp.frequencyValue.toString();
-        _dueDayController.text = (exp.dueDay ?? 1).toString();
         _frequencyType = exp.frequencyType;
-        _isReminderEnabled = exp.isReminderEnabled;
 
-        if (exp.category != null || exp.name.isNotEmpty) {
-          final catName = exp.category ?? exp.name;
+        if (exp.category != null) {
+          final catName = exp.category!;
           _selectedCategory = _categoryController.categories.firstWhereOrNull(
             (c) => c.name.toLowerCase() == catName.toLowerCase(),
           );
@@ -71,7 +72,6 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
   void dispose() {
     _amountController.dispose();
     _frequencyValueController.dispose();
-    _dueDayController.dispose();
     super.dispose();
   }
 
@@ -93,9 +93,7 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
     }
 
     final freqVal = int.tryParse(_frequencyValueController.text) ?? 1;
-    final dueDayVal = int.tryParse(_dueDayController.text);
-
-    final request = CreateFixedExpenseRequest(
+    final request = CreateEstimatedExpenseRequest(
       category: _selectedCategory!.name,
       categoryId: _selectedCategory!.id,
       subCategoryId: _selectedSubCategory?.id,
@@ -104,19 +102,17 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
       dailyLimit: _dailyLimitFor(amount, freqVal),
       frequencyType: _frequencyType,
       frequencyValue: freqVal,
-      dueDay: dueDayVal,
-      isReminderEnabled: _isReminderEnabled,
     );
 
     final bool success;
     if (widget.expense == null) {
-      success = await _spendingPlanController.createFixedExpense(
+      success = await _spendingPlanController.createEstimatedExpense(
         widget.plan.id,
         request,
         showSuccessMessage: false,
       );
     } else {
-      success = await _spendingPlanController.updateFixedExpense(
+      success = await _spendingPlanController.updateEstimatedExpense(
         widget.plan.id,
         widget.expense!.id,
         request.toJson(),
@@ -129,8 +125,8 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
       Future.delayed(const Duration(milliseconds: 150), () {
         AppHelperFunction.showSuccessSnackBar(
           widget.expense == null
-              ? 'Đã thêm chi phí cố định thành công'
-              : 'Đã cập nhật chi phí cố định',
+              ? 'Đã thêm khoản chi dự kiến thành công'
+              : 'Đã cập nhật khoản chi dự kiến',
         );
       });
     }
@@ -266,8 +262,8 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
   @override
   Widget build(BuildContext context) {
     final title = widget.expense == null
-        ? 'Thêm Chi phí cố định'
-        : 'Sửa Chi phí cố định';
+        ? 'Thêm Khoản chi dự kiến'
+        : 'Sửa Khoản chi dự kiến';
 
     return Container(
       decoration: const BoxDecoration(
@@ -379,13 +375,7 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
                         if (val != null) {
                           setState(() {
                             _frequencyType = val;
-                            if (val == 'daily') {
-                              _dueDayController.text = '';
-                            } else if (val == 'weekly') {
-                              _dueDayController.text = '1';
-                              _frequencyValueController.text = '1';
-                            } else {
-                              _dueDayController.text = '1';
+                            if (val != 'daily') {
                               _frequencyValueController.text = '1';
                             }
                           });
@@ -396,44 +386,6 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
                 ],
               ),
               const SizedBox(height: 12),
-
-              if (_frequencyType == 'monthly')
-                TextFormField(
-                  controller: _dueDayController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Ngày trả (1 - 31)',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                    prefixIcon: Icon(Icons.calendar_month_outlined),
-                  ),
-                ),
-              if (_frequencyType == 'weekly')
-                DropdownButtonFormField<int>(
-                  initialValue: int.tryParse(_dueDayController.text) ?? 1,
-                  decoration: const InputDecoration(
-                    labelText: 'Chọn thứ',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                    prefixIcon: Icon(Icons.today_outlined),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 1, child: Text('Thứ 2')),
-                    DropdownMenuItem(value: 2, child: Text('Thứ 3')),
-                    DropdownMenuItem(value: 3, child: Text('Thứ 4')),
-                    DropdownMenuItem(value: 4, child: Text('Thứ 5')),
-                    DropdownMenuItem(value: 5, child: Text('Thứ 6')),
-                    DropdownMenuItem(value: 6, child: Text('Thứ 7')),
-                    DropdownMenuItem(value: 7, child: Text('Chủ Nhật')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      setState(() {
-                        _dueDayController.text = val.toString();
-                      });
-                    }
-                  },
-                ),
               if (_frequencyType == 'daily')
                 TextFormField(
                   controller: _frequencyValueController,
@@ -445,23 +397,7 @@ class _FixedExpenseEditSheetState extends State<FixedExpenseEditSheet> {
                     prefixIcon: Icon(Icons.repeat),
                   ),
                 ),
-              if (_frequencyType == 'monthly' ||
-                  _frequencyType == 'weekly' ||
-                  _frequencyType == 'daily')
-                const SizedBox(height: 12),
-
-              SwitchListTile(
-                title: const Text('Nhắc nhở thanh toán'),
-                subtitle: const Text('Gửi thông báo vào ngày hẹn trả'),
-                value: _isReminderEnabled,
-                onChanged: (val) {
-                  setState(() {
-                    _isReminderEnabled = val;
-                  });
-                },
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-              ),
+              if (_frequencyType == 'daily') const SizedBox(height: 12),
               const SizedBox(height: 16),
 
               Obx(

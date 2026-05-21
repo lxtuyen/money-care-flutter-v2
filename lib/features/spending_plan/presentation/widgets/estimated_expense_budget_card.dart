@@ -6,12 +6,12 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
-class FixedExpenseBudgetCard extends StatelessWidget {
+class EstimatedExpenseBudgetCard extends StatelessWidget {
   final int daysInMonth;
-  final FixedExpenseEntity expense;
+  final EstimatedExpenseEntity expense;
   final VoidCallback? onTap;
 
-  const FixedExpenseBudgetCard({
+  const EstimatedExpenseBudgetCard({
     super.key,
     required this.daysInMonth,
     required this.expense,
@@ -176,8 +176,7 @@ class FixedExpenseBudgetCard extends StatelessWidget {
   String get _categoryName {
     final category = expense.category?.trim();
     if (category != null && category.isNotEmpty) return category;
-    final name = expense.name.trim();
-    return name.isNotEmpty ? name : 'Chi ph\u00ed c\u1ed1 \u0111\u1ecbnh';
+    return expense.displayName;
   }
 
   String? get _subCategoryName {

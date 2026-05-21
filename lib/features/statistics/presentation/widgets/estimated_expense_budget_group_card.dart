@@ -7,14 +7,14 @@ import 'package:money_care/features/statistics/presentation/models/goal_plan_imp
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
-class FixedExpenseBudgetGroupCard extends StatelessWidget {
+class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
   final String categoryName;
   final int daysInMonth;
-  final List<FixedExpenseEntity> expenses;
-  final void Function(FixedExpenseEntity)? onExpenseTap;
+  final List<EstimatedExpenseEntity> expenses;
+  final void Function(EstimatedExpenseEntity)? onExpenseTap;
   final BudgetCategoryGoalImpact? goalImpact;
 
-  const FixedExpenseBudgetGroupCard({
+  const EstimatedExpenseBudgetGroupCard({
     super.key,
     required this.categoryName,
     required this.daysInMonth,
@@ -23,17 +23,15 @@ class FixedExpenseBudgetGroupCard extends StatelessWidget {
     this.goalImpact,
   });
 
-  static Map<String, List<FixedExpenseEntity>> groupExpenses(
-    List<FixedExpenseEntity> expenses,
+  static Map<String, List<EstimatedExpenseEntity>> groupExpenses(
+    List<EstimatedExpenseEntity> expenses,
   ) {
-    final groups = <String, List<FixedExpenseEntity>>{};
+    final groups = <String, List<EstimatedExpenseEntity>>{};
     for (final expense in expenses) {
       final category = expense.category?.trim();
       final key = category != null && category.isNotEmpty
           ? category
-          : expense.name.trim().isNotEmpty
-          ? expense.name.trim()
-          : 'Chi phí cố định';
+          : expense.displayName;
       groups.putIfAbsent(key, () => []).add(expense);
     }
     return groups;
@@ -169,7 +167,7 @@ class FixedExpenseBudgetGroupCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ...expenses.map((expense) {
-            return _FixedExpenseBudgetGroupItem(
+            return _EstimatedExpenseBudgetGroupItem(
               expense: expense,
               daysInMonth: daysInMonth,
               onTap: onExpenseTap != null ? () => onExpenseTap!(expense) : null,
@@ -196,14 +194,14 @@ class FixedExpenseBudgetGroupCard extends StatelessWidget {
     });
   }
 
-  double _monthlyLimitFor(FixedExpenseEntity expense) {
-    if (expense.trackingType == 'budget' && expense.monthlyLimit > 0) {
+  double _monthlyLimitFor(EstimatedExpenseEntity expense) {
+    if (expense.monthlyLimit > 0) {
       return expense.monthlyLimit;
     }
     return _monthlyizedAmount(expense);
   }
 
-  double _monthlyizedAmount(FixedExpenseEntity expense) {
+  double _monthlyizedAmount(EstimatedExpenseEntity expense) {
     final frequencyValue = expense.frequencyValue <= 0
         ? 1
         : expense.frequencyValue;
@@ -280,12 +278,12 @@ class _GoalImpactLine extends StatelessWidget {
   }
 }
 
-class _FixedExpenseBudgetGroupItem extends StatelessWidget {
-  final FixedExpenseEntity expense;
+class _EstimatedExpenseBudgetGroupItem extends StatelessWidget {
+  final EstimatedExpenseEntity expense;
   final int daysInMonth;
   final VoidCallback? onTap;
 
-  const _FixedExpenseBudgetGroupItem({
+  const _EstimatedExpenseBudgetGroupItem({
     required this.expense,
     required this.daysInMonth,
     this.onTap,
@@ -369,8 +367,7 @@ class _FixedExpenseBudgetGroupItem extends StatelessWidget {
   String get _displayName {
     final subCategory = expense.subCategory?.trim();
     if (subCategory != null && subCategory.isNotEmpty) return subCategory;
-    final name = expense.name.trim();
-    return name.isNotEmpty ? name : 'Khoản theo dõi';
+    return expense.displayName;
   }
 
   double get _dailyLimit {

@@ -53,7 +53,10 @@ class SpendingPlanSummaryCard extends StatelessWidget {
             runSpacing: 12,
             children: [
               _MetricTile(label: 'Tổng tiền', value: plan.totalAmount),
-              _MetricTile(label: 'Chi cố định', value: plan.fixedExpenseTotal),
+              _MetricTile(
+                label: 'Chi dự kiến',
+                value: plan.estimatedExpenseTotal,
+              ),
               _MetricTile(
                 label: 'Còn chi linh hoạt',
                 value: plan.availableSpendingAmount,

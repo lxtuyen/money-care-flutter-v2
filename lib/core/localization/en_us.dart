@@ -107,7 +107,7 @@ const Map<String, String> enUS = {
   'profile.targetTitle': 'Saving Target',
   'profile.yourProfile': 'Your Profile',
   'profile.avatar': 'Avatar',
-  'profile.fixedCosts': 'Fixed Costs',
+  'profile.estimatedExpenses': 'Estimated Expenses',
   'profile.basicInfo': 'Basic Info',
   'profile.avatarLink': 'Avatar URL',
   'profile.avatarHint': 'Enter your avatar URL',

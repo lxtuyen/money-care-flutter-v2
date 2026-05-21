@@ -7,12 +7,12 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
-class FixedExpenseItem extends StatelessWidget {
-  final FixedExpenseEntity expense;
+class EstimatedExpenseItem extends StatelessWidget {
+  final EstimatedExpenseEntity expense;
   final VoidCallback? onTap;
   final bool isShowDivider;
 
-  const FixedExpenseItem({
+  const EstimatedExpenseItem({
     super.key,
     required this.expense,
     this.onTap,
@@ -21,7 +21,7 @@ class FixedExpenseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final typeColor = expense.isPaid ? AppColors.income : AppColors.expense;
+    const typeColor = AppColors.expense;
     final amountText =
         '- ${AppHelperFunction.formatAmount(expense.amount, currency: '')} ₫';
 
@@ -54,7 +54,7 @@ class FixedExpenseItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        expense.name,
+                        expense.displayName,
                         style: TextStyle(
                           fontSize: AppSizes.fontSizeSm + 1,
                           fontWeight: FontWeight.w600,
@@ -89,7 +89,7 @@ class FixedExpenseItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      expense.isPaid ? 'Đã thanh toán' : _dueText(),
+                      _frequencyText(),
                       style: TextStyle(
                         fontSize: 11,
                         color: AppThemeColors.of(context).textMuted,
@@ -117,7 +117,7 @@ class FixedExpenseItem extends StatelessWidget {
     return [
       if (expense.category != null &&
           expense.category!.isNotEmpty &&
-          expense.category!.toLowerCase() != expense.name.toLowerCase())
+          expense.category!.toLowerCase() != expense.displayName.toLowerCase())
         expense.category,
       _frequencyText(),
     ].whereType<String>().where((item) => item.isNotEmpty).join(' · ');
@@ -126,14 +126,6 @@ class FixedExpenseItem extends StatelessWidget {
   String _frequencyText() {
     if (expense.frequencyType == 'once') return 'Một lần';
     return '${expense.frequencyValue} lần / ${_frequencyLabel(expense.frequencyType)}';
-  }
-
-  String _dueText() {
-    if (expense.dueDay == null) return 'Chưa thanh toán';
-    if (expense.frequencyType == 'weekly') {
-      return 'Thứ ${_weekday(expense.dueDay)}';
-    }
-    return 'Ngày ${expense.dueDay}';
   }
 
   String _frequencyLabel(String type) {
@@ -149,18 +141,12 @@ class FixedExpenseItem extends StatelessWidget {
     }
   }
 
-  String _weekday(int? day) {
-    if (day == null) return '';
-    if (day == 7) return 'Chủ Nhật';
-    return (day + 1).toString();
-  }
-
   String _categoryIcon() {
     final catController = Get.find<UserCategoryController>();
-    final catName = expense.category ?? expense.name;
+    final catName = expense.category ?? expense.displayName;
     final category = catController.categories.firstWhereOrNull(
       (item) => item.name.toLowerCase() == catName.toLowerCase(),
     );
-    return category?.icon ?? (expense.isPaid ? '✅' : '🧾');
+    return category?.icon ?? '\u{1F9FE}';
   }
 }

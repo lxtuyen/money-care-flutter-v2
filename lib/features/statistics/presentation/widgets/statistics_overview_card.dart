@@ -24,141 +24,141 @@ class StatisticsOverviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String displayTotal = totalAmount;
-      final String displayIncome = incomeAmount;
+    final String displayIncome = incomeAmount;
 
-      final bool hasData = categories.isNotEmpty;
+    final bool hasData = categories.isNotEmpty;
 
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppThemeColors.of(context).cardBackground,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '$startDate - $endDate',
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppThemeColors.of(context).cardBackground,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 110,
-                    width: 110,
-                    child: hasData
-                        ? PieChart(
-                            PieChartData(
-                              startDegreeOffset: -90,
-                              centerSpaceRadius: 32,
-                              sectionsSpace: 2,
-                              sections: categories
-                                  .map(
-                                    (e) => PieChartSectionData(
-                                      color: e.color,
-                                      value: e.spendingPercentage,
-                                      title: '',
-                                      radius: 22,
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          )
-                        : PieChart(
-                            PieChartData(
-                              sections: [
-                                PieChartSectionData(
-                                  color: Colors.grey.shade200,
-                                  value: 1,
-                                  title: '',
-                                  radius: 22,
-                                ),
-                              ],
-                              centerSpaceRadius: 32,
-                              sectionsSpace: 0,
-                            ),
-                          ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-
-                  const SizedBox(width: 16),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildAmountRow(
-                          label: 'Chi tiêu',
-                          amount: displayTotal,
-                          color: AppColors.error,
-                          icon: Icons.arrow_downward_rounded,
-                        ),
-                        const SizedBox(height: 10),
-                        _buildAmountRow(
-                          label: 'Thu nhập',
-                          amount: displayIncome,
-                          color: AppColors.success,
-                          icon: Icons.arrow_upward_rounded,
-                        ),
-                      ],
+                  child: Text(
+                    '$startDate - $endDate',
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
-              ),
-
-              if (hasData) ...[
-                const SizedBox(height: 16),
-                const Divider(height: 1),
-                const SizedBox(height: 12),
-                GridView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    mainAxisExtent: 38,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    return CategoryShareChip(category: categories[index]);
-                  },
                 ),
               ],
+            ),
+
+            const SizedBox(height: 16),
+
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 110,
+                  width: 110,
+                  child: hasData
+                      ? PieChart(
+                          PieChartData(
+                            startDegreeOffset: -90,
+                            centerSpaceRadius: 32,
+                            sectionsSpace: 2,
+                            sections: categories
+                                .map(
+                                  (e) => PieChartSectionData(
+                                    color: e.color,
+                                    value: e.spendingPercentage,
+                                    title: '',
+                                    radius: 22,
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        )
+                      : PieChart(
+                          PieChartData(
+                            sections: [
+                              PieChartSectionData(
+                                color: Colors.grey.shade200,
+                                value: 1,
+                                title: '',
+                                radius: 22,
+                              ),
+                            ],
+                            centerSpaceRadius: 32,
+                            sectionsSpace: 0,
+                          ),
+                        ),
+                ),
+
+                const SizedBox(width: 16),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildAmountRow(
+                        label: 'Chi tiêu',
+                        amount: displayTotal,
+                        color: AppColors.error,
+                        icon: Icons.arrow_downward_rounded,
+                      ),
+                      const SizedBox(height: 10),
+                      _buildAmountRow(
+                        label: 'Thu nhập',
+                        amount: displayIncome,
+                        color: AppColors.success,
+                        icon: Icons.arrow_upward_rounded,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            if (hasData) ...[
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 38,
+                ),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  return CategoryShareChip(category: categories[index]);
+                },
+              ),
             ],
-          ),
+          ],
+        ),
       ),
     );
   }

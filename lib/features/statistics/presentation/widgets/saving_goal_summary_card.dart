@@ -519,7 +519,10 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
     _controller = Get.find<StatisticsController>();
   }
 
-  Widget _buildPremiumBadge(BuildContext context, GoalPlanInsightModel insight) {
+  Widget _buildPremiumBadge(
+    BuildContext context,
+    GoalPlanInsightModel insight,
+  ) {
     final status = insight.projectionStatus;
     final diff = insight.projectedDaysDiff ?? 0;
 
@@ -539,9 +542,11 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
       badgeBgColor = AppColors.expense.withValues(alpha: 0.08);
       borderColor = AppColors.expense.withValues(alpha: 0.16);
       textColor = AppColors.expense;
-      icon = diff == 999 ? Icons.warning_amber_rounded : Icons.trending_down_rounded;
-      label = diff == 999 
-          ? 'Không thể hoàn thành chặng (tiêu lạm vốn)' 
+      icon = diff == 999
+          ? Icons.warning_amber_rounded
+          : Icons.trending_down_rounded;
+      label = diff == 999
+          ? 'Không thể hoàn thành chặng (tiêu lạm vốn)'
           : 'Dự kiến trễ $diff ngày';
     } else {
       badgeBgColor = AppColors.primary.withValues(alpha: 0.08);
@@ -562,11 +567,7 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: textColor,
-          ),
+          Icon(icon, size: 14, color: textColor),
           const SizedBox(width: 6),
           Flexible(
             child: Text(
@@ -635,10 +636,7 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
             },
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 6,
-                horizontal: 12,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
@@ -739,7 +737,9 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
           decoration: BoxDecoration(
             color: AppColors.primary.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -755,19 +755,26 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
                   duration: const Duration(milliseconds: 400),
                   switchInCurve: Curves.easeOutBack,
                   switchOutCurve: Curves.easeIn,
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.0, 0.1),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: _buildContent(context, insight, isLoading, hasError, themeColors),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.0, 0.1),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        );
+                      },
+                  child: _buildContent(
+                    context,
+                    insight,
+                    isLoading,
+                    hasError,
+                    themeColors,
+                  ),
                 ),
               ),
             ],

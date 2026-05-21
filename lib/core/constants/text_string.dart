@@ -4,7 +4,8 @@ class AppTexts {
   // --- Forgot Password ---
   static String get login => 'auth.login'.tr;
   static String get forgotPasswordTitle => 'auth.forgotPasswordTitle'.tr;
-  static String get forgotPasswordDescription => 'auth.forgotPasswordDescription'.tr;
+  static String get forgotPasswordDescription =>
+      'auth.forgotPasswordDescription'.tr;
   static String get emailLabel => 'auth.email'.tr;
   static String get rememberPassword => 'auth.rememberPassword'.tr;
 
@@ -37,13 +38,17 @@ class AppTexts {
 
   // --- Onboarding Expense Management ---
   static String get onboardingExpenseTitle => 'onboarding.expenseTitle'.tr;
-  static String get onboardingExpenseHighlight => 'onboarding.expenseHighlight'.tr;
-  static String get onboardingExpenseDescription => 'onboarding.expenseDescription'.tr;
+  static String get onboardingExpenseHighlight =>
+      'onboarding.expenseHighlight'.tr;
+  static String get onboardingExpenseDescription =>
+      'onboarding.expenseDescription'.tr;
 
   // --- Onboarding Financial Freedom ---
   static String get onboardingFinancialTitle => 'onboarding.financialTitle'.tr;
-  static String get onboardingFinancialHighlight => 'onboarding.financialHighlight'.tr;
-  static String get onboardingFinancialDescription => 'onboarding.financialDescription'.tr;
+  static String get onboardingFinancialHighlight =>
+      'onboarding.financialHighlight'.tr;
+  static String get onboardingFinancialDescription =>
+      'onboarding.financialDescription'.tr;
 
   // --- Onboarding Income ---
   static String get done => 'common.done'.tr;
@@ -69,7 +74,7 @@ class AppTexts {
   static String get reportOfTheYear => 'report.title'.tr;
   static String get annualPortfolioReport => 'report.portfolio'.tr;
   static String get funds => 'profile.savingGoals'.tr;
-  static const String fixedCosts = 'Chi phí cố định';
+  static const String estimatedExpenses = 'Khoản chi dự kiến';
   static String get logout => 'auth.logout'.tr;
 
   // --- Statistics ---
@@ -98,6 +103,8 @@ class AppTexts {
   static String get photoPreviewTitle => 'transaction.photoPreview'.tr;
   static String get retakePhoto => 'transaction.retakePhoto'.tr;
   static String get transactionInfoSection => 'transaction.infoSection'.tr;
-  static String get classificationSection => 'transaction.classificationSection'.tr;
-  static String get incomeNoCategoryMessage => 'transaction.incomeNoCategory'.tr;
+  static String get classificationSection =>
+      'transaction.classificationSection'.tr;
+  static String get incomeNoCategoryMessage =>
+      'transaction.incomeNoCategory'.tr;
 }

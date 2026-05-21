@@ -23,8 +23,8 @@ class GoalPlanInsightModel {
       summary: json['summary']?.toString() ?? '',
       reason: json['reason']?.toString() ?? '',
       suggestion: json['suggestion']?.toString() ?? '',
-      projectedDaysDiff: json['projectedDaysDiff'] != null 
-          ? int.tryParse(json['projectedDaysDiff'].toString()) 
+      projectedDaysDiff: json['projectedDaysDiff'] != null
+          ? int.tryParse(json['projectedDaysDiff'].toString())
           : null,
       projectionStatus: json['projectionStatus']?.toString(),
     );

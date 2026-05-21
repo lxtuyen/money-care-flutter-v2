@@ -48,8 +48,6 @@ class FixedExpenseEntity {
 
 class SpendingPlanEntity {
   final int id;
-  final int month;
-  final int year;
   final double totalAmount;
   final double savingTargetAmount;
   final double fixedExpenseTotal;
@@ -60,8 +58,6 @@ class SpendingPlanEntity {
 
   const SpendingPlanEntity({
     required this.id,
-    required this.month,
-    required this.year,
     required this.totalAmount,
     required this.savingTargetAmount,
     required this.fixedExpenseTotal,
@@ -74,11 +70,11 @@ class SpendingPlanEntity {
   bool get isActive => status == 'active';
   bool get isPaused => status == 'paused';
   bool get isArchived => status == 'archived';
+  int get month => DateTime.now().month;
+  int get year => DateTime.now().year;
 
   SpendingPlanEntity copyWith({
     int? id,
-    int? month,
-    int? year,
     double? totalAmount,
     double? savingTargetAmount,
     double? fixedExpenseTotal,
@@ -89,8 +85,6 @@ class SpendingPlanEntity {
   }) {
     return SpendingPlanEntity(
       id: id ?? this.id,
-      month: month ?? this.month,
-      year: year ?? this.year,
       totalAmount: totalAmount ?? this.totalAmount,
       savingTargetAmount: savingTargetAmount ?? this.savingTargetAmount,
       fixedExpenseTotal: fixedExpenseTotal ?? this.fixedExpenseTotal,

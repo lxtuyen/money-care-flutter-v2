@@ -146,8 +146,6 @@ class FixedExpenseModel {
 
 class SpendingPlanModel {
   final int id;
-  final int month;
-  final int year;
   final double totalAmount;
   final double savingTargetAmount;
   final double fixedExpenseTotal;
@@ -158,8 +156,6 @@ class SpendingPlanModel {
 
   const SpendingPlanModel({
     required this.id,
-    required this.month,
-    required this.year,
     required this.totalAmount,
     required this.savingTargetAmount,
     required this.fixedExpenseTotal,
@@ -173,8 +169,6 @@ class SpendingPlanModel {
     final rawFixedExpenses = json['fixedExpenses'];
     return SpendingPlanModel(
       id: _asInt(json['id']),
-      month: _asInt(json['month']),
-      year: _asInt(json['year']),
       totalAmount: _asDouble(json['totalAmount']),
       savingTargetAmount: _asDouble(json['savingTargetAmount']),
       fixedExpenseTotal: _asDouble(json['fixedExpenseTotal']),
@@ -193,8 +187,6 @@ class SpendingPlanModel {
   SpendingPlanEntity toEntity() {
     return SpendingPlanEntity(
       id: id,
-      month: month,
-      year: year,
       totalAmount: totalAmount,
       savingTargetAmount: savingTargetAmount,
       fixedExpenseTotal: fixedExpenseTotal,
@@ -256,15 +248,11 @@ class CreateFixedExpenseRequest {
 }
 
 class CreateSpendingPlanRequest {
-  final int? month;
-  final int? year;
   final double totalAmount;
   final double savingTargetAmount;
   final List<CreateFixedExpenseRequest> fixedExpenses;
 
   const CreateSpendingPlanRequest({
-    this.month,
-    this.year,
     required this.totalAmount,
     required this.savingTargetAmount,
     required this.fixedExpenses,
@@ -272,8 +260,6 @@ class CreateSpendingPlanRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      if (month != null) 'month': month,
-      if (year != null) 'year': year,
       'totalAmount': totalAmount,
       'savingTargetAmount': savingTargetAmount,
       'fixedExpenses': fixedExpenses
@@ -284,15 +270,11 @@ class CreateSpendingPlanRequest {
 }
 
 class UpdateSpendingPlanRequest {
-  final int? month;
-  final int? year;
   final double? totalAmount;
   final double? savingTargetAmount;
   final List<CreateFixedExpenseRequest>? fixedExpenses;
 
   const UpdateSpendingPlanRequest({
-    this.month,
-    this.year,
     this.totalAmount,
     this.savingTargetAmount,
     this.fixedExpenses,
@@ -300,8 +282,6 @@ class UpdateSpendingPlanRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      if (month != null) 'month': month,
-      if (year != null) 'year': year,
       if (totalAmount != null) 'totalAmount': totalAmount,
       if (savingTargetAmount != null) 'savingTargetAmount': savingTargetAmount,
       if (fixedExpenses != null)

@@ -13,6 +13,23 @@ class SavingGoalProposalBubble extends StatelessWidget {
 
   const SavingGoalProposalBubble({super.key, required this.metadata});
 
+  String _formatShortAmount(double amount) {
+    if (amount >= 1000000) {
+      double value = amount / 1000000;
+      if (value == value.toInt()) {
+        return "${value.toInt()}M";
+      }
+      return "${value.toStringAsFixed(1)}M";
+    } else if (amount >= 1000) {
+      double value = amount / 1000;
+      if (value == value.toInt()) {
+        return "${value.toInt()}k";
+      }
+      return "${value.toStringAsFixed(1)}k";
+    }
+    return amount.toInt().toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
@@ -117,7 +134,9 @@ class SavingGoalProposalBubble extends StatelessWidget {
           Row(
             children: [
               SavingGoalStatChip(
-                label: AppHelperFunction.formatAmount(proposal.target),
+                label: proposal.initFund > 0
+                    ? "${_formatShortAmount(proposal.initFund)}/${_formatShortAmount(proposal.target)}"
+                    : AppHelperFunction.formatAmount(proposal.target),
                 subtitle: "Mục tiêu",
                 colors: colors,
               ),
@@ -142,10 +161,15 @@ class SavingGoalProposalBubble extends StatelessWidget {
 
           if (proposal.endDate != null && !proposal.isImpossible) ...[
             const SizedBox(height: 14),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.06),
                     borderRadius: BorderRadius.circular(10),
@@ -170,36 +194,6 @@ class SavingGoalProposalBubble extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (proposal.initFund > 0) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.income.withOpacity(0.06),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.income.withOpacity(0.15)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          size: 15,
-                          color: AppColors.income,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          "Đã trích: ${AppHelperFunction.formatAmount(proposal.initFund)}",
-                          style: const TextStyle(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.income,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ],
@@ -438,7 +432,8 @@ class SavingGoalProposal {
     final rawOptions = map['durationOptions'];
     final initFund = (map['initFund'] as num?)?.toDouble() ?? 0;
     final sourceWalletId = (map['sourceWalletId'] as num?)?.toInt() ?? 0;
-    final remainingTarget = (map['remainingTarget'] as num?)?.toDouble() ?? target;
+    final remainingTarget =
+        (map['remainingTarget'] as num?)?.toDouble() ?? target;
 
     List<SavingGoalDurationOption> parsedOptions = [];
     if (rawOptions is List && rawOptions.isNotEmpty) {

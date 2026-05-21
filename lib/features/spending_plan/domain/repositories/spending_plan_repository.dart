@@ -18,10 +18,5 @@ abstract class SpendingPlanRepository {
   Future<Either<Failure, SpendingPlanEntity>> activatePlan(int id);
   Future<Either<Failure, SpendingPlanEntity>> pausePlan(int id);
   Future<Either<Failure, SpendingPlanEntity>> archivePlan(int id);
-  Future<Either<Failure, SpendingPlanEntity>> clonePlan(
-    int id, {
-    int? month,
-    int? year,
-  });
   Future<Either<Failure, SpendingPlanStatsEntity?>> getActivePlanStatistics();
 }

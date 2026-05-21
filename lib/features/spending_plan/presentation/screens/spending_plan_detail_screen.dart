@@ -179,10 +179,7 @@ class _PlanActions extends StatelessWidget {
                 ? null
                 : () => Get.toNamed(
                     RoutePath.createSpendingPlan,
-                    arguments: {
-                      'isClone': true,
-                      'plan': plan,
-                    },
+                    arguments: {'isClone': true, 'plan': plan},
                   ),
             icon: Icons.copy_rounded,
             label: 'Nhân bản',

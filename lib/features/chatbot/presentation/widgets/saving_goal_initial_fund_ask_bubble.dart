@@ -460,8 +460,6 @@ class _SavingGoalInitialFundAskBubbleState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.show_chart_rounded, size: 18),
-                    const SizedBox(width: 8),
                     Text(
                       initFundValue > 0
                           ? "Trích ${AppHelperFunction.formatAmount(initFundValue)} & Xem lộ trình"

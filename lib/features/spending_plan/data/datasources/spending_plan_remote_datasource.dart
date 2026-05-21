@@ -16,7 +16,6 @@ abstract class SpendingPlanRemoteDatasource {
   Future<SpendingPlanModel> activatePlan(int id);
   Future<SpendingPlanModel> pausePlan(int id);
   Future<SpendingPlanModel> archivePlan(int id);
-  Future<SpendingPlanModel> clonePlan(int id, {int? month, int? year});
   Future<SpendingPlanModel> createFixedExpense(
     int planId,
     CreateFixedExpenseRequest request,
@@ -159,9 +158,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
     );
     if (!res.success || res.data == null) {
       throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tạm dừng kế hoạch',
+        res.message.isNotEmpty ? res.message : 'Không thể tạm dừng kế hoạch',
       );
     }
     return res.data!;
@@ -176,25 +173,6 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
     if (!res.success || res.data == null) {
       throw ServerException(
         res.message.isNotEmpty ? res.message : 'Không thể lưu trữ kế hoạch',
-      );
-    }
-    return res.data!;
-  }
-
-  @override
-  Future<SpendingPlanModel> clonePlan(int id, {int? month, int? year}) async {
-    final body = <String, dynamic>{};
-    if (month != null) body['month'] = month;
-    if (year != null) body['year'] = year;
-
-    final res = await api.post<SpendingPlanModel>(
-      '${ApiRoutes.spendingPlans}/$id/clone',
-      body: body,
-      fromJsonT: (json) => SpendingPlanModel.fromJson(json),
-    );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể nhân bản kế hoạch',
       );
     }
     return res.data!;

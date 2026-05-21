@@ -18,7 +18,6 @@ class SpendingPlanController extends GetxController {
   final ArchiveSpendingPlanUseCase archiveSpendingPlanUseCase;
   final GetActiveSpendingPlanStatisticsUseCase
   getActiveSpendingPlanStatisticsUseCase;
-  final CloneSpendingPlanUseCase cloneSpendingPlanUseCase;
 
   SpendingPlanController({
     required this.getSpendingPlansUseCase,
@@ -31,7 +30,6 @@ class SpendingPlanController extends GetxController {
     required this.pauseSpendingPlanUseCase,
     required this.archiveSpendingPlanUseCase,
     required this.getActiveSpendingPlanStatisticsUseCase,
-    required this.cloneSpendingPlanUseCase,
   });
 
   final plans = <SpendingPlanEntity>[].obs;
@@ -198,27 +196,6 @@ class SpendingPlanController extends GetxController {
           selectedPlan.value = null;
         }
         AppHelperFunction.showSuccessSnackBar('Đã xóa kế hoạch chi tiêu');
-        return true;
-      },
-    );
-    isSaving.value = false;
-    return success;
-  }
-
-  Future<bool> clonePlan(int id, {int? month, int? year}) async {
-    isSaving.value = true;
-    final result = await cloneSpendingPlanUseCase(id, month: month, year: year);
-    final success = result.fold(
-      (failure) {
-        _handleFailure(failure);
-        return false;
-      },
-      (plan) {
-        selectedPlan.value = plan;
-        _replacePlan(plan);
-        AppHelperFunction.showSuccessSnackBar(
-          'Nhân bản kế hoạch chi tiêu thành công',
-        );
         return true;
       },
     );

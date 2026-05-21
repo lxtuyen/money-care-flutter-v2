@@ -166,10 +166,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   onPressed: () => controller.pickAndScanReceipt(userId ?? 0),
                   icon: const Icon(
                     Icons.camera_alt_rounded,
-                    color: AppColors.primary,
+                    color: Colors.blueAccent,
                   ),
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: Colors.blue.withValues(alpha: 0.05),
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -251,12 +251,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           controller.isListening.value ? Icons.mic : Icons.mic_none_rounded,
           color: controller.isListening.value
               ? Colors.redAccent
-              : AppColors.primary,
+              : Colors.blueAccent,
         ),
         style: IconButton.styleFrom(
           backgroundColor: controller.isListening.value
               ? Colors.red.withValues(alpha: 0.1)
-              : AppColors.primary,
+              : Colors.blue.withValues(alpha: 0.05),
         ),
       ),
     );

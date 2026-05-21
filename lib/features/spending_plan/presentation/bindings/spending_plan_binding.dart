@@ -83,13 +83,6 @@ class SpendingPlanBinding extends Bindings {
       );
     }
 
-    if (!Get.isRegistered<CloneSpendingPlanUseCase>()) {
-      Get.lazyPut<CloneSpendingPlanUseCase>(
-        () => CloneSpendingPlanUseCase(repository),
-        fenix: true,
-      );
-    }
-
     if (!Get.isRegistered<SpendingPlanController>()) {
       Get.lazyPut<SpendingPlanController>(
         () => SpendingPlanController(
@@ -105,7 +98,6 @@ class SpendingPlanBinding extends Bindings {
           archiveSpendingPlanUseCase: Get.find<ArchiveSpendingPlanUseCase>(),
           getActiveSpendingPlanStatisticsUseCase:
               Get.find<GetActiveSpendingPlanStatisticsUseCase>(),
-          cloneSpendingPlanUseCase: Get.find<CloneSpendingPlanUseCase>(),
         ),
         fenix: true,
       );

@@ -15,7 +15,6 @@ abstract class SpendingPlanRemoteDatasource {
   Future<void> deletePlan(int id);
   Future<SpendingPlanModel> activatePlan(int id);
   Future<SpendingPlanModel> pausePlan(int id);
-  Future<SpendingPlanModel> archivePlan(int id);
   Future<SpendingPlanModel> createEstimatedExpense(
     int planId,
     CreateEstimatedExpenseRequest request,
@@ -154,20 +153,6 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
     if (!res.success || res.data == null) {
       throw ServerException(
         res.message.isNotEmpty ? res.message : 'Không thể tạm dừng kế hoạch',
-      );
-    }
-    return res.data!;
-  }
-
-  @override
-  Future<SpendingPlanModel> archivePlan(int id) async {
-    final res = await api.patch<SpendingPlanModel>(
-      '${ApiRoutes.spendingPlans}/$id/archive',
-      fromJsonT: (json) => SpendingPlanModel.fromJson(json),
-    );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể lưu trữ kế hoạch',
       );
     }
     return res.data!;

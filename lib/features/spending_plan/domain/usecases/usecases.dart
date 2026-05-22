@@ -78,15 +78,6 @@ class PauseSpendingPlanUseCase {
       repository.pausePlan(id);
 }
 
-class ArchiveSpendingPlanUseCase {
-  final SpendingPlanRepository repository;
-
-  ArchiveSpendingPlanUseCase(this.repository);
-
-  Future<Either<Failure, SpendingPlanEntity>> call(int id) =>
-      repository.archivePlan(id);
-}
-
 class GetActiveSpendingPlanStatisticsUseCase {
   final SpendingPlanRepository repository;
 

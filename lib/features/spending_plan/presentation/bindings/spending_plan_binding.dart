@@ -63,12 +63,7 @@ class SpendingPlanBinding extends Bindings {
         fenix: true,
       );
     }
-    if (!Get.isRegistered<ArchiveSpendingPlanUseCase>()) {
-      Get.lazyPut<ArchiveSpendingPlanUseCase>(
-        () => ArchiveSpendingPlanUseCase(repository),
-        fenix: true,
-      );
-    }
+
     if (!Get.isRegistered<PauseSpendingPlanUseCase>()) {
       Get.lazyPut<PauseSpendingPlanUseCase>(
         () => PauseSpendingPlanUseCase(repository),
@@ -95,7 +90,6 @@ class SpendingPlanBinding extends Bindings {
           deleteSpendingPlanUseCase: Get.find<DeleteSpendingPlanUseCase>(),
           activateSpendingPlanUseCase: Get.find<ActivateSpendingPlanUseCase>(),
           pauseSpendingPlanUseCase: Get.find<PauseSpendingPlanUseCase>(),
-          archiveSpendingPlanUseCase: Get.find<ArchiveSpendingPlanUseCase>(),
           getActiveSpendingPlanStatisticsUseCase:
               Get.find<GetActiveSpendingPlanStatisticsUseCase>(),
         ),

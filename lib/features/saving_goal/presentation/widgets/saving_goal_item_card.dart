@@ -47,7 +47,7 @@ class SavingGoalItemCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                _buildGoalIcon(fund.templateKey),
+                _buildGoalIcon(),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -121,7 +121,7 @@ class SavingGoalItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGoalIcon(String? key) {
+  Widget _buildGoalIcon() {
     String emoji = '🎯';
 
     return Container(

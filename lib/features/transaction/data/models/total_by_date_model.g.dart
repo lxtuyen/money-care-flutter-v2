@@ -10,7 +10,7 @@ _TotalByDateEntityModel _$TotalByDateEntityModelFromJson(
   Map<String, dynamic> json,
 ) => _TotalByDateEntityModel(
   date: DateTime.parse(json['date'] as String),
-  total: json['total'] == null ? 0 : NumParser.parseInt(json['total']),
+  total: (json['total'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$TotalByDateEntityModelToJson(

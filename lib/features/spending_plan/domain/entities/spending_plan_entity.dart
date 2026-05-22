@@ -47,7 +47,7 @@ class EstimatedExpenseEntity {
 class SpendingPlanEntity {
   final int id;
   final double totalAmount;
-  final double savingTargetAmount;
+
   final double estimatedExpenseTotal;
   final double availableSpendingAmount;
   final String status;
@@ -57,7 +57,7 @@ class SpendingPlanEntity {
   const SpendingPlanEntity({
     required this.id,
     required this.totalAmount,
-    required this.savingTargetAmount,
+
     required this.estimatedExpenseTotal,
     required this.availableSpendingAmount,
     required this.status,
@@ -74,7 +74,7 @@ class SpendingPlanEntity {
   SpendingPlanEntity copyWith({
     int? id,
     double? totalAmount,
-    double? savingTargetAmount,
+
     double? estimatedExpenseTotal,
     double? availableSpendingAmount,
     String? status,
@@ -84,7 +84,7 @@ class SpendingPlanEntity {
     return SpendingPlanEntity(
       id: id ?? this.id,
       totalAmount: totalAmount ?? this.totalAmount,
-      savingTargetAmount: savingTargetAmount ?? this.savingTargetAmount,
+
       estimatedExpenseTotal:
           estimatedExpenseTotal ?? this.estimatedExpenseTotal,
       availableSpendingAmount:

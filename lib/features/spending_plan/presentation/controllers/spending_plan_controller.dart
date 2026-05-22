@@ -15,7 +15,6 @@ class SpendingPlanController extends GetxController {
   final DeleteSpendingPlanUseCase deleteSpendingPlanUseCase;
   final ActivateSpendingPlanUseCase activateSpendingPlanUseCase;
   final PauseSpendingPlanUseCase pauseSpendingPlanUseCase;
-  final ArchiveSpendingPlanUseCase archiveSpendingPlanUseCase;
   final GetActiveSpendingPlanStatisticsUseCase
   getActiveSpendingPlanStatisticsUseCase;
 
@@ -28,7 +27,6 @@ class SpendingPlanController extends GetxController {
     required this.deleteSpendingPlanUseCase,
     required this.activateSpendingPlanUseCase,
     required this.pauseSpendingPlanUseCase,
-    required this.archiveSpendingPlanUseCase,
     required this.getActiveSpendingPlanStatisticsUseCase,
   });
 
@@ -247,29 +245,6 @@ class SpendingPlanController extends GetxController {
         }
         selectedPlan.value = plan;
         AppHelperFunction.showSuccessSnackBar('Đã tạm dừng kế hoạch');
-        return true;
-      },
-    );
-    isSaving.value = false;
-    return success;
-  }
-
-  Future<bool> archivePlan(int id) async {
-    isSaving.value = true;
-    final result = await archiveSpendingPlanUseCase(id);
-    final success = result.fold(
-      (failure) {
-        _handleFailure(failure);
-        return false;
-      },
-      (plan) {
-        _replacePlan(plan);
-        if (activePlan.value?.id == plan.id) {
-          activePlan.value = null;
-          statsSummary.value = null;
-        }
-        selectedPlan.value = plan;
-        AppHelperFunction.showSuccessSnackBar('Đã lưu trữ kế hoạch');
         return true;
       },
     );

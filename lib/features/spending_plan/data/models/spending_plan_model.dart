@@ -110,7 +110,6 @@ class EstimatedExpenseModel {
 class SpendingPlanModel {
   final int id;
   final double totalAmount;
-  final double savingTargetAmount;
   final double estimatedExpenseTotal;
   final double availableSpendingAmount;
   final String status;
@@ -120,7 +119,6 @@ class SpendingPlanModel {
   const SpendingPlanModel({
     required this.id,
     required this.totalAmount,
-    required this.savingTargetAmount,
     required this.estimatedExpenseTotal,
     required this.availableSpendingAmount,
     required this.status,
@@ -134,7 +132,6 @@ class SpendingPlanModel {
     return SpendingPlanModel(
       id: _asInt(json['id']),
       totalAmount: _asDouble(json['totalAmount']),
-      savingTargetAmount: _asDouble(json['savingTargetAmount']),
       estimatedExpenseTotal: _asDouble(
         json['estimatedExpenseTotal'] ?? json['fixedExpenseTotal'],
       ),
@@ -154,7 +151,6 @@ class SpendingPlanModel {
     return SpendingPlanEntity(
       id: id,
       totalAmount: totalAmount,
-      savingTargetAmount: savingTargetAmount,
       estimatedExpenseTotal: estimatedExpenseTotal,
       availableSpendingAmount: availableSpendingAmount,
       status: status,
@@ -203,19 +199,16 @@ class CreateEstimatedExpenseRequest {
 
 class CreateSpendingPlanRequest {
   final double totalAmount;
-  final double savingTargetAmount;
   final List<CreateEstimatedExpenseRequest> estimatedExpenses;
 
   const CreateSpendingPlanRequest({
     required this.totalAmount,
-    required this.savingTargetAmount,
     required this.estimatedExpenses,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'totalAmount': totalAmount,
-      'savingTargetAmount': savingTargetAmount,
       'estimatedExpenses': estimatedExpenses
           .map((expense) => expense.toJson())
           .toList(),
@@ -225,19 +218,16 @@ class CreateSpendingPlanRequest {
 
 class UpdateSpendingPlanRequest {
   final double? totalAmount;
-  final double? savingTargetAmount;
   final List<CreateEstimatedExpenseRequest>? estimatedExpenses;
 
   const UpdateSpendingPlanRequest({
     this.totalAmount,
-    this.savingTargetAmount,
     this.estimatedExpenses,
   });
 
   Map<String, dynamic> toJson() {
     return {
       if (totalAmount != null) 'totalAmount': totalAmount,
-      if (savingTargetAmount != null) 'savingTargetAmount': savingTargetAmount,
       if (estimatedExpenses != null)
         'estimatedExpenses': estimatedExpenses!
             .map((expense) => expense.toJson())

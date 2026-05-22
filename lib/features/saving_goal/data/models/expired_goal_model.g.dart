@@ -9,19 +9,15 @@ part of 'expired_goal_model.dart';
 _ExpiredGoalInfoModel _$ExpiredGoalInfoModelFromJson(
   Map<String, dynamic> json,
 ) => _ExpiredGoalInfoModel(
-  id: NumParser.parseInt(json['id']),
+  id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   endDate: json['end_date'] == null
       ? null
       : DateTime.parse(json['end_date'] as String),
-  completionPercentage: json['completion_percentage'] == null
-      ? 0
-      : NumParser.parseInt(json['completion_percentage']),
-  totalSpent: json['total_spent'] == null
-      ? 0
-      : NumParser.parseDouble(json['total_spent']),
-  target: json['target'] == null ? 0 : NumParser.parseDouble(json['target']),
-  balance: json['balance'] == null ? 0 : NumParser.parseDouble(json['balance']),
+  completionPercentage: (json['completion_percentage'] as num?)?.toInt() ?? 0,
+  totalSpent: (json['total_spent'] as num?)?.toDouble() ?? 0,
+  target: (json['target'] as num?)?.toDouble() ?? 0,
+  balance: (json['balance'] as num?)?.toDouble() ?? 0,
 );
 
 Map<String, dynamic> _$ExpiredGoalInfoModelToJson(

@@ -286,7 +286,6 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
         ? await controller.createPlan(
             CreateSpendingPlanRequest(
               totalAmount: _income,
-              savingTargetAmount: 0,
               estimatedExpenses: estimatedExpenses,
             ),
           )
@@ -294,7 +293,6 @@ class _CreateSpendingPlanScreenState extends State<CreateSpendingPlanScreen> {
             _editingPlan!.id,
             UpdateSpendingPlanRequest(
               totalAmount: _income,
-              savingTargetAmount: _editingPlan!.savingTargetAmount,
               estimatedExpenses: estimatedExpenses,
             ),
           );

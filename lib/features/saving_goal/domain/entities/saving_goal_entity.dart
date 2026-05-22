@@ -14,8 +14,6 @@ class SavingGoalEntity {
 
   final bool isCompleted;
 
-  final String? templateKey;
-
   final DateTime? startDate;
   final DateTime? endDate;
   final DateTime? updatedAt;
@@ -29,7 +27,7 @@ class SavingGoalEntity {
     this.target,
     this.savedAmount = 0,
     this.isCompleted = false,
-    this.templateKey,
+
     this.startDate,
     this.endDate,
     this.updatedAt,

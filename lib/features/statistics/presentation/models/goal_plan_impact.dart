@@ -116,9 +116,9 @@ class GoalPlanImpact {
       now ?? DateTime.now(),
     );
     final monthProgress = daysPassed / daysInMonth;
-    final monthlyPlan = stats.availableSpendingAmount;
+    final monthlyPlan = stats.totalAmount;
     final plannedToDate = monthlyPlan * monthProgress;
-    final actualSpent = stats.spentFlexibleAmount;
+    final actualSpent = stats.spentAmount;
     final overAmount = actualSpent - plannedToDate;
     final status = overAmount > 0
         ? GoalPlanImpactStatus.delayed

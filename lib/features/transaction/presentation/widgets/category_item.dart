@@ -22,18 +22,20 @@ class CategoryItem extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isSelected
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.primary.withValues(alpha: 0.1)
             : AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.42)
+              ? AppColors.primary.withValues(alpha: 0.42)
               : AppColors.borderSecondary,
           width: isSelected ? 1.6 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppThemeColors.of(context).textPrimary.withOpacity(0.04),
+            color: AppThemeColors.of(
+              context,
+            ).textPrimary.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 6),
           ),
@@ -50,7 +52,7 @@ class CategoryItem extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withOpacity(0.16)
+                      ? AppColors.primary.withValues(alpha: 0.16)
                       : AppColors.backgroundPrimary,
                   borderRadius: BorderRadius.circular(14),
                 ),

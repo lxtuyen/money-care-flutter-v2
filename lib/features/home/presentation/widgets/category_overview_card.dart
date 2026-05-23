@@ -9,7 +9,6 @@ class CategoryOverviewCard extends StatelessWidget {
   final int spent;
   final String iconPath;
   final bool isIncome;
-  final bool isBalanceVisible;
 
   const CategoryOverviewCard({
     super.key,
@@ -17,7 +16,6 @@ class CategoryOverviewCard extends StatelessWidget {
     required this.spent,
     required this.iconPath,
     this.isIncome = false,
-    this.isBalanceVisible = true,
   });
 
   @override
@@ -37,10 +35,12 @@ class CategoryOverviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppThemeColors.of(context).cardBackground,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderSecondary.withOpacity(0.5)),
+        border: Border.all(
+          color: AppColors.borderSecondary.withValues(alpha: 0.5),
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.text1.withOpacity(0.04),
+            color: AppColors.text1.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -52,14 +52,11 @@ class CategoryOverviewCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: themeColor.withOpacity(0.1),
+              color: themeColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             alignment: Alignment.center,
-            child: Text(
-              iconPath, // This is likely the emoji string in this context
-              style: const TextStyle(fontSize: 24),
-            ),
+            child: Text(iconPath, style: const TextStyle(fontSize: 24)),
           ),
           const SizedBox(width: AppSizes.spaceBtwItems),
 

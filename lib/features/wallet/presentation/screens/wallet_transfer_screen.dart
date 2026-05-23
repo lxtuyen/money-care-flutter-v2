@@ -20,7 +20,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
   final controller = Get.find<WalletController>();
   final amountController = TextEditingController();
   final noteController = TextEditingController();
-  
+
   int? fromWalletId;
   int? toWalletId;
 
@@ -29,13 +29,17 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
     super.initState();
     if (controller.wallets.isNotEmpty) {
       // Find first wallet with positive balance for source
-      final positiveWallets = controller.wallets.where((w) => w.balance > 0).toList();
+      final positiveWallets = controller.wallets
+          .where((w) => w.balance > 0)
+          .toList();
       if (positiveWallets.isNotEmpty) {
         fromWalletId = positiveWallets.first.id;
-        
+
         // Pick a different wallet for target if possible
         if (controller.wallets.length > 1) {
-          toWalletId = controller.wallets.firstWhere((w) => w.id != fromWalletId).id;
+          toWalletId = controller.wallets
+              .firstWhere((w) => w.id != fromWalletId)
+              .id;
         }
       }
     }
@@ -44,17 +48,13 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     return Scaffold(
       backgroundColor: colors.surfaceBackground,
       body: SafeArea(
         child: Column(
           children: [
-            AppHeader(
-              title: "Chuyển tiền",
-              showBackButton: true,
-              height: 140,
-            ),
+            AppHeader(title: "Chuyển tiền", showBackButton: true, height: 140),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -92,17 +92,27 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                         alignLabelWithHint: true,
                         prefixIcon: Padding(
                           padding: const EdgeInsets.only(bottom: 40),
-                          child: Icon(Icons.description_rounded, color: AppColors.primary, size: 22),
+                          child: Icon(
+                            Icons.description_rounded,
+                            color: AppColors.primary,
+                            size: 22,
+                          ),
                         ),
                         filled: true,
                         fillColor: AppColors.backgroundSecondary,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(color: AppColors.borderSecondary, width: 1.2),
+                          borderSide: const BorderSide(
+                            color: AppColors.borderSecondary,
+                            width: 1.2,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(color: AppColors.primary, width: 1.8),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                            width: 1.8,
+                          ),
                         ),
                         contentPadding: const EdgeInsets.all(18),
                       ),
@@ -113,11 +123,13 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              child: Obx(() => PrimaryButton(
-                label: "Thực hiện chuyển tiền",
-                isLoading: controller.isLoading.value,
-                onPressed: _handleTransfer,
-              )),
+              child: Obx(
+                () => PrimaryButton(
+                  label: "Thực hiện chuyển tiền",
+                  isLoading: controller.isLoading.value,
+                  onPressed: _handleTransfer,
+                ),
+              ),
             ),
           ],
         ),
@@ -125,10 +137,18 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
     );
   }
 
-  Widget _buildWalletSelector(String label, int? selectedId, Function(int?) onChanged, {bool isSource = false, required IconData icon}) {
+  Widget _buildWalletSelector(
+    String label,
+    int? selectedId,
+    Function(int?) onChanged, {
+    bool isSource = false,
+    required IconData icon,
+  }) {
     final colors = AppThemeColors.of(context);
-    final selectedWallet = controller.wallets.where((w) => w.id == selectedId).firstOrNull;
-    
+    final selectedWallet = controller.wallets
+        .where((w) => w.id == selectedId)
+        .firstOrNull;
+
     return InkWell(
       onTap: () => _showWalletPicker(label, selectedId, onChanged, isSource),
       borderRadius: BorderRadius.circular(18),
@@ -188,11 +208,16 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: selectedWallet.balance < 0 ? AppColors.expense : AppColors.income,
+                    color: selectedWallet.balance < 0
+                        ? AppColors.expense
+                        : AppColors.income,
                   ),
                 ),
               ),
-            const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.text3),
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: AppColors.text3,
+            ),
             const SizedBox(width: 12),
           ],
         ),
@@ -200,9 +225,14 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
     );
   }
 
-  void _showWalletPicker(String title, int? selectedId, Function(int?) onChanged, bool isSource) {
+  void _showWalletPicker(
+    String title,
+    int? selectedId,
+    Function(int?) onChanged,
+    bool isSource,
+  ) {
     final colors = AppThemeColors.of(context);
-    
+
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
@@ -231,27 +261,35 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: controller.wallets.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final wallet = controller.wallets[index];
                   final bool isDisabled = isSource && wallet.balance <= 0;
                   final bool isSelected = wallet.id == selectedId;
-                  
+
                   return InkWell(
-                    onTap: isDisabled ? null : () {
-                      onChanged(wallet.id);
-                      Get.back();
-                    },
+                    onTap: isDisabled
+                        ? null
+                        : () {
+                            onChanged(wallet.id);
+                            Get.back();
+                          },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected 
-                            ? AppColors.primary.withOpacity(0.05) 
-                            : (isDisabled ? colors.surfaceBackground.withOpacity(0.5) : Colors.transparent),
+                        color: isSelected
+                            ? AppColors.primary.withValues(alpha: 0.05)
+                            : (isDisabled
+                                  ? colors.surfaceBackground.withValues(
+                                      alpha: 0.5,
+                                    )
+                                  : Colors.transparent),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isSelected ? AppColors.primary.withOpacity(0.3) : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.primary.withValues(alpha: 0.3)
+                              : Colors.transparent,
                           width: 1,
                         ),
                       ),
@@ -261,7 +299,11 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: (isDisabled ? colors.textMuted : AppColors.primary).withOpacity(0.1),
+                              color:
+                                  (isDisabled
+                                          ? colors.textMuted
+                                          : AppColors.primary)
+                                      .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Center(
@@ -281,13 +323,20 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: isDisabled ? colors.textMuted : colors.textPrimary,
+                                    color: isDisabled
+                                        ? colors.textMuted
+                                        : colors.textPrimary,
                                   ),
                                 ),
                                 if (isDisabled)
                                   Text(
                                     "Số dư không khả dụng",
-                                    style: TextStyle(fontSize: 11, color: AppColors.expense.withOpacity(0.7)),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.expense.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    ),
                                   ),
                               ],
                             ),
@@ -300,10 +349,14 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
-                                  color: isDisabled 
-                                      ? colors.textMuted 
-                                      : (wallet.balance < 0 ? AppColors.expense : AppColors.income),
-                                  decoration: isDisabled ? TextDecoration.lineThrough : null,
+                                  color: isDisabled
+                                      ? colors.textMuted
+                                      : (wallet.balance < 0
+                                            ? AppColors.expense
+                                            : AppColors.income),
+                                  decoration: isDisabled
+                                      ? TextDecoration.lineThrough
+                                      : null,
                                 ),
                               ),
                             ],
@@ -328,29 +381,41 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
       AppHelperFunction.showErrorSnackBar("Vui lòng chọn cả ví gửi và ví nhận");
       return;
     }
-    
+
     if (fromWalletId == toWalletId) {
-      AppHelperFunction.showErrorSnackBar("Ví gửi và ví nhận không được trùng nhau");
+      AppHelperFunction.showErrorSnackBar(
+        "Ví gửi và ví nhận không được trùng nhau",
+      );
       return;
     }
-    
-    final amount = double.tryParse(AppHelperFunction.unformatCurrency(amountController.text)) ?? 0;
-    
+
+    final amount =
+        double.tryParse(
+          AppHelperFunction.unformatCurrency(amountController.text),
+        ) ??
+        0;
+
     if (amount <= 0) {
       AppHelperFunction.showErrorSnackBar("Số tiền chuyển phải lớn hơn 0");
       return;
     }
 
-    final fromWallet = controller.wallets.firstWhere((w) => w.id == fromWalletId);
+    final fromWallet = controller.wallets.firstWhere(
+      (w) => w.id == fromWalletId,
+    );
     if (fromWallet.balance <= 0) {
-      AppHelperFunction.showErrorSnackBar("Ví '${fromWallet.name}' không có số dư để thực hiện chuyển tiền");
+      AppHelperFunction.showErrorSnackBar(
+        "Ví '${fromWallet.name}' không có số dư để thực hiện chuyển tiền",
+      );
       return;
     }
 
     if (fromWallet.balance < amount) {
-      AppHelperFunction.showErrorSnackBar("Số dư ví không đủ để thực hiện chuyển khoản");
+      AppHelperFunction.showErrorSnackBar(
+        "Số dư ví không đủ để thực hiện chuyển khoản",
+      );
     }
-    
+
     try {
       final categoryController = Get.find<UserCategoryController>();
       final categoryId = await categoryController.getOrCreateTransferCategory();

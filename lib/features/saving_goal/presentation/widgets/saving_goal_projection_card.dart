@@ -39,15 +39,15 @@ class SavingGoalProjectionCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            statusColor.withOpacity(0.08),
-            statusColor.withOpacity(0.02),
+            statusColor.withValues(alpha: 0.08),
+            statusColor.withValues(alpha: 0.02),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: statusColor.withOpacity(0.2)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: statusColor.withOpacity(0.06),
+            color: statusColor.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -62,7 +62,7 @@ class SavingGoalProjectionCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.15),
+                  color: statusColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(statusIcon, color: statusColor, size: 22),
@@ -95,9 +95,12 @@ class SavingGoalProjectionCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
+                  color: statusColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -164,10 +167,7 @@ class SavingGoalProjectionCard extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     "Dự kiến hoàn thành: ",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
                   ),
                   Text(
                     DateFormat('MM/yyyy').format(projection.projectedDate!),
@@ -177,7 +177,8 @@ class SavingGoalProjectionCard extends StatelessWidget {
                       color: statusColor,
                     ),
                   ),
-                  if (projection.monthsDiff != null && projection.monthsDiff! > 0) ...[
+                  if (projection.monthsDiff != null &&
+                      projection.monthsDiff! > 0) ...[
                     const Spacer(),
                     Text(
                       isOnTrack
@@ -205,14 +206,14 @@ class SavingGoalProjectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.cardBackground,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.info.withOpacity(0.2)),
+        border: Border.all(color: AppColors.info.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.info.withOpacity(0.1),
+              color: AppColors.info.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -237,10 +238,7 @@ class SavingGoalProjectionCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   "Hãy tạo kế hoạch chi tiêu tháng để xem dự báo thời gian hoàn thành mục tiêu!",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
                 ),
               ],
             ),
@@ -284,10 +282,7 @@ class _MetricTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

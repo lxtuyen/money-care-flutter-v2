@@ -9,8 +9,8 @@ class SelectSavingGoalUseCase {
 
   Future<Either<Failure, SavingGoalEntity?>> call(
     int userId,
-    int SavingGoalId,
+    int savingGoalId,
   ) {
-    return repository.selectSavingGoal(userId, SavingGoalId);
+    return repository.selectSavingGoal(userId, savingGoalId);
   }
 }

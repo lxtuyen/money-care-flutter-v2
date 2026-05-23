@@ -53,7 +53,8 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                   constraints: const BoxConstraints(maxWidth: 600),
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     child: Form(
                       key: _formKey,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -81,32 +82,37 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                             label: 'Số tiền cần đạt',
                             icon: Icons.monetization_on,
                             hintText: 'VD: 10.000.000',
-                            validator: (value) =>
-                                AppValidator.validateAmount(value, minAmount: 10000),
-                            onRawChanged: (value) =>
-                                _controller.target.value = double.tryParse(value),
+                            validator: (value) => AppValidator.validateAmount(
+                              value,
+                              minAmount: 10000,
+                            ),
+                            onRawChanged: (value) => _controller.target.value =
+                                double.tryParse(value),
                           ),
                           const SizedBox(height: 16),
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.05),
+                              color: AppColors.primary.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                               ),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.account_balance_wallet_rounded,
-                                  color: AppColors.primary.withOpacity(0.8),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.8,
+                                  ),
                                   size: 24,
                                 ),
                                 const SizedBox(width: 12),
                                 const Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Ví mục tiêu tự động',
@@ -148,7 +154,8 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                                   selectedDate: _controller.startDate,
                                   label: 'Bắt đầu',
                                   placeholder: 'Chọn ngày',
-                                  onTap: () => _controller.selectStartDate(context),
+                                  onTap: () =>
+                                      _controller.selectStartDate(context),
                                 ),
                               ),
                               const SizedBox(width: 16),
@@ -157,7 +164,8 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                                   selectedDate: _controller.endDate,
                                   label: 'Dự kiến xong',
                                   placeholder: 'Chọn ngày',
-                                  onTap: () => _controller.selectEndDate(context),
+                                  onTap: () =>
+                                      _controller.selectEndDate(context),
                                 ),
                               ),
                             ],

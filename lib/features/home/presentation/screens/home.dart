@@ -55,14 +55,16 @@ class HomeScreen extends GetView<HomeController> {
                                 gradient: LinearGradient(
                                   colors: [
                                     AppColors.primary,
-                                    AppColors.primary.withOpacity(0.7),
+                                    AppColors.primary.withValues(alpha: 0.7),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.2),
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -253,9 +255,13 @@ class HomeScreen extends GetView<HomeController> {
             children: [
               const StreakBadgeWidget(),
               Obx(() {
-                final showStreak = Get.find<GamificationController>().currentStreak.value > 0;
-                final showForecast = Get.find<SpendingPlanController>().activePlan.value != null &&
-                    Get.find<SpendingPlanController>().statsSummary.value != null;
+                final showStreak =
+                    Get.find<GamificationController>().currentStreak.value > 0;
+                final showForecast =
+                    Get.find<SpendingPlanController>().activePlan.value !=
+                        null &&
+                    Get.find<SpendingPlanController>().statsSummary.value !=
+                        null;
                 if (showStreak && showForecast) {
                   return const SizedBox(width: 8);
                 }
@@ -415,7 +421,6 @@ class HomeScreen extends GetView<HomeController> {
               spent: category.total,
               iconPath: category.categoryIcon,
               isIncome: false,
-              isBalanceVisible: controller.appController.isBalanceVisible.value,
             );
           }),
           const SizedBox(height: AppSizes.defaultSpace),
@@ -454,7 +459,6 @@ class HomeScreen extends GetView<HomeController> {
               spent: category.total,
               iconPath: category.categoryIcon,
               isIncome: true,
-              isBalanceVisible: controller.appController.isBalanceVisible.value,
             );
           }),
           const SizedBox(height: AppSizes.defaultSpace),

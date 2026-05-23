@@ -15,7 +15,6 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   savingGoal: json['savingGoal'] == null
       ? null
       : SavingGoalModel.fromJson(json['savingGoal'] as Map<String, dynamic>),
-  hasCategories: json['hasCategories'] as bool?,
 );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -26,5 +25,4 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'accessToken': instance.accessToken,
       'profile': instance.profile,
       'savingGoal': instance.savingGoal,
-      'hasCategories': instance.hasCategories,
     };

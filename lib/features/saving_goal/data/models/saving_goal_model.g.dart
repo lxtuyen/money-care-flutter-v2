@@ -8,14 +8,16 @@ part of 'saving_goal_model.dart';
 
 _SavingGoalModel _$SavingGoalModelFromJson(Map<String, dynamic> json) =>
     _SavingGoalModel(
-      id: (json['id'] as num).toInt(),
+      id: NumParser.parseInt(json['id']),
       name: json['name'] as String? ?? '',
       isSelected: json['is_selected'] as bool?,
       categories: (json['categories'] as List<dynamic>?)
           ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      target: (json['target'] as num?)?.toDouble(),
-      savedAmount: (json['saved_amount'] as num?)?.toDouble() ?? 0,
+      target: NumParser.parseDoubleNullable(json['target']),
+      savedAmount: json['saved_amount'] == null
+          ? 0
+          : NumParser.parseDouble(json['saved_amount']),
       isCompleted: json['is_completed'] as bool? ?? false,
       startDate: json['start_date'] == null
           ? null

@@ -1,5 +1,4 @@
 import 'package:money_care/core/constants/api_routes.dart';
-import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/spending_plan/data/models/spending_plan_model.dart';
 
@@ -42,14 +41,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
         return list.map((item) => SpendingPlanModel.fromJson(item)).toList();
       },
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải danh sách kế hoạch chi tiêu',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -59,14 +51,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       fromJsonT: (json) =>
           json == null ? null : SpendingPlanModel.fromJson(json),
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải kế hoạch đang áp dụng',
-      );
-    }
-    return res.data;
+    return res.unwrap();
   }
 
   @override
@@ -75,12 +60,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       '${ApiRoutes.spendingPlans}/$id',
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể tải kế hoạch',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -92,12 +72,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       body: request.toJson(),
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể tạo kế hoạch',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -110,24 +85,13 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       body: request.toJson(),
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'KhÃ´ng thá»ƒ cáº­p nháº­t káº¿ hoáº¡ch',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
   Future<void> deletePlan(int id) async {
     final res = await api.delete<dynamic>('${ApiRoutes.spendingPlans}/$id');
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'KhÃ´ng thá»ƒ xÃ³a káº¿ hoáº¡ch',
-      );
-    }
+    res.unwrap();
   }
 
   @override
@@ -136,12 +100,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       '${ApiRoutes.spendingPlans}/$id/activate',
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể áp dụng kế hoạch',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -150,12 +109,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       '${ApiRoutes.spendingPlans}/$id/pause',
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể tạm dừng kế hoạch',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -168,14 +122,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       body: request.toJson(),
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể thêm khoản chi dự kiến',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -189,14 +136,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       body: data,
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể cập nhật khoản chi dự kiến',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -208,14 +148,7 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       '${ApiRoutes.spendingPlans}/$planId/estimated-expenses/$expenseId',
       fromJsonT: (json) => SpendingPlanModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể xóa khoản chi dự kiến',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -225,13 +158,6 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
       fromJsonT: (json) =>
           json == null ? null : SpendingPlanStatsModel.fromJson(json),
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải thống kê kế hoạch chi tiêu',
-      );
-    }
-    return res.data;
+    return res.unwrap();
   }
 }

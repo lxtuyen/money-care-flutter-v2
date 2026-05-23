@@ -6,15 +6,16 @@ part of 'saving_goal_report_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_MilestoneModel _$MilestoneModelFromJson(Map<String, dynamic> json) =>
-    _MilestoneModel(
-      label: json['label'] as String,
-      startDate: DateTime.parse(json['start_date'] as String),
-      endDate: DateTime.parse(json['end_date'] as String),
-      target: (json['target'] as num?)?.toDouble() ?? 0,
-      actual: (json['actual'] as num?)?.toDouble() ?? 0,
-      isCompleted: json['is_completed'] as bool? ?? false,
-    );
+_MilestoneModel _$MilestoneModelFromJson(
+  Map<String, dynamic> json,
+) => _MilestoneModel(
+  label: json['label'] as String,
+  startDate: DateTime.parse(json['start_date'] as String),
+  endDate: DateTime.parse(json['end_date'] as String),
+  target: json['target'] == null ? 0 : NumParser.parseDouble(json['target']),
+  actual: json['actual'] == null ? 0 : NumParser.parseDouble(json['actual']),
+  isCompleted: json['is_completed'] as bool? ?? false,
+);
 
 Map<String, dynamic> _$MilestoneModelToJson(_MilestoneModel instance) =>
     <String, dynamic>{
@@ -44,14 +45,15 @@ Map<String, dynamic> _$CategorySpendingModelToJson(
 
 _ProjectionModel _$ProjectionModelFromJson(Map<String, dynamic> json) =>
     _ProjectionModel(
-      monthlySavingCapacity:
-          (json['monthlySavingCapacity'] as num?)?.toDouble() ?? 0,
-      monthsRemaining: (json['monthsRemaining'] as num?)?.toInt(),
+      monthlySavingCapacity: json['monthlySavingCapacity'] == null
+          ? 0
+          : NumParser.parseDouble(json['monthlySavingCapacity']),
+      monthsRemaining: NumParser.parseIntNullable(json['monthsRemaining']),
       projectedDate: json['projectedDate'] == null
           ? null
           : DateTime.parse(json['projectedDate'] as String),
       isOnTrack: json['isOnTrack'] as bool?,
-      monthsDiff: (json['monthsDiff'] as num?)?.toInt(),
+      monthsDiff: NumParser.parseIntNullable(json['monthsDiff']),
       hasPlan: json['hasPlan'] as bool? ?? false,
     );
 
@@ -68,7 +70,7 @@ Map<String, dynamic> _$ProjectionModelToJson(_ProjectionModel instance) =>
 _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   Map<String, dynamic> json,
 ) => _SavingGoalReportModel(
-  id: (json['id'] as num).toInt(),
+  id: NumParser.parseInt(json['id']),
   name: json['name'] as String,
   startDate: json['start_date'] == null
       ? null
@@ -76,13 +78,18 @@ _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   endDate: json['end_date'] == null
       ? null
       : DateTime.parse(json['end_date'] as String),
-  target: (json['target'] as num?)?.toDouble() ?? 0,
-  currentBalance: (json['current_balance'] as num?)?.toDouble() ?? 0,
-  progressPercent: (json['progress_percent'] as num?)?.toInt() ?? 0,
+  target: json['target'] == null ? 0 : NumParser.parseDouble(json['target']),
+  currentBalance: json['current_balance'] == null
+      ? 0
+      : NumParser.parseDouble(json['current_balance']),
+  progressPercent: json['progress_percent'] == null
+      ? 0
+      : NumParser.parseInt(json['progress_percent']),
   isCompleted: json['is_completed'] as bool? ?? false,
   completionNotified: json['completion_notified'] as bool? ?? false,
-  currentMilestoneIndex:
-      (json['current_milestone_index'] as num?)?.toInt() ?? -1,
+  currentMilestoneIndex: json['current_milestone_index'] == null
+      ? -1
+      : NumParser.parseInt(json['current_milestone_index']),
   milestones:
       (json['milestones'] as List<dynamic>?)
           ?.map((e) => MilestoneModel.fromJson(e as Map<String, dynamic>))
@@ -106,7 +113,9 @@ _SavingGoalReportModel _$SavingGoalReportModelFromJson(
   dailyAverageSpending: (json['dailyAverageSpending'] as num?)?.toDouble() ?? 0,
   remainingBudget: (json['remainingBudget'] as num?)?.toDouble() ?? 0,
   walletName: json['wallet_name'] as String?,
-  walletBalance: (json['wallet_balance'] as num?)?.toDouble() ?? 0,
+  walletBalance: json['wallet_balance'] == null
+      ? 0
+      : NumParser.parseDouble(json['wallet_balance']),
   projection: json['projection'] == null
       ? null
       : ProjectionModel.fromJson(json['projection'] as Map<String, dynamic>),

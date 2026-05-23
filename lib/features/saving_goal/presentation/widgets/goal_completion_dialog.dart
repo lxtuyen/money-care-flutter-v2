@@ -27,7 +27,7 @@ class GoalCompletionDialog extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: AppColors.success.withOpacity(0.2),
+              color: AppColors.success.withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -39,7 +39,7 @@ class GoalCompletionDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
+                color: AppColors.success.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

@@ -58,7 +58,7 @@ class AppHeader extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.18),
+            color: AppColors.primary.withValues(alpha: 0.18),
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -79,7 +79,7 @@ class AppHeader extends StatelessWidget {
                   width: 132,
                   height: 132,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
+                    color: Colors.white.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -91,7 +91,7 @@ class AppHeader extends StatelessWidget {
                   width: 144,
                   height: 144,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -116,12 +116,12 @@ class AppHeader extends StatelessWidget {
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(
-                                  hasCustomBackground ? 0.12 : 0.16,
+                                color: Colors.white.withValues(
+                                  alpha: hasCustomBackground ? 0.12 : 0.16,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.14),
+                                  color: Colors.white.withValues(alpha: 0.14),
                                 ),
                               ),
                               child: Icon(

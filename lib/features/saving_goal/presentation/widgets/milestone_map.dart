@@ -54,8 +54,8 @@ class MilestoneMap extends StatelessWidget {
   }
 
   Widget _buildMilestoneNode(MilestoneModel milestone, bool isLast) {
-    final bool isFailed = !milestone.isCompleted &&
-        milestone.endDate.isBefore(DateTime.now());
+    final bool isFailed =
+        !milestone.isCompleted && milestone.endDate.isBefore(DateTime.now());
 
     final color = milestone.isCompleted
         ? AppColors.income
@@ -76,11 +76,13 @@ class MilestoneMap extends StatelessWidget {
           child: milestone.isCompleted
               ? const Icon(Icons.check, size: 14, color: Colors.white)
               : (isFailed
-                  ? const Icon(Icons.close, size: 14, color: Colors.white)
-                  : null),
+                    ? const Icon(Icons.close, size: 14, color: Colors.white)
+                    : null),
         ),
         if (!isLast)
-          Expanded(child: Container(width: 2, color: color.withOpacity(0.5))),
+          Expanded(
+            child: Container(width: 2, color: color.withValues(alpha: 0.5)),
+          ),
       ],
     );
   }
@@ -94,13 +96,13 @@ class MilestoneMap extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: milestone.isCompleted
-              ? AppColors.income.withOpacity(0.3)
+              ? AppColors.income.withValues(alpha: 0.3)
               : AppColors.borderSecondary,
         ),
         boxShadow: [
           if (milestone.isCompleted)
             BoxShadow(
-              color: AppColors.income.withOpacity(0.1),
+              color: AppColors.income.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

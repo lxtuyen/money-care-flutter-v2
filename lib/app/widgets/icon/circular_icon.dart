@@ -35,15 +35,17 @@ class CircularIcon extends StatelessWidget {
           color: backgroundColor != null
               ? backgroundColor!
               : (Theme.of(context).brightness == Brightness.dark
-                  ? const Color(0xFF1E2630).withOpacity(0.9)
-                  : AppColors.white.withOpacity(0.9)),
+                    ? const Color(0xFF1E2630).withValues(alpha: 0.9)
+                    : AppColors.white.withValues(alpha: 0.9)),
         ),
         child: iconPath != null
             ? SvgPicture.asset(
                 iconPath!,
                 width: width,
                 height: height,
-                color: color,
+                colorFilter: color != null
+                    ? ColorFilter.mode(color!, BlendMode.srcIn)
+                    : null,
               )
             : Icon(icon, color: color, size: size),
       ),

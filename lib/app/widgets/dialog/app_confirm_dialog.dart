@@ -51,7 +51,7 @@ class AppConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     IconData iconData;
     Color iconColor;
     Color btnColor;
@@ -85,7 +85,7 @@ class AppConfirmDialog extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -97,14 +97,10 @@ class AppConfirmDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                iconData,
-                color: iconColor,
-                size: 40,
-              ),
+              child: Icon(iconData, color: iconColor, size: 40),
             ),
             const SizedBox(height: 20),
             if (title != null) ...[
@@ -139,7 +135,9 @@ class AppConfirmDialog extends StatelessWidget {
                     },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(color: colors.textMuted.withOpacity(0.3)),
+                      side: BorderSide(
+                        color: colors.textMuted.withValues(alpha: 0.3),
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -171,9 +169,7 @@ class AppConfirmDialog extends StatelessWidget {
                     ),
                     child: Text(
                       confirmText,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

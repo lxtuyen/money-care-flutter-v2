@@ -1,5 +1,4 @@
 import 'package:money_care/core/constants/api_routes.dart';
-import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/saving_goal/data/models/models.dart';
 
@@ -32,14 +31,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       body: dto.toJsonCreate(),
       fromJsonT: (json) => SavingGoalModel.fromJson(json),
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tạo mục tiêu tiết kiệm',
-      );
-    }
-    return res.data ?? SavingGoalModel(id: 0, name: dto.name ?? '');
+    return res.unwrap();
   }
 
   @override
@@ -51,14 +43,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
         return list.map((e) => SavingGoalModel.fromJson(e)).toList();
       },
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải danh sách mục tiêu tiết kiệm',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -67,14 +52,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       '${ApiRoutes.savingGoal}/$id',
       fromJsonT: (json) => SavingGoalModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải mục tiêu tiết kiệm',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -84,27 +62,14 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       body: dto.toJsonUpdate(),
       fromJsonT: (json) => SavingGoalModel.fromJson(json),
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể cập nhật mục tiêu tiết kiệm',
-      );
-    }
-    return res.data ?? SavingGoalModel(id: dto.id ?? 0, name: dto.name ?? '');
+    return res.unwrap();
   }
 
   @override
   Future<bool> deleteSavingGoal(int id) async {
     final res = await api.delete<void>('${ApiRoutes.savingGoal}/$id');
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể xóa mục tiêu tiết kiệm',
-      );
-    }
-    return res.success;
+    res.unwrap();
+    return true;
   }
 
   @override
@@ -114,14 +79,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       body: {'userId': userId},
       fromJsonT: (json) => json == null ? null : SavingGoalModel.fromJson(json),
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể chọn mục tiêu tiết kiệm',
-      );
-    }
-    return res.data;
+    return res.unwrap();
   }
 
   @override
@@ -130,14 +88,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       '${ApiRoutes.checkExpiredSavingGoal}/$userId',
       fromJsonT: (json) => ExpiredGoalCheckModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể kiểm tra mục tiêu hết hạn',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -145,11 +96,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     final res = await api.patch<void>(
       '${ApiRoutes.savingGoal}/$id/mark-notified',
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể cập nhật trạng thái',
-      );
-    }
+    res.unwrap();
     return true;
   }
 
@@ -169,12 +116,7 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       body: body,
       fromJsonT: (json) => SavingGoalModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể gia hạn mục tiêu',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -183,11 +125,6 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
       '${ApiRoutes.savingGoal}/$id/report',
       fromJsonT: (json) => SavingGoalReportModel.fromJson(json),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Không thể tải báo cáo',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 }

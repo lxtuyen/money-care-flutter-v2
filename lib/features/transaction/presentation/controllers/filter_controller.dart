@@ -28,12 +28,6 @@ class FilterController extends GetxController {
     }
   }
 
-  void setGoalRange(DateTime start, DateTime end, String goalName) {
-    startDate.value = start;
-    endDate.value = end;
-    dateLabel.value = 'Mục tiêu: $goalName';
-  }
-
   void updateKeyword(String value) => keyword.value = value;
 
   bool get hasKeyword => keyword.value.trim().isNotEmpty;
@@ -70,13 +64,11 @@ class FilterController extends GetxController {
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month, 1);
 
-    // Check if start is first day of current month
     final isStartMatch =
         start.year == monthStart.year &&
         start.month == monthStart.month &&
         start.day == 1;
 
-    // Check if end is within the current month (same month and year)
     final isEndMatch = end.year == now.year && end.month == now.month;
 
     return isStartMatch && isEndMatch;

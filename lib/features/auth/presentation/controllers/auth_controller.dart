@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,7 +10,6 @@ import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase
 import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/get_cached_user_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:money_care/app/services/notification_service.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 
 class AuthController extends GetxController {
@@ -46,17 +46,15 @@ class AuthController extends GetxController {
     final cachedUser = getCachedUserUseCase();
     if (cachedUser != null) {
       user.value = cachedUser;
-      try {
-        Get.find<NotificationService>().syncToken();
-      } catch (e) {}
     }
 
     ever(user, (UserEntity? currentUser) {
       if (currentUser != null) {
         try {
           Get.find<AppController>().setUserId(currentUser.id);
-          Get.find<NotificationService>().syncToken();
-        } catch (e) {}
+        } catch (e) {
+          debugPrint('Error setting userId or syncing token on user change: $e');
+        }
       }
     });
   }
@@ -123,10 +121,6 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    try {
-      await Get.find<NotificationService>().removeTokenFromServer();
-    } catch (e) {}
-
     if (isGoogleLogin.value) {
       await _googleSignIn.signOut();
     }
@@ -134,7 +128,9 @@ class AuthController extends GetxController {
     user.value = null;
     try {
       Get.find<AppController>().clearUser();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error clearing user on logout: $e');
+    }
     await logoutUseCase();
   }
 
@@ -145,16 +141,15 @@ class AuthController extends GetxController {
         Get.find<AppController>().setUserId(currentUser.id);
 
         if (currentUser.role == 'user') {
-          final destination = currentUser.hasCategories
-              ? RoutePath.main
-              : RoutePath.onboardingWelcome;
-          Get.offAllNamed(destination);
+          Get.offAllNamed(RoutePath.main);
           return;
         }
         if (currentUser.role == 'admin') {
           Get.offAllNamed(RoutePath.adminHome);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Error navigating after Google login: $e');
+      }
     });
   }
 

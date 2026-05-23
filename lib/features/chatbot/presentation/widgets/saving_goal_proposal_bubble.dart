@@ -52,7 +52,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -100,21 +100,21 @@ class SavingGoalProposalBubble extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: proposal.isImpossible
-                    ? AppColors.error.withOpacity(0.06)
+                    ? AppColors.error.withValues(alpha: 0.06)
                     : proposal.isWarning
-                    ? AppColors.warning.withOpacity(0.06)
+                    ? AppColors.warning.withValues(alpha: 0.06)
                     : proposal.isFinalized
-                    ? AppColors.income.withOpacity(0.06)
-                    : AppColors.primary.withOpacity(0.06),
+                    ? AppColors.income.withValues(alpha: 0.06)
+                    : AppColors.primary.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: proposal.isImpossible
-                      ? AppColors.error.withOpacity(0.2)
+                      ? AppColors.error.withValues(alpha: 0.2)
                       : proposal.isWarning
-                      ? AppColors.warning.withOpacity(0.2)
+                      ? AppColors.warning.withValues(alpha: 0.2)
                       : proposal.isFinalized
-                      ? AppColors.income.withOpacity(0.2)
-                      : AppColors.primary.withOpacity(0.2),
+                      ? AppColors.income.withValues(alpha: 0.2)
+                      : AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
@@ -171,7 +171,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.06),
+                    color: AppColors.primary.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -224,9 +224,11 @@ class SavingGoalProposalBubble extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.income.withOpacity(0.08),
+                color: AppColors.income.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.income.withOpacity(0.25)),
+                border: Border.all(
+                  color: AppColors.income.withValues(alpha: 0.25),
+                ),
               ),
               child: Row(
                 children: [
@@ -359,17 +361,17 @@ class _DurationOptions extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: isRecommended
-                    ? AppColors.primary.withOpacity(0.08)
+                    ? AppColors.primary.withValues(alpha: 0.08)
                     : needsWarning
-                    ? AppColors.warning.withOpacity(0.08)
-                    : colors.surfaceBackground.withOpacity(0.35),
+                    ? AppColors.warning.withValues(alpha: 0.08)
+                    : colors.surfaceBackground.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isRecommended
-                      ? AppColors.primary.withOpacity(0.35)
+                      ? AppColors.primary.withValues(alpha: 0.35)
                       : needsWarning
-                      ? AppColors.warning.withOpacity(0.35)
-                      : colors.borderSecondary.withOpacity(0.7),
+                      ? AppColors.warning.withValues(alpha: 0.35)
+                      : colors.borderSecondary.withValues(alpha: 0.7),
                 ),
               ),
               child: Text(

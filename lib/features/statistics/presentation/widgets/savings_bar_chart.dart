@@ -41,7 +41,10 @@ class SavingsBarChart extends StatelessWidget {
         BarChartRodData(
           toY: index < thisMonthSpots.length ? thisMonthSpots[index].y : 0,
           gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+            colors: [
+              AppColors.primary,
+              AppColors.primary.withValues(alpha: 0.7),
+            ],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -97,7 +100,7 @@ class SavingsBarChart extends StatelessWidget {
           );
         },
         tooltipData: BarTouchTooltipData(
-          getTooltipColor: (group) => AppColors.primary.withOpacity(0.9),
+          getTooltipColor: (group) => AppColors.primary.withValues(alpha: 0.9),
           tooltipPadding: const EdgeInsets.symmetric(
             horizontal: 12,
             vertical: 8,

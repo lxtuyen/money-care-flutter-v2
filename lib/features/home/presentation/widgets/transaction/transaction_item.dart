@@ -48,7 +48,7 @@ class TransactionItem extends StatelessWidget {
     final bool isIncome = item.type == 'income' || item.type == 'thu';
     final Color typeColor =
         color ?? (isIncome ? AppColors.income : AppColors.expense);
-    
+
     final double amountValue = (item.amount).toDouble();
     final String amountText =
         '${showAmountSign ? (isIncome ? '+' : '-') : ''} ${AppHelperFunction.formatAmount(amountValue, currency: '')} ₫';
@@ -64,7 +64,7 @@ class TransactionItem extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: typeColor.withOpacity(0.1),
+                  color: typeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 alignment: Alignment.center,
@@ -97,11 +97,7 @@ class TransactionItem extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    if (detail != null) ...[
-                      const SizedBox(height: 4),
-                      detail!,
-                    ],
-
+                    if (detail != null) ...[const SizedBox(height: 4), detail!],
                   ],
                 ),
               ),

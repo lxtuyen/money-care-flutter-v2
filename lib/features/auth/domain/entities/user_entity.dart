@@ -8,7 +8,6 @@ class UserEntity {
   final String? accessToken;
   final UserProfileEntity profile;
   final SavingGoalEntity? savingGoal;
-  final bool hasCategories;
 
   const UserEntity({
     required this.id,
@@ -17,7 +16,6 @@ class UserEntity {
     this.accessToken,
     required this.profile,
     this.savingGoal,
-    this.hasCategories = false,
   });
 
   UserEntity copyWith({
@@ -27,7 +25,6 @@ class UserEntity {
     String? accessToken,
     UserProfileEntity? profile,
     SavingGoalEntity? savingGoal,
-    bool? hasCategories,
   }) {
     return UserEntity(
       id: id ?? this.id,
@@ -36,7 +33,6 @@ class UserEntity {
       accessToken: accessToken ?? this.accessToken,
       profile: profile ?? this.profile,
       savingGoal: savingGoal ?? this.savingGoal,
-      hasCategories: hasCategories ?? this.hasCategories,
     );
   }
 }

@@ -67,7 +67,7 @@ class _FilterDialogState extends State<FilterDialog> {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 30,
               offset: const Offset(0, 16),
             ),
@@ -126,7 +126,7 @@ class _FilterDialogState extends State<FilterDialog> {
                               : 'filter.walletDescription'.tr)
                         : 'filter.categoryDescription'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       height: 1.35,
                     ),
                   ),

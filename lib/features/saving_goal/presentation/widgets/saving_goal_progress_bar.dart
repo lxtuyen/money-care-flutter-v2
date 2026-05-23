@@ -62,13 +62,13 @@ class SavingGoalProgressBar extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       AppColors.primary,
-                      AppColors.primary.withOpacity(0.7),
+                      AppColors.primary.withValues(alpha: 0.7),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(6),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary.withValues(alpha: 0.3),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

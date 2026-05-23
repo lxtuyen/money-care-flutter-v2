@@ -88,7 +88,7 @@ class _CategoryDetailSheetState extends State<CategoryDetailSheet> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -137,7 +137,7 @@ class _CategoryDetailSheetState extends State<CategoryDetailSheet> {
                   color: theme.surfaceBackground,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: AppColors.borderPrimary.withOpacity(0.5),
+                    color: AppColors.borderPrimary.withValues(alpha: 0.5),
                   ),
                 ),
                 child: Row(
@@ -163,7 +163,7 @@ class _CategoryDetailSheetState extends State<CategoryDetailSheet> {
                       Switch(
                         value: _isEssential,
                         onChanged: _toggleEssential,
-                        activeColor: AppColors.primary,
+                        activeThumbColor: AppColors.primary,
                       ),
                   ],
                 ),
@@ -219,7 +219,7 @@ class _CategoryDetailSheetState extends State<CategoryDetailSheet> {
                   color: theme.surfaceBackground,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: AppColors.borderPrimary.withOpacity(0.5),
+                    color: AppColors.borderPrimary.withValues(alpha: 0.5),
                   ),
                 ),
                 child: Row(

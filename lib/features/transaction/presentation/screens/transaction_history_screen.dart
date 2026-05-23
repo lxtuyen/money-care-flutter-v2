@@ -504,11 +504,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             color: AppThemeColors.of(context).cardBackground,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppThemeColors.of(context).textMuted.withOpacity(0.2),
+              color: AppThemeColors.of(
+                context,
+              ).textMuted.withValues(alpha: 0.2),
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.text1.withOpacity(0.04),
+                color: AppColors.text1.withValues(alpha: 0.04),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),

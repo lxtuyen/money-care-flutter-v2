@@ -83,7 +83,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                         Text(
                           'Xem chi tiết',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -92,7 +92,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                         Icon(
                           Icons.arrow_forward_ios_rounded,
                           size: 10,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ],
                     ),
@@ -201,13 +201,13 @@ class SavingGoalSummaryCard extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    AppColors.primary.withOpacity(0.08),
-                    AppColors.primary.withOpacity(0.02),
+                    AppColors.primary.withValues(alpha: 0.08),
+                    AppColors.primary.withValues(alpha: 0.02),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.15),
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   width: 1,
                 ),
               ),
@@ -218,7 +218,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -291,7 +291,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                           thickness: 0.5,
                           color: AppThemeColors.of(
                             context,
-                          ).textMuted.withOpacity(0.2),
+                          ).textMuted.withValues(alpha: 0.2),
                         ),
                         Expanded(
                           child: _SmallStat(
@@ -365,7 +365,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.success.withOpacity(0.2),
+                      color: AppColors.success.withValues(alpha: 0.2),
                       blurRadius: 12,
                     ),
                   ],
@@ -838,7 +838,7 @@ class _CircleMetric extends StatelessWidget {
                         radius: 10,
                       ),
                       PieChartSectionData(
-                        color: color.withOpacity(0.12),
+                        color: color.withValues(alpha: 0.12),
                         value: 1 - percent,
                         title: '',
                         radius: 10,

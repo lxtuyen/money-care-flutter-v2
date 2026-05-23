@@ -106,7 +106,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           child: LinearProgressIndicator(
                             backgroundColor: Colors.transparent,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primary.withOpacity(0.5),
+                              AppColors.primary.withValues(alpha: 0.5),
                             ),
                             minHeight: 2,
                           ),
@@ -136,7 +136,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 4,
                               ),
                             ],
@@ -444,7 +444,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 border: Border.all(color: AppColors.primary, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.08),
+                    color: AppColors.primary.withValues(alpha: 0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -504,7 +504,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             border: Border.all(color: AppColors.primary, width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -585,9 +585,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(16),
-          color: color.withOpacity(0.05),
+          color: color.withValues(alpha: 0.05),
         ),
         child: Column(
           children: [

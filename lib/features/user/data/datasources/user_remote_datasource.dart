@@ -19,7 +19,6 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
       body: dto.toJson(),
       fromJsonT: (json) => UserProfileModel.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 }

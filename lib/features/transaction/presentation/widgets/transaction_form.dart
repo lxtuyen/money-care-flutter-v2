@@ -14,11 +14,10 @@ import 'package:money_care/features/transaction/presentation/widgets/category_sh
 import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
 
 class TransactionForm extends StatefulWidget {
   final String title;
-  final bool showCategory;
-  final bool showTypeSelector;
 
   final String transactionType;
   final TransactionEntity? item;
@@ -27,8 +26,6 @@ class TransactionForm extends StatefulWidget {
     super.key,
     required this.title,
     required this.transactionType,
-    this.showCategory = true,
-    this.showTypeSelector = false,
     this.item,
   });
 
@@ -38,14 +35,12 @@ class TransactionForm extends StatefulWidget {
 
 class _TransactionFormState extends State<TransactionForm> {
   late final TransactionFormController controller;
-  late String selectedTransactionType;
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<TransactionFormController>();
-    selectedTransactionType = widget.transactionType;
-    controller.init(widget.showCategory, widget.item, selectedTransactionType);
+    controller.init(widget.item, widget.transactionType);
   }
 
   @override
@@ -70,29 +65,17 @@ class _TransactionFormState extends State<TransactionForm> {
                           Get.offAllNamed(RoutePath.main);
                         }
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            _buildHeaderToggleCard(
-                              label: 'Tiền Chi',
-                              icon: Icons.remove_circle_outline,
-                              isActive: selectedTransactionType == 'expense',
-                              onTap: () => _onTypeChanged('expense'),
-                            ),
-                            const SizedBox(width: 12),
-                            _buildHeaderToggleCard(
-                              label: 'Tiền Thu',
-                              icon: Icons.add_circle_outline,
-                              isActive: selectedTransactionType == 'income',
-                              onTap: () => _onTypeChanged('income'),
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: Obx(() => TransactionTypeSummaryToggle(
+                        selected: controller.transactionType,
+                        onSelected: controller.changeTransactionType,
+                        showAmount: false,
+                        spendLabel: 'Tiền Chi',
+                        incomeLabel: 'Tiền Thu',
+                        spendValue: 'expense',
+                        incomeValue: 'income',
+                        spendIcon: Icons.remove_circle_outline,
+                        incomeIcon: Icons.add_circle_outline,
+                      )),
                     ),
                     Center(
                       child: ConstrainedBox(
@@ -170,107 +153,102 @@ class _TransactionFormState extends State<TransactionForm> {
                                     );
                                   },
                                 ),
-                                if (widget.showCategory) ...[
-                                  const SizedBox(height: 20),
-                                  AppTextFormField(
-                                    controller: controller.categoryController,
-                                    label: 'transaction.category'.tr,
-                                    icon: Icons.category,
-                                    hintText: 'transaction.categoryHint'.tr,
-                                    validator: (v) =>
-                                        AppValidator.validateCategory(v),
-                                    onTap: () async {
-                                      final selected =
-                                          await showModalBottomSheet<
-                                            CategoryEntity
-                                          >(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            backgroundColor: AppThemeColors.of(
-                                              context,
-                                            ).cardBackground,
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.vertical(
-                                                    top: Radius.circular(20),
-                                                  ),
+                                const SizedBox(height: 20),
+                                AppTextFormField(
+                                  controller: controller.categoryController,
+                                  label: 'transaction.category'.tr,
+                                  icon: Icons.category,
+                                  hintText: 'transaction.categoryHint'.tr,
+                                  validator: (v) =>
+                                      AppValidator.validateCategory(v),
+                                  onTap: () async {
+                                    final selected =
+                                        await showModalBottomSheet<
+                                          CategoryEntity
+                                        >(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          backgroundColor: AppThemeColors.of(
+                                            context,
+                                          ).cardBackground,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.vertical(
+                                              top: Radius.circular(20),
                                             ),
-                                            builder: (context) {
-                                              return Obx(() {
-                                                final fundCategories =
-                                                    controller
-                                                        .savingGoalController
-                                                        .currentGoal
-                                                        .value
-                                                        ?.categories;
+                                          ),
+                                          builder: (context) {
+                                            return Obx(() {
+                                              final fundCategories = controller
+                                                  .savingGoalController
+                                                  .currentGoal
+                                                  .value
+                                                  ?.categories;
 
-                                                final userCategoryController =
-                                                    Get.find<
-                                                      UserCategoryController
-                                                    >();
+                                              final userCategoryController =
+                                                  Get.find<
+                                                    UserCategoryController
+                                                  >();
 
-                                                final categories =
-                                                    (fundCategories != null &&
-                                                        fundCategories
-                                                            .isNotEmpty)
-                                                    ? fundCategories
-                                                    : userCategoryController
-                                                          .categories;
+                                              final categories =
+                                                  (fundCategories != null &&
+                                                      fundCategories.isNotEmpty)
+                                                  ? fundCategories
+                                                  : userCategoryController
+                                                        .categories;
 
-                                                if (controller
-                                                    .savingGoalController
-                                                    .isLoadingCurrent
-                                                    .value) {
-                                                  return const SizedBox(
-                                                    height: 200,
-                                                    child: Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                  );
-                                                }
-
-                                                if (categories.isEmpty) {
-                                                  return const SizedBox(
-                                                    height: 200,
-                                                    child: Center(
-                                                      child: Text(
-                                                        'Chưa có danh mục nào',
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-
-                                                return CategorySheet(
-                                                  categories: categories,
-                                                  transactionType:
-                                                      selectedTransactionType,
-                                                  selectedCategoryInit:
-                                                      controller
-                                                              .selectedCategoryId
-                                                              .value !=
-                                                          null
-                                                      ? categories.firstWhereOrNull(
-                                                          (c) =>
-                                                              c.id ==
-                                                              controller
-                                                                  .selectedCategoryId
-                                                                  .value,
-                                                        )
-                                                      : null,
+                                              if (controller
+                                                  .savingGoalController
+                                                  .isLoadingCurrent
+                                                  .value) {
+                                                return const SizedBox(
+                                                  height: 200,
+                                                  child: Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
                                                 );
-                                              });
-                                            },
-                                          );
+                                              }
 
-                                      if (selected != null) {
-                                        controller.setCategory(selected);
-                                      }
-                                    },
-                                    readOnly: true,
-                                  ),
-                                  _buildSubCategoryField(),
-                                ],
+                                              if (categories.isEmpty) {
+                                                return const SizedBox(
+                                                  height: 200,
+                                                  child: Center(
+                                                    child: Text(
+                                                      'Chưa có danh mục nào',
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+
+                                              return CategorySheet(
+                                                categories: categories,
+                                                transactionType:
+                                                    controller.transactionType,
+                                                selectedCategoryInit:
+                                                    controller
+                                                            .selectedCategoryId
+                                                            .value !=
+                                                        null
+                                                    ? categories.firstWhereOrNull(
+                                                        (c) =>
+                                                            c.id ==
+                                                            controller
+                                                                .selectedCategoryId
+                                                                .value,
+                                                      )
+                                                    : null,
+                                              );
+                                            });
+                                          },
+                                        );
+
+                                    if (selected != null) {
+                                      controller.setCategory(selected);
+                                    }
+                                  },
+                                  readOnly: true,
+                                ),
+                                _buildSubCategoryField(),
                                 const SizedBox(height: 20),
                                 AppTextFormField(
                                   controller: controller.noteController,
@@ -322,17 +300,6 @@ class _TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  void _onTypeChanged(String type) {
-    setState(() {
-      selectedTransactionType = type;
-      controller.transactionType = type;
-      controller.selectedCategoryId.value = null;
-      controller.selectedSubCategoryId.value = null;
-      controller.selectedCategory = null;
-      controller.categoryController.clear();
-      controller.subCategoryController.clear();
-    });
-  }
 
   Widget _buildSubCategoryField() {
     return Obx(() {
@@ -387,54 +354,5 @@ class _TransactionFormState extends State<TransactionForm> {
         ],
       );
     });
-  }
-
-  Widget _buildHeaderToggleCard({
-    required String label,
-    required IconData icon,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          height: 70,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isActive
-                ? Colors.white.withValues(alpha: 0.24)
-                : Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isActive
-                  ? Colors.white.withValues(alpha: 0.4)
-                  : Colors.white.withValues(alpha: 0.15),
-              width: 1.5,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isActive ? Colors.white : Colors.white70,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isActive ? Colors.white : Colors.white70,
-                  fontSize: 15,
-                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

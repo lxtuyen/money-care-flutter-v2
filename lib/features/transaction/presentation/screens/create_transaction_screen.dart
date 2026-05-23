@@ -17,7 +17,6 @@ class CreateTransactionScreen extends StatelessWidget {
           ? (type == 'expense' ? 'Thêm Tiền Chi' : 'Thêm Tiền Thu')
           : 'Chỉnh sửa giao dịch',
       transactionType: type,
-      showCategory: true,
       item: item,
     );
   }

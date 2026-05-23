@@ -32,11 +32,11 @@ class CustomChoiceChip extends StatelessWidget {
         selected: isSelected,
         onSelected: onSelected,
         backgroundColor: Colors.white,
-        selectedColor: AppColors.primary.withOpacity(0.12),
+        selectedColor: AppColors.primary.withValues(alpha: 0.12),
         surfaceTintColor: Colors.transparent,
         side: BorderSide(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.35)
+              ? AppColors.primary.withValues(alpha: 0.35)
               : AppColors.borderSecondary,
           width: isSelected ? 1.4 : 1,
         ),

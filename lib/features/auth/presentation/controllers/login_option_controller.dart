@@ -16,11 +16,7 @@ class LoginOptionController extends GetxController {
       (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
       (currentUser) {
         if (currentUser.role == 'user') {
-          Get.offAllNamed(
-            currentUser.hasCategories
-                ? RoutePath.main
-                : RoutePath.onboardingWelcome,
-          );
+          Get.offAllNamed(RoutePath.main);
           return;
         }
         if (currentUser.role == 'admin') {

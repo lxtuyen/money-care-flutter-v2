@@ -40,8 +40,6 @@ class TransactionController extends GetxController {
   late DateTime monthStartDate = DateTime(now.year, now.month, 1);
   late DateTime monthEndDate = DateTime(now.year, now.month + 1, 0);
 
-  TransactionFilterDto? _lastFilter;
-
   TransactionController({
     required this.filterTransactionsUseCase,
     required this.createTransactionUseCase,
@@ -121,16 +119,13 @@ class TransactionController extends GetxController {
 
   Future<void> filterTransactions(int userId, TransactionFilterDto dto) async {
     isLoading.value = true;
-    _lastFilter = dto;
     try {
       final result = await filterTransactionsUseCase(userId, dto);
       transactionByfilter.value = result;
 
-      // REUSE: Derive recent transactions from the filtered result (top 5)
       final allIncome = result.incomeTransactions;
       final allExpense = result.expenseTransactions;
 
-      // Sort both by date DESC
       final sortedIncome = [...allIncome]..sort((a, b) =>
           (b.transactionDate ?? DateTime.now())
               .compareTo(a.transactionDate ?? DateTime.now()));
@@ -143,7 +138,6 @@ class TransactionController extends GetxController {
         expenseTransactions: sortedExpense.take(5).toList(),
       );
 
-      // REUSE: Update statistics locally from this list
       if (Get.isRegistered<StatisticsController>()) {
         Get.find<StatisticsController>().updateStatsFromTransactions(result);
       }
@@ -175,7 +169,6 @@ class TransactionController extends GetxController {
       Get.find<SpendingPlanController>().loadStatsSummary();
     }
     
-    // Refresh saving goals to sync balances and active goal progress
     await savingGoalController.loadGoals(userId);
     final activeGoalId = savingGoalController.goalId.value;
     if (activeGoalId > 0) {

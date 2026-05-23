@@ -27,10 +27,7 @@ abstract class TransactionRemoteDatasource {
     XFile image, {
     ReceiptParseResult? localResult,
   });
-  Future<StatisticsSummaryModel> getStatisticsSummary(
-    int userId,
-    TransactionTotalsDto dto,
-  );
+  Future<StatisticsSummaryModel> getStatisticsSummary(int userId);
   Future<bool> exportReport(
     int userId,
     TransactionFilterDto dto,
@@ -43,19 +40,19 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
 
   TransactionRemoteDatasourceImpl({required this.api});
 
+  String _userPath(int userId) => '${ApiRoutes.transaction}/$userId';
+
   @override
   Future<TransactionByTypeModel> findAllByFilter(
     int userId,
     TransactionFilterDto dto,
   ) async {
     final res = await api.get<TransactionByTypeModel>(
-      '${ApiRoutes.transaction}/$userId/filter',
+      '${_userPath(userId)}/filter',
       queryParameters: dto.toQueryParams(),
       fromJsonT: (json) => TransactionByTypeModel.fromJson(json),
     );
-
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -64,12 +61,11 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     TransactionTotalsDto dto,
   ) async {
     final res = await api.get<TotalByTypeModel>(
-      '${ApiRoutes.transaction}/$userId/total-by-type',
+      '${_userPath(userId)}/total-by-type',
       queryParameters: dto.toJson(),
       fromJsonT: (json) => TotalByTypeModel.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -78,15 +74,14 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     TransactionTotalsDto dto,
   ) async {
     final res = await api.get<List<TotalByCategoryEntityModel>>(
-      '${ApiRoutes.transaction}/$userId/total-by-category',
+      '${_userPath(userId)}/total-by-category',
       queryParameters: dto.toJson(),
       fromJsonT: (json) {
         final list = json as List<dynamic>;
         return list.map((e) => TotalByCategoryEntityModel.fromJson(e)).toList();
       },
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data ?? [];
+    return res.unwrap();
   }
 
   @override
@@ -95,25 +90,21 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     TransactionTotalsDto dto,
   ) async {
     final res = await api.get<TotalsByDateEntityModel>(
-      '${ApiRoutes.transaction}/$userId/total-by-day',
+      '${_userPath(userId)}/total-by-day',
       queryParameters: dto.toJson(),
       fromJsonT: (json) => TotalsByDateEntityModel.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
   Future<TransactionModel> createTransaction(TransactionCreateDto dto) async {
-    final jsonBody = dto.toJson();
-
     final res = await api.post<TransactionModel>(
       ApiRoutes.transaction,
-      body: jsonBody,
+      body: dto.toJson(),
       fromJsonT: (json) => TransactionModel.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -126,8 +117,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
       body: dto.toJson(),
       fromJsonT: (json) => TransactionModel.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -148,27 +138,19 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
         fields: localResult?.toAiFields(),
         fromJsonT: (json) => ScanReceiptModel.fromJson(json),
       );
-
-      if (!res.success || res.data == null) {
-        throw Exception(res.message);
-      }
-      return res.data!;
+      return res.unwrap();
     } catch (e) {
       throw Exception('Quét hoá đơn thất bại: $e');
     }
   }
 
   @override
-  Future<StatisticsSummaryModel> getStatisticsSummary(
-    int userId,
-    TransactionTotalsDto dto,
-  ) async {
+  Future<StatisticsSummaryModel> getStatisticsSummary(int userId) async {
     final res = await api.get<StatisticsSummaryModel>(
-      '${ApiRoutes.transaction}/$userId/statistics-summary',
+      '${_userPath(userId)}/statistics-summary',
       fromJsonT: (json) => StatisticsSummaryModel.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -178,7 +160,7 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
     String format,
   ) async {
     final res = await api.post<void>(
-      '${ApiRoutes.transaction}/$userId/export',
+      '${_userPath(userId)}/export',
       queryParameters: {'format': format},
       body: dto.toJson(),
     );

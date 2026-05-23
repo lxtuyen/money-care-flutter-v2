@@ -27,9 +27,11 @@ class SpendingOverviewCard extends StatelessWidget {
   List<DateTime> get dateRange {
     if (startDate == null || endDate == null) return [];
     final days = <DateTime>[];
-    for (var d = startDate!;
-        d.isBefore(endDate!.add(const Duration(days: 1)));
-        d = d.add(const Duration(days: 1))) {
+    for (
+      var d = startDate!;
+      d.isBefore(endDate!.add(const Duration(days: 1)));
+      d = d.add(const Duration(days: 1))
+    ) {
       days.add(d);
     }
     return days;
@@ -60,7 +62,10 @@ class SpendingOverviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppHelperFunction.formatAmount(amountSpent.toDouble(), currency: 'VND'),
+              AppHelperFunction.formatAmount(
+                amountSpent.toDouble(),
+                currency: 'VND',
+              ),
               style: TextStyle(
                 fontSize: AppSizes.lg,
                 fontWeight: FontWeight.bold,
@@ -104,7 +109,7 @@ class SpendingOverviewCard extends StatelessWidget {
                             gradient: LinearGradient(
                               colors: [
                                 AppColors.primary,
-                                AppColors.primary.withOpacity(0.6),
+                                AppColors.primary.withValues(alpha: 0.6),
                               ],
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
@@ -122,8 +127,13 @@ class SpendingOverviewCard extends StatelessWidget {
                       fitInsideVertically: true,
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         final dateStr = AppHelperFunction.getFormattedDate(
-                            dateRange[group.x.toInt()], format: 'dd/MM');
-                        final amountStr = AppHelperFunction.formatAmount(rod.toY, currency: 'VND');
+                          dateRange[group.x.toInt()],
+                          format: 'dd/MM',
+                        );
+                        final amountStr = AppHelperFunction.formatAmount(
+                          rod.toY,
+                          currency: 'VND',
+                        );
                         return BarTooltipItem(
                           "$dateStr\n$amountStr",
                           const TextStyle(

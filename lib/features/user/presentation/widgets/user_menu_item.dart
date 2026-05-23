@@ -19,11 +19,25 @@ class UserMenuItem extends StatelessWidget {
       children: [
         ListTile(
           leading: Icon(icon, color: AppColors.primary),
-          title: Text(title, style: TextStyle(fontSize: 16, color: AppThemeColors.of(context).textPrimary)),
-          trailing: Icon(Icons.arrow_forward_ios, size: 16, color: AppThemeColors.of(context).textSecondary),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              color: AppThemeColors.of(context).textPrimary,
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: AppThemeColors.of(context).textSecondary,
+          ),
           onTap: onTap,
         ),
-        Divider(height: 1, thickness: 0.5, color: AppThemeColors.of(context).textMuted.withOpacity(0.2)),
+        Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppThemeColors.of(context).textMuted.withValues(alpha: 0.2),
+        ),
       ],
     );
   }

@@ -38,12 +38,12 @@ class SearchWithFilter extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: hasActiveFilters
-                      ? AppColors.primary.withOpacity(0.35)
+                      ? AppColors.primary.withValues(alpha: 0.35)
                       : AppColors.borderSecondary,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.text1.withOpacity(0.04),
+                    color: AppColors.text1.withValues(alpha: 0.04),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -53,12 +53,10 @@ class SearchWithFilter extends StatelessWidget {
                 controller: controller,
                 onChanged: onChanged,
                 decoration: InputDecoration(
-                  prefixIcon: Container(
-                    child: const Icon(
-                      Icons.search_rounded,
-                      color: AppColors.text3,
-                      size: 18,
-                    ),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: AppColors.text3,
+                    size: 18,
                   ),
                   suffixIcon: controller != null && controller!.text.isNotEmpty
                       ? IconButton(

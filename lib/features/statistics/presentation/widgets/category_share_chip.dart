@@ -10,7 +10,7 @@ class CategoryShareChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: category.color?.withOpacity(0.12),
+        color: category.color?.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

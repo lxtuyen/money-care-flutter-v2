@@ -73,13 +73,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
           UserModel.fromAuthJson(json['user'], json['accessToken']),
     );
 
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Dang nhap Google that bai',
-      );
-    }
-
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -90,12 +84,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       fromJsonT: (json) =>
           UserModel.fromAuthJson(json['user'], json['accessToken']),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Dang nhap that bai',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -114,11 +103,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         'lastName': lastName,
       },
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Dang ky that bai',
-      );
-    }
+    res.unwrap();
     return res.message;
   }
 
@@ -128,11 +113,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       ApiRoutes.forgotPassword,
       body: {'email': email},
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Khong the gui ma OTP',
-      );
-    }
+    res.unwrap();
     return res.message;
   }
 
@@ -142,11 +123,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       ApiRoutes.verifyOtp,
       body: {'email': email, 'otp': otp},
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Xac nhan OTP that bai',
-      );
-    }
+    res.unwrap();
     return res.message;
   }
 
@@ -156,11 +133,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       ApiRoutes.resetPassword,
       body: {'email': email, 'newPassword': newPassword},
     );
-    if (!res.success) {
-      throw ServerException(
-        res.message.isNotEmpty ? res.message : 'Doi mat khau that bai',
-      );
-    }
+    res.unwrap();
     return res.message;
   }
 }

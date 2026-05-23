@@ -23,11 +23,6 @@ class GoalPlanInsightRemoteDatasourceImpl
       fromJsonT: (json) =>
           GoalPlanInsightModel.fromJson(json as Map<String, dynamic>),
     );
-    if (!res.success || res.data == null) {
-      throw Exception(
-        res.message.isNotEmpty ? res.message : 'AI insight failed',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 }

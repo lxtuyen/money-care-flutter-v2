@@ -200,7 +200,7 @@ class _OnboardingTemplateState extends State<OnboardingTemplate>
                     decoration: BoxDecoration(
                       color: isActive
                           ? AppColors.primary
-                          : AppColors.primary.withOpacity(0.2),
+                          : AppColors.primary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(100),
                     ),
                   );

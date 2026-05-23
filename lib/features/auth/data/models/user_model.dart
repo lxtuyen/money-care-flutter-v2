@@ -15,7 +15,6 @@ abstract class UserModel with _$UserModel {
     String? accessToken,
     required UserProfileModel profile,
     @JsonKey(name: 'savingGoal') SavingGoalModel? savingGoal,
-    bool? hasCategories,
   }) = _UserModel;
 
   const UserModel._();
@@ -38,6 +37,5 @@ abstract class UserModel with _$UserModel {
     accessToken: accessToken,
     profile: profile.toEntity(),
     savingGoal: savingGoal?.toEntity(),
-    hasCategories: hasCategories ?? false,
   );
 }

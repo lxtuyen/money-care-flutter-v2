@@ -224,8 +224,6 @@ class UserCategoryController extends GetxController {
     }
   }
 
-  bool get hasCategories => categories.isNotEmpty;
-
   Map<String, dynamic> _toJson(CategoryEntity c) => {
     'name': c.name,
     'icon': c.icon,

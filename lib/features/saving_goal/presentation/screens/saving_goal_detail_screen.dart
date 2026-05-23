@@ -24,7 +24,7 @@ class SavingGoalDetailScreen extends StatefulWidget {
 class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   final savingGoalController = Get.find<SavingGoalController>();
   final transactionController = Get.find<TransactionController>();
-  
+
   late SavingGoalEntity goal;
   @override
   void initState() {
@@ -38,7 +38,8 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   void _confirmDelete() {
     AppConfirmDialog.show(
       title: "Xóa mục tiêu?",
-      message: "Bạn có chắc chắn muốn xóa mục tiêu \"${goal.name}\"? Dữ liệu này sẽ không thể khôi phục.",
+      message:
+          "Bạn có chắc chắn muốn xóa mục tiêu \"${goal.name}\"? Dữ liệu này sẽ không thể khôi phục.",
       confirmText: "Xóa",
       cancelText: "Hủy",
       onConfirm: () async {
@@ -57,7 +58,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     return Scaffold(
       backgroundColor: colors.surfaceBackground,
       body: Column(
@@ -68,7 +69,8 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
             height: 220,
             child: Obx(() {
               final report = savingGoalController.goalReport.value;
-              final percent = report?.progressPercent.toDouble() ?? goal.progressPercent;
+              final percent =
+                  report?.progressPercent.toDouble() ?? goal.progressPercent;
               final displayAmount = report?.currentBalance ?? goal.savedAmount;
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -82,8 +84,10 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                         child: CircularProgressIndicator(
                           value: percent / 100,
                           strokeWidth: 8,
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                          backgroundColor: Colors.white.withValues(alpha: 0.2),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                           strokeCap: StrokeCap.round,
                         ),
                       ),
@@ -101,7 +105,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                   Text(
                     "Đã tiết kiệm: ${AppHelperFunction.formatAmount(displayAmount)}",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -110,7 +114,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               );
             }),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
@@ -145,7 +149,8 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               }
 
               final report = savingGoalController.goalReport.value;
-              final transactions = report?.transactions.map((m) => m.toEntity()).toList() ?? [];
+              final transactions =
+                  report?.transactions.map((m) => m.toEntity()).toList() ?? [];
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +177,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                       currentBalance: report.currentBalance,
                     ),
                   ],
-                  
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
                     child: Text(
@@ -184,21 +189,21 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                       ),
                     ),
                   ),
-                  
+
                   Expanded(
                     child: transactions.isEmpty
                         ? const AppEmptyState(
                             message: "Chưa có giao dịch nào cho mục tiêu này",
                           )
                         : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 0,
+                            ),
                             itemCount: transactions.length,
                             itemBuilder: (context, index) {
                               final tx = transactions[index];
-                              return TransactionItem(
-                                item: tx,
-                                onTap: () {},
-                              );
+                              return TransactionItem(item: tx, onTap: () {});
                             },
                           ),
                   ),
@@ -222,7 +227,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -231,7 +236,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
       child: Column(
         children: [
           _buildDetailRow(
-            "Mục tiêu", 
+            "Mục tiêu",
             AppHelperFunction.formatAmount(report?.target ?? goal.target ?? 0),
             Icons.flag_rounded,
             AppColors.primary,
@@ -239,9 +244,11 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
           ),
           const Divider(height: 32),
           _buildDetailRow(
-            "Ngày bắt đầu", 
-            (report?.startDate ?? goal.startDate) != null 
-                ? DateFormat('dd/MM/yyyy').format(report?.startDate ?? goal.startDate!) 
+            "Ngày bắt đầu",
+            (report?.startDate ?? goal.startDate) != null
+                ? DateFormat(
+                    'dd/MM/yyyy',
+                  ).format(report?.startDate ?? goal.startDate!)
                 : "Chưa đặt",
             Icons.calendar_today_rounded,
             Colors.blue,
@@ -249,9 +256,11 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
           ),
           const Divider(height: 32),
           _buildDetailRow(
-            "Ngày kết thúc", 
-            (report?.endDate ?? goal.endDate) != null 
-                ? DateFormat('dd/MM/yyyy').format(report?.endDate ?? goal.endDate!) 
+            "Ngày kết thúc",
+            (report?.endDate ?? goal.endDate) != null
+                ? DateFormat(
+                    'dd/MM/yyyy',
+                  ).format(report?.endDate ?? goal.endDate!)
                 : "Chưa đặt",
             Icons.event_rounded,
             Colors.blue,
@@ -263,10 +272,10 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   }
 
   Widget _buildDetailRow(
-    String label, 
-    String value, 
-    IconData icon, 
-    Color iconColor, 
+    String label,
+    String value,
+    IconData icon,
+    Color iconColor,
     AppThemeColors colors, {
     Color? valueColor,
   }) {
@@ -275,7 +284,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
+            color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: iconColor, size: 20),
@@ -283,10 +292,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
         const SizedBox(width: 16),
         Text(
           label,
-          style: TextStyle(
-            color: colors.textSecondary,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: colors.textSecondary, fontSize: 14),
         ),
         const Spacer(),
         Text(
@@ -320,7 +326,7 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     return Material(
       color: colors.cardBackground,
       borderRadius: BorderRadius.circular(16),
@@ -331,7 +337,7 @@ class _ActionButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withOpacity(0.2)),
+            border: Border.all(color: color.withValues(alpha: 0.2)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

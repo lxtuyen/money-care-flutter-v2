@@ -20,8 +20,8 @@ class ColorConverter implements JsonConverter<Color?, dynamic> {
     return null;
   }
 
-  @override
-  dynamic toJson(Color? color) => color?.value;
+@override
+dynamic toJson(Color? color) => color?.toARGB32();
 }
 
 @freezed

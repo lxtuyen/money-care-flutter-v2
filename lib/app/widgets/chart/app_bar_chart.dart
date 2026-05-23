@@ -93,8 +93,8 @@ class AppBarChart extends StatelessWidget {
 
             return FlLine(
               color: (isZeroLine || isMaxLine)
-                  ? AppColors.text4.withOpacity(0.6)
-                  : AppColors.text4.withOpacity(0.3),
+                  ? AppColors.text4.withValues(alpha: 0.6)
+                  : AppColors.text4.withValues(alpha: 0.3),
               strokeWidth: isZeroLine ? 1.8 : 1,
               dashArray: isZeroLine ? null : const [4, 4],
             );
@@ -104,11 +104,11 @@ class AppBarChart extends StatelessWidget {
           show: true,
           border: Border(
             bottom: BorderSide(
-              color: AppColors.text4.withOpacity(0.6),
+              color: AppColors.text4.withValues(alpha: 0.6),
               width: 1.8,
             ),
             left: BorderSide(
-              color: AppColors.text4.withOpacity(0.6),
+              color: AppColors.text4.withValues(alpha: 0.6),
               width: 1.8,
             ),
             top: BorderSide.none,

@@ -26,8 +26,7 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
         return list.map((e) => WalletEntity.fromJson(e)).toList();
       },
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -36,8 +35,7 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
       '${ApiRoutes.wallets}/$id',
       fromJsonT: (json) => WalletEntity.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -47,8 +45,7 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
       body: data,
       fromJsonT: (json) => WalletEntity.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -58,14 +55,14 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
       body: data,
       fromJsonT: (json) => WalletEntity.fromJson(json),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
   Future<bool> delete(int id) async {
     final res = await api.delete<void>('${ApiRoutes.wallets}/$id');
-    return res.success;
+    res.unwrap();
+    return true;
   }
 
   @override
@@ -74,7 +71,7 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
       '${ApiRoutes.wallets}/transfer',
       body: data,
     );
-    if (!res.success) throw Exception(res.message);
+    res.unwrap();
   }
 
   @override
@@ -83,7 +80,6 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
       ApiRoutes.totalAssets,
       fromJsonT: (json) => double.parse(json.toString()),
     );
-    if (!res.success || res.data == null) throw Exception(res.message);
-    return res.data!;
+    return res.unwrap();
   }
 }

@@ -7,7 +7,6 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/services/notification_service.dart';
 
 import 'package:money_care/app/bindings/app_state_binding.dart';
-import 'package:money_care/core/services/ocr_service.dart';
 
 import 'package:money_care/features/splash/presentation/bindings/splash_binding.dart';
 import 'package:money_care/features/auth/presentation/bindings/auth_binding.dart';
@@ -131,10 +130,8 @@ class AppBinding extends Bindings {
     final transactionRemoteDs = TransactionRemoteDatasourceImpl(
       api: apiService,
     );
-    final ocrService = Get.put(OCRService());
     final transactionRepo = TransactionRepositoryImpl(
       remoteDatasource: transactionRemoteDs,
-      ocrService: ocrService,
     );
     Get.put<TransactionController>(
       TransactionController(

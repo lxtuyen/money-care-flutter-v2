@@ -56,7 +56,7 @@ class TransactionDetail extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -74,8 +74,8 @@ class TransactionDetail extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        themeColor.withOpacity(0.15),
-                        themeColor.withOpacity(0.05),
+                        themeColor.withValues(alpha: 0.15),
+                        themeColor.withValues(alpha: 0.05),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -90,7 +90,7 @@ class TransactionDetail extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: themeColor.withOpacity(0.2),
+                              color: themeColor.withValues(alpha: 0.2),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -119,7 +119,7 @@ class TransactionDetail extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: themeColor.withOpacity(0.7),
+                          color: themeColor.withValues(alpha: 0.7),
                           letterSpacing: 1.2,
                         ),
                       ),
@@ -221,7 +221,6 @@ class TransactionDetail extends StatelessWidget {
                                       transactionType: isExpense
                                           ? 'expense'
                                           : 'income',
-                                      showCategory: true,
                                     ),
                                   ),
                                 );

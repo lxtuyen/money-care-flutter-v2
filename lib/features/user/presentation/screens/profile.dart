@@ -61,28 +61,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Column(
                                 children: [
                                   Obx(() {
-                                    final profile = userController.userProfile.value;
+                                    final profile =
+                                        userController.userProfile.value;
                                     return Container(
                                       width: 100,
                                       height: 100,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: AppColors.primary.withOpacity(0.1),
-                                        image: profile?.avatar != null &&
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        image:
+                                            profile?.avatar != null &&
                                                 profile!.avatar!.isNotEmpty
                                             ? DecorationImage(
-                                                image: NetworkImage(profile.avatar!),
+                                                image: NetworkImage(
+                                                  profile.avatar!,
+                                                ),
                                                 fit: BoxFit.cover,
                                               )
                                             : null,
                                       ),
-                                      child: profile?.avatar == null ||
+                                      child:
+                                          profile?.avatar == null ||
                                               profile!.avatar!.isEmpty
                                           ? Center(
                                               child: Text(
-                                                (profile?.firstName?.isNotEmpty == true)
+                                                (profile
+                                                            ?.firstName
+                                                            ?.isNotEmpty ==
+                                                        true)
                                                     ? profile!.firstName![0]
-                                                        .toUpperCase()
+                                                          .toUpperCase()
                                                     : "U",
                                                 style: const TextStyle(
                                                   fontSize: 40,
@@ -121,7 +131,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               label: 'auth.firstName'.tr,
                               icon: Icons.person,
                               hintText: 'profile.nameHint'.tr,
-                              validator: (v) => AppValidator.validateFirstName(v),
+                              validator: (v) =>
+                                  AppValidator.validateFirstName(v),
                             ),
                             const SizedBox(height: 16),
                             AppTextFormField(
@@ -129,7 +140,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               label: 'auth.lastName'.tr,
                               icon: Icons.person,
                               hintText: 'profile.lastNameHint'.tr,
-                              validator: (v) => AppValidator.validateLastName(v),
+                              validator: (v) =>
+                                  AppValidator.validateLastName(v),
                             ),
                             const SizedBox(height: 32),
                             Obx(() {

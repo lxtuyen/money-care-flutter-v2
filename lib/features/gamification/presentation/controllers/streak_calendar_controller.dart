@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -84,6 +85,7 @@ class StreakCalendarController extends GetxController {
         selectDay(DateTime.now().day);
       }
     } catch (e) {
+      debugPrint('Error loading streak calendar month data: $e');
     } finally {
       isLoading.value = false;
     }

@@ -1,5 +1,4 @@
 import 'package:money_care/core/constants/api_routes.dart';
-import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/gamification/data/models/gamification_model.dart';
 
@@ -22,14 +21,7 @@ class GamificationRemoteDatasourceImpl implements GamificationRemoteDatasource {
       fromJsonT: (json) =>
           GamificationModel.fromJson(json as Map<String, dynamic>),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể tải dữ liệu gamification',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 
   @override
@@ -43,13 +35,6 @@ class GamificationRemoteDatasourceImpl implements GamificationRemoteDatasource {
       fromJsonT: (json) =>
           GamificationModel.fromJson(json as Map<String, dynamic>),
     );
-    if (!res.success || res.data == null) {
-      throw ServerException(
-        res.message.isNotEmpty
-            ? res.message
-            : 'Không thể ghi nhận giao dịch ngày',
-      );
-    }
-    return res.data!;
+    return res.unwrap();
   }
 }

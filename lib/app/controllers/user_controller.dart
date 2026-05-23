@@ -14,7 +14,6 @@ class UserController extends GetxController {
 
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController avatarController = TextEditingController();
 
   Rxn<UserEntity> get user => Get.find<AuthController>().user;
 
@@ -43,8 +42,6 @@ class UserController extends GetxController {
     if (profile == null || isClosed) return;
     firstNameController.text = profile.firstName ?? '';
     lastNameController.text = profile.lastName ?? '';
-
-    avatarController.text = profile.avatar ?? '';
   }
 
   var userProfile = Rxn<UserProfileEntity>();
@@ -56,7 +53,6 @@ class UserController extends GetxController {
       final dto = ProfileUpdateDto(
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
-        avatar: avatarController.text.trim(),
       );
       final updated = await updateMyProfileUseCase(dto);
       userProfile.value = updated;

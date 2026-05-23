@@ -20,12 +20,12 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
         fields: dto.toJson(),
         file: file,
       );
-      if (!res.success) throw Exception(res.message);
+      res.unwrap();
       return res.message;
     }
 
     final res = await api.post<String>(ApiRoutes.chatbot, body: dto.toJson());
-    if (!res.success) throw Exception(res.message);
+    res.unwrap();
     return res.message;
   }
 }

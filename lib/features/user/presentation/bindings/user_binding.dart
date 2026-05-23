@@ -8,6 +8,6 @@ class UserBinding extends Bindings {
   void dependencies() {
     final apiClient = Get.find<ApiClient>();
     final remoteDatasource = UserRemoteDatasourceImpl(api: apiClient);
-    final repository = UserRepositoryImpl(remoteDatasource: remoteDatasource);
+    UserRepositoryImpl(remoteDatasource: remoteDatasource);
   }
 }

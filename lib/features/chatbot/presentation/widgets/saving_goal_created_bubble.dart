@@ -24,7 +24,7 @@ class SavingGoalCreatedBubble extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -65,9 +65,11 @@ class SavingGoalCreatedBubble extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.income.withOpacity(0.06),
+                color: AppColors.income.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.income.withOpacity(0.2)),
+                border: Border.all(
+                  color: AppColors.income.withValues(alpha: 0.2),
+                ),
               ),
               child: Text(
                 model.aiMessage,
@@ -114,7 +116,7 @@ class SavingGoalCreatedBubble extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: themeColor.withOpacity(0.06),
+                color: themeColor.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(

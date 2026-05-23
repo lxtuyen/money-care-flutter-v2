@@ -50,7 +50,7 @@ class _UserCategoryManagementScreenState
               child: TabBar(
                 controller: _tabController,
                 labelColor: Colors.white,
-                unselectedLabelColor: Colors.white.withOpacity(0.7),
+                unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
                 indicatorColor: Colors.white,
                 indicatorWeight: 3,
                 indicatorSize: TabBarIndicatorSize.label,
@@ -124,10 +124,12 @@ class _CategoryItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppThemeColors.of(context).cardBackground,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderPrimary.withOpacity(0.5)),
+          border: Border.all(
+            color: AppColors.borderPrimary.withValues(alpha: 0.5),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -167,7 +169,7 @@ class _CategoryItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
@@ -186,7 +188,7 @@ class _CategoryItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.text4.withOpacity(0.1),
+                            color: AppColors.text4.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
@@ -205,7 +207,7 @@ class _CategoryItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.08),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(

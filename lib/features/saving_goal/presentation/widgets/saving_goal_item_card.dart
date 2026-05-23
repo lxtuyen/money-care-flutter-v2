@@ -36,7 +36,7 @@ class SavingGoalItemCard extends StatelessWidget {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -73,7 +73,11 @@ class SavingGoalItemCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Row(
                             children: [
-                              const Icon(Icons.account_balance_wallet, size: 12, color: AppColors.primary),
+                              const Icon(
+                                Icons.account_balance_wallet,
+                                size: 12,
+                                color: AppColors.primary,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 fund.wallet!.name,
@@ -129,7 +133,7 @@ class SavingGoalItemCard extends StatelessWidget {
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Text(emoji, style: const TextStyle(fontSize: 20)),

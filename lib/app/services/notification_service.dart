@@ -1,8 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/network/api_client.dart';
-import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/constants/route_path.dart';
 
 @pragma('vm:entry-point')
@@ -24,20 +23,15 @@ class NotificationService extends GetxService {
 
     try {
       fcmToken = await _firebaseMessaging.getToken();
-    } catch (e) {}
-
-    _firebaseMessaging.onTokenRefresh.listen((newToken) {
-      fcmToken = newToken;
-      if (LocalStorage().getToken() != null) {
-        _sendTokenToServer(newToken);
-      }
-    });
+    } catch (e) {
+      debugPrint('Error getting FCM token: $e');
+    }
 
     return this;
   }
 
   Future<void> _requestPermissions() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -99,28 +93,6 @@ class NotificationService extends GetxService {
     );
   }
 
-  Future<void> _sendTokenToServer(String token) async {
-    try {
-      final apiClient = Get.find<ApiClient>();
-      final response = await apiClient.post(
-        'users/device-tokens',
-        body: {'token': token},
-      );
-      if (response.success) {
-      } else {
-      }
-    } catch (e) {}
-  }
-
-  Future<void> syncToken() async {
-    try {
-      fcmToken ??= await _firebaseMessaging.getToken();
-    } catch (e) {}
-    if (fcmToken != null) {
-      await _sendTokenToServer(fcmToken!);
-    }
-  }
-
   Future<void> showLocalNotification({
     required String title,
     required String body,
@@ -145,20 +117,5 @@ class NotificationService extends GetxService {
       body: body,
       notificationDetails: details,
     );
-  }
-
-  Future<void> removeTokenFromServer() async {
-    try {
-      fcmToken ??= await _firebaseMessaging.getToken();
-    } catch (e) {}
-    if (fcmToken != null) {
-      try {
-        final apiClient = Get.find<ApiClient>();
-        await apiClient.delete(
-          'users/device-tokens',
-          body: {'token': fcmToken},
-        );
-      } catch (e) {}
-    }
   }
 }

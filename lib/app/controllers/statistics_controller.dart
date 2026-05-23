@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
@@ -227,7 +228,9 @@ class StatisticsController extends GetxController {
       );
 
       globalTotalByType.value = await getTotalByTypeUseCase(userId, dto);
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error loading global total by type: $e');
+    }
   }
 
   Future<void> _loadPreviousTotalByType(int userId) async {
@@ -387,7 +390,7 @@ class StatisticsController extends GetxController {
       expenseCategories.assignAll(results[0]);
       incomeCategories.assignAll(results[1]);
     } catch (e) {
-      print("Error loading monthly categories: $e");
+      debugPrint("Error loading monthly categories: $e");
     }
   }
 
@@ -539,7 +542,7 @@ class StatisticsController extends GetxController {
         ),
       );
     } catch (e) {
-      print("Error loading hourly data: $e");
+      debugPrint("Error loading hourly data: $e");
     }
   }
 
@@ -603,8 +606,7 @@ class StatisticsController extends GetxController {
 
   Future<void> _loadStatisticsSummary(int userId) async {
     try {
-      final dto = _createTotalsDto(currentStartDate, currentEndDate);
-      statisticsSummary.value = await getStatisticsSummaryUseCase(userId, dto);
+      statisticsSummary.value = await getStatisticsSummaryUseCase(userId);
     } catch (e) {
       statisticsSummary.value = null;
     }

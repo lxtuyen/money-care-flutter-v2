@@ -1,3 +1,5 @@
+import 'package:money_care/core/errors/exceptions.dart';
+
 class ApiResponse<T> {
   final bool success;
   final String message;
@@ -24,5 +26,15 @@ class ApiResponse<T> {
           ? fromJsonT(json['data'])
           : null,
     );
+  }
+
+  T unwrap() {
+    if (!success) {
+      throw ServerException(message);
+    }
+    if (data == null && null is! T) {
+      throw ServerException(message.isNotEmpty ? message : 'Response data is null');
+    }
+    return data as T;
   }
 }

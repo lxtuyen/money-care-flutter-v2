@@ -52,7 +52,9 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
         all.sort((a, b) => (b.transactionDate ?? DateTime.now()).compareTo(a.transactionDate ?? DateTime.now()));
         walletTransactions.assignAll(all);
       }
-    } catch (e) {} finally {
+    } catch (e) {
+      debugPrint('Error fetching wallet transactions: $e');
+    } finally {
       isLoadingTransactions.value = false;
     }
   }
@@ -124,6 +126,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                         setState(() {
                           wallet = walletController.wallets.firstWhere((w) => w.id == wallet.id);
                         });
+                        if (!context.mounted) return;
                         Navigator.pop(context);
                       }
                     },

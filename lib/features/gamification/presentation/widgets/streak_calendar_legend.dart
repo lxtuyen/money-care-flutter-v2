@@ -15,7 +15,7 @@ class StreakCalendarLegend extends StatelessWidget {
         children: [
           _LegendItem(
             color: const Color(0xFFFFF3E0),
-            borderColor: AppColors.secondaryOrange.withOpacity(0.12),
+            borderColor: AppColors.secondaryOrange.withValues(alpha: 0.12),
             label: 'streak.hasTransaction'.tr,
             icon: Icons.local_fire_department,
           ),

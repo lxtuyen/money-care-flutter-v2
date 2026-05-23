@@ -314,10 +314,12 @@ class TransactionListBubble extends StatelessWidget {
         if (startStr == endStr) return startStr;
         return '$startStr - $endStr';
       }
-      if (start != null)
+      if (start != null) {
         return 'từ ${AppHelperFunction.formatDayMonth(start.toLocal())}';
-      if (end != null)
+      }
+      if (end != null) {
         return 'đến ${AppHelperFunction.formatDayMonth(end.toLocal())}';
+      }
     } catch (_) {}
     return '';
   }

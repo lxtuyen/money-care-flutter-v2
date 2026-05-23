@@ -34,16 +34,25 @@ class TransactionFormController extends GetxController {
   set selectedCategory(CategoryEntity? value) =>
       _selectedCategory.value = value;
 
-  bool showCategory = true;
-  String transactionType = 'expense';
+  final RxString _transactionType = 'expense'.obs;
+  String get transactionType => _transactionType.value;
+  set transactionType(String value) => _transactionType.value = value;
+
   TransactionEntity? initialItem;
 
+  void changeTransactionType(String type) {
+    transactionType = type;
+    selectedCategoryId.value = null;
+    selectedSubCategoryId.value = null;
+    selectedCategory = null;
+    categoryController.clear();
+    subCategoryController.clear();
+  }
+
   void init(
-    bool isCategoryVisible,
     TransactionEntity? item, [
     String type = 'expense',
   ]) {
-    showCategory = isCategoryVisible;
     transactionType = type;
     initialItem = item;
 
@@ -153,7 +162,7 @@ class TransactionFormController extends GetxController {
     final userId = await appController.getCurrentUserId();
     if (userId == null) {
       AppHelperFunction.showErrorSnackBar(
-        'Khong the xac dinh nguoi dung. Vui long dang nhap lai.',
+        'Khong the xac dinh nguoi dung.',
       );
       return;
     }
@@ -171,7 +180,7 @@ class TransactionFormController extends GetxController {
     final userId = await appController.getCurrentUserId();
     if (userId == null) {
       AppHelperFunction.showErrorSnackBar(
-        'Khong the xac dinh nguoi dung. Vui long dang nhap lai.',
+        'Khong the xac dinh nguoi dung.',
       );
       return;
     }

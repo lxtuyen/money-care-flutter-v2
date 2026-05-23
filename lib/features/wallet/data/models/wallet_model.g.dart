@@ -7,9 +7,9 @@ part of 'wallet_model.dart';
 // **************************************************************************
 
 _WalletModel _$WalletModelFromJson(Map<String, dynamic> json) => _WalletModel(
-  id: (json['id'] as num).toInt(),
+  id: NumParser.parseInt(json['id']),
   name: json['name'] as String? ?? '',
-  balance: (json['balance'] as num?)?.toDouble() ?? 0,
+  balance: json['balance'] == null ? 0 : NumParser.parseDouble(json['balance']),
   icon: json['icon'] as String?,
   color: json['color'] as String?,
   isActive: json['is_active'] as bool? ?? true,

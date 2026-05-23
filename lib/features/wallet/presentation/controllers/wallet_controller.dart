@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/wallet/domain/repositories/wallet_repository.dart';
@@ -45,7 +46,9 @@ class WalletController extends GetxController {
       if (wallets.isNotEmpty && selectedWallet.value == null) {
         selectedWallet.value = wallets.first;
       }
-    } catch (e) {} finally {
+    } catch (e) {
+      debugPrint('Error refreshing wallets: $e');
+    } finally {
       isLoading.value = false;
     }
   }
@@ -80,10 +83,10 @@ class WalletController extends GetxController {
     try {
       await repository.update(id, {
         'name': name,
-        if (icon != null) 'icon': icon,
-        if (color != null) 'color': color,
-        if (isActive != null) 'is_active': isActive,
-        if (isPrimary != null) 'is_primary': isPrimary,
+        'icon': ?icon,
+        'color': ?color,
+        'is_active': ?isActive,
+        'is_primary': ?isPrimary,
       });
       await refreshWallets();
       AppHelperFunction.showSuccessSnackBar('Cập nhật ví thành công');
@@ -115,8 +118,8 @@ class WalletController extends GetxController {
         'toWalletId': toId,
         'amount': amount,
         'fee': fee,
-        if (note != null) 'note': note,
-        if (categoryId != null) 'categoryId': categoryId,
+        'note': ?note,
+        'categoryId': ?categoryId,
       });
       await refreshWallets();
       

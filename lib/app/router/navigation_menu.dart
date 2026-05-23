@@ -187,7 +187,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     tileColor: isActive
-                        ? AppColors.primary.withOpacity(0.08)
+                        ? AppColors.primary.withValues(alpha: 0.08)
                         : null,
                     leading: AppSvgIcon(
                       iconName: isActive ? item.activeIcon : item.icon,
@@ -254,12 +254,14 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
         decoration: BoxDecoration(
-          color: AppThemeColors.of(context).cardBackground.withOpacity(0.96),
+          color: AppThemeColors.of(
+            context,
+          ).cardBackground.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: AppThemeColors.of(context).borderSecondary),
           boxShadow: [
             BoxShadow(
-              color: AppColors.text1.withOpacity(0.08),
+              color: AppColors.text1.withValues(alpha: 0.08),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),
@@ -314,7 +316,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: isActive
-                    ? AppColors.primary.withOpacity(0.12)
+                    ? AppColors.primary.withValues(alpha: 0.12)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -356,7 +358,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
               borderRadius: BorderRadius.circular(28),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.text1.withOpacity(0.1),
+                  color: AppColors.text1.withValues(alpha: 0.1),
                   blurRadius: 28,
                   offset: const Offset(0, 12),
                 ),
@@ -392,7 +394,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 _buildTransactionOptionTile(
                   icon: Icons.north_east_rounded,
                   iconColor: AppColors.success,
-                  iconBackground: AppColors.success.withOpacity(0.12),
+                  iconBackground: AppColors.success.withValues(alpha:0.12),
                   title: 'Tạo thu',
                   subtitle: 'Ghi nhận khoản tiền bạn nhận được',
                   onTap: () {
@@ -404,7 +406,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 _buildTransactionOptionTile(
                   icon: Icons.south_east_rounded,
                   iconColor: AppColors.secondaryOrange,
-                  iconBackground: AppColors.secondaryOrange.withOpacity(0.12),
+                  iconBackground: AppColors.secondaryOrange.withValues(alpha:0.12),
                   title: 'Tạo chi',
                   subtitle: 'Ghi lại khoản chi tiêu của bạn',
                   onTap: () {
@@ -417,7 +419,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 _buildTransactionOptionTile(
                   icon: Icons.receipt_long_outlined,
                   iconColor: AppColors.primary,
-                  iconBackground: AppColors.primary.withOpacity(0.12),
+                  iconBackground: AppColors.primary.withValues(alpha: 0.12),
                   title: 'transaction.create'.tr,
                   subtitle: 'Tạo giao dịch thu hoặc chi thủ công',
                   onTap: () {
@@ -432,7 +434,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 _buildTransactionOptionTile(
                   icon: Icons.smart_toy_outlined,
                   iconColor: AppColors.primary,
-                  iconBackground: AppColors.primary.withOpacity(0.12),
+                  iconBackground: AppColors.primary.withValues(alpha: 0.12),
                   title: 'chatbot.title'.tr,
                   subtitle: 'chatbot.desc'.tr,
                   onTap: () {

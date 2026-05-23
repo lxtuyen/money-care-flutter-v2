@@ -60,18 +60,22 @@ class _SavingGoalInitialFundAskBubbleState
     name = widget.metadata['name'] ?? 'Mục tiêu tiết kiệm';
     target = (widget.metadata['target'] as num?)?.toDouble() ?? 0;
     totalBalance = (widget.metadata['totalBalance'] as num?)?.toDouble() ?? 0;
-    requestedMonths = (widget.metadata['requestedMonths'] as num?)?.toInt() ?? 0;
+    requestedMonths =
+        (widget.metadata['requestedMonths'] as num?)?.toInt() ?? 0;
 
     final rawWallets = widget.metadata['wallets'];
     if (rawWallets is List) {
       wallets = rawWallets
-          .map((item) => _ChatbotWallet.fromMap(Map<String, dynamic>.from(item)))
+          .map(
+            (item) => _ChatbotWallet.fromMap(Map<String, dynamic>.from(item)),
+          )
           .toList();
     } else {
       wallets = [];
     }
 
-    final suggestedId = (widget.metadata['suggestedWalletId'] as num?)?.toInt() ?? 0;
+    final suggestedId =
+        (widget.metadata['suggestedWalletId'] as num?)?.toInt() ?? 0;
     activeWalletIndex = wallets.indexWhere((w) => w.id == suggestedId);
     if (activeWalletIndex == -1 && wallets.isNotEmpty) {
       activeWalletIndex = 0;
@@ -86,7 +90,9 @@ class _SavingGoalInitialFundAskBubbleState
   }
 
   double get selectedWalletBalance {
-    if (wallets.isEmpty || activeWalletIndex < 0 || activeWalletIndex >= wallets.length) {
+    if (wallets.isEmpty ||
+        activeWalletIndex < 0 ||
+        activeWalletIndex >= wallets.length) {
       return 0;
     }
     return wallets[activeWalletIndex].balance;
@@ -96,7 +102,8 @@ class _SavingGoalInitialFundAskBubbleState
     if (selectedPercent == 'custom') {
       return customAmount;
     }
-    final double percent = double.tryParse(selectedPercent.replaceAll('%', '')) ?? 0;
+    final double percent =
+        double.tryParse(selectedPercent.replaceAll('%', '')) ?? 0;
     return (selectedWalletBalance * percent / 100).floorToDouble();
   }
 
@@ -118,7 +125,9 @@ class _SavingGoalInitialFundAskBubbleState
     if (amt > selectedWalletBalance) {
       setState(() {
         customAmount = selectedWalletBalance;
-        amountController.text = AppHelperFunction.formatAmount(selectedWalletBalance).replaceAll('₫', '').trim();
+        amountController.text = AppHelperFunction.formatAmount(
+          selectedWalletBalance,
+        ).replaceAll('₫', '').trim();
         amountController.selection = TextSelection.fromPosition(
           TextPosition(offset: amountController.text.length),
         );
@@ -148,7 +157,7 @@ class _SavingGoalInitialFundAskBubbleState
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -164,7 +173,7 @@ class _SavingGoalInitialFundAskBubbleState
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -199,9 +208,12 @@ class _SavingGoalInitialFundAskBubbleState
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.06),
+                  color: AppColors.primary.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -264,20 +276,23 @@ class _SavingGoalInitialFundAskBubbleState
                               if (customAmount > wallet.balance) {
                                 customAmount = wallet.balance;
                                 amountController.text =
-                                    AppHelperFunction.formatAmount(wallet.balance)
-                                        .replaceAll('₫', '')
-                                        .trim();
+                                    AppHelperFunction.formatAmount(
+                                      wallet.balance,
+                                    ).replaceAll('₫', '').trim();
                               }
                             }
                           });
                         },
                   child: Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.primary.withOpacity(0.06)
-                          : colors.surfaceBackground.withOpacity(0.3),
+                          ? AppColors.primary.withValues(alpha: 0.06)
+                          : colors.surfaceBackground.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isSelected
@@ -304,8 +319,12 @@ class _SavingGoalInitialFundAskBubbleState
                               wallet.name,
                               style: TextStyle(
                                 fontSize: 11.5,
-                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                color: isSelected ? AppColors.primary : colors.textPrimary,
+                                fontWeight: isSelected
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : colors.textPrimary,
                               ),
                             ),
                           ],
@@ -339,15 +358,21 @@ class _SavingGoalInitialFundAskBubbleState
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: OutlinedButton(
-                    onPressed: isFinalized ? null : () => _onPercentSelected(val),
+                    onPressed: isFinalized
+                        ? null
+                        : () => _onPercentSelected(val),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       backgroundColor: isSelected
                           ? AppColors.primary
                           : colors.cardBackground,
-                      foregroundColor: isSelected ? Colors.white : colors.textPrimary,
+                      foregroundColor: isSelected
+                          ? Colors.white
+                          : colors.textPrimary,
                       side: BorderSide(
-                        color: isSelected ? AppColors.primary : colors.borderSecondary,
+                        color: isSelected
+                            ? AppColors.primary
+                            : colors.borderSecondary,
                         width: 1.2,
                       ),
                       shape: RoundedRectangleBorder(
@@ -381,19 +406,26 @@ class _SavingGoalInitialFundAskBubbleState
                 hintStyle: const TextStyle(fontSize: 12.5, color: Colors.grey),
                 suffixText: 'VND',
                 suffixStyle: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textSecondary),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textSecondary,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 filled: true,
-                fillColor: colors.surfaceBackground.withOpacity(0.2),
+                fillColor: colors.surfaceBackground.withValues(alpha: 0.2),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(color: colors.borderSecondary),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  ),
                 ),
               ),
               onChanged: _onCustomAmountChanged,
@@ -408,9 +440,11 @@ class _SavingGoalInitialFundAskBubbleState
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.income.withOpacity(0.08),
+                color: AppColors.income.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.income.withOpacity(0.25)),
+                border: Border.all(
+                  color: AppColors.income.withValues(alpha: 0.25),
+                ),
               ),
               child: const Row(
                 children: [

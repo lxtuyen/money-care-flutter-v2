@@ -56,7 +56,9 @@ class AppSvgIcon extends StatelessWidget {
       resolvedPath,
       width: iconWidth,
       height: iconHeight,
-      color: color,
+      colorFilter: color != null
+          ? ColorFilter.mode(color!, BlendMode.srcIn)
+          : null,
       fit: fit,
     );
   }

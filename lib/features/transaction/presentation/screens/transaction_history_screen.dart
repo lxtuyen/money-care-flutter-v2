@@ -7,7 +7,7 @@ import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
-import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
+import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -81,7 +81,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 );
               }
 
-              return TransactionTypeSummaryToggle(
+              return TransactionTypeToggle(
                 selected: selectedType,
                 onSelected: (value) => statisticsController.changeType(value),
                 spendText: data?.expenseTotal ?? 0,

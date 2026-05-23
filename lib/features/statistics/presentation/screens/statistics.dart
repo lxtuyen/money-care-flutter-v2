@@ -8,7 +8,7 @@ import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
-import 'package:money_care/app/widgets/states/app_empty_state.dart';
+
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -16,14 +16,17 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
+import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
+import 'package:money_care/features/statistics/presentation/widgets/budget_tracking_section.dart';
+import 'package:money_care/features/statistics/presentation/widgets/statistics_export_sheet.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
-import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
+
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 
@@ -77,7 +80,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 title: 'statistics.title'.tr,
                 actions: [
                   IconButton(
-                    onPressed: () => _showExportDialog(),
+                    onPressed: () => Get.bottomSheet(const StatisticsExportSheet()),
                     icon: const Icon(
                       Icons.file_download_outlined,
                       color: Colors.white,
@@ -90,7 +93,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
                   return Stack(
                     children: [
-                      TransactionTypeSummaryToggle(
+                      TransactionTypeToggle(
                         selected: selectedType,
                         onSelected: (value) =>
                             statisticsController.changeType(value),
@@ -171,7 +174,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 8),
 
-              Obx(() => _buildTimeNavigator()),
+              const StatisticsTimeNavigator(),
 
               const SizedBox(height: 20),
 
@@ -267,9 +270,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 25),
 
-              // Tạm ẩn so sánh với kỳ trước theo yêu cầu của người dùng
-              const SizedBox.shrink(),
-
               Obx(
                 () => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -352,11 +352,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _buildBudgetTrackingSection(
-                      context,
-                      stats,
-                      groupedExpenses,
-                      planImpact,
+                    BudgetTrackingSection(
+                      stats: stats,
+                      groupedExpenses: groupedExpenses,
+                      planImpact: planImpact,
                     ),
                     const SizedBox(height: 25),
                   ],
@@ -412,246 +411,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildTimeNavigator() {
-    String label = "";
-    if (statisticsController.periodType.value == 'hàng tháng') {
-      label = AppHelperFunction.getFormattedDate(
-        statisticsController.selectedMonth.value,
-        format: 'yyyy/MM',
-      );
-    } else {
-      label = AppHelperFunction.getFormattedDate(
-        statisticsController.selectedDay.value,
-        format: 'yyyy/MM/dd',
-      );
-    }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          _buildNavButton(
-            icon: Icons.chevron_left_rounded,
-            onTap: () => statisticsController.previousPeriod(),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.primary, width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (statisticsController.periodType.value == 'hàng ngày')
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          _buildNavButton(
-            icon: Icons.chevron_right_rounded,
-            onTap: () => statisticsController.nextPeriod(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.primary, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Icon(icon, color: AppColors.primary, size: 28),
-        ),
-      ),
-    );
-  }
-
-  void _showExportDialog() {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'statistics.exportTitle'.tr,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.text1,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'statistics.exportEmailNote'.tr.replaceAll(
-                '@email',
-                userController.user.value?.email ?? '...',
-              ),
-              style: const TextStyle(color: AppColors.text3),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildExportOption(
-                    icon: Icons.picture_as_pdf_rounded,
-                    label: 'PDF',
-                    color: Colors.red,
-                    onTap: () => _handleExport('pdf'),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildExportOption(
-                    icon: Icons.table_chart_rounded,
-                    label: 'CSV',
-                    color: Colors.green,
-                    onTap: () => _handleExport('csv'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildExportOption({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          border: Border.all(color: color.withValues(alpha: 0.3)),
-          borderRadius: BorderRadius.circular(16),
-          color: color.withValues(alpha: 0.05),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(fontWeight: FontWeight.bold, color: color),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _handleExport(String format) async {
-    Get.back();
-    final userId = appController.userId.value;
-    if (userId == null) return;
-
-    final filterDto = TransactionFilterDto(
-      startDate: statisticsController.currentStartDate.toIso8601String(),
-      endDate: statisticsController.currentEndDate.toIso8601String(),
-    );
-
-    await Get.find<TransactionController>().exportReport(
-      userId,
-      filterDto,
-      format,
-    );
-  }
-
-  Widget _buildBudgetTrackingSection(
-    BuildContext context,
-    SpendingPlanStatsEntity stats,
-    Map<String, List<EstimatedExpenseEntity>> groupedExpenses,
-    GoalPlanImpact? planImpact,
-  ) {
-    final selMonth = statisticsController.selectedMonth.value;
-    final daysInMonth = DateTime(selMonth.year, selMonth.month + 1, 0).day;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (stats.estimatedExpenses.isEmpty)
-            const AppEmptyState(
-              message: 'Chưa có khoản theo dõi ngân sách nào.',
-            )
-          else ...[
-            ...groupedExpenses.entries.map((entry) {
-              return EstimatedExpenseBudgetGroupCard(
-                categoryName: entry.key,
-                daysInMonth: daysInMonth,
-                expenses: entry.value,
-                goalImpact: _categoryImpactFor(planImpact, entry.key),
-              );
-            }),
-          ],
-        ],
-      ),
-    );
-  }
 
   GoalPlanImpact? _buildGoalPlanImpact(
     SpendingPlanStatsEntity? stats,
@@ -668,15 +428,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  BudgetCategoryGoalImpact? _categoryImpactFor(
-    GoalPlanImpact? impact,
-    String categoryName,
-  ) {
-    if (impact == null) return null;
-    return impact.categories.firstWhereOrNull(
-      (item) => item.name == categoryName,
-    );
-  }
 
   GoalPlanInsightSnapshot? _buildGoalPlanInsightSnapshot(
     GoalPlanImpact? impact,

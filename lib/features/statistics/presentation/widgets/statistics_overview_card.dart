@@ -121,14 +121,14 @@ class StatisticsOverviewCard extends StatelessWidget {
                       _buildAmountRow(
                         label: 'Chi tiêu',
                         amount: displayTotal,
-                        color: AppColors.error,
+                        color: AppColors.expense,
                         icon: Icons.arrow_downward_rounded,
                       ),
                       const SizedBox(height: 10),
                       _buildAmountRow(
                         label: 'Thu nhập',
                         amount: displayIncome,
-                        color: AppColors.success,
+                        color: AppColors.income,
                         icon: Icons.arrow_upward_rounded,
                       ),
                     ],

@@ -1,10 +1,7 @@
-import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
-import 'package:money_care/features/transaction/data/models/scan_receipt_model.dart';
 import 'package:money_care/features/transaction/data/models/statistics_summary_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
-import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
 
 abstract class TransactionRemoteDatasource {
   Future<TransactionByTypeModel> findAllByFilter(
@@ -23,10 +20,6 @@ abstract class TransactionRemoteDatasource {
   Future<TransactionModel> createTransaction(TransactionCreateDto dto);
   Future<TransactionModel> updateTransaction(TransactionCreateDto dto, int id);
   Future<bool> deleteTransaction(int id);
-  Future<ScanReceiptModel> scanReceipt(
-    XFile image, {
-    ReceiptParseResult? localResult,
-  });
   Future<StatisticsSummaryModel> getStatisticsSummary(int userId);
   Future<bool> exportReport(
     int userId,
@@ -124,24 +117,6 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   Future<bool> deleteTransaction(int id) async {
     final res = await api.delete<void>('${ApiRoutes.transaction}/$id');
     return res.success;
-  }
-
-  @override
-  Future<ScanReceiptModel> scanReceipt(
-    XFile image, {
-    ReceiptParseResult? localResult,
-  }) async {
-    try {
-      final res = await api.postMultipart<ScanReceiptModel>(
-        ApiRoutes.scanReceipt,
-        file: image,
-        fields: localResult?.toAiFields(),
-        fromJsonT: (json) => ScanReceiptModel.fromJson(json),
-      );
-      return res.unwrap();
-    } catch (e) {
-      throw Exception('Quét hoá đơn thất bại: $e');
-    }
   }
 
   @override

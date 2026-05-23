@@ -14,7 +14,7 @@ import 'package:money_care/features/transaction/presentation/widgets/category_sh
 import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/constants/colors.dart';
-import 'package:money_care/features/statistics/presentation/widgets/transaction_type_summary_toggle.dart';
+import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
 
 class TransactionForm extends StatefulWidget {
   final String title;
@@ -65,7 +65,7 @@ class _TransactionFormState extends State<TransactionForm> {
                           Get.offAllNamed(RoutePath.main);
                         }
                       },
-                      child: Obx(() => TransactionTypeSummaryToggle(
+                      child: Obx(() => TransactionTypeToggle(
                         selected: controller.transactionType,
                         onSelected: controller.changeTransactionType,
                         showAmount: false,

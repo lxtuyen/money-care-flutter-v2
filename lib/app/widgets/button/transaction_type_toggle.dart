@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 
-class TransactionTypeSummaryToggle extends StatelessWidget {
+class TransactionTypeToggle extends StatelessWidget {
   final String selected;
   final Function(String) onSelected;
   final int spendText;
@@ -15,7 +15,7 @@ class TransactionTypeSummaryToggle extends StatelessWidget {
   final String spendValue;
   final String incomeValue;
 
-  const TransactionTypeSummaryToggle({
+  const TransactionTypeToggle({
     super.key,
     required this.selected,
     required this.onSelected,

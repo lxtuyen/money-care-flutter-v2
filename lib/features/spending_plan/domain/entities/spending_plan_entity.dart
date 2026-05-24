@@ -1,4 +1,8 @@
 import 'package:money_care/features/spending_plan/domain/entities/estimated_expense_entity.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_stats_entity.dart';
+
+export 'estimated_expense_entity.dart';
+export 'spending_plan_stats_entity.dart';
 
 class SpendingPlanEntity {
   final int id;

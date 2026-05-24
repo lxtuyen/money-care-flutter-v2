@@ -1,4 +1,4 @@
-import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
+import 'package:money_care/features/spending_plan/domain/entities/entities.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_request.dart';
 
 class SpendingPlanWizardUseCase {

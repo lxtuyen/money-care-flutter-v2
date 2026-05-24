@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
-import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -32,20 +32,14 @@ class EstimatedExpenseEditSheet extends StatefulWidget {
 }
 
 class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
-  final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
-  final _frequencyValueController = TextEditingController(text: '1');
-
-  String _frequencyType = 'monthly';
   CategoryEntity? _selectedCategory;
-  SubCategoryEntity? _selectedSubCategory;
   final _categoryController = Get.find<UserCategoryController>();
   final _spendingPlanController = Get.find<SpendingPlanController>();
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = Get.find<AppController>().userId.value;
       if (userId != null && _categoryController.categories.isEmpty) {
@@ -55,44 +49,23 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
       if (widget.expense != null) {
         final exp = widget.expense!;
         _amountController.text = exp.amount.round().toString();
-        _frequencyValueController.text = exp.frequencyValue.toString();
-        _frequencyType = exp.frequencyType;
-
         if (exp.category != null) {
-          final catName = exp.category!;
           _selectedCategory = _categoryController.categories.firstWhereOrNull(
-            (c) => c.name.toLowerCase() == catName.toLowerCase(),
+            (c) => c.name.toLowerCase() == exp.category!.toLowerCase(),
           );
-          if (_selectedCategory != null && exp.subCategory != null) {
-            _selectedSubCategory = _selectedCategory!.subCategories
-                .firstWhereOrNull((sub) => sub.name == exp.subCategory);
-          }
+          if (_selectedCategory != null) setState(() {});
         }
       } else if (widget.initialDraft != null) {
         final draft = widget.initialDraft!;
-        _amountController.text = draft.amount > 0
-            ? draft.amount.round().toString()
-            : '';
-        _frequencyValueController.text = draft.frequencyValue.toString();
-        _frequencyType = draft.frequencyType;
-
-        final catName = draft.category;
-        if (catName != null) {
+        _amountController.text =
+            draft.amount > 0 ? draft.amount.round().toString() : '';
+        if (draft.category != null) {
           final matched = _categoryController.categories.firstWhereOrNull(
             (c) =>
                 c.id == draft.categoryId ||
-                c.name.toLowerCase() == catName.toLowerCase(),
+                c.name.toLowerCase() == draft.category!.toLowerCase(),
           );
-          if (matched != null) {
-            setState(() {
-              _selectedCategory = matched;
-              if (draft.subCategoryId != null) {
-                _selectedSubCategory = matched.subCategories.firstWhereOrNull(
-                  (sub) => sub.id == draft.subCategoryId,
-                );
-              }
-            });
-          }
+          if (matched != null) setState(() => _selectedCategory = matched);
         }
       }
     });
@@ -101,52 +74,41 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
   @override
   void dispose() {
     _amountController.dispose();
-    _frequencyValueController.dispose();
     super.dispose();
   }
 
-  double _parseMoney(String text) {
-    return double.tryParse(text.replaceAll('.', '').replaceAll(',', '')) ?? 0.0;
-  }
+  double _parseMoney(String text) =>
+      double.tryParse(text.replaceAll('.', '').replaceAll(',', '')) ?? 0.0;
 
   Future<void> _submit() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_selectedCategory == null) {
       AppHelperFunction.showErrorSnackBar('Vui lòng chọn danh mục.');
       return;
     }
-
     final amount = _parseMoney(_amountController.text);
     if (amount <= 0) {
       AppHelperFunction.showErrorSnackBar('Vui lòng nhập số tiền hợp lệ.');
       return;
     }
 
-    final freqVal = int.tryParse(_frequencyValueController.text) ?? 1;
     final request = CreateEstimatedExpenseRequest(
       category: _selectedCategory!.name,
       categoryId: _selectedCategory!.id,
-      subCategory: _selectedSubCategory?.name,
-      subCategoryId: _selectedSubCategory?.id,
       amount: amount,
-      monthlyLimit: _monthlyLimitFor(amount, freqVal),
-      dailyLimit: _dailyLimitFor(amount, freqVal),
-      frequencyType: _frequencyType,
-      frequencyValue: freqVal,
+      monthlyLimit: amount,
+      dailyLimit: null,
+      frequencyType: 'monthly',
+      frequencyValue: 1,
     );
 
     if (widget.onSave != null) {
       final success = await widget.onSave!(request);
-      if (success) {
-        Get.back();
-      }
+      if (success) Get.back();
       return;
     }
 
     if (widget.plan == null) {
-      AppHelperFunction.showErrorSnackBar(
-        'Lỗi hệ thống: Thiếu thông tin kế hoạch.',
-      );
+      AppHelperFunction.showErrorSnackBar('Lỗi hệ thống: Thiếu thông tin kế hoạch.');
       return;
     }
 
@@ -195,296 +157,178 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
       ),
     );
 
-    if (selected != null) {
-      setState(() {
-        if (_selectedCategory?.id != selected.id) {
-          _selectedSubCategory = null;
-        }
-        _selectedCategory = selected;
-      });
-    }
-  }
-
-  Widget _buildSubCategoryField() {
-    final subCategories = _selectedCategory?.subCategories ?? const [];
-    if (subCategories.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => _selectSubCategory(subCategories),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: Row(
-            children: [
-              Text(
-                _selectedSubCategory?.icon ?? '',
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  _selectedSubCategory?.name ?? 'Chọn danh mục con',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: _selectedSubCategory == null
-                        ? Colors.grey.shade600
-                        : Colors.black,
-                  ),
-                ),
-              ),
-              const Icon(Icons.keyboard_arrow_down_rounded),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _selectSubCategory(List<SubCategoryEntity> subCategories) async {
-    showDialog(
-      context: context,
-      builder: (context) => SelectionDialog(
-        title: 'Danh mục con',
-        description: 'Chọn nhóm chi tiết cho khoản chi này',
-        clearButtonText: 'Xóa',
-        options: subCategories
-            .where((item) => item.id != null)
-            .map(
-              (item) => SelectionOption(
-                id: item.id.toString(),
-                label:
-                    '${item.icon.isNotEmpty ? '${item.icon} ' : ''}${item.name}',
-              ),
-            )
-            .toList(),
-        initialSelectedId: _selectedSubCategory?.id?.toString(),
-        onSelect: (id, label) {
-          setState(() {
-            if (id == null) {
-              _selectedSubCategory = null;
-            } else {
-              _selectedSubCategory = subCategories.firstWhereOrNull(
-                (item) => item.id?.toString() == id,
-              );
-            }
-          });
-        },
-      ),
-    );
-  }
-
-  int get _daysInMonth {
-    final year = widget.plan?.year ?? DateTime.now().year;
-    final month = widget.plan?.month ?? DateTime.now().month;
-    return DateTime(year, month + 1, 0).day;
-  }
-
-  double _monthlyLimitFor(double amount, int frequencyValue) {
-    final safeFrequencyValue = frequencyValue <= 0 ? 1 : frequencyValue;
-    switch (_frequencyType) {
-      case 'daily':
-        return amount * safeFrequencyValue * _daysInMonth;
-      case 'weekly':
-        return amount * safeFrequencyValue * (_daysInMonth / 7);
-      case 'monthly':
-      default:
-        return amount * safeFrequencyValue;
-    }
-  }
-
-  double? _dailyLimitFor(double amount, int frequencyValue) {
-    if (_frequencyType != 'daily') return null;
-    final safeFrequencyValue = frequencyValue <= 0 ? 1 : frequencyValue;
-    return amount * safeFrequencyValue;
+    if (selected != null) setState(() => _selectedCategory = selected);
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.expense == null
-        ? 'Thêm Khoản chi dự kiến'
-        : 'Sửa Khoản chi dự kiến';
+    final isEdit = widget.expense != null;
+    final iconColor = _selectedCategory?.color ?? AppColors.primary;
+    final hasIcon = _selectedCategory != null &&
+        _selectedCategory!.icon.isNotEmpty;
 
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        MediaQuery.of(context).viewInsets.bottom + 24,
+        20,
+        12,
+        20,
+        MediaQuery.of(context).viewInsets.bottom + 28,
       ),
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Handle bar
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ),
+
+          // Header
+          Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Get.back(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              InkWell(
-                onTap: _selectCategory,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  height: 48,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        _selectedCategory?.icon ?? '',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          _selectedCategory?.name ?? 'Chọn danh mục',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: _selectedCategory == null
-                                ? Colors.grey.shade600
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                      const Icon(Icons.keyboard_arrow_down_rounded),
-                    ],
+              Expanded(
+                child: Text(
+                  isEdit ? 'Sửa khoản chi' : 'Thêm khoản chi',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.text1,
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
-              _buildSubCategoryField(),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: AppCurrencyFormField(
-                      controller: _amountController,
-                      label: 'Số tiền',
-                      icon: Icons.payments_outlined,
-                      hintText: 'VD: 1.000.000',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _frequencyType,
-                      decoration: const InputDecoration(
-                        labelText: 'Tần suất',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'daily',
-                          child: Text('Hàng ngày'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'weekly',
-                          child: Text('Hàng tuần'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'monthly',
-                          child: Text('Hàng tháng'),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _frequencyType = val;
-                            if (val != 'daily') {
-                              _frequencyValueController.text = '1';
-                            }
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              if (_frequencyType == 'daily')
-                TextFormField(
-                  controller: _frequencyValueController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Số lần / ngày',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                    prefixIcon: Icon(Icons.repeat),
-                  ),
-                ),
-              if (_frequencyType == 'daily') const SizedBox(height: 12),
-              const SizedBox(height: 16),
-
-              Obx(
-                () => ElevatedButton(
-                  onPressed: _spendingPlanController.isSaving.value
-                      ? null
-                      : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: _spendingPlanController.isSaving.value
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : const Text(
-                          'Lưu',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded, color: AppColors.text3),
+                onPressed: () => Get.back(),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 16),
+
+          // Category picker
+          InkWell(
+            onTap: _selectCategory,
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              decoration: BoxDecoration(
+                color: _selectedCategory != null
+                    ? iconColor.withValues(alpha: 0.06)
+                    : Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: _selectedCategory != null
+                      ? iconColor.withValues(alpha: 0.25)
+                      : Colors.grey.shade300,
+                  width: 1.2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  if (_selectedCategory != null) ...[
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: iconColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: hasIcon
+                            ? AppSvgIcon(
+                                iconName: _selectedCategory!.icon,
+                                color: iconColor,
+                                size: 16,
+                              )
+                            : Icon(
+                                Icons.receipt_long_outlined,
+                                color: iconColor,
+                                size: 16,
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ] else ...[
+                    Icon(
+                      Icons.grid_view_rounded,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+                  Expanded(
+                    child: Text(
+                      _selectedCategory?.name ?? 'Chọn danh mục',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: _selectedCategory != null
+                            ? AppColors.text1
+                            : Colors.grey.shade500,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Colors.grey.shade400,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Amount field
+          AppCurrencyFormField(
+            controller: _amountController,
+            label: 'Số tiền mỗi tháng',
+            icon: Icons.payments_outlined,
+            hintText: 'VD: 1.000.000',
+          ),
+          const SizedBox(height: 20),
+
+          // Save button
+          Obx(
+            () => FilledButton(
+              onPressed: _spendingPlanController.isSaving.value ? null : _submit,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: _spendingPlanController.isSaving.value
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      isEdit ? 'Cập nhật' : 'Thêm',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+            ),
+          ),
+        ],
       ),
     );
   }

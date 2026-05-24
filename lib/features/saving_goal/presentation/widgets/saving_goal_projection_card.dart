@@ -122,9 +122,11 @@ class SavingGoalProjectionCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MetricTile(
-                  label: "Tiết kiệm/tháng",
+                  label: "Cần tiết kiệm/tháng",
                   value: AppHelperFunction.formatAmount(
-                    projection.monthlySavingCapacity,
+                    projection.requiredMonthlySaving > 0
+                        ? projection.requiredMonthlySaving
+                        : projection.monthlySavingCapacity,
                   ),
                   icon: Icons.savings_outlined,
                   color: AppColors.primary,

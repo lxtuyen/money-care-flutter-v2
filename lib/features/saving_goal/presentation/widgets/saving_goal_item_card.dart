@@ -153,8 +153,6 @@ class SavingGoalItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (isSelected)
-                  const Icon(Icons.check_circle, color: AppColors.primary),
                 PopupMenuButton<String>(
                   onSelected: (value) {
                     if (value == 'edit') onUpdate();

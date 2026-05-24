@@ -14,7 +14,7 @@ class SavingGoalCreatedBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     final model = SavingGoalCreatedModel.fromMap(metadata);
-    final themeColor = AppColors.income;
+    final themeColor = AppColors.primary;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -65,10 +65,10 @@ class SavingGoalCreatedBubble extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.income.withValues(alpha: 0.06),
+                color: AppColors.primary.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.income.withValues(alpha: 0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(

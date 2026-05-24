@@ -562,7 +562,7 @@ as double,
 /// @nodoc
 mixin _$ProjectionModel {
 
-@JsonKey(fromJson: NumParser.parseDouble) double get monthlySavingCapacity;@JsonKey(fromJson: NumParser.parseIntNullable) int? get monthsRemaining; DateTime? get projectedDate; bool? get isOnTrack;@JsonKey(fromJson: NumParser.parseIntNullable) int? get monthsDiff; bool get hasPlan;
+@JsonKey(fromJson: NumParser.parseDouble) double get monthlySavingCapacity;@JsonKey(fromJson: NumParser.parseDouble) double get requiredMonthlySaving;@JsonKey(fromJson: NumParser.parseIntNullable) int? get monthsRemaining; DateTime? get projectedDate; bool? get isOnTrack;@JsonKey(fromJson: NumParser.parseIntNullable) int? get monthsDiff; bool get hasPlan;
 /// Create a copy of ProjectionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -575,16 +575,16 @@ $ProjectionModelCopyWith<ProjectionModel> get copyWith => _$ProjectionModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProjectionModel&&(identical(other.monthlySavingCapacity, monthlySavingCapacity) || other.monthlySavingCapacity == monthlySavingCapacity)&&(identical(other.monthsRemaining, monthsRemaining) || other.monthsRemaining == monthsRemaining)&&(identical(other.projectedDate, projectedDate) || other.projectedDate == projectedDate)&&(identical(other.isOnTrack, isOnTrack) || other.isOnTrack == isOnTrack)&&(identical(other.monthsDiff, monthsDiff) || other.monthsDiff == monthsDiff)&&(identical(other.hasPlan, hasPlan) || other.hasPlan == hasPlan));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProjectionModel&&(identical(other.monthlySavingCapacity, monthlySavingCapacity) || other.monthlySavingCapacity == monthlySavingCapacity)&&(identical(other.requiredMonthlySaving, requiredMonthlySaving) || other.requiredMonthlySaving == requiredMonthlySaving)&&(identical(other.monthsRemaining, monthsRemaining) || other.monthsRemaining == monthsRemaining)&&(identical(other.projectedDate, projectedDate) || other.projectedDate == projectedDate)&&(identical(other.isOnTrack, isOnTrack) || other.isOnTrack == isOnTrack)&&(identical(other.monthsDiff, monthsDiff) || other.monthsDiff == monthsDiff)&&(identical(other.hasPlan, hasPlan) || other.hasPlan == hasPlan));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,monthlySavingCapacity,monthsRemaining,projectedDate,isOnTrack,monthsDiff,hasPlan);
+int get hashCode => Object.hash(runtimeType,monthlySavingCapacity,requiredMonthlySaving,monthsRemaining,projectedDate,isOnTrack,monthsDiff,hasPlan);
 
 @override
 String toString() {
-  return 'ProjectionModel(monthlySavingCapacity: $monthlySavingCapacity, monthsRemaining: $monthsRemaining, projectedDate: $projectedDate, isOnTrack: $isOnTrack, monthsDiff: $monthsDiff, hasPlan: $hasPlan)';
+  return 'ProjectionModel(monthlySavingCapacity: $monthlySavingCapacity, requiredMonthlySaving: $requiredMonthlySaving, monthsRemaining: $monthsRemaining, projectedDate: $projectedDate, isOnTrack: $isOnTrack, monthsDiff: $monthsDiff, hasPlan: $hasPlan)';
 }
 
 
@@ -595,7 +595,7 @@ abstract mixin class $ProjectionModelCopyWith<$Res>  {
   factory $ProjectionModelCopyWith(ProjectionModel value, $Res Function(ProjectionModel) _then) = _$ProjectionModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseDouble) double monthlySavingCapacity,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining, DateTime? projectedDate, bool? isOnTrack,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff, bool hasPlan
+@JsonKey(fromJson: NumParser.parseDouble) double monthlySavingCapacity,@JsonKey(fromJson: NumParser.parseDouble) double requiredMonthlySaving,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining, DateTime? projectedDate, bool? isOnTrack,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff, bool hasPlan
 });
 
 
@@ -612,9 +612,10 @@ class _$ProjectionModelCopyWithImpl<$Res>
 
 /// Create a copy of ProjectionModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? monthlySavingCapacity = null,Object? monthsRemaining = freezed,Object? projectedDate = freezed,Object? isOnTrack = freezed,Object? monthsDiff = freezed,Object? hasPlan = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? monthlySavingCapacity = null,Object? requiredMonthlySaving = null,Object? monthsRemaining = freezed,Object? projectedDate = freezed,Object? isOnTrack = freezed,Object? monthsDiff = freezed,Object? hasPlan = null,}) {
   return _then(_self.copyWith(
 monthlySavingCapacity: null == monthlySavingCapacity ? _self.monthlySavingCapacity : monthlySavingCapacity // ignore: cast_nullable_to_non_nullable
+as double,requiredMonthlySaving: null == requiredMonthlySaving ? _self.requiredMonthlySaving : requiredMonthlySaving // ignore: cast_nullable_to_non_nullable
 as double,monthsRemaining: freezed == monthsRemaining ? _self.monthsRemaining : monthsRemaining // ignore: cast_nullable_to_non_nullable
 as int?,projectedDate: freezed == projectedDate ? _self.projectedDate : projectedDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,isOnTrack: freezed == isOnTrack ? _self.isOnTrack : isOnTrack // ignore: cast_nullable_to_non_nullable
@@ -705,10 +706,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(name: 'required_monthly_saving', fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProjectionModel() when $default != null:
-return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
+return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
   return orElse();
 
 }
@@ -726,10 +727,10 @@ return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projecte
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(name: 'required_monthly_saving', fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)  $default,) {final _that = this;
 switch (_that) {
 case _ProjectionModel():
-return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
+return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -746,10 +747,10 @@ return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projecte
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(name: 'required_monthly_saving', fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,) {final _that = this;
 switch (_that) {
 case _ProjectionModel() when $default != null:
-return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
+return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
   return null;
 
 }
@@ -761,10 +762,11 @@ return $default(_that.monthlySavingCapacity,_that.monthsRemaining,_that.projecte
 @JsonSerializable()
 
 class _ProjectionModel implements ProjectionModel {
-  const _ProjectionModel({@JsonKey(fromJson: NumParser.parseDouble) this.monthlySavingCapacity = 0, @JsonKey(fromJson: NumParser.parseIntNullable) this.monthsRemaining, this.projectedDate, this.isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable) this.monthsDiff, this.hasPlan = false});
+  const _ProjectionModel({@JsonKey(fromJson: NumParser.parseDouble) this.monthlySavingCapacity = 0, @JsonKey(fromJson: NumParser.parseDouble) this.requiredMonthlySaving = 0, @JsonKey(fromJson: NumParser.parseIntNullable) this.monthsRemaining, this.projectedDate, this.isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable) this.monthsDiff, this.hasPlan = false});
   factory _ProjectionModel.fromJson(Map<String, dynamic> json) => _$ProjectionModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseDouble) final  double monthlySavingCapacity;
+@override@JsonKey(fromJson: NumParser.parseDouble) final  double requiredMonthlySaving;
 @override@JsonKey(fromJson: NumParser.parseIntNullable) final  int? monthsRemaining;
 @override final  DateTime? projectedDate;
 @override final  bool? isOnTrack;
@@ -784,16 +786,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProjectionModel&&(identical(other.monthlySavingCapacity, monthlySavingCapacity) || other.monthlySavingCapacity == monthlySavingCapacity)&&(identical(other.monthsRemaining, monthsRemaining) || other.monthsRemaining == monthsRemaining)&&(identical(other.projectedDate, projectedDate) || other.projectedDate == projectedDate)&&(identical(other.isOnTrack, isOnTrack) || other.isOnTrack == isOnTrack)&&(identical(other.monthsDiff, monthsDiff) || other.monthsDiff == monthsDiff)&&(identical(other.hasPlan, hasPlan) || other.hasPlan == hasPlan));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProjectionModel&&(identical(other.monthlySavingCapacity, monthlySavingCapacity) || other.monthlySavingCapacity == monthlySavingCapacity)&&(identical(other.requiredMonthlySaving, requiredMonthlySaving) || other.requiredMonthlySaving == requiredMonthlySaving)&&(identical(other.monthsRemaining, monthsRemaining) || other.monthsRemaining == monthsRemaining)&&(identical(other.projectedDate, projectedDate) || other.projectedDate == projectedDate)&&(identical(other.isOnTrack, isOnTrack) || other.isOnTrack == isOnTrack)&&(identical(other.monthsDiff, monthsDiff) || other.monthsDiff == monthsDiff)&&(identical(other.hasPlan, hasPlan) || other.hasPlan == hasPlan));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,monthlySavingCapacity,monthsRemaining,projectedDate,isOnTrack,monthsDiff,hasPlan);
+int get hashCode => Object.hash(runtimeType,monthlySavingCapacity,requiredMonthlySaving,monthsRemaining,projectedDate,isOnTrack,monthsDiff,hasPlan);
 
 @override
 String toString() {
-  return 'ProjectionModel(monthlySavingCapacity: $monthlySavingCapacity, monthsRemaining: $monthsRemaining, projectedDate: $projectedDate, isOnTrack: $isOnTrack, monthsDiff: $monthsDiff, hasPlan: $hasPlan)';
+  return 'ProjectionModel(monthlySavingCapacity: $monthlySavingCapacity, requiredMonthlySaving: $requiredMonthlySaving, monthsRemaining: $monthsRemaining, projectedDate: $projectedDate, isOnTrack: $isOnTrack, monthsDiff: $monthsDiff, hasPlan: $hasPlan)';
 }
 
 
@@ -804,7 +806,7 @@ abstract mixin class _$ProjectionModelCopyWith<$Res> implements $ProjectionModel
   factory _$ProjectionModelCopyWith(_ProjectionModel value, $Res Function(_ProjectionModel) _then) = __$ProjectionModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseDouble) double monthlySavingCapacity,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining, DateTime? projectedDate, bool? isOnTrack,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff, bool hasPlan
+@JsonKey(fromJson: NumParser.parseDouble) double monthlySavingCapacity,@JsonKey(fromJson: NumParser.parseDouble) double requiredMonthlySaving,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining, DateTime? projectedDate, bool? isOnTrack,@JsonKey(fromJson: NumParser.parseIntNullable) int? monthsDiff, bool hasPlan
 });
 
 
@@ -821,9 +823,10 @@ class __$ProjectionModelCopyWithImpl<$Res>
 
 /// Create a copy of ProjectionModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? monthlySavingCapacity = null,Object? monthsRemaining = freezed,Object? projectedDate = freezed,Object? isOnTrack = freezed,Object? monthsDiff = freezed,Object? hasPlan = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? monthlySavingCapacity = null,Object? requiredMonthlySaving = null,Object? monthsRemaining = freezed,Object? projectedDate = freezed,Object? isOnTrack = freezed,Object? monthsDiff = freezed,Object? hasPlan = null,}) {
   return _then(_ProjectionModel(
 monthlySavingCapacity: null == monthlySavingCapacity ? _self.monthlySavingCapacity : monthlySavingCapacity // ignore: cast_nullable_to_non_nullable
+as double,requiredMonthlySaving: null == requiredMonthlySaving ? _self.requiredMonthlySaving : requiredMonthlySaving // ignore: cast_nullable_to_non_nullable
 as double,monthsRemaining: freezed == monthsRemaining ? _self.monthsRemaining : monthsRemaining // ignore: cast_nullable_to_non_nullable
 as int?,projectedDate: freezed == projectedDate ? _self.projectedDate : projectedDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,isOnTrack: freezed == isOnTrack ? _self.isOnTrack : isOnTrack // ignore: cast_nullable_to_non_nullable

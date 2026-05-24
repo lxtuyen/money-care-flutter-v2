@@ -27,9 +27,6 @@ class SpendingPlanWizardController extends GetxController {
     expenses: estimatedExpenses,
   );
 
-  double get dailyFlexibleAmount =>
-      wizardUseCase.dailyFlexibleAmount(estimatedExpenses);
-
   double get estimatedExpenseRatio => wizardUseCase.estimatedExpenseRatio(
     income: monthlyIncome.value,
     expenses: estimatedExpenses,
@@ -43,7 +40,7 @@ class SpendingPlanWizardController extends GetxController {
   bool get canSave => wizardUseCase.canSave(
     income: monthlyIncome.value,
     expenses: estimatedExpenses,
-  );
+  ) && estimatedExpenses.every((e) => e.amount > 0);
 
   void initialize({
     double? income,
@@ -61,8 +58,6 @@ class SpendingPlanWizardController extends GetxController {
   int get expensesStepIndex => showWelcomeStep ? 2 : 1;
 
   int get maxStepIndex => showWelcomeStep ? 2 : 1;
-
-  bool get isOnExpensesStep => currentStep.value == expensesStepIndex;
 
   bool get shouldShowHeader => !showWelcomeStep || currentStep.value > 0;
 
@@ -143,6 +138,33 @@ class SpendingPlanWizardController extends GetxController {
     } else {
       updateExpense(index, draft);
     }
+  }
+
+  /// Thêm khoản chi với amount = 0 ngay vào list (chưa nhập tiền).
+  /// Trả về index của item vừa thêm.
+  int addEmptyExpense({
+    required String category,
+    required int? categoryId,
+  }) {
+    final id = estimatedExpenses.length;
+    estimatedExpenses.add(EstimatedExpenseEntity(
+      id: id,
+      category: category,
+      categoryId: categoryId,
+      amount: 0,
+      frequencyType: 'monthly',
+      frequencyValue: 1,
+    ));
+    return estimatedExpenses.length - 1;
+  }
+
+  bool get hasUnfilledExpenses => estimatedExpenses.any((e) => e.amount <= 0);
+  bool quickUpdateExpenseAmount(int index, double newAmount) {
+    if (index < 0 || index >= estimatedExpenses.length) return false;
+    if (newAmount <= 0) return false;
+    final existing = estimatedExpenses[index];
+    estimatedExpenses[index] = existing.copyWith(amount: newAmount);
+    return true;
   }
 
   CreateSpendingPlanRequest buildCreateRequest() {

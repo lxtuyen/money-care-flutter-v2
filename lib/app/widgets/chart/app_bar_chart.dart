@@ -132,14 +132,14 @@ class AppBarChart extends StatelessWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 22,
+              reservedSize: 32,
               interval: interval,
               getTitlesWidget: (value, meta) {
                 if ((value - chartMaxY).abs() < epsilon) {
                   return const SizedBox.shrink();
                 }
                 return Padding(
-                  padding: const EdgeInsets.only(right: 2.0),
+                  padding: const EdgeInsets.only(right: 4.0),
                   child: Text(
                     chartHelper.formatCurrencyShort(value.toInt()),
                     style: TextStyle(
@@ -152,6 +152,8 @@ class AppBarChart extends StatelessWidget {
                           : FontWeight.w400,
                     ),
                     textAlign: TextAlign.right,
+                    overflow: TextOverflow.visible,
+                    softWrap: false,
                   ),
                 );
               },

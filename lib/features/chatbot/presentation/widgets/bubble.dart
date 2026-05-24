@@ -51,7 +51,6 @@ class Bubble extends StatelessWidget {
                 ),
               ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 2),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: bg,

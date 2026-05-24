@@ -92,10 +92,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         );
       }
 
-      return ListView.builder(
+      return ListView.separated(
         controller: controller.scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         itemCount: messages.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final m = messages[index];
           if (!m.isUser && m.metadata != null) {

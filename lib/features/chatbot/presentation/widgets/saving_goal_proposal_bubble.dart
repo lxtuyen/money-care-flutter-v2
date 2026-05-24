@@ -103,8 +103,6 @@ class SavingGoalProposalBubble extends StatelessWidget {
                     ? AppColors.error.withValues(alpha: 0.06)
                     : proposal.isWarning
                     ? AppColors.warning.withValues(alpha: 0.06)
-                    : proposal.isFinalized
-                    ? AppColors.income.withValues(alpha: 0.06)
                     : AppColors.primary.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
@@ -112,8 +110,6 @@ class SavingGoalProposalBubble extends StatelessWidget {
                       ? AppColors.error.withValues(alpha: 0.2)
                       : proposal.isWarning
                       ? AppColors.warning.withValues(alpha: 0.2)
-                      : proposal.isFinalized
-                      ? AppColors.income.withValues(alpha: 0.2)
                       : AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
@@ -224,10 +220,10 @@ class SavingGoalProposalBubble extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.income.withValues(alpha: 0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.income.withValues(alpha: 0.25),
+                  color: AppColors.primary.withValues(alpha: 0.25),
                 ),
               ),
               child: Row(
@@ -235,7 +231,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
                   const Icon(
                     Icons.check_circle_rounded,
                     size: 17,
-                    color: AppColors.income,
+                    color: AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -244,7 +240,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.income,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),

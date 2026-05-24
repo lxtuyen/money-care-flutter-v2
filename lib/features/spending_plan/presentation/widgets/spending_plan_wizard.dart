@@ -43,6 +43,7 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
   late final PageController _pageController;
   late final TextEditingController _incomeController;
   late final SpendingPlanWizardController _wizardController;
+  final _expensesScrollController = ScrollController();
 
   @override
   void initState() {
@@ -66,6 +67,7 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
   void dispose() {
     _pageController.dispose();
     _incomeController.dispose();
+    _expensesScrollController.dispose();
     Get.delete<SpendingPlanWizardController>();
     super.dispose();
   }
@@ -107,18 +109,6 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
     return Obx(
       () => Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: _wizardController.isOnExpensesStep
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 120),
-                child: FloatingActionButton(
-                  onPressed: () => _openExpenseSheet(),
-                  backgroundColor: AppColors.primary,
-                  elevation: 4,
-                  shape: const CircleBorder(),
-                  child: const Icon(Icons.add, color: Colors.white, size: 28),
-                ),
-              )
-            : null,
         body: Column(
           children: [
             if (_wizardController.shouldShowHeader)
@@ -329,6 +319,7 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
         children: [
           Expanded(
             child: ListView(
+              controller: _expensesScrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               children: [
                 Obx(
@@ -342,36 +333,36 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                     monthlyAmountFor: _wizardController.monthlyAmountFor,
                     onEditExpense: _openExpenseSheet,
                     onRemoveExpense: _wizardController.removeExpense,
+                    onQuickEditAmount: (index, newAmount) async {
+                      return _wizardController.quickUpdateExpenseAmount(
+                        index,
+                        newAmount,
+                      );
+                    },
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 const Text(
-                  'Gợi ý khoản chi phổ biến',
+                  'Thêm nhanh theo danh mục:',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.text1,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.text2,
                   ),
                 ),
-                const SizedBox(height: 2),
-                const Text(
-                  'Chọn nhanh để bắt đầu hoặc tùy chỉnh theo ý muốn của bạn.',
-                  style: TextStyle(fontSize: 12, color: AppColors.text3),
-                ),
-                const SizedBox(height: 12),
-                ExpenseTemplatesList(
-                  onTapCategory: (cat) {
-                    _openExpenseSheet(
-                      initial: EstimatedExpenseEntity(
-                        id: 0,
+                const SizedBox(height: 10),
+                Obx(
+                  () => ExpenseCategoryChips(
+                    selectedCategoryIds: _wizardController.estimatedExpenses
+                        .map((e) => e.categoryId)
+                        .toSet(),
+                    onTapCategory: (cat) {
+                      _addEmptyExpenseAndScroll(
                         category: cat.name,
                         categoryId: cat.id,
-                        amount: 0,
-                        frequencyType: 'monthly',
-                        frequencyValue: 1,
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -413,6 +404,19 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                 padding: EdgeInsets.only(bottom: 12),
                 child: Text(
                   'Chi phí đang vượt thu nhập, hãy chỉnh lại trước khi lưu.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            if (!isOver && _wizardController.hasUnfilledExpenses)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'Vui lòng nhập số tiền cho tất cả khoản chi.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12,
@@ -465,6 +469,34 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
         ),
       );
     });
+  }
+
+  void _scrollToExpenseList() {
+    if (!_expensesScrollController.hasClients) return;
+    _expensesScrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _addEmptyExpenseAndScroll({
+    required String category,
+    required int? categoryId,
+  }) {
+    // Nếu đã có khoản cùng category chưa nhập tiền thì không thêm nữa
+    final alreadyExists = _wizardController.estimatedExpenses.any(
+      (e) => e.categoryId == categoryId && e.amount <= 0,
+    );
+    if (alreadyExists) {
+      _scrollToExpenseList();
+      return;
+    }
+    _wizardController.addEmptyExpense(
+      category: category,
+      categoryId: categoryId,
+    );
+    Future.delayed(const Duration(milliseconds: 80), _scrollToExpenseList);
   }
 
   Future<void> _openExpenseSheet({

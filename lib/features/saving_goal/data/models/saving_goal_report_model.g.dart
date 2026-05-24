@@ -48,6 +48,9 @@ _ProjectionModel _$ProjectionModelFromJson(Map<String, dynamic> json) =>
       monthlySavingCapacity: json['monthlySavingCapacity'] == null
           ? 0
           : NumParser.parseDouble(json['monthlySavingCapacity']),
+      requiredMonthlySaving: json['requiredMonthlySaving'] == null
+          ? 0
+          : NumParser.parseDouble(json['requiredMonthlySaving']),
       monthsRemaining: NumParser.parseIntNullable(json['monthsRemaining']),
       projectedDate: json['projectedDate'] == null
           ? null
@@ -60,6 +63,7 @@ _ProjectionModel _$ProjectionModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ProjectionModelToJson(_ProjectionModel instance) =>
     <String, dynamic>{
       'monthlySavingCapacity': instance.monthlySavingCapacity,
+      'requiredMonthlySaving': instance.requiredMonthlySaving,
       'monthsRemaining': instance.monthsRemaining,
       'projectedDate': instance.projectedDate?.toIso8601String(),
       'isOnTrack': instance.isOnTrack,

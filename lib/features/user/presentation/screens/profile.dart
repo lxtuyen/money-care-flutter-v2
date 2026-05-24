@@ -63,6 +63,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Obx(() {
                                     final profile =
                                         userController.userProfile.value;
+                                    final avatarUrl = profile?.avatar;
+                                    final hasAvatar = avatarUrl != null &&
+                                        avatarUrl.isNotEmpty;
+                                    final initials =
+                                        (profile?.firstName?.isNotEmpty == true)
+                                            ? profile!.firstName![0]
+                                                  .toUpperCase()
+                                            : 'U';
+
                                     return Container(
                                       width: 100,
                                       height: 100,
@@ -71,37 +80,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: AppColors.primary.withValues(
                                           alpha: 0.1,
                                         ),
-                                        image:
-                                            profile?.avatar != null &&
-                                                profile!.avatar!.isNotEmpty
-                                            ? DecorationImage(
-                                                image: NetworkImage(
-                                                  profile.avatar!,
-                                                ),
-                                                fit: BoxFit.cover,
-                                              )
-                                            : null,
                                       ),
-                                      child:
-                                          profile?.avatar == null ||
-                                              profile!.avatar!.isEmpty
-                                          ? Center(
-                                              child: Text(
-                                                (profile
-                                                            ?.firstName
-                                                            ?.isNotEmpty ==
-                                                        true)
-                                                    ? profile!.firstName![0]
-                                                          .toUpperCase()
-                                                    : "U",
-                                                style: const TextStyle(
-                                                  fontSize: 40,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColors.primary,
-                                                ),
+                                      child: ClipOval(
+                                        child: hasAvatar
+                                            ? Image.network(
+                                                avatarUrl,
+                                                fit: BoxFit.cover,
+                                                width: 100,
+                                                height: 100,
+                                                errorBuilder: (_, __, ___) =>
+                                                    _AvatarFallback(
+                                                      initials: initials,
+                                                    ),
+                                                loadingBuilder: (
+                                                  _,
+                                                  child,
+                                                  progress,
+                                                ) {
+                                                  if (progress == null) {
+                                                    return child;
+                                                  }
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
+                                                  );
+                                                },
+                                              )
+                                            : _AvatarFallback(
+                                                initials: initials,
                                               ),
-                                            )
-                                          : null,
+                                      ),
                                     );
                                   }),
                                   const SizedBox(height: 12),
@@ -162,6 +174,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AvatarFallback extends StatelessWidget {
+  final String initials;
+
+  const _AvatarFallback({required this.initials});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      height: 100,
+      color: AppColors.primary.withValues(alpha: 0.1),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            fontSize: 40,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
         ),
       ),
     );

@@ -39,6 +39,9 @@ abstract class ProjectionModel with _$ProjectionModel {
     @JsonKey(fromJson: NumParser.parseDouble)
     @Default(0)
     double monthlySavingCapacity,
+    @JsonKey(fromJson: NumParser.parseDouble)
+    @Default(0)
+    double requiredMonthlySaving,
     @JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining,
     DateTime? projectedDate,
     bool? isOnTrack,

@@ -10,7 +10,6 @@ import 'package:money_care/features/spending_plan/domain/entities/spending_plan_
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_summary_card.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/estimated_expense_edit_sheet.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/estimated_expense_detail.dart';
 
 class SpendingPlanDetailScreen extends StatefulWidget {
@@ -109,24 +108,6 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
           ],
         ),
       ),
-      floatingActionButton: Obx(() {
-        final plan = controller.selectedPlan.value;
-        if (plan == null) {
-          return const SizedBox.shrink();
-        }
-        return FloatingActionButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (_) => EstimatedExpenseEditSheet(plan: plan),
-            );
-          },
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.add, color: Colors.white),
-        );
-      }),
       bottomNavigationBar: SafeArea(
         child: Obx(() {
           final plan = controller.selectedPlan.value;

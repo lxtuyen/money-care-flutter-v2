@@ -25,7 +25,7 @@ class SavingsBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double leftTitlesReservedSize = 28.0;
+    final double leftTitlesReservedSize = 32.0;
     final double chartWidth = screenWidth - leftTitlesReservedSize - 16;
     final double barWidth = (chartWidth / (xLabels.length * 1.5)).clamp(
       4.0,

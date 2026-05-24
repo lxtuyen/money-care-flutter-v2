@@ -439,12 +439,12 @@ class StatisticsController extends GetxController {
               startDate: currentStartDate,
               endDate: currentEndDate,
             ),
-            _loadMonthlyCategories(userId),
             _loadTotalByDate(userId, dtoRange),
           ]);
         }
 
         futures.addAll([
+          _loadMonthlyCategories(userId),
           _loadPreviousTotalByType(userId),
           _loadStatisticsSummary(userId),
         ]);

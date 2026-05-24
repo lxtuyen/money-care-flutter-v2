@@ -37,12 +37,6 @@ class SpendingPlanWizardUseCase {
     return income - estimatedExpenseTotal(expenses);
   }
 
-  double dailyFlexibleAmount(List<EstimatedExpenseEntity> expenses) {
-    final total = estimatedExpenseTotal(expenses);
-    if (total <= 0) return 0;
-    return total / daysInMonth();
-  }
-
   double estimatedExpenseRatio({
     required double income,
     required List<EstimatedExpenseEntity> expenses,

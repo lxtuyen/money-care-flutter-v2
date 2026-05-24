@@ -100,14 +100,6 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
                         color: themeColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${expenses.length} mục theo dõi',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: themeColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -165,18 +157,6 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          ...expenses.map((expense) {
-            return _EstimatedExpenseBudgetGroupItem(
-              expense: expense,
-              daysInMonth: daysInMonth,
-              onTap: onExpenseTap != null ? () => onExpenseTap!(expense) : null,
-            );
-          }),
-          if (goalImpact != null) ...[
-            const SizedBox(height: 12),
-            _GoalImpactLine(impact: goalImpact!),
-          ],
         ],
       ),
     );
@@ -230,54 +210,6 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
   }
 }
 
-class _GoalImpactLine extends StatelessWidget {
-  final BudgetCategoryGoalImpact impact;
-
-  const _GoalImpactLine({required this.impact});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeColors = AppThemeColors.of(context);
-    final color = switch (impact.status) {
-      GoalPlanImpactStatus.delayed => AppColors.expense,
-      GoalPlanImpactStatus.onTrack => AppColors.primary,
-    };
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.auto_awesome_rounded, size: 14, color: color),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              _text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: themeColors.textSecondary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String get _text {
-    if (impact.status == GoalPlanImpactStatus.delayed) {
-      return 'Chậm tiến độ · vượt kế hoạch';
-    }
-    return 'Đúng tiến độ · còn trong kế hoạch';
-  }
-}
-
 class _EstimatedExpenseBudgetGroupItem extends StatelessWidget {
   final EstimatedExpenseEntity expense;
   final int daysInMonth;
@@ -317,16 +249,6 @@ class _EstimatedExpenseBudgetGroupItem extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: themeColors.textPrimary,
                   fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                _formulaText,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: themeColors.textSecondary,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
               if (_dailyLimit > 0) ...[
@@ -382,21 +304,6 @@ class _EstimatedExpenseBudgetGroupItem extends StatelessWidget {
 
   int get _frequencyValue {
     return expense.frequencyValue <= 0 ? 1 : expense.frequencyValue;
-  }
-
-  String get _formulaText {
-    final amount = _formatMoney(expense.amount);
-    switch (expense.frequencyType.toLowerCase()) {
-      case 'daily':
-        return '$amount x $_frequencyValue / ngày';
-      case 'weekly':
-        return '$amount x $_frequencyValue / tuần';
-      case 'monthly':
-        return '$amount x $_frequencyValue / tháng';
-      case 'once':
-      default:
-        return '$amount x $_frequencyValue';
-    }
   }
 
   String _formatMoney(double value) {

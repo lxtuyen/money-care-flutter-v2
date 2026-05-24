@@ -13,7 +13,6 @@ import 'package:money_care/features/home/presentation/widgets/transaction/transa
 import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
-import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_projection_card.dart';
 
 class SavingGoalDetailScreen extends StatefulWidget {
   const SavingGoalDetailScreen({super.key});
@@ -151,60 +150,58 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               final transactions =
                   report?.transactions.map((m) => m.toEntity()).toList() ?? [];
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-                    child: Text(
-                      "Chi tiết tài chính",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: colors.textPrimary,
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+                      child: Text(
+                        "Chi tiết tài chính",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
                   ),
-                  _buildDetailCard(colors),
+                  SliverToBoxAdapter(child: _buildDetailCard(colors)),
 
-                  if (report?.projection != null) ...[
-                    const SizedBox(height: 16),
-                    SavingGoalProjectionCard(
-                      projection: report!.projection!,
-                      target: report.target,
-                      currentBalance: report.currentBalance,
-                    ),
-                  ],
-
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-                    child: Text(
-                      "Giao dịch liên quan",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: colors.textPrimary,
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+                      child: Text(
+                        "Giao dịch liên quan",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
                   ),
 
-                  Expanded(
-                    child: transactions.isEmpty
-                        ? const AppEmptyState(
-                            message: "Chưa có giao dịch nào cho mục tiêu này",
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 0,
-                            ),
-                            itemCount: transactions.length,
-                            itemBuilder: (context, index) {
-                              final tx = transactions[index];
-                              return TransactionItem(item: tx, onTap: () {});
-                            },
-                          ),
-                  ),
+                  if (transactions.isEmpty)
+                    const SliverFillRemaining(
+                      child: AppEmptyState(
+                        message: "Chưa có giao dịch nào cho mục tiêu này",
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final tx = transactions[index];
+                            return TransactionItem(item: tx, onTap: () {});
+                          },
+                          childCount: transactions.length,
+                        ),
+                      ),
+                    ),
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],
               );
             }),

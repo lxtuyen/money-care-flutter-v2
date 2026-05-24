@@ -174,7 +174,6 @@ class _AppCurrencyFormFieldState extends State<AppCurrencyFormField> {
 }
 
 class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
-
   static String formatRaw(String value) {
     return AppHelperFunction.formatCurrency(value);
   }

@@ -3,7 +3,6 @@ import 'package:money_care/features/transaction/presentation/controllers/filter_
 
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 
-
 class TransactionBinding extends Bindings {
   @override
   void dependencies() {

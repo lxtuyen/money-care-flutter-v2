@@ -129,7 +129,6 @@ class LocalStorage {
     return readInt(keyStartDayOfMonth) ?? 1;
   }
 
-
   Future<void> saveWidgetBalanceVisibility(bool visible) async {
     await writeBool(keyWidgetBalanceVisible, visible);
   }

@@ -30,11 +30,13 @@ class StreakCalendarScreen extends StatelessWidget {
             height: 110,
           ),
           const SizedBox(height: 16),
-          Obx(() => StatisticsTimeNavigator(
-            focusedMonth: controller.focusedMonth.value,
-            onPrevious: () => controller.prevMonth(),
-            onNext: () => controller.nextMonth(),
-          )),
+          Obx(
+            () => StatisticsTimeNavigator(
+              focusedMonth: controller.focusedMonth.value,
+              onPrevious: () => controller.prevMonth(),
+              onNext: () => controller.nextMonth(),
+            ),
+          ),
           const SizedBox(height: 16),
           const StreakWeekdayRow(),
           const SizedBox(height: 8),

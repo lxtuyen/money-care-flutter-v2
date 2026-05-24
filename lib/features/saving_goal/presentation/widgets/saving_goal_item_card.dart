@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/saving_goal_progress_bar.dart';
 
@@ -10,6 +11,7 @@ class SavingGoalItemCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onDelete;
   final VoidCallback onUpdate;
+  final VoidCallback? onExtend;
 
   const SavingGoalItemCard({
     super.key,
@@ -18,6 +20,7 @@ class SavingGoalItemCard extends StatelessWidget {
     required this.onTap,
     required this.onDelete,
     required this.onUpdate,
+    this.onExtend,
   });
 
   @override
@@ -39,6 +42,12 @@ class SavingGoalItemCard extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
+              )
+            else
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
           ],
         ),
@@ -53,16 +62,67 @@ class SavingGoalItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        fund.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.text1,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              fund.name,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.text1,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (fund.isCompleted) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.income.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                'Đã hoàn thành',
+                                style: TextStyle(
+                                  color: AppColors.income,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ] else if (fund.isExpired) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.expense.withValues(
+                                  alpha: 0.15,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'Hết hạn',
+                                style: const TextStyle(
+                                  color: AppColors.expense,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
+                      const SizedBox(height: 4),
                       Text(
-                        'Cần: ${AppHelperFunction.formatAmount(fund.target ?? 0, currency: 'VND')}',
+                        'Tích lũy: ${AppHelperFunction.formatAmount(fund.savedAmount, currency: 'VND')} / ${AppHelperFunction.formatAmount(fund.target ?? 0, currency: 'VND')}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.text3,
@@ -113,12 +173,40 @@ class SavingGoalItemCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Bắt đầu: ${fund.startDate != null ? AppHelperFunction.getFormattedDate(fund.startDate!) : '-'}',
+                  style: const TextStyle(fontSize: 11, color: AppColors.text4),
+                ),
+                Text(
+                  fund.isCompleted
+                      ? 'Hoàn thành: ${fund.updatedAt != null ? AppHelperFunction.getFormattedDate(fund.updatedAt!) : '-'}'
+                      : 'Hạn: ${fund.endDate != null ? AppHelperFunction.getFormattedDate(fund.endDate!) : '-'}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: fund.isCompleted
+                        ? AppColors.income
+                        : AppColors.text4,
+                    fontWeight: fund.isCompleted
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             SavingGoalProgressBar(
               currentValue: fund.savedAmount,
               targetValue: fund.target ?? 0,
               showPercentage: true,
             ),
+            if (onExtend != null && fund.isExpired && !fund.isCompleted) ...[
+              const SizedBox(height: 12),
+              PrimaryButton(label: 'Gia hạn mục tiêu', onPressed: onExtend),
+            ],
           ],
         ),
       ),

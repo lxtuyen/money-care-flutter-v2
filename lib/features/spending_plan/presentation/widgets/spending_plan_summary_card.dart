@@ -67,11 +67,18 @@ class SpendingPlanSummaryCard extends StatelessWidget {
                 ),
               ),
               if (isSelected) ...[
-                const Icon(Icons.check_circle, color: AppColors.primary, size: 20),
+                const Icon(
+                  Icons.check_circle,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
               ],
               _StatusChip(status: plan.status),
-              if (onDetail != null || onEdit != null || onClone != null || onDelete != null) ...[
+              if (onDetail != null ||
+                  onEdit != null ||
+                  onClone != null ||
+                  onDelete != null) ...[
                 const SizedBox(width: 4),
                 PopupMenuButton<String>(
                   padding: EdgeInsets.zero,
@@ -121,7 +128,11 @@ class SpendingPlanSummaryCard extends StatelessWidget {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                            Icon(
+                              Icons.delete_outline,
+                              size: 20,
+                              color: Colors.red,
+                            ),
                             SizedBox(width: 8),
                             Text('Xóa', style: TextStyle(color: Colors.red)),
                           ],
@@ -158,10 +169,7 @@ class SpendingPlanSummaryCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: cardContent,
-      );
+      return GestureDetector(onTap: onTap, child: cardContent);
     }
     return cardContent;
   }

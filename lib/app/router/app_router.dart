@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/router/navigation_menu.dart';
 import 'package:money_care/features/chatbot/presentation/screens/chatbot.dart';
+import 'package:money_care/features/spending_plan/presentation/screens/initial_setup_screen.dart';
 import 'package:money_care/features/auth/presentation/screens/otp.dart';
 import 'package:money_care/features/auth/presentation/screens/reset_password.dart';
 import 'package:money_care/features/onboarding/presentation/screens/onboarding_expense_management.dart';
@@ -101,6 +102,12 @@ final List<GetPage> appPages = [
     page: () => const CreateSavingGoalScreen(),
     transition: Transition.rightToLeft,
     binding: SavingGoalBinding(),
+  ),
+  GetPage(
+    name: RoutePath.initialSetup,
+    page: () => const InitialSetupScreen(),
+    transition: Transition.rightToLeft,
+    binding: SpendingPlanBinding(),
   ),
   GetPage(
     name: RoutePath.expense,

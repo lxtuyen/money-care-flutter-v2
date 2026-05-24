@@ -19,7 +19,12 @@ class SplashController extends GetxController {
     final hasToken = storage.getToken() != null;
     final hasUserInfo = storage.getUserInfo() != null;
 
-    if (hasToken && hasUserInfo) {
+    final shouldRunInitialFinancialSetup =
+        storage.getUserInfo()?['shouldRunInitialFinancialSetup'] == true;
+
+    if (hasToken && hasUserInfo && shouldRunInitialFinancialSetup) {
+      Get.offAllNamed(RoutePath.onboardingWelcome);
+    } else if (hasToken && hasUserInfo) {
       Get.offAllNamed(RoutePath.main);
     } else {
       Get.offAllNamed(RoutePath.loginOption);

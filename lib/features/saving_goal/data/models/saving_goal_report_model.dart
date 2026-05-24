@@ -36,7 +36,9 @@ abstract class CategorySpendingModel with _$CategorySpendingModel {
 @freezed
 abstract class ProjectionModel with _$ProjectionModel {
   const factory ProjectionModel({
-    @JsonKey(fromJson: NumParser.parseDouble) @Default(0) double monthlySavingCapacity,
+    @JsonKey(fromJson: NumParser.parseDouble)
+    @Default(0)
+    double monthlySavingCapacity,
     @JsonKey(fromJson: NumParser.parseIntNullable) int? monthsRemaining,
     DateTime? projectedDate,
     bool? isOnTrack,

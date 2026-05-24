@@ -20,7 +20,7 @@ class WalletDetailScreen extends StatefulWidget {
 
 class _WalletDetailScreenState extends State<WalletDetailScreen> {
   final walletController = Get.find<WalletController>();
-  
+
   late WalletEntity wallet;
 
   @override
@@ -69,7 +69,10 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
               TextField(
                 controller: nameController,
                 autofocus: true,
-                style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
                 decoration: InputDecoration(
                   hintText: "Nhập tên ví...",
                   filled: true,
@@ -86,7 +89,10 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text("Hủy", style: TextStyle(color: colors.textSecondary)),
+                    child: Text(
+                      "Hủy",
+                      style: TextStyle(color: colors.textSecondary),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -95,7 +101,9 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                       if (name.isNotEmpty) {
                         await walletController.updateWallet(wallet.id, name);
                         setState(() {
-                          wallet = walletController.wallets.firstWhere((w) => w.id == wallet.id);
+                          wallet = walletController.wallets.firstWhere(
+                            (w) => w.id == wallet.id,
+                          );
                         });
                         if (!context.mounted) return;
                         Navigator.pop(context);
@@ -104,7 +112,9 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: const Text("Lưu"),
                   ),
@@ -120,7 +130,8 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
   void _confirmDelete() {
     AppConfirmDialog.show(
       title: "Xác nhận xóa",
-      message: "Bạn có chắc chắn muốn xóa ví '${wallet.name}' không? Các giao dịch liên quan sẽ bị ảnh hưởng.",
+      message:
+          "Bạn có chắc chắn muốn xóa ví '${wallet.name}' không? Các giao dịch liên quan sẽ bị ảnh hưởng.",
       confirmText: "Xóa",
       cancelText: "Hủy",
       onConfirm: () async {
@@ -133,7 +144,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     return Scaffold(
       backgroundColor: colors.surfaceBackground,
       body: Column(
@@ -155,7 +166,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
               ),
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
@@ -180,19 +191,19 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
               ],
             ),
           ),
-          
+
           Expanded(
             child: Obx(() {
               if (walletController.isLoadingTransactions.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (walletController.walletTransactions.isEmpty) {
                 return const AppEmptyState(
                   message: "Chưa có giao dịch nào cho ví này",
                 );
               }
-              
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -209,15 +220,14 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 0,
+                      ),
                       itemCount: walletController.walletTransactions.length,
                       itemBuilder: (context, index) {
                         final tx = walletController.walletTransactions[index];
-                        return TransactionItem(
-                          item: tx,
-                          onTap: () {
-                          },
-                        );
+                        return TransactionItem(item: tx, onTap: () {});
                       },
                     ),
                   ),
@@ -230,4 +240,3 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
     );
   }
 }
-

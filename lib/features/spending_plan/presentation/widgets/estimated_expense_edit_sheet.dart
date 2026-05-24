@@ -5,21 +5,25 @@ import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/spending_plan/data/models/spending_plan_model.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_request.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
 
 class EstimatedExpenseEditSheet extends StatefulWidget {
-  final SpendingPlanEntity plan;
+  final SpendingPlanEntity? plan;
   final EstimatedExpenseEntity? expense;
+  final EstimatedExpenseEntity? initialDraft;
+  final Future<bool> Function(CreateEstimatedExpenseRequest request)? onSave;
 
   const EstimatedExpenseEditSheet({
     super.key,
-    required this.plan,
+    this.plan,
     this.expense,
+    this.initialDraft,
+    this.onSave,
   });
 
   @override
@@ -64,6 +68,32 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
                 .firstWhereOrNull((sub) => sub.name == exp.subCategory);
           }
         }
+      } else if (widget.initialDraft != null) {
+        final draft = widget.initialDraft!;
+        _amountController.text = draft.amount > 0
+            ? draft.amount.round().toString()
+            : '';
+        _frequencyValueController.text = draft.frequencyValue.toString();
+        _frequencyType = draft.frequencyType;
+
+        final catName = draft.category;
+        if (catName != null) {
+          final matched = _categoryController.categories.firstWhereOrNull(
+            (c) =>
+                c.id == draft.categoryId ||
+                c.name.toLowerCase() == catName.toLowerCase(),
+          );
+          if (matched != null) {
+            setState(() {
+              _selectedCategory = matched;
+              if (draft.subCategoryId != null) {
+                _selectedSubCategory = matched.subCategories.firstWhereOrNull(
+                  (sub) => sub.id == draft.subCategoryId,
+                );
+              }
+            });
+          }
+        }
       }
     });
   }
@@ -96,6 +126,7 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
     final request = CreateEstimatedExpenseRequest(
       category: _selectedCategory!.name,
       categoryId: _selectedCategory!.id,
+      subCategory: _selectedSubCategory?.name,
       subCategoryId: _selectedSubCategory?.id,
       amount: amount,
       monthlyLimit: _monthlyLimitFor(amount, freqVal),
@@ -104,18 +135,33 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
       frequencyValue: freqVal,
     );
 
+    if (widget.onSave != null) {
+      final success = await widget.onSave!(request);
+      if (success) {
+        Get.back();
+      }
+      return;
+    }
+
+    if (widget.plan == null) {
+      AppHelperFunction.showErrorSnackBar(
+        'Lỗi hệ thống: Thiếu thông tin kế hoạch.',
+      );
+      return;
+    }
+
     final bool success;
     if (widget.expense == null) {
-      success = await _spendingPlanController.createEstimatedExpense(
-        widget.plan.id,
+      success = await _spendingPlanController.addPlanExpense(
+        widget.plan!.id,
         request,
         showSuccessMessage: false,
       );
     } else {
-      success = await _spendingPlanController.updateEstimatedExpense(
-        widget.plan.id,
+      success = await _spendingPlanController.updatePlanExpense(
+        widget.plan!.id,
         widget.expense!.id,
-        request.toJson(),
+        request,
         showSuccessMessage: false,
       );
     }
@@ -237,8 +283,11 @@ class _EstimatedExpenseEditSheetState extends State<EstimatedExpenseEditSheet> {
     );
   }
 
-  int get _daysInMonth =>
-      DateTime(widget.plan.year, widget.plan.month + 1, 0).day;
+  int get _daysInMonth {
+    final year = widget.plan?.year ?? DateTime.now().year;
+    final month = widget.plan?.month ?? DateTime.now().month;
+    return DateTime(year, month + 1, 0).day;
+  }
 
   double _monthlyLimitFor(double amount, int frequencyValue) {
     final safeFrequencyValue = frequencyValue <= 0 ? 1 : frequencyValue;

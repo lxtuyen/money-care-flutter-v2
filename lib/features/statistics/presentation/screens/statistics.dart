@@ -80,7 +80,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 title: 'statistics.title'.tr,
                 actions: [
                   IconButton(
-                    onPressed: () => Get.bottomSheet(const StatisticsExportSheet()),
+                    onPressed: () =>
+                        Get.bottomSheet(const StatisticsExportSheet()),
                     icon: const Icon(
                       Icons.file_download_outlined,
                       color: Colors.white,
@@ -411,8 +412,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-
-
   GoalPlanImpact? _buildGoalPlanImpact(
     SpendingPlanStatsEntity? stats,
     Map<String, List<EstimatedExpenseEntity>> groupedExpenses,
@@ -427,7 +426,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       groupedExpenses: groupedExpenses,
     );
   }
-
 
   GoalPlanInsightSnapshot? _buildGoalPlanInsightSnapshot(
     GoalPlanImpact? impact,

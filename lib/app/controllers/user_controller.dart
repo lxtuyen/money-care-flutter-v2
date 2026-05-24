@@ -6,7 +6,6 @@ import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 
-
 class UserController extends GetxController {
   final UpdateMyProfileUseCase updateMyProfileUseCase;
 

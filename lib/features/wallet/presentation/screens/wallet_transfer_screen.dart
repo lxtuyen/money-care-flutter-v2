@@ -307,10 +307,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Center(
-                              child: Text(
-                                '💰',
-                                style: TextStyle(fontSize: 22),
-                              ),
+                              child: Text('💰', style: TextStyle(fontSize: 22)),
                             ),
                           ),
                           const SizedBox(width: 16),

@@ -12,7 +12,9 @@ class WidgetService {
     try {
       await HomeWidget.saveWidgetData<String>(
         'widget_balance',
-        balance != null ? AppHelperFunction.formatAmount(balance) : '****** VND',
+        balance != null
+            ? AppHelperFunction.formatAmount(balance)
+            : '****** VND',
       );
       await HomeWidget.saveWidgetData<String>(
         'widget_expense',
@@ -27,9 +29,7 @@ class WidgetService {
             : '****** VND',
       );
 
-      await HomeWidget.updateWidget(
-        androidName: _androidWidgetName,
-      );
+      await HomeWidget.updateWidget(androidName: _androidWidgetName);
     } catch (e) {
       // Log error if needed
     }

@@ -78,7 +78,6 @@ class LoginOptionScreen extends GetView<LoginOptionController> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-
                       ],
                     ),
                   );

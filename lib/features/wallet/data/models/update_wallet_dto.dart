@@ -12,10 +12,7 @@ abstract class UpdateWalletDto with _$UpdateWalletDto {
   const UpdateWalletDto._();
 
   Map<String, dynamic> toJson() {
-    final map = {
-      'name': name,
-      'is_active': isActive,
-    };
+    final map = {'name': name, 'is_active': isActive};
     map.removeWhere((key, value) => value == null);
     return map;
   }

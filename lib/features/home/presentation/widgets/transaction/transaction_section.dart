@@ -59,10 +59,7 @@ class _TransactionSectionState extends State<TransactionSection> {
                 .map(
                   (entry) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: TransactionItem(
-                      item: entry.value,
-                      onTap: () {},
-                    ),
+                    child: TransactionItem(item: entry.value, onTap: () {}),
                   ),
                 ),
         ],

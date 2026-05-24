@@ -34,8 +34,11 @@ class DatePickerField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.date_range_rounded,
-                  color: AppColors.secondaryNavyBlue, size: 24),
+              const Icon(
+                Icons.date_range_rounded,
+                color: AppColors.secondaryNavyBlue,
+                size: 24,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

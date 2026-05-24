@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:money_care/core/errors/failure.dart';
-import 'package:money_care/features/spending_plan/data/models/spending_plan_model.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_request.dart';
 
 abstract class SpendingPlanRepository {
   Future<Either<Failure, List<SpendingPlanEntity>>> getPlans();
@@ -18,4 +18,17 @@ abstract class SpendingPlanRepository {
   Future<Either<Failure, SpendingPlanEntity>> activatePlan(int id);
   Future<Either<Failure, SpendingPlanEntity>> pausePlan(int id);
   Future<Either<Failure, SpendingPlanStatsEntity?>> getActivePlanStatistics();
+  Future<Either<Failure, SpendingPlanEntity>> addPlanExpense(
+    int planId,
+    CreateEstimatedExpenseRequest request,
+  );
+  Future<Either<Failure, SpendingPlanEntity>> updatePlanExpense(
+    int planId,
+    int expenseId,
+    CreateEstimatedExpenseRequest request,
+  );
+  Future<Either<Failure, SpendingPlanEntity>> removePlanExpense(
+    int planId,
+    int expenseId,
+  );
 }

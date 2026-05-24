@@ -1,48 +1,4 @@
-class EstimatedExpenseEntity {
-  final int id;
-  final String? category;
-  final int? categoryId;
-  final String? subCategory;
-  final int? subCategoryId;
-  final double amount;
-  final double monthlyLimit;
-  final double? dailyLimit;
-  final double spentThisMonth;
-  final double todaySpent;
-  final double monthlyProgress;
-  final double dailyOverAmount;
-  final String frequencyType;
-  final int frequencyValue;
-
-  const EstimatedExpenseEntity({
-    required this.id,
-    this.category,
-    this.categoryId,
-    this.subCategory,
-    this.subCategoryId,
-    required this.amount,
-    this.monthlyLimit = 0,
-    this.dailyLimit,
-    this.spentThisMonth = 0,
-    this.todaySpent = 0,
-    this.monthlyProgress = 0,
-    this.dailyOverAmount = 0,
-    required this.frequencyType,
-    required this.frequencyValue,
-  });
-
-  String get displayName {
-    final subCategoryName = subCategory?.trim();
-    if (subCategoryName != null && subCategoryName.isNotEmpty) {
-      return subCategoryName;
-    }
-    final categoryName = category?.trim();
-    if (categoryName != null && categoryName.isNotEmpty) {
-      return categoryName;
-    }
-    return 'Khoản chi dự kiến';
-  }
-}
+import 'package:money_care/features/spending_plan/domain/entities/estimated_expense_entity.dart';
 
 class SpendingPlanEntity {
   final int id;
@@ -93,28 +49,4 @@ class SpendingPlanEntity {
       estimatedExpenses: estimatedExpenses ?? this.estimatedExpenses,
     );
   }
-}
-
-class SpendingPlanStatsEntity {
-  final int planId;
-  final String planName;
-  final double totalAmount;
-  final double availableSpendingAmount;
-  final double spentAmount;
-  final double remainingAmount;
-  final int daysLeft;
-  final double projectedEndBalance;
-  final List<EstimatedExpenseEntity> estimatedExpenses;
-
-  const SpendingPlanStatsEntity({
-    required this.planId,
-    required this.planName,
-    required this.totalAmount,
-    required this.availableSpendingAmount,
-    required this.spentAmount,
-    required this.remainingAmount,
-    required this.daysLeft,
-    required this.projectedEndBalance,
-    required this.estimatedExpenses,
-  });
 }

@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
+import 'package:money_care/features/auth/presentation/utils/auth_navigation.dart';
 import 'package:money_care/features/auth/domain/usecases/forgot_password_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:money_care/features/auth/domain/usecases/get_cached_user_usecase.dart';
@@ -53,7 +53,9 @@ class AuthController extends GetxController {
         try {
           Get.find<AppController>().setUserId(currentUser.id);
         } catch (e) {
-          debugPrint('Error setting userId or syncing token on user change: $e');
+          debugPrint(
+            'Error setting userId or syncing token on user change: $e',
+          );
         }
       }
     });
@@ -140,17 +142,23 @@ class AuthController extends GetxController {
       try {
         Get.find<AppController>().setUserId(currentUser.id);
 
-        if (currentUser.role == 'user') {
-          Get.offAllNamed(RoutePath.main);
-          return;
-        }
-        if (currentUser.role == 'admin') {
-          Get.offAllNamed(RoutePath.adminHome);
-        }
+        AuthNavigation.goAfterLogin(currentUser);
       } catch (e) {
         debugPrint('Error navigating after Google login: $e');
       }
     });
+  }
+
+  Future<void> markInitialFinancialSetupCompleted() async {
+    if (user.value != null) {
+      user.value = user.value!.copyWith(shouldRunInitialFinancialSetup: false);
+    }
+
+    final userInfo = storage.getUserInfo();
+    if (userInfo != null) {
+      userInfo['shouldRunInitialFinancialSetup'] = false;
+      await storage.saveUserInfo(userInfo);
+    }
   }
 
   UserEntity? getUserInfo() => user.value;

@@ -65,17 +65,19 @@ class _TransactionFormState extends State<TransactionForm> {
                           Get.offAllNamed(RoutePath.main);
                         }
                       },
-                      child: Obx(() => TransactionTypeToggle(
-                        selected: controller.transactionType,
-                        onSelected: controller.changeTransactionType,
-                        showAmount: false,
-                        spendLabel: 'Tiền Chi',
-                        incomeLabel: 'Tiền Thu',
-                        spendValue: 'expense',
-                        incomeValue: 'income',
-                        spendIcon: Icons.remove_circle_outline,
-                        incomeIcon: Icons.add_circle_outline,
-                      )),
+                      child: Obx(
+                        () => TransactionTypeToggle(
+                          selected: controller.transactionType,
+                          onSelected: controller.changeTransactionType,
+                          showAmount: false,
+                          spendLabel: 'Tiền Chi',
+                          incomeLabel: 'Tiền Thu',
+                          spendValue: 'expense',
+                          incomeValue: 'income',
+                          spendIcon: Icons.remove_circle_outline,
+                          incomeIcon: Icons.add_circle_outline,
+                        ),
+                      ),
                     ),
                     Center(
                       child: ConstrainedBox(
@@ -299,7 +301,6 @@ class _TransactionFormState extends State<TransactionForm> {
       ),
     );
   }
-
 
   Widget _buildSubCategoryField() {
     return Obx(() {

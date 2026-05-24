@@ -15,7 +15,8 @@ class StreakCalendarController extends GetxController {
   final RxSet<int> daysWithTx = <int>{}.obs;
 
   final RxInt selectedDay = 0.obs;
-  final RxList<TransactionEntity> selectedDayTransactions = <TransactionEntity>[].obs;
+  final RxList<TransactionEntity> selectedDayTransactions =
+      <TransactionEntity>[].obs;
   List<TransactionEntity> _allTransactions = [];
 
   @override
@@ -74,7 +75,10 @@ class StreakCalendarController extends GetxController {
       process(data.incomeTransactions, 1);
       process(data.expenseTransactions, -1);
 
-      _allTransactions = [...data.incomeTransactions, ...data.expenseTransactions];
+      _allTransactions = [
+        ...data.incomeTransactions,
+        ...data.expenseTransactions,
+      ];
 
       dailyNet.assignAll(net);
       daysWithTx.assignAll(days);
@@ -122,8 +126,11 @@ class StreakCalendarController extends GetxController {
     selectedDay.value = dayNum;
     selectedDayTransactions.assignAll(
       _allTransactions.where((tx) => tx.transactionDate?.day == dayNum).toList()
-        ..sort((a, b) => (b.transactionDate ?? DateTime(0))
-            .compareTo(a.transactionDate ?? DateTime(0))),
+        ..sort(
+          (a, b) => (b.transactionDate ?? DateTime(0)).compareTo(
+            a.transactionDate ?? DateTime(0),
+          ),
+        ),
     );
   }
 }

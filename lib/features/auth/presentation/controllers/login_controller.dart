@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
 import 'package:money_care/features/auth/domain/usecases/login_usecase.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:money_care/features/auth/presentation/utils/auth_navigation.dart';
 
 class LoginController extends GetxController {
   final LoginUseCase loginUseCase;
@@ -61,19 +61,7 @@ class LoginController extends GetxController {
 
     result.match(
       (failure) => AppHelperFunction.showErrorSnackBar(failure.message),
-      (currentUser) {
-        if (currentUser.role == 'user') {
-          Get.offAllNamed(RoutePath.main);
-          return;
-        }
-
-        if (currentUser.role == 'admin') {
-          Get.offAllNamed(RoutePath.adminHome);
-          return;
-        }
-
-        AppHelperFunction.showErrorSnackBar('Đăng nhập thất bại');
-      },
+      AuthNavigation.goAfterLogin,
     );
   }
 

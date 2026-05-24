@@ -70,7 +70,10 @@ class SpendingSummary extends StatelessWidget {
                       Flexible(
                         child: Text(
                           'common.viewDetail'.tr,
-                          style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+                          style: TextStyle(
+                            color: themeColors.textSecondary,
+                            fontSize: 14,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),

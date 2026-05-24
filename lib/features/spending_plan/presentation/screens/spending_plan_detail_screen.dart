@@ -162,10 +162,8 @@ class _PlanActions extends StatelessWidget {
       children: [
         Expanded(
           child: AppActionButton(
-            onTap: () => Get.toNamed(
-                RoutePath.createSpendingPlan,
-                arguments: plan,
-              ),
+            onTap: () =>
+                Get.toNamed(RoutePath.createSpendingPlan, arguments: plan),
             icon: Icons.edit_outlined,
             label: 'Cập nhật',
             color: AppColors.primary,
@@ -175,9 +173,9 @@ class _PlanActions extends StatelessWidget {
         Expanded(
           child: AppActionButton(
             onTap: () => Get.toNamed(
-                RoutePath.createSpendingPlan,
-                arguments: {'isClone': true, 'plan': plan},
-              ),
+              RoutePath.createSpendingPlan,
+              arguments: {'isClone': true, 'plan': plan},
+            ),
             icon: Icons.copy_rounded,
             label: 'Nhân bản',
             color: Colors.blueAccent,

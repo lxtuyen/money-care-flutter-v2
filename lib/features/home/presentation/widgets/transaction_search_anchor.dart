@@ -43,10 +43,7 @@ class _TransactionSearchAnchorState extends State<TransactionSearchAnchor> {
           final List<Widget> widgets = filtered.asMap().entries.map((entry) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: TransactionItem(
-                item: entry.value,
-                onTap: () {},
-              ),
+              child: TransactionItem(item: entry.value, onTap: () {}),
             );
           }).toList();
 

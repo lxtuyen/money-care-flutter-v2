@@ -106,16 +106,13 @@ class GamificationController extends GetxController {
     isLoading.value = true;
 
     final result = await _getGamificationUseCase(userId);
-    result.fold(
-      (failure) {},
-      (entity) {
-        _cachedEntity = entity;
-        currentStreak.value = _computeEffectiveStreak(entity);
-        badges.value = entity.badges;
+    result.fold((failure) {}, (entity) {
+      _cachedEntity = entity;
+      currentStreak.value = _computeEffectiveStreak(entity);
+      badges.value = entity.badges;
 
-        updateWeeklyProgress();
-      },
-    );
+      updateWeeklyProgress();
+    });
 
     isLoading.value = false;
   }
@@ -145,37 +142,34 @@ class GamificationController extends GetxController {
     final oldLastDate = _cachedEntity?.lastTransactionDate;
 
     final result = await _recordDailyTransactionUseCase(userId);
-    await result.fold(
-      (failure) async {},
-      (entity) async {
-        final newDate = entity.lastTransactionDate;
+    await result.fold((failure) async {}, (entity) async {
+      final newDate = entity.lastTransactionDate;
 
-        bool isNewDay = false;
-        if (oldLastDate == null && newDate != null) {
-          isNewDay = true;
-        } else if (oldLastDate != null && newDate != null) {
-          final oldD = DateTime(
-            oldLastDate.year,
-            oldLastDate.month,
-            oldLastDate.day,
-          );
-          final newD = DateTime(newDate.year, newDate.month, newDate.day);
-          isNewDay = newD.isAfter(oldD);
-        }
+      bool isNewDay = false;
+      if (oldLastDate == null && newDate != null) {
+        isNewDay = true;
+      } else if (oldLastDate != null && newDate != null) {
+        final oldD = DateTime(
+          oldLastDate.year,
+          oldLastDate.month,
+          oldLastDate.day,
+        );
+        final newD = DateTime(newDate.year, newDate.month, newDate.day);
+        isNewDay = newD.isAfter(oldD);
+      }
 
-        _cachedEntity = entity;
-        currentStreak.value = entity.currentStreak;
-        badges.value = entity.badges;
+      _cachedEntity = entity;
+      currentStreak.value = entity.currentStreak;
+      badges.value = entity.badges;
 
-        updateWeeklyProgress();
+      updateWeeklyProgress();
 
-        await checkAndAwardBadges();
+      await checkAndAwardBadges();
 
-        if (isNewDay) {
-          showStreakDialogTrigger.value = true;
-        }
-      },
-    );
+      if (isNewDay) {
+        showStreakDialogTrigger.value = true;
+      }
+    });
   }
 
   Future<void> checkAndAwardBadges({bool goalCompleted = false}) async {

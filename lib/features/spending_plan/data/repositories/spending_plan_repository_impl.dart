@@ -2,8 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource.dart';
-import 'package:money_care/features/spending_plan/data/models/spending_plan_model.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_request.dart';
 import 'package:money_care/features/spending_plan/domain/repositories/spending_plan_repository.dart';
 
 class SpendingPlanRepositoryImpl implements SpendingPlanRepository {
@@ -118,6 +118,56 @@ class SpendingPlanRepositoryImpl implements SpendingPlanRepository {
     try {
       final model = await remoteDatasource.getActivePlanStatistics();
       return Right(model?.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SpendingPlanEntity>> addPlanExpense(
+    int planId,
+    CreateEstimatedExpenseRequest request,
+  ) async {
+    try {
+      final model = await remoteDatasource.addPlanExpense(planId, request);
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SpendingPlanEntity>> updatePlanExpense(
+    int planId,
+    int expenseId,
+    CreateEstimatedExpenseRequest request,
+  ) async {
+    try {
+      final model = await remoteDatasource.updatePlanExpense(
+        planId,
+        expenseId,
+        request,
+      );
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SpendingPlanEntity>> removePlanExpense(
+    int planId,
+    int expenseId,
+  ) async {
+    try {
+      final model = await remoteDatasource.removePlanExpense(planId, expenseId);
+      return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

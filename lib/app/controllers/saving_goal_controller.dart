@@ -110,7 +110,9 @@ class SavingGoalController extends GetxController {
       if (activeGoal != null) {
         _syncCurrentGoal(activeGoal);
       } else if (goalId.value > 0) {
-        final matchingGoal = goals.firstWhereOrNull((g) => g.id == goalId.value);
+        final matchingGoal = goals.firstWhereOrNull(
+          (g) => g.id == goalId.value,
+        );
         if (matchingGoal != null) {
           _syncCurrentGoal(matchingGoal);
         }
@@ -417,9 +419,10 @@ class SavingGoalController extends GetxController {
     try {
       final walletController = Get.find<WalletController>();
       final categoryController = Get.find<UserCategoryController>();
-      
+
       if (amount > 0) {
-        final categoryId = await categoryController.getOrCreateTransferCategory();
+        final categoryId = await categoryController
+            .getOrCreateTransferCategory();
 
         await walletController.transfer(
           sourceWalletId,
@@ -429,13 +432,14 @@ class SavingGoalController extends GetxController {
           categoryId: categoryId,
         );
       }
-      
+
       await completeGoalEarly(goalId);
 
       await walletController.deleteWallet(sourceWalletId);
 
       AppHelperFunction.showSuccessSnackBar(
-          'Đã chuyển tiền và đóng ví mục tiêu thành công');
+        'Đã chuyển tiền và đóng ví mục tiêu thành công',
+      );
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Lỗi khi hoàn thành mục tiêu: $e');
     } finally {

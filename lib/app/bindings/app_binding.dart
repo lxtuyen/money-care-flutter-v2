@@ -46,6 +46,7 @@ import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
 import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource.dart';
+import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource_impl.dart';
 import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
 import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
@@ -173,6 +174,9 @@ class AppBinding extends Bindings {
         pauseSpendingPlanUseCase: PauseSpendingPlanUseCase(spendingPlanRepo),
         getActiveSpendingPlanStatisticsUseCase:
             GetActiveSpendingPlanStatisticsUseCase(spendingPlanRepo),
+        addPlanExpenseUseCase: AddPlanExpenseUseCase(spendingPlanRepo),
+        updatePlanExpenseUseCase: UpdatePlanExpenseUseCase(spendingPlanRepo),
+        removePlanExpenseUseCase: RemovePlanExpenseUseCase(spendingPlanRepo),
       ),
       permanent: true,
     );

@@ -8,6 +8,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
+import 'package:money_care/app/widgets/button/app_action_button.dart';
 
 class WalletListScreen extends GetView<WalletController> {
   const WalletListScreen({super.key});
@@ -46,22 +47,20 @@ class WalletListScreen extends GetView<WalletController> {
             child: Row(
               children: [
                 Expanded(
-                  child: _ListActionButton(
+                  child: AppActionButton(
                     onTap: () => Get.toNamed(RoutePath.walletTransfer),
                     icon: Icons.swap_horiz,
                     label: "Chuyển tiền",
                     color: AppColors.primary,
-                    context: context,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _ListActionButton(
+                  child: AppActionButton(
                     onTap: () => controller.createWallet(),
                     icon: Icons.add_circle_outline_rounded,
                     label: "Thêm ví",
                     color: AppColors.primary,
-                    context: context,
                   ),
                 ),
               ],
@@ -135,10 +134,7 @@ class WalletListScreen extends GetView<WalletController> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Center(
-                  child: Text(
-                    "💰",
-                    style: TextStyle(fontSize: 26),
-                  ),
+                  child: Text("💰", style: TextStyle(fontSize: 26)),
                 ),
               ),
               const SizedBox(width: 16),
@@ -204,58 +200,6 @@ class WalletListScreen extends GetView<WalletController> {
                     ),
                   ),
                 ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ListActionButton extends StatelessWidget {
-  final VoidCallback onTap;
-  final IconData icon;
-  final String label;
-  final Color color;
-  final BuildContext context;
-
-  const _ListActionButton({
-    required this.onTap,
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.context,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-
-    return Material(
-      color: colors.cardBackground,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withValues(alpha: 0.2)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
               ),
             ],
           ),

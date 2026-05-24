@@ -25,11 +25,19 @@ class WalletEntity {
       name: json['name'],
       balance: double.parse(json['balance']?.toString() ?? '0'),
       isActive: json['is_active'] ?? true,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
-      savingGoals: json['savingGoals'] != null 
-        ? (json['savingGoals'] as List).map<SavingGoalEntity>((e) => SavingGoalEntity.fromJson(e as Map<String, dynamic>)).toList() 
-        : [],
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
+      savingGoals: json['savingGoals'] != null
+          ? (json['savingGoals'] as List)
+                .map<SavingGoalEntity>(
+                  (e) => SavingGoalEntity.fromJson(e as Map<String, dynamic>),
+                )
+                .toList()
+          : [],
     );
   }
 

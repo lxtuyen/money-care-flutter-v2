@@ -10,6 +10,7 @@ class RoutePath {
   static const onboardingFinancialFreedom = '/onboarding_financial_freedom';
   static const onboardingWelcome = '/onboarding_welcome';
   static const onboardingBudgetSetup = '/onboarding_balance_setup';
+  static const initialSetup = '/initial_setup';
   static const main = '/main';
   static const savingGoalManagement = '/saving_goal_management';
   static const createSavingGoal = '/create_saving_goal';

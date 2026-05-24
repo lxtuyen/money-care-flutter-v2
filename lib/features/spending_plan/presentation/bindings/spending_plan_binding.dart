@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource.dart';
+import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource_impl.dart';
 import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
 import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
@@ -77,6 +78,24 @@ class SpendingPlanBinding extends Bindings {
         fenix: true,
       );
     }
+    if (!Get.isRegistered<AddPlanExpenseUseCase>()) {
+      Get.lazyPut<AddPlanExpenseUseCase>(
+        () => AddPlanExpenseUseCase(repository),
+        fenix: true,
+      );
+    }
+    if (!Get.isRegistered<UpdatePlanExpenseUseCase>()) {
+      Get.lazyPut<UpdatePlanExpenseUseCase>(
+        () => UpdatePlanExpenseUseCase(repository),
+        fenix: true,
+      );
+    }
+    if (!Get.isRegistered<RemovePlanExpenseUseCase>()) {
+      Get.lazyPut<RemovePlanExpenseUseCase>(
+        () => RemovePlanExpenseUseCase(repository),
+        fenix: true,
+      );
+    }
 
     if (!Get.isRegistered<SpendingPlanController>()) {
       Get.lazyPut<SpendingPlanController>(
@@ -92,6 +111,9 @@ class SpendingPlanBinding extends Bindings {
           pauseSpendingPlanUseCase: Get.find<PauseSpendingPlanUseCase>(),
           getActiveSpendingPlanStatisticsUseCase:
               Get.find<GetActiveSpendingPlanStatisticsUseCase>(),
+          addPlanExpenseUseCase: Get.find<AddPlanExpenseUseCase>(),
+          updatePlanExpenseUseCase: Get.find<UpdatePlanExpenseUseCase>(),
+          removePlanExpenseUseCase: Get.find<RemovePlanExpenseUseCase>(),
         ),
         fenix: true,
       );

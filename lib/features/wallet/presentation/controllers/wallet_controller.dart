@@ -21,7 +21,8 @@ class WalletController extends GetxController {
   var isLoading = false.obs;
   var selectedWallet = Rxn<WalletEntity>();
 
-  final RxList<TransactionEntity> walletTransactions = <TransactionEntity>[].obs;
+  final RxList<TransactionEntity> walletTransactions =
+      <TransactionEntity>[].obs;
   final RxBool isLoadingTransactions = false.obs;
 
   @override
@@ -36,7 +37,7 @@ class WalletController extends GetxController {
         totalAssets.value = 0.0;
       }
     });
-    
+
     if (appController.userId.value != null) {
       refreshWallets();
     }
@@ -47,10 +48,10 @@ class WalletController extends GetxController {
     try {
       final list = await repository.findAll();
       wallets.assignAll(list);
-      
+
       final total = await repository.getTotalAssets();
       totalAssets.value = total;
-      
+
       if (wallets.isNotEmpty && selectedWallet.value == null) {
         selectedWallet.value = wallets.first;
       }
@@ -78,10 +79,10 @@ class WalletController extends GetxController {
   Future<void> updateWallet(int id, String name, {bool? isActive}) async {
     isLoading.value = true;
     try {
-      await repository.update(id, UpdateWalletDto(
-        name: name,
-        isActive: isActive,
-      ));
+      await repository.update(
+        id,
+        UpdateWalletDto(name: name, isActive: isActive),
+      );
       await refreshWallets();
       AppHelperFunction.showSuccessSnackBar('Cập nhật ví thành công');
     } catch (e) {
@@ -104,18 +105,26 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<void> transfer(int fromId, int toId, double amount, {String? note, int? categoryId}) async {
+  Future<void> transfer(
+    int fromId,
+    int toId,
+    double amount, {
+    String? note,
+    int? categoryId,
+  }) async {
     isLoading.value = true;
     try {
-      await repository.transfer(TransferDto(
-        fromWalletId: fromId,
-        toWalletId: toId,
-        amount: amount,
-        note: note,
-        categoryId: categoryId,
-      ));
+      await repository.transfer(
+        TransferDto(
+          fromWalletId: fromId,
+          toWalletId: toId,
+          amount: amount,
+          note: note,
+          categoryId: categoryId,
+        ),
+      );
       await refreshWallets();
-      
+
       final appController = Get.find<AppController>();
       final userId = appController.userId.value;
       if (userId != null) {
@@ -146,9 +155,19 @@ class WalletController extends GetxController {
       final userId = appController.userId.value;
       if (userId != null) {
         final transactionController = Get.find<TransactionController>();
-        final result = await transactionController.filterTransactionsUseCase(userId, filter);
-        final all = [...result.expenseTransactions, ...result.incomeTransactions];
-        all.sort((a, b) => (b.transactionDate ?? DateTime.now()).compareTo(a.transactionDate ?? DateTime.now()));
+        final result = await transactionController.filterTransactionsUseCase(
+          userId,
+          filter,
+        );
+        final all = [
+          ...result.expenseTransactions,
+          ...result.incomeTransactions,
+        ];
+        all.sort(
+          (a, b) => (b.transactionDate ?? DateTime.now()).compareTo(
+            a.transactionDate ?? DateTime.now(),
+          ),
+        );
         walletTransactions.assignAll(all);
       }
     } catch (e) {

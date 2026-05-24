@@ -91,11 +91,18 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   }
 
   @override
-  AppThemeColors lerp(covariant ThemeExtension<AppThemeColors>? other, double t) {
+  AppThemeColors lerp(
+    covariant ThemeExtension<AppThemeColors>? other,
+    double t,
+  ) {
     if (other is! AppThemeColors) return this;
     return AppThemeColors(
       cardBackground: Color.lerp(cardBackground, other.cardBackground, t)!,
-      surfaceBackground: Color.lerp(surfaceBackground, other.surfaceBackground, t)!,
+      surfaceBackground: Color.lerp(
+        surfaceBackground,
+        other.surfaceBackground,
+        t,
+      )!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
       textTertiary: Color.lerp(textTertiary, other.textTertiary, t)!,
@@ -104,7 +111,11 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       borderPrimary: Color.lerp(borderPrimary, other.borderPrimary, t)!,
       borderSecondary: Color.lerp(borderSecondary, other.borderSecondary, t)!,
       iconBackground: Color.lerp(iconBackground, other.iconBackground, t)!,
-      dialogBackground: Color.lerp(dialogBackground, other.dialogBackground, t)!,
+      dialogBackground: Color.lerp(
+        dialogBackground,
+        other.dialogBackground,
+        t,
+      )!,
     );
   }
 }

@@ -73,9 +73,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
-    extensions: const <ThemeExtension>[
-      AppThemeColors.light,
-    ],
+    extensions: const <ThemeExtension>[AppThemeColors.light],
   );
 
   // ────────────────── DARK THEME ──────────────────
@@ -162,8 +160,6 @@ class AppTheme {
       labelLarge: TextStyle(color: Color(0xFFE8ECF0)),
     ),
     iconTheme: const IconThemeData(color: Color(0xFFCDD3DA)),
-    extensions: const <ThemeExtension>[
-      AppThemeColors.dark,
-    ],
+    extensions: const <ThemeExtension>[AppThemeColors.dark],
   );
 }

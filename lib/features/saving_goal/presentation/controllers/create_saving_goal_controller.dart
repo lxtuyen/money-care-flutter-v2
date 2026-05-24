@@ -95,8 +95,6 @@ class CreateSavingGoalController extends GetxController {
       return false;
     }
 
-
-
     final rawTarget = AppHelperFunction.unformatCurrency(targetController.text);
     final finalTarget = double.tryParse(rawTarget) ?? 0;
 
@@ -108,7 +106,6 @@ class CreateSavingGoalController extends GetxController {
       savedAmount: 0,
       startDate: startDate.value,
       endDate: endDate.value,
-      walletId: isEditMode.value ? null : null, // Not used, handled by createNewWallet or keeping existing wallet
       createNewWallet: isEditMode.value ? false : true,
     );
 
@@ -120,7 +117,6 @@ class CreateSavingGoalController extends GetxController {
     return result.fold(
       (failure) {
         isLoading.value = false;
-        // Sử dụng auto-inferring snackbar
         AppHelperFunction.showSnackBar(failure.message);
         return false;
       },
@@ -133,8 +129,6 @@ class CreateSavingGoalController extends GetxController {
       },
     );
   }
-
-
 
   void _resetForm() {
     nameController.clear();

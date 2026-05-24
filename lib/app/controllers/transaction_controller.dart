@@ -126,12 +126,18 @@ class TransactionController extends GetxController {
       final allIncome = result.incomeTransactions;
       final allExpense = result.expenseTransactions;
 
-      final sortedIncome = [...allIncome]..sort((a, b) =>
-          (b.transactionDate ?? DateTime.now())
-              .compareTo(a.transactionDate ?? DateTime.now()));
-      final sortedExpense = [...allExpense]..sort((a, b) =>
-          (b.transactionDate ?? DateTime.now())
-              .compareTo(a.transactionDate ?? DateTime.now()));
+      final sortedIncome = [...allIncome]
+        ..sort(
+          (a, b) => (b.transactionDate ?? DateTime.now()).compareTo(
+            a.transactionDate ?? DateTime.now(),
+          ),
+        );
+      final sortedExpense = [...allExpense]
+        ..sort(
+          (a, b) => (b.transactionDate ?? DateTime.now()).compareTo(
+            a.transactionDate ?? DateTime.now(),
+          ),
+        );
 
       recentTransactions.value = TransactionByTypeEntity(
         incomeTransactions: sortedIncome.take(5).toList(),
@@ -156,6 +162,7 @@ class TransactionController extends GetxController {
   ) async {
     await filterTransactions(userId, filterDto);
   }
+
   Future<void> refreshAllData(int userId) async {
     await applyFilters(userId);
 
@@ -163,12 +170,15 @@ class TransactionController extends GetxController {
       Get.find<WalletController>().refreshWallets();
     }
     if (Get.isRegistered<StatisticsController>()) {
-      Get.find<StatisticsController>().refreshStatisticsData(userId, skipMainTotals: true);
+      Get.find<StatisticsController>().refreshStatisticsData(
+        userId,
+        skipMainTotals: true,
+      );
     }
     if (Get.isRegistered<SpendingPlanController>()) {
       Get.find<SpendingPlanController>().loadStatsSummary();
     }
-    
+
     await savingGoalController.loadGoals(userId);
     final activeGoalId = savingGoalController.goalId.value;
     if (activeGoalId > 0) {
@@ -206,7 +216,11 @@ class TransactionController extends GetxController {
     return DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
   }
 
-  Future<void> exportReport(int userId, TransactionFilterDto dto, String format) async {
+  Future<void> exportReport(
+    int userId,
+    TransactionFilterDto dto,
+    String format,
+  ) async {
     isLoading.value = true;
     try {
       final success = await exportReportUseCase(userId, dto, format);
@@ -218,9 +232,7 @@ class TransactionController extends GetxController {
         throw Exception('Export failed');
       }
     } catch (e) {
-      AppHelperFunction.showErrorSnackBar(
-        'Không thể xuất báo cáo: $e',
-      );
+      AppHelperFunction.showErrorSnackBar('Không thể xuất báo cáo: $e');
     } finally {
       isLoading.value = false;
     }

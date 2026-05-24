@@ -33,7 +33,9 @@ class ApiResponse<T> {
       throw ServerException(message);
     }
     if (data == null && null is! T) {
-      throw ServerException(message.isNotEmpty ? message : 'Response data is null');
+      throw ServerException(
+        message.isNotEmpty ? message : 'Response data is null',
+      );
     }
     return data as T;
   }

@@ -36,7 +36,10 @@ class AppDropdownField<T> extends StatelessWidget {
         fontSize: 16,
         fontWeight: FontWeight.w500,
       ),
-      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.text3),
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: AppColors.text3,
+      ),
       dropdownColor: Colors.white,
       borderRadius: BorderRadius.circular(16),
       menuMaxHeight: 300,
@@ -72,10 +75,7 @@ class AppDropdownField<T> extends StatelessWidget {
   OutlineInputBorder _buildBorder(Color color, [double width = 1.2]) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
-      borderSide: BorderSide(
-        color: color,
-        width: width,
-      ),
+      borderSide: BorderSide(color: color, width: width),
     );
   }
 }

@@ -17,9 +17,6 @@ abstract class UserProfileModel with _$UserProfileModel {
   factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
       _$UserProfileModelFromJson(json);
 
-  UserProfileEntity toEntity() => UserProfileEntity(
-    id: id,
-    firstName: firstName,
-    lastName: lastName,
-  );
+  UserProfileEntity toEntity() =>
+      UserProfileEntity(id: id, firstName: firstName, lastName: lastName);
 }

@@ -149,8 +149,9 @@ class TransactionTypeToggle extends StatelessWidget {
                       style: TextStyle(
                         color: isActive ? Colors.white : Colors.white70,
                         fontSize: 15,
-                        fontWeight:
-                            isActive ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isActive
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                       ),
                     ),
                   ],

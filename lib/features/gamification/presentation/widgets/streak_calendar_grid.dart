@@ -154,9 +154,7 @@ class _DayCell extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
-                      color: net >= 0
-                          ?  AppColors.income
-                          : AppColors.expense,
+                      color: net >= 0 ? AppColors.income : AppColors.expense,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.clip,

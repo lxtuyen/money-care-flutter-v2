@@ -49,10 +49,7 @@ class TransactionFormController extends GetxController {
     subCategoryController.clear();
   }
 
-  void init(
-    TransactionEntity? item, [
-    String type = 'expense',
-  ]) {
+  void init(TransactionEntity? item, [String type = 'expense']) {
     transactionType = type;
     initialItem = item;
 
@@ -161,9 +158,7 @@ class TransactionFormController extends GetxController {
   Future<void> createTransaction() async {
     final userId = await appController.getCurrentUserId();
     if (userId == null) {
-      AppHelperFunction.showErrorSnackBar(
-        'Khong the xac dinh nguoi dung.',
-      );
+      AppHelperFunction.showErrorSnackBar('Khong the xac dinh nguoi dung.');
       return;
     }
     try {
@@ -179,9 +174,7 @@ class TransactionFormController extends GetxController {
   Future<void> updateTransaction() async {
     final userId = await appController.getCurrentUserId();
     if (userId == null) {
-      AppHelperFunction.showErrorSnackBar(
-        'Khong the xac dinh nguoi dung.',
-      );
+      AppHelperFunction.showErrorSnackBar('Khong the xac dinh nguoi dung.');
       return;
     }
     try {

@@ -4,13 +4,10 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 
 import 'package:money_care/features/transaction/domain/repositories/transaction_repository.dart';
 
-
 class TransactionRepositoryImpl implements TransactionRepository {
   final TransactionRemoteDatasource remoteDatasource;
 
-  TransactionRepositoryImpl({
-    required this.remoteDatasource,
-  });
+  TransactionRepositoryImpl({required this.remoteDatasource});
 
   @override
   Future<TransactionByTypeEntity> findAllByFilter(

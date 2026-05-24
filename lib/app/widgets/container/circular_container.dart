@@ -28,7 +28,11 @@ class AppCircularContainer extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
-        color: backgroundColor ?? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2630) : Colors.white),
+        color:
+            backgroundColor ??
+            (Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF1E2630)
+                : Colors.white),
       ),
       child: child,
     );

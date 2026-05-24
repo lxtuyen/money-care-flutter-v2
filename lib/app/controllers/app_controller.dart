@@ -29,7 +29,6 @@ class AppController extends GetxController {
     isWidgetBalanceVisible.value = storage.getWidgetBalanceVisibility();
   }
 
-
   Future<void> initializeUser() async {
     try {
       final userInfoJson = storage.getUserInfo();
@@ -106,7 +105,7 @@ class AppController extends GetxController {
   void toggleWidgetBalanceVisibility() {
     isWidgetBalanceVisible.value = !isWidgetBalanceVisible.value;
     storage.saveWidgetBalanceVisibility(isWidgetBalanceVisible.value);
-    
+
     final statsController = Get.find<StatisticsController>();
     if (userId.value != null) {
       statsController.refreshStatisticsData(userId.value!);

@@ -35,9 +35,15 @@ class RoundedContainer extends StatelessWidget {
       padding: padding,
       margin: margin,
       decoration: BoxDecoration(
-        color: backgroundColor ?? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2630) : Colors.white),
+        color:
+            backgroundColor ??
+            (Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF1E2630)
+                : Colors.white),
         borderRadius: BorderRadius.circular(radius),
-        border: showBorder ? Border.all(color: borderColor ?? AppColors.borderPrimary) : null,
+        border: showBorder
+            ? Border.all(color: borderColor ?? AppColors.borderPrimary)
+            : null,
       ),
       child: child,
     );

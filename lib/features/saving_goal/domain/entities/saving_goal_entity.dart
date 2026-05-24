@@ -69,12 +69,19 @@ class SavingGoalEntity {
       id: json['id'],
       name: json['name'],
       target: double.tryParse(json['target']?.toString() ?? '0'),
-      savedAmount: double.tryParse(json['saved_amount']?.toString() ?? '0') ?? 0,
+      savedAmount:
+          double.tryParse(json['saved_amount']?.toString() ?? '0') ?? 0,
       isCompleted: json['is_completed'] ?? false,
       status: json['status'],
-      startDate: json['start_date'] != null ? DateTime.parse(json['start_date']) : null,
-      endDate: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-      wallet: json['wallet'] != null ? WalletEntity.fromJson(json['wallet']) : null,
+      startDate: json['start_date'] != null
+          ? DateTime.parse(json['start_date'])
+          : null,
+      endDate: json['end_date'] != null
+          ? DateTime.parse(json['end_date'])
+          : null,
+      wallet: json['wallet'] != null
+          ? WalletEntity.fromJson(json['wallet'])
+          : null,
     );
   }
 

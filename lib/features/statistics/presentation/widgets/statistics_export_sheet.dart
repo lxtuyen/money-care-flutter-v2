@@ -35,13 +35,15 @@ class StatisticsExportSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Obx(() => Text(
-            'statistics.exportEmailNote'.tr.replaceAll(
-              '@email',
-              userController.user.value?.email ?? '...',
+          Obx(
+            () => Text(
+              'statistics.exportEmailNote'.tr.replaceAll(
+                '@email',
+                userController.user.value?.email ?? '...',
+              ),
+              style: const TextStyle(color: AppColors.text3),
             ),
-            style: const TextStyle(color: AppColors.text3),
-          )),
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
@@ -50,7 +52,8 @@ class StatisticsExportSheet extends StatelessWidget {
                   icon: Icons.picture_as_pdf_rounded,
                   label: 'PDF',
                   color: Colors.red,
-                  onTap: () => _handleExport(appController, statisticsController, 'pdf'),
+                  onTap: () =>
+                      _handleExport(appController, statisticsController, 'pdf'),
                 ),
               ),
               const SizedBox(width: 16),
@@ -59,7 +62,8 @@ class StatisticsExportSheet extends StatelessWidget {
                   icon: Icons.table_chart_rounded,
                   label: 'CSV',
                   color: Colors.green,
-                  onTap: () => _handleExport(appController, statisticsController, 'csv'),
+                  onTap: () =>
+                      _handleExport(appController, statisticsController, 'csv'),
                 ),
               ),
             ],

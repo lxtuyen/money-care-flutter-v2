@@ -19,9 +19,11 @@ class AppActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     final isDisabled = onTap == null;
-    
+
     return Material(
-      color: isDisabled ? colors.cardBackground.withValues(alpha: 0.5) : colors.cardBackground,
+      color: isDisabled
+          ? colors.cardBackground.withValues(alpha: 0.5)
+          : colors.cardBackground,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -31,19 +33,15 @@ class AppActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isDisabled 
-                  ? colors.textHint.withValues(alpha: 0.1) 
+              color: isDisabled
+                  ? colors.textHint.withValues(alpha: 0.1)
                   : color.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon, 
-                color: isDisabled ? colors.textHint : color, 
-                size: 20,
-              ),
+              Icon(icon, color: isDisabled ? colors.textHint : color, size: 20),
               const SizedBox(width: 8),
               Text(
                 label,

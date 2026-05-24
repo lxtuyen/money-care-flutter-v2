@@ -15,6 +15,7 @@ abstract class UserModel with _$UserModel {
     String? accessToken,
     required UserProfileModel profile,
     @JsonKey(name: 'savingGoal') SavingGoalModel? savingGoal,
+    @Default(false) bool shouldRunInitialFinancialSetup,
   }) = _UserModel;
 
   const UserModel._();
@@ -37,5 +38,6 @@ abstract class UserModel with _$UserModel {
     accessToken: accessToken,
     profile: profile.toEntity(),
     savingGoal: savingGoal?.toEntity(),
+    shouldRunInitialFinancialSetup: shouldRunInitialFinancialSetup,
   );
 }

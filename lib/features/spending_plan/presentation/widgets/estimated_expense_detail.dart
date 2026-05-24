@@ -243,7 +243,7 @@ class EstimatedExpenseDetail extends StatelessWidget {
       cancelText: 'Quay lại',
       onConfirm: () async {
         Get.back();
-        await controller.deleteEstimatedExpense(plan.id, expense.id);
+        await controller.removePlanExpense(plan.id, expense.id);
       },
     );
   }

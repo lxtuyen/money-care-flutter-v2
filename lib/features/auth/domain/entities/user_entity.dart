@@ -8,6 +8,7 @@ class UserEntity {
   final String? accessToken;
   final UserProfileEntity profile;
   final SavingGoalEntity? savingGoal;
+  final bool shouldRunInitialFinancialSetup;
 
   const UserEntity({
     required this.id,
@@ -16,6 +17,7 @@ class UserEntity {
     this.accessToken,
     required this.profile,
     this.savingGoal,
+    this.shouldRunInitialFinancialSetup = false,
   });
 
   UserEntity copyWith({
@@ -25,6 +27,7 @@ class UserEntity {
     String? accessToken,
     UserProfileEntity? profile,
     SavingGoalEntity? savingGoal,
+    bool? shouldRunInitialFinancialSetup,
   }) {
     return UserEntity(
       id: id ?? this.id,
@@ -33,6 +36,8 @@ class UserEntity {
       accessToken: accessToken ?? this.accessToken,
       profile: profile ?? this.profile,
       savingGoal: savingGoal ?? this.savingGoal,
+      shouldRunInitialFinancialSetup:
+          shouldRunInitialFinancialSetup ?? this.shouldRunInitialFinancialSetup,
     );
   }
 }

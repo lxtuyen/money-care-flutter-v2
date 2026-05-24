@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -231,46 +232,9 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF71C4FF), Color(0xFF0966A7)],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.24),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: FilledButton.icon(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: _nextStep,
-                        icon: const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          'Bắt đầu ngay',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
+                  PrimaryButton(
+                    label: 'Bắt đầu ngay',
+                    onPressed: _nextStep,
                   ),
                 ],
               ),
@@ -372,7 +336,6 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                     income: _wizardController.monthlyIncome.value,
                     fixedExpense: _wizardController.estimatedExpenseTotal,
                     flexibleAmount: _wizardController.remainingAmount,
-                    dailyFlexibleAmount: _wizardController.dailyFlexibleAmount,
                     fixedRatio: _wizardController.estimatedExpenseRatio,
                     flexibleRatio: _wizardController.flexibleExpenseRatio,
                     expenses: List.from(_wizardController.estimatedExpenses),

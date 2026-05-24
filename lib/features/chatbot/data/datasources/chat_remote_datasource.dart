@@ -1,4 +1,5 @@
 import 'package:image_picker/image_picker.dart';
+import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/features/chatbot/data/models/models.dart';
@@ -20,12 +21,12 @@ class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
         fields: dto.toJson(),
         file: file,
       );
-      res.unwrap();
+      if (!res.success) throw ServerException(res.message);
       return res.message;
     }
 
     final res = await api.post<String>(ApiRoutes.chatbot, body: dto.toJson());
-    res.unwrap();
+    if (!res.success) throw ServerException(res.message);
     return res.message;
   }
 }

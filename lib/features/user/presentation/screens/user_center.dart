@@ -52,11 +52,6 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       title: 'Kế hoạch chi tiêu',
                       onTap: () => Get.toNamed(RoutePath.spendingPlanList),
                     ),
-                    UserMenuItem(
-                      icon: Icons.auto_awesome_outlined,
-                      title: 'Thiết lập tài chính AI',
-                      onTap: () => Get.toNamed(RoutePath.initialSetup),
-                    ),
 
                     UserMenuItem(
                       icon: Icons.category_rounded,

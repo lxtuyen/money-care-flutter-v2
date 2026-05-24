@@ -11,7 +11,6 @@ class SpendingPlanBudgetSketchCard extends StatelessWidget {
   final double income;
   final double fixedExpense;
   final double flexibleAmount;
-  final double dailyFlexibleAmount;
   final double fixedRatio;
   final double flexibleRatio;
   final List<EstimatedExpenseEntity> expenses;
@@ -25,7 +24,6 @@ class SpendingPlanBudgetSketchCard extends StatelessWidget {
     required this.income,
     required this.fixedExpense,
     required this.flexibleAmount,
-    required this.dailyFlexibleAmount,
     required this.fixedRatio,
     required this.flexibleRatio,
     required this.expenses,
@@ -55,7 +53,7 @@ class SpendingPlanBudgetSketchCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Phác họa ngân sách tháng này',
+            'Phác họa ngân sách tháng',
             style: TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 16,
@@ -72,24 +70,17 @@ class SpendingPlanBudgetSketchCard extends StatelessWidget {
           SpendingPlanAmountRow(
             label: 'Thu nhập hàng tháng',
             value: income,
-            color: AppColors.primary,
           ),
           SpendingPlanAmountRow(
             label: 'Tổng chi phí dự kiến',
             value: fixedExpense,
-            color: const Color(0xFFFF7D39),
           ),
           SpendingPlanAmountRow(
             label: isOverBudget ? 'Số tiền đang thiếu' : 'Số dư',
             value: flexibleAmount.abs(),
-            color: isOverBudget ? AppColors.error : AppColors.success,
             prefix: isOverBudget ? '-' : null,
           ),
-          SpendingPlanAmountRow(
-            label: 'Chi tiêu dự kiến mỗi ngày',
-            value: dailyFlexibleAmount,
-            color: isOverBudget ? AppColors.error : AppColors.success,
-          ),
+
           if (isOverBudget) ...[
             const SizedBox(height: 12),
             Container(
@@ -184,82 +175,20 @@ class SpendingPlanBudgetAllocationBar extends StatelessWidget {
                   Expanded(
                     flex: fixedFlex,
                     child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: isOverBudget
-                              ? [AppColors.error, Colors.red.shade700]
-                              : [
-                                  const Color(0xFFFFB85C),
-                                  const Color(0xFFFF7D39),
-                                ],
-                        ),
-                      ),
+                      color: isOverBudget
+                          ? AppColors.error
+                          : AppColors.primary,
                     ),
                   ),
                 if (flexibleFlex > 0)
                   Expanded(
                     flex: flexibleFlex,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF5BE327), Color(0xFF27AE60)],
-                        ),
-                      ),
-                    ),
+                    child: Container(color: Colors.grey.shade200),
                   ),
                 if (fixedFlex == 0 && flexibleFlex == 0)
                   Expanded(child: Container(color: Colors.grey.shade200)),
               ],
             ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 16,
-          runSpacing: 6,
-          children: [
-            SpendingPlanLegendDot(
-              color: const Color(0xFFFF7D39),
-              label: 'Chi phí dự kiến ($fixedPct%)',
-            ),
-            SpendingPlanLegendDot(
-              color: const Color(0xFF27AE60),
-              label: 'Số dư ($flexPct%)',
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class SpendingPlanLegendDot extends StatelessWidget {
-  final Color color;
-  final String label;
-
-  const SpendingPlanLegendDot({
-    super.key,
-    required this.color,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: AppColors.text3,
           ),
         ),
       ],
@@ -270,14 +199,12 @@ class SpendingPlanLegendDot extends StatelessWidget {
 class SpendingPlanAmountRow extends StatelessWidget {
   final String label;
   final double value;
-  final Color? color;
   final String? prefix;
 
   const SpendingPlanAmountRow({
     super.key,
     required this.label,
     required this.value,
-    this.color,
     this.prefix,
   });
 
@@ -287,15 +214,6 @@ class SpendingPlanAmountRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Container(
-            width: 6,
-            height: 6,
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color ?? AppColors.primary,
-            ),
-          ),
           Expanded(
             child: Text(
               label,
@@ -308,10 +226,10 @@ class SpendingPlanAmountRow extends StatelessWidget {
           ),
           Text(
             '${prefix ?? ''}${AppHelperFunction.formatAmount(value)}',
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 13.5,
-              color: color ?? AppColors.text1,
+              color: AppColors.text1,
             ),
           ),
         ],

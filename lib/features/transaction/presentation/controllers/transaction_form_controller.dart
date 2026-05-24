@@ -165,7 +165,7 @@ class TransactionFormController extends GetxController {
       final dto = buildTransactionDto();
       await transactionController.createTransaction(dto);
       Get.back();
-      AppHelperFunction.showSuccessSnackBar('Tao giao dich thanh cong');
+      AppHelperFunction.showSuccessSnackBar('Tạo giao dịch thành công');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
     }

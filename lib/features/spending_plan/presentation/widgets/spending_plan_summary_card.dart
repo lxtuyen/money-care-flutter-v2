@@ -60,7 +60,7 @@ class SpendingPlanSummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  title ?? 'Kế hoạch chi tiêu ${plan.id}',
+                  title ?? 'Kế hoạch chi tiêu',
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),

@@ -4,26 +4,53 @@ import 'package:money_care/features/spending_plan/domain/entities/spending_plan_
 
 class SpendingPlanSummaryCard extends StatelessWidget {
   final SpendingPlanEntity plan;
+  final bool isSelected;
+  final String? title;
+  final VoidCallback? onTap;
+  final VoidCallback? onDetail;
+  final VoidCallback? onEdit;
+  final VoidCallback? onClone;
+  final VoidCallback? onDelete;
 
-  const SpendingPlanSummaryCard({super.key, required this.plan});
+  const SpendingPlanSummaryCard({
+    super.key,
+    required this.plan,
+    this.isSelected = false,
+    this.title,
+    this.onTap,
+    this.onDetail,
+    this.onEdit,
+    this.onClone,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
+    final cardContent = Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isSelected ? AppColors.primary : Colors.grey.shade200,
+          width: isSelected ? 2 : 1,
+        ),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
+          if (isSelected)
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
         ],
       ),
       child: Column(
@@ -33,13 +60,76 @@ class SpendingPlanSummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Kế hoạch chi tiêu',
+                  title ?? 'Kế hoạch chi tiêu ${plan.id}',
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
+              if (isSelected) ...[
+                const Icon(Icons.check_circle, color: AppColors.primary, size: 20),
+                const SizedBox(width: 8),
+              ],
               _StatusChip(status: plan.status),
+              if (onDetail != null || onEdit != null || onClone != null || onDelete != null) ...[
+                const SizedBox(width: 4),
+                PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.more_vert, color: Colors.grey),
+                  onSelected: (value) {
+                    if (value == 'detail') onDetail?.call();
+                    if (value == 'edit') onEdit?.call();
+                    if (value == 'clone') onClone?.call();
+                    if (value == 'delete') onDelete?.call();
+                  },
+                  itemBuilder: (context) => [
+                    if (onDetail != null)
+                      const PopupMenuItem(
+                        value: 'detail',
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline, size: 20),
+                            SizedBox(width: 8),
+                            Text('Xem chi tiết'),
+                          ],
+                        ),
+                      ),
+                    if (onEdit != null)
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_outlined, size: 20),
+                            SizedBox(width: 8),
+                            Text('Chỉnh sửa'),
+                          ],
+                        ),
+                      ),
+                    if (onClone != null)
+                      const PopupMenuItem(
+                        value: 'clone',
+                        child: Row(
+                          children: [
+                            Icon(Icons.copy_rounded, size: 20),
+                            SizedBox(width: 8),
+                            Text('Nhân bản'),
+                          ],
+                        ),
+                      ),
+                    if (onDelete != null)
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('Xóa', style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -66,6 +156,14 @@ class SpendingPlanSummaryCard extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: cardContent,
+      );
+    }
+    return cardContent;
   }
 }
 
@@ -110,21 +208,20 @@ class _StatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isActive = status == 'active';
     final isPaused = status == 'paused';
-    final isArchived = status == 'archived';
     final color = isActive
         ? AppColors.primary
         : isPaused
         ? Colors.blueGrey
-        : isArchived
-        ? Colors.grey
         : Colors.orange;
     final label = isActive
-        ? 'Đang áp dụng'
+        ? ''
         : isPaused
         ? 'Tạm dừng'
-        : isArchived
-        ? 'Đã lưu trữ'
         : 'Bản nháp';
+
+    if (label.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

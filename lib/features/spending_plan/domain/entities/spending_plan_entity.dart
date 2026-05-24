@@ -67,7 +67,6 @@ class SpendingPlanEntity {
 
   bool get isActive => status == 'active';
   bool get isPaused => status == 'paused';
-  bool get isArchived => status == 'archived';
   int get month => DateTime.now().month;
   int get year => DateTime.now().year;
 

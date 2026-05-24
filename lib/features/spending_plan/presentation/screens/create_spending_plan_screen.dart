@@ -473,7 +473,7 @@ class _PreviewRow extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(child: Text(label)),
           Text(
-            _formatMoney(value),
+            AppHelperFunction.formatAmount(value),
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ],
@@ -578,6 +578,7 @@ class _EstimatedExpenseFields extends StatelessWidget {
               ),
             ],
           ),
+          
           if (draft.frequencyType == 'daily')
             AppTextFormField(
               controller: draft.frequencyValue,
@@ -777,17 +778,4 @@ class _EstimatedExpenseFields extends StatelessWidget {
       onChanged();
     }
   }
-}
-
-String _formatMoney(double value) {
-  final rounded = value.round().toString();
-  final buffer = StringBuffer();
-  for (var i = 0; i < rounded.length; i++) {
-    final reversedIndex = rounded.length - i;
-    buffer.write(rounded[i]);
-    if (reversedIndex > 1 && reversedIndex % 3 == 1) {
-      buffer.write('.');
-    }
-  }
-  return '${buffer.toString()}đ';
 }

@@ -38,6 +38,7 @@ class SpendingPlanController extends GetxController {
   final isLoadingStats = false.obs;
   final isSaving = false.obs;
   final errorMessage = ''.obs;
+  final selectedPlanIndex = (-1).obs;
   Future<void>? _activePlanRequest;
   Future<void>? _statsSummaryRequest;
 
@@ -53,8 +54,37 @@ class SpendingPlanController extends GetxController {
     final result = await getSpendingPlansUseCase();
     result.fold(_handleFailure, (items) {
       plans.assignAll(items);
+      final activeIdx = plans.indexWhere((p) => p.isActive);
+      selectedPlanIndex.value = activeIdx;
     });
     isLoading.value = false;
+  }
+
+  void updateSelectedPlanIndex(int index) {
+    if (selectedPlanIndex.value == index) {
+      selectedPlanIndex.value = -1;
+    } else {
+      selectedPlanIndex.value = index;
+    }
+  }
+
+  Future<void> saveSelection() async {
+    final currentActiveIndex = plans.indexWhere((p) => p.isActive);
+    if (selectedPlanIndex.value == currentActiveIndex) {
+      return;
+    }
+
+    if (selectedPlanIndex.value == -1) {
+      if (currentActiveIndex != -1) {
+        final currentActive = plans[currentActiveIndex];
+        await pausePlan(currentActive.id);
+      }
+    } else if (plans.isNotEmpty &&
+        selectedPlanIndex.value >= 0 &&
+        selectedPlanIndex.value < plans.length) {
+      final selected = plans[selectedPlanIndex.value];
+      await activatePlan(selected.id);
+    }
   }
 
   Future<void> loadActivePlan() async {
@@ -193,6 +223,8 @@ class SpendingPlanController extends GetxController {
         if (selectedPlan.value?.id == id) {
           selectedPlan.value = null;
         }
+        final activeIdx = plans.indexWhere((p) => p.isActive);
+        selectedPlanIndex.value = activeIdx;
         AppHelperFunction.showSuccessSnackBar('Đã xóa kế hoạch chi tiêu');
         return true;
       },
@@ -220,6 +252,7 @@ class SpendingPlanController extends GetxController {
           }
         }
         plans.refresh();
+        selectedPlanIndex.value = plans.indexWhere((p) => p.id == plan.id);
         loadStatsSummary();
         AppHelperFunction.showSuccessSnackBar('Đã áp dụng kế hoạch');
         return true;
@@ -244,6 +277,7 @@ class SpendingPlanController extends GetxController {
           statsSummary.value = null;
         }
         selectedPlan.value = plan;
+        selectedPlanIndex.value = -1;
         AppHelperFunction.showSuccessSnackBar('Đã tạm dừng kế hoạch');
         return true;
       },

@@ -111,7 +111,7 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
       ),
       floatingActionButton: Obx(() {
         final plan = controller.selectedPlan.value;
-        if (plan == null || plan.isArchived) {
+        if (plan == null) {
           return const SizedBox.shrink();
         }
         return FloatingActionButton(
@@ -130,7 +130,7 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
       bottomNavigationBar: SafeArea(
         child: Obx(() {
           final plan = controller.selectedPlan.value;
-          if (plan == null || plan.isArchived) {
+          if (plan == null) {
             return const SizedBox.shrink();
           }
 
@@ -162,12 +162,10 @@ class _PlanActions extends StatelessWidget {
       children: [
         Expanded(
           child: AppActionButton(
-            onTap: plan.isArchived
-                ? null
-                : () => Get.toNamed(
-                    RoutePath.createSpendingPlan,
-                    arguments: plan,
-                  ),
+            onTap: () => Get.toNamed(
+                RoutePath.createSpendingPlan,
+                arguments: plan,
+              ),
             icon: Icons.edit_outlined,
             label: 'Cập nhật',
             color: AppColors.primary,
@@ -176,12 +174,10 @@ class _PlanActions extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: AppActionButton(
-            onTap: plan.isArchived
-                ? null
-                : () => Get.toNamed(
-                    RoutePath.createSpendingPlan,
-                    arguments: {'isClone': true, 'plan': plan},
-                  ),
+            onTap: () => Get.toNamed(
+                RoutePath.createSpendingPlan,
+                arguments: {'isClone': true, 'plan': plan},
+              ),
             icon: Icons.copy_rounded,
             label: 'Nhân bản',
             color: Colors.blueAccent,

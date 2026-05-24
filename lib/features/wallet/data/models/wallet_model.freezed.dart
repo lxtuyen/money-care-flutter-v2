@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WalletModel {
 
-@JsonKey(fromJson: NumParser.parseInt) int get id; String get name;@JsonKey(fromJson: NumParser.parseDouble) double get balance; String? get icon; String? get color;@JsonKey(name: 'is_active') bool get isActive; String get type; List<SavingGoalModel> get savingGoals;
+@JsonKey(fromJson: NumParser.parseInt) int get id; String get name;@JsonKey(fromJson: NumParser.parseDouble) double get balance;@JsonKey(name: 'is_active') bool get isActive; List<SavingGoalModel> get savingGoals;
 /// Create a copy of WalletModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WalletModelCopyWith<WalletModel> get copyWith => _$WalletModelCopyWithImpl<Wall
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.balance, balance) || other.balance == balance)&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.color, color) || other.color == color)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.savingGoals, savingGoals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.balance, balance) || other.balance == balance)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&const DeepCollectionEquality().equals(other.savingGoals, savingGoals));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,balance,icon,color,isActive,type,const DeepCollectionEquality().hash(savingGoals));
+int get hashCode => Object.hash(runtimeType,id,name,balance,isActive,const DeepCollectionEquality().hash(savingGoals));
 
 @override
 String toString() {
-  return 'WalletModel(id: $id, name: $name, balance: $balance, icon: $icon, color: $color, isActive: $isActive, type: $type, savingGoals: $savingGoals)';
+  return 'WalletModel(id: $id, name: $name, balance: $balance, isActive: $isActive, savingGoals: $savingGoals)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WalletModelCopyWith<$Res>  {
   factory $WalletModelCopyWith(WalletModel value, $Res Function(WalletModel) _then) = _$WalletModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(fromJson: NumParser.parseDouble) double balance, String? icon, String? color,@JsonKey(name: 'is_active') bool isActive, String type, List<SavingGoalModel> savingGoals
+@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(fromJson: NumParser.parseDouble) double balance,@JsonKey(name: 'is_active') bool isActive, List<SavingGoalModel> savingGoals
 });
 
 
@@ -65,16 +65,13 @@ class _$WalletModelCopyWithImpl<$Res>
 
 /// Create a copy of WalletModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? balance = null,Object? icon = freezed,Object? color = freezed,Object? isActive = null,Object? type = null,Object? savingGoals = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? balance = null,Object? isActive = null,Object? savingGoals = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,balance: null == balance ? _self.balance : balance // ignore: cast_nullable_to_non_nullable
-as double,icon: freezed == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
-as String?,color: freezed == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
-as String?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
-as bool,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,savingGoals: null == savingGoals ? _self.savingGoals : savingGoals // ignore: cast_nullable_to_non_nullable
+as double,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
+as bool,savingGoals: null == savingGoals ? _self.savingGoals : savingGoals // ignore: cast_nullable_to_non_nullable
 as List<SavingGoalModel>,
   ));
 }
@@ -160,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(fromJson: NumParser.parseDouble)  double balance,  String? icon,  String? color, @JsonKey(name: 'is_active')  bool isActive,  String type,  List<SavingGoalModel> savingGoals)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(fromJson: NumParser.parseDouble)  double balance, @JsonKey(name: 'is_active')  bool isActive,  List<SavingGoalModel> savingGoals)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WalletModel() when $default != null:
-return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.isActive,_that.type,_that.savingGoals);case _:
+return $default(_that.id,_that.name,_that.balance,_that.isActive,_that.savingGoals);case _:
   return orElse();
 
 }
@@ -181,10 +178,10 @@ return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.i
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(fromJson: NumParser.parseDouble)  double balance,  String? icon,  String? color, @JsonKey(name: 'is_active')  bool isActive,  String type,  List<SavingGoalModel> savingGoals)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(fromJson: NumParser.parseDouble)  double balance, @JsonKey(name: 'is_active')  bool isActive,  List<SavingGoalModel> savingGoals)  $default,) {final _that = this;
 switch (_that) {
 case _WalletModel():
-return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.isActive,_that.type,_that.savingGoals);case _:
+return $default(_that.id,_that.name,_that.balance,_that.isActive,_that.savingGoals);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +198,10 @@ return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.i
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(fromJson: NumParser.parseDouble)  double balance,  String? icon,  String? color, @JsonKey(name: 'is_active')  bool isActive,  String type,  List<SavingGoalModel> savingGoals)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(fromJson: NumParser.parseDouble)  double balance, @JsonKey(name: 'is_active')  bool isActive,  List<SavingGoalModel> savingGoals)?  $default,) {final _that = this;
 switch (_that) {
 case _WalletModel() when $default != null:
-return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.isActive,_that.type,_that.savingGoals);case _:
+return $default(_that.id,_that.name,_that.balance,_that.isActive,_that.savingGoals);case _:
   return null;
 
 }
@@ -216,16 +213,13 @@ return $default(_that.id,_that.name,_that.balance,_that.icon,_that.color,_that.i
 @JsonSerializable()
 
 class _WalletModel extends WalletModel {
-  const _WalletModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, this.name = '', @JsonKey(fromJson: NumParser.parseDouble) this.balance = 0, this.icon, this.color, @JsonKey(name: 'is_active') this.isActive = true, this.type = 'regular', final  List<SavingGoalModel> savingGoals = const []}): _savingGoals = savingGoals,super._();
+  const _WalletModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, this.name = '', @JsonKey(fromJson: NumParser.parseDouble) this.balance = 0, @JsonKey(name: 'is_active') this.isActive = true, final  List<SavingGoalModel> savingGoals = const []}): _savingGoals = savingGoals,super._();
   factory _WalletModel.fromJson(Map<String, dynamic> json) => _$WalletModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseInt) final  int id;
 @override@JsonKey() final  String name;
 @override@JsonKey(fromJson: NumParser.parseDouble) final  double balance;
-@override final  String? icon;
-@override final  String? color;
 @override@JsonKey(name: 'is_active') final  bool isActive;
-@override@JsonKey() final  String type;
  final  List<SavingGoalModel> _savingGoals;
 @override@JsonKey() List<SavingGoalModel> get savingGoals {
   if (_savingGoals is EqualUnmodifiableListView) return _savingGoals;
@@ -247,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.balance, balance) || other.balance == balance)&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.color, color) || other.color == color)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other._savingGoals, _savingGoals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.balance, balance) || other.balance == balance)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&const DeepCollectionEquality().equals(other._savingGoals, _savingGoals));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,balance,icon,color,isActive,type,const DeepCollectionEquality().hash(_savingGoals));
+int get hashCode => Object.hash(runtimeType,id,name,balance,isActive,const DeepCollectionEquality().hash(_savingGoals));
 
 @override
 String toString() {
-  return 'WalletModel(id: $id, name: $name, balance: $balance, icon: $icon, color: $color, isActive: $isActive, type: $type, savingGoals: $savingGoals)';
+  return 'WalletModel(id: $id, name: $name, balance: $balance, isActive: $isActive, savingGoals: $savingGoals)';
 }
 
 
@@ -267,7 +261,7 @@ abstract mixin class _$WalletModelCopyWith<$Res> implements $WalletModelCopyWith
   factory _$WalletModelCopyWith(_WalletModel value, $Res Function(_WalletModel) _then) = __$WalletModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(fromJson: NumParser.parseDouble) double balance, String? icon, String? color,@JsonKey(name: 'is_active') bool isActive, String type, List<SavingGoalModel> savingGoals
+@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(fromJson: NumParser.parseDouble) double balance,@JsonKey(name: 'is_active') bool isActive, List<SavingGoalModel> savingGoals
 });
 
 
@@ -284,16 +278,13 @@ class __$WalletModelCopyWithImpl<$Res>
 
 /// Create a copy of WalletModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? balance = null,Object? icon = freezed,Object? color = freezed,Object? isActive = null,Object? type = null,Object? savingGoals = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? balance = null,Object? isActive = null,Object? savingGoals = null,}) {
   return _then(_WalletModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,balance: null == balance ? _self.balance : balance // ignore: cast_nullable_to_non_nullable
-as double,icon: freezed == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
-as String?,color: freezed == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
-as String?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
-as bool,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,savingGoals: null == savingGoals ? _self._savingGoals : savingGoals // ignore: cast_nullable_to_non_nullable
+as double,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
+as bool,savingGoals: null == savingGoals ? _self._savingGoals : savingGoals // ignore: cast_nullable_to_non_nullable
 as List<SavingGoalModel>,
   ));
 }

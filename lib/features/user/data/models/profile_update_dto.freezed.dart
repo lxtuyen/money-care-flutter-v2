@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProfileUpdateDto {
 
-@JsonKey(name: 'first_name') String? get firstName;@JsonKey(name: 'last_name') String? get lastName;@JsonKey(name: 'avatar') String? get avatar;
+@JsonKey(name: 'first_name') String? get firstName;@JsonKey(name: 'last_name') String? get lastName;
 /// Create a copy of ProfileUpdateDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ProfileUpdateDtoCopyWith<ProfileUpdateDto> get copyWith => _$ProfileUpdateDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileUpdateDto&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileUpdateDto&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,firstName,lastName,avatar);
+int get hashCode => Object.hash(runtimeType,firstName,lastName);
 
 @override
 String toString() {
-  return 'ProfileUpdateDto(firstName: $firstName, lastName: $lastName, avatar: $avatar)';
+  return 'ProfileUpdateDto(firstName: $firstName, lastName: $lastName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ProfileUpdateDtoCopyWith<$Res>  {
   factory $ProfileUpdateDtoCopyWith(ProfileUpdateDto value, $Res Function(ProfileUpdateDto) _then) = _$ProfileUpdateDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'first_name') String? firstName,@JsonKey(name: 'last_name') String? lastName,@JsonKey(name: 'avatar') String? avatar
+@JsonKey(name: 'first_name') String? firstName,@JsonKey(name: 'last_name') String? lastName
 });
 
 
@@ -65,11 +65,10 @@ class _$ProfileUpdateDtoCopyWithImpl<$Res>
 
 /// Create a copy of ProfileUpdateDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? firstName = freezed,Object? lastName = freezed,Object? avatar = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? firstName = freezed,Object? lastName = freezed,}) {
   return _then(_self.copyWith(
 firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -155,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'first_name')  String? firstName, @JsonKey(name: 'last_name')  String? lastName, @JsonKey(name: 'avatar')  String? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'first_name')  String? firstName, @JsonKey(name: 'last_name')  String? lastName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProfileUpdateDto() when $default != null:
-return $default(_that.firstName,_that.lastName,_that.avatar);case _:
+return $default(_that.firstName,_that.lastName);case _:
   return orElse();
 
 }
@@ -176,10 +175,10 @@ return $default(_that.firstName,_that.lastName,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'first_name')  String? firstName, @JsonKey(name: 'last_name')  String? lastName, @JsonKey(name: 'avatar')  String? avatar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'first_name')  String? firstName, @JsonKey(name: 'last_name')  String? lastName)  $default,) {final _that = this;
 switch (_that) {
 case _ProfileUpdateDto():
-return $default(_that.firstName,_that.lastName,_that.avatar);case _:
+return $default(_that.firstName,_that.lastName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +195,10 @@ return $default(_that.firstName,_that.lastName,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'first_name')  String? firstName, @JsonKey(name: 'last_name')  String? lastName, @JsonKey(name: 'avatar')  String? avatar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'first_name')  String? firstName, @JsonKey(name: 'last_name')  String? lastName)?  $default,) {final _that = this;
 switch (_that) {
 case _ProfileUpdateDto() when $default != null:
-return $default(_that.firstName,_that.lastName,_that.avatar);case _:
+return $default(_that.firstName,_that.lastName);case _:
   return null;
 
 }
@@ -211,12 +210,11 @@ return $default(_that.firstName,_that.lastName,_that.avatar);case _:
 @JsonSerializable()
 
 class _ProfileUpdateDto implements ProfileUpdateDto {
-  const _ProfileUpdateDto({@JsonKey(name: 'first_name') this.firstName, @JsonKey(name: 'last_name') this.lastName, @JsonKey(name: 'avatar') this.avatar});
+  const _ProfileUpdateDto({@JsonKey(name: 'first_name') this.firstName, @JsonKey(name: 'last_name') this.lastName});
   factory _ProfileUpdateDto.fromJson(Map<String, dynamic> json) => _$ProfileUpdateDtoFromJson(json);
 
 @override@JsonKey(name: 'first_name') final  String? firstName;
 @override@JsonKey(name: 'last_name') final  String? lastName;
-@override@JsonKey(name: 'avatar') final  String? avatar;
 
 /// Create a copy of ProfileUpdateDto
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +229,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileUpdateDto&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileUpdateDto&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,firstName,lastName,avatar);
+int get hashCode => Object.hash(runtimeType,firstName,lastName);
 
 @override
 String toString() {
-  return 'ProfileUpdateDto(firstName: $firstName, lastName: $lastName, avatar: $avatar)';
+  return 'ProfileUpdateDto(firstName: $firstName, lastName: $lastName)';
 }
 
 
@@ -251,7 +249,7 @@ abstract mixin class _$ProfileUpdateDtoCopyWith<$Res> implements $ProfileUpdateD
   factory _$ProfileUpdateDtoCopyWith(_ProfileUpdateDto value, $Res Function(_ProfileUpdateDto) _then) = __$ProfileUpdateDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'first_name') String? firstName,@JsonKey(name: 'last_name') String? lastName,@JsonKey(name: 'avatar') String? avatar
+@JsonKey(name: 'first_name') String? firstName,@JsonKey(name: 'last_name') String? lastName
 });
 
 
@@ -268,11 +266,10 @@ class __$ProfileUpdateDtoCopyWithImpl<$Res>
 
 /// Create a copy of ProfileUpdateDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? firstName = freezed,Object? lastName = freezed,Object? avatar = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? firstName = freezed,Object? lastName = freezed,}) {
   return _then(_ProfileUpdateDto(
 firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

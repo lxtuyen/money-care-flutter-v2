@@ -10,12 +10,10 @@ _ProfileUpdateDto _$ProfileUpdateDtoFromJson(Map<String, dynamic> json) =>
     _ProfileUpdateDto(
       firstName: json['first_name'] as String?,
       lastName: json['last_name'] as String?,
-      avatar: json['avatar'] as String?,
     );
 
 Map<String, dynamic> _$ProfileUpdateDtoToJson(_ProfileUpdateDto instance) =>
     <String, dynamic>{
       'first_name': instance.firstName,
       'last_name': instance.lastName,
-      'avatar': instance.avatar,
     };

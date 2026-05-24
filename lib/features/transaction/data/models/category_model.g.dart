@@ -8,12 +8,12 @@ part of 'category_model.dart';
 
 _SubCategoryModel _$SubCategoryModelFromJson(Map<String, dynamic> json) =>
     _SubCategoryModel(
-      id: (json['id'] as num?)?.toInt(),
+      id: NumParser.parseIntNullable(json['id']),
       name: json['name'] as String? ?? '',
       icon: json['icon'] as String? ?? '',
       type: json['type'] as String?,
       isSystem: json['is_system'] as bool? ?? false,
-      categoryId: (json['categoryId'] as num?)?.toInt(),
+      categoryId: NumParser.parseIntNullable(json['categoryId']),
     );
 
 Map<String, dynamic> _$SubCategoryModelToJson(_SubCategoryModel instance) =>
@@ -28,7 +28,7 @@ Map<String, dynamic> _$SubCategoryModelToJson(_SubCategoryModel instance) =>
 
 _CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>
     _CategoryModel(
-      id: (json['id'] as num?)?.toInt(),
+      id: NumParser.parseIntNullable(json['id']),
       name: json['name'] as String? ?? '',
       icon: json['icon'] as String? ?? '',
       color: const ColorConverter().fromJson(json['color']),

@@ -184,7 +184,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                     const SizedBox(height: 2),
                     if (selectedWallet != null)
                       Text(
-                        "${selectedWallet.icon ?? '💰'} ${selectedWallet.name}",
+                        "💰 ${selectedWallet.name}",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -306,10 +306,10 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                                       .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Center(
+                            child: const Center(
                               child: Text(
-                                wallet.icon ?? '💰',
-                                style: const TextStyle(fontSize: 22),
+                                '💰',
+                                style: TextStyle(fontSize: 22),
                               ),
                             ),
                           ),
@@ -424,7 +424,6 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
         fromWalletId!,
         toWalletId!,
         amount,
-        fee: 0,
         note: noteController.text.trim(),
         categoryId: categoryId,
       );

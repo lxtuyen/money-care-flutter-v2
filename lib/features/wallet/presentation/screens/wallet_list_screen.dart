@@ -57,7 +57,7 @@ class WalletListScreen extends GetView<WalletController> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _ListActionButton(
-                    onTap: () => controller.autoCreateNextWallet(),
+                    onTap: () => controller.createWallet(),
                     icon: Icons.add_circle_outline_rounded,
                     label: "Thêm ví",
                     color: AppColors.primary,
@@ -77,7 +77,7 @@ class WalletListScreen extends GetView<WalletController> {
                 return AppEmptyState(
                   message: "Bạn chưa có ví nào",
                   action: ElevatedButton(
-                    onPressed: () => controller.autoCreateNextWallet(),
+                    onPressed: () => controller.createWallet(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -134,10 +134,10 @@ class WalletListScreen extends GetView<WalletController> {
                   color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
-                    wallet.icon ?? "💰",
-                    style: const TextStyle(fontSize: 26),
+                    "💰",
+                    style: TextStyle(fontSize: 26),
                   ),
                 ),
               ),

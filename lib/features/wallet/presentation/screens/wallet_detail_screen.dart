@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
-import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -10,8 +8,6 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
@@ -24,39 +20,14 @@ class WalletDetailScreen extends StatefulWidget {
 
 class _WalletDetailScreenState extends State<WalletDetailScreen> {
   final walletController = Get.find<WalletController>();
-  final transactionController = Get.find<TransactionController>();
   
   late WalletEntity wallet;
-  final RxList<TransactionEntity> walletTransactions = <TransactionEntity>[].obs;
-  final RxBool isLoadingTransactions = false.obs;
 
   @override
   void initState() {
     super.initState();
     wallet = Get.arguments as WalletEntity;
-    _fetchTransactions();
-  }
-
-  Future<void> _fetchTransactions() async {
-    isLoadingTransactions.value = true;
-    try {
-      final filter = TransactionFilterDto(
-        walletId: wallet.id,
-        limit: 50,
-        includeTransfer: 'true',
-      );
-      final userId = Get.find<AppController>().userId.value;
-      if (userId != null) {
-        final result = await transactionController.filterTransactionsUseCase(userId, filter);
-        final all = [...result.expenseTransactions, ...result.incomeTransactions];
-        all.sort((a, b) => (b.transactionDate ?? DateTime.now()).compareTo(a.transactionDate ?? DateTime.now()));
-        walletTransactions.assignAll(all);
-      }
-    } catch (e) {
-      debugPrint('Error fetching wallet transactions: $e');
-    } finally {
-      isLoadingTransactions.value = false;
-    }
+    walletController.fetchWalletTransactions(wallet.id);
   }
 
   void _showEditDialog() {
@@ -212,11 +183,11 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
           
           Expanded(
             child: Obx(() {
-              if (isLoadingTransactions.value) {
+              if (walletController.isLoadingTransactions.value) {
                 return const Center(child: CircularProgressIndicator());
               }
               
-              if (walletTransactions.isEmpty) {
+              if (walletController.walletTransactions.isEmpty) {
                 return const AppEmptyState(
                   message: "Chưa có giao dịch nào cho ví này",
                 );
@@ -239,9 +210,9 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                      itemCount: walletTransactions.length,
+                      itemCount: walletController.walletTransactions.length,
                       itemBuilder: (context, index) {
-                        final tx = walletTransactions[index];
+                        final tx = walletController.walletTransactions[index];
                         return TransactionItem(
                           item: tx,
                           onTap: () {

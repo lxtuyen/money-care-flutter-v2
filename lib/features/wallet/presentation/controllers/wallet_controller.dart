@@ -1,10 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:money_care/features/wallet/data/models/transfer_dto.dart';
+import 'package:money_care/features/wallet/data/models/update_wallet_dto.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/wallet/domain/repositories/wallet_repository.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 
 class WalletController extends GetxController {
   final WalletRepository repository;
@@ -15,6 +20,9 @@ class WalletController extends GetxController {
   var totalAssets = 0.0.obs;
   var isLoading = false.obs;
   var selectedWallet = Rxn<WalletEntity>();
+
+  final RxList<TransactionEntity> walletTransactions = <TransactionEntity>[].obs;
+  final RxBool isLoadingTransactions = false.obs;
 
   @override
   void onInit() {
@@ -53,18 +61,13 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<void> createWallet(String name, double balance, {String? icon, String? color}) async {
+  Future<void> createWallet() async {
     isLoading.value = true;
     try {
-      await repository.create({
-        'name': name,
-        'balance': balance,
-        'icon': icon,
-        'color': color,
-      });
+      await repository.create({});
       await refreshWallets();
       wallets.refresh();
-      AppHelperFunction.showSuccessSnackBar('Đã tạo $name thành công');
+      AppHelperFunction.showSuccessSnackBar('Tạo ví thành công');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Không thể tạo ví: $e');
     } finally {
@@ -72,22 +75,13 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<void> autoCreateNextWallet() async {
-    final nextNumber = wallets.length + 1;
-    final name = "Ví $nextNumber";
-    await createWallet(name, 0.0, icon: "💰", color: "#4CAF50");
-  }
-
-  Future<void> updateWallet(int id, String name, {String? icon, String? color, bool? isActive, bool? isPrimary}) async {
+  Future<void> updateWallet(int id, String name, {bool? isActive}) async {
     isLoading.value = true;
     try {
-      await repository.update(id, {
-        'name': name,
-        'icon': ?icon,
-        'color': ?color,
-        'is_active': ?isActive,
-        'is_primary': ?isPrimary,
-      });
+      await repository.update(id, UpdateWalletDto(
+        name: name,
+        isActive: isActive,
+      ));
       await refreshWallets();
       AppHelperFunction.showSuccessSnackBar('Cập nhật ví thành công');
     } catch (e) {
@@ -110,17 +104,16 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<void> transfer(int fromId, int toId, double amount, {double fee = 0, String? note, int? categoryId}) async {
+  Future<void> transfer(int fromId, int toId, double amount, {String? note, int? categoryId}) async {
     isLoading.value = true;
     try {
-      await repository.transfer({
-        'fromWalletId': fromId,
-        'toWalletId': toId,
-        'amount': amount,
-        'fee': fee,
-        'note': ?note,
-        'categoryId': ?categoryId,
-      });
+      await repository.transfer(TransferDto(
+        fromWalletId: fromId,
+        toWalletId: toId,
+        amount: amount,
+        note: note,
+        categoryId: categoryId,
+      ));
       await refreshWallets();
       
       final appController = Get.find<AppController>();
@@ -138,6 +131,30 @@ class WalletController extends GetxController {
       rethrow;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchWalletTransactions(int walletId) async {
+    isLoadingTransactions.value = true;
+    try {
+      final filter = TransactionFilterDto(
+        walletId: walletId,
+        limit: 50,
+        includeTransfer: 'true',
+      );
+      final appController = Get.find<AppController>();
+      final userId = appController.userId.value;
+      if (userId != null) {
+        final transactionController = Get.find<TransactionController>();
+        final result = await transactionController.filterTransactionsUseCase(userId, filter);
+        final all = [...result.expenseTransactions, ...result.incomeTransactions];
+        all.sort((a, b) => (b.transactionDate ?? DateTime.now()).compareTo(a.transactionDate ?? DateTime.now()));
+        walletTransactions.assignAll(all);
+      }
+    } catch (e) {
+      debugPrint('Error fetching wallet transactions: $e');
+    } finally {
+      isLoadingTransactions.value = false;
     }
   }
 }

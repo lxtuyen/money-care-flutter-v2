@@ -10,10 +10,7 @@ _WalletModel _$WalletModelFromJson(Map<String, dynamic> json) => _WalletModel(
   id: NumParser.parseInt(json['id']),
   name: json['name'] as String? ?? '',
   balance: json['balance'] == null ? 0 : NumParser.parseDouble(json['balance']),
-  icon: json['icon'] as String?,
-  color: json['color'] as String?,
   isActive: json['is_active'] as bool? ?? true,
-  type: json['type'] as String? ?? 'regular',
   savingGoals:
       (json['savingGoals'] as List<dynamic>?)
           ?.map((e) => SavingGoalModel.fromJson(e as Map<String, dynamic>))
@@ -26,9 +23,6 @@ Map<String, dynamic> _$WalletModelToJson(_WalletModel instance) =>
       'id': instance.id,
       'name': instance.name,
       'balance': instance.balance,
-      'icon': instance.icon,
-      'color': instance.color,
       'is_active': instance.isActive,
-      'type': instance.type,
       'savingGoals': instance.savingGoals,
     };

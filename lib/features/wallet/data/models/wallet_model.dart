@@ -12,10 +12,7 @@ abstract class WalletModel with _$WalletModel {
     @JsonKey(fromJson: NumParser.parseInt) required int id,
     @Default('') String name,
     @JsonKey(fromJson: NumParser.parseDouble) @Default(0) double balance,
-    String? icon,
-    String? color,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
-    @Default('regular') String type,
     @Default([]) List<SavingGoalModel> savingGoals,
   }) = _WalletModel;
 
@@ -29,10 +26,7 @@ abstract class WalletModel with _$WalletModel {
       id: id,
       name: name,
       balance: balance,
-      icon: icon,
-      color: color,
       isActive: isActive,
-      type: type,
       savingGoals: savingGoals.map((e) => e.toEntity()).toList(),
     );
   }

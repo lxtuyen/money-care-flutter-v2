@@ -5,6 +5,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/gamification/presentation/controllers/streak_calendar_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
 class StreakDayTransactionList extends StatelessWidget {
   final StreakCalendarController controller;
@@ -56,7 +57,7 @@ class StreakDayTransactionList extends StatelessWidget {
           const SizedBox(height: 16),
           Obx(() {
             if (controller.selectedDayTransactions.isEmpty) {
-              return const _EmptyTransactionState();
+              return AppEmptyState(message: 'streak.noTransactionOnDay'.tr);
             }
 
             return Container(
@@ -98,46 +99,6 @@ class StreakDayTransactionList extends StatelessWidget {
               ),
             );
           }),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyTransactionState extends StatelessWidget {
-  const _EmptyTransactionState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 48,
-            color: AppColors.text4.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'streak.noTransactionOnDay'.tr,
-            style: TextStyle(
-              color: AppColors.text3.withValues(alpha: 0.6),
-              fontSize: 14,
-            ),
-          ),
         ],
       ),
     );

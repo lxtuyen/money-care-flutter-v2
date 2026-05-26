@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/app/widgets/states/app_empty_state.dart';
 
 class TransactionListBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -102,27 +101,8 @@ class TransactionListBubble extends StatelessWidget {
             ),
 
             if (transactions.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.inbox_outlined,
-                      color: Colors.grey.shade400,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Không có giao dịch nào trong khoảng thời gian này.',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              AppEmptyState(
+                message: 'Không có giao dịch nào trong khoảng thời gian này.',
               )
             else
               ListView.separated(
@@ -149,9 +129,6 @@ class TransactionListBubble extends StatelessWidget {
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () => Get.find<ChatController>().onTransactionTap(
-                        transactionMaps[index] as Map<String, dynamic>,
-                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -237,7 +214,6 @@ class TransactionListBubble extends StatelessWidget {
                 },
               ),
 
-            // Summary footer
             if (transactions.isNotEmpty) _buildSummaryFooter(transactions),
           ],
         ),

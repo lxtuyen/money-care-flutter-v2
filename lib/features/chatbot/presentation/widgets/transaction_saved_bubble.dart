@@ -49,7 +49,6 @@ class TransactionSavedBubble extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => Get.find<ChatController>().onTransactionTap(metadata),
             borderRadius: BorderRadius.circular(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

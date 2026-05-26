@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_wizard_controller.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/estimated_expense_edit_sheet.dart';
-import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_budget_sketch_card.dart';
 import 'package:money_care/features/spending_plan/presentation/widgets/spending_plan_setup_widgets.dart';
+import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class SpendingPlanWizard extends StatefulWidget {
   final double initialIncome;
@@ -43,7 +44,7 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
   late final PageController _pageController;
   late final TextEditingController _incomeController;
   late final SpendingPlanWizardController _wizardController;
-  final _expensesScrollController = ScrollController();
+  final Map<int, TextEditingController> _amountControllers = {};
 
   @override
   void initState() {
@@ -67,7 +68,9 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
   void dispose() {
     _pageController.dispose();
     _incomeController.dispose();
-    _expensesScrollController.dispose();
+    for (final controller in _amountControllers.values) {
+      controller.dispose();
+    }
     Get.delete<SpendingPlanWizardController>();
     super.dispose();
   }
@@ -81,6 +84,10 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
   }
 
   void _nextStep() {
+    if (_wizardController.currentStep.value ==
+        _wizardController.categoryStepIndex) {
+      _wizardController.prepareExpensesFromSelectedCategories();
+    }
     if (_wizardController.goToNextStep()) {
       _animateToCurrentStep();
     }
@@ -128,7 +135,8 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                 children: [
                   if (widget.showWelcomeStep) _buildWelcomeStep(),
                   _buildIncomeStep(),
-                  _buildExpensesStep(),
+                  _buildCategoryStep(),
+                  _buildBudgetStep(),
                 ],
               ),
             ),
@@ -190,19 +198,18 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                     ),
                   ),
                   const Text(
-                    'Chào mừng bạn đến với\nMoney Care AI 👋',
+                    'Chào mừng bạn đến với\nMoney Care AI',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
                       color: AppColors.text1,
                       height: 1.3,
-                      letterSpacing: -0.5,
                     ),
                   ),
                   const SizedBox(height: 18),
                   const Text(
-                    'Hãy cùng thiết lập kế hoạch tài chính ban đầu chỉ với 2 bước cực kỳ đơn giản để bắt đầu quản lý chi tiêu thông minh.',
+                    'Hãy thiết lập kế hoạch tài chính ban đầu để Money Care AI hiểu thu nhập, danh mục thiết yếu và ngân sách hằng tháng của bạn.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,
@@ -211,21 +218,8 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 14),
-                  const Text(
-                    'Kế hoạch này sẽ giúp Money Care AI theo dõi, phân tích và đưa ra các đề xuất điều chỉnh chi tiêu tối ưu cho bạn.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.45,
-                      color: AppColors.text3,
-                    ),
-                  ),
                   const SizedBox(height: 32),
-                  PrimaryButton(
-                    label: 'Bắt đầu ngay',
-                    onPressed: _nextStep,
-                  ),
+                  PrimaryButton(label: 'Bắt đầu ngay', onPressed: _nextStep),
                 ],
               ),
             ),
@@ -243,7 +237,7 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            '1. Nhập thu nhập hàng tháng',
+            '1. Nhập thu nhập hằng tháng',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -252,18 +246,16 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Khoản thu nhập trung bình bạn nhận được mỗi tháng để làm cơ sở phân bổ ngân sách.',
+            'Khoản thu nhập trung bình mỗi tháng sẽ là cơ sở để phân bổ ngân sách.',
             style: TextStyle(fontSize: 14, color: AppColors.text3, height: 1.4),
           ),
           const SizedBox(height: 32),
           AppCurrencyFormField(
             controller: _incomeController,
-            label: 'Thu nhập hàng tháng',
+            label: 'Thu nhập hằng tháng',
             icon: Icons.account_balance_wallet_outlined,
             hintText: 'VD: 10.000.000',
-            onChanged: (val) {
-              _wizardController.updateIncomeFromText(val);
-            },
+            onChanged: _wizardController.updateIncomeFromText,
           ),
           const SizedBox(height: 18),
           const Text(
@@ -292,13 +284,7 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
             return SizedBox(
               width: double.infinity,
               child: FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
+                style: _primaryButtonStyle(),
                 onPressed: hasIncome ? _nextStep : null,
                 child: const Text(
                   'Tiếp tục',
@@ -312,207 +298,574 @@ class _SpendingPlanWizardState extends State<SpendingPlanWizard> {
     );
   }
 
-  Widget _buildExpensesStep() {
+  Widget _buildCategoryStep() {
     return Container(
       color: const Color(0xFFF8FAFC),
       child: Column(
         children: [
           Expanded(
-            child: ListView(
-              controller: _expensesScrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              children: [
-                Obx(
-                  () => SpendingPlanBudgetSketchCard(
-                    income: _wizardController.monthlyIncome.value,
-                    fixedExpense: _wizardController.estimatedExpenseTotal,
-                    flexibleAmount: _wizardController.remainingAmount,
-                    fixedRatio: _wizardController.estimatedExpenseRatio,
-                    flexibleRatio: _wizardController.flexibleExpenseRatio,
-                    expenses: List.from(_wizardController.estimatedExpenses),
-                    monthlyAmountFor: _wizardController.monthlyAmountFor,
-                    onEditExpense: _openExpenseSheet,
-                    onRemoveExpense: _wizardController.removeExpense,
-                    onQuickEditAmount: (index, newAmount) async {
-                      return _wizardController.quickUpdateExpenseAmount(
-                        index,
-                        newAmount,
-                      );
-                    },
-                  ),
+            child: Obx(() {
+              final categories = _wizardController.expenseCategories;
+              final selectedIds = _wizardController.selectedEssentialCategoryIds
+                  .toSet();
+              if (categories.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return GridView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 190,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1.2,
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Thêm nhanh theo danh mục:',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.text2,
-                  ),
+                itemCount: categories.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _CategoryIntroCard(
+                      selectedCount:
+                          _wizardController.selectedEssentialCategoryIds.length,
+                    );
+                  }
+                  final category = categories[index - 1];
+                  return _EssentialCategoryTile(
+                    category: category,
+                    selected:
+                        category.id != null &&
+                        selectedIds.contains(category.id),
+                    onTap: () =>
+                        _wizardController.toggleEssentialCategory(category),
+                  );
+                },
+              );
+            }),
+          ),
+          Obx(
+            () => _BottomActionBar(
+              message: _wizardController.hasSelectedEssentialCategories
+                  ? null
+                  : 'Chọn ít nhất một danh mục thiết yếu để tiếp tục.',
+              child: FilledButton(
+                style: _primaryButtonStyle(),
+                onPressed: _wizardController.hasSelectedEssentialCategories
+                    ? _nextStep
+                    : null,
+                child: const Text(
+                  'Tiếp tục',
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                 ),
-                const SizedBox(height: 10),
-                Obx(
-                  () => ExpenseCategoryChips(
-                    selectedCategoryIds: _wizardController.estimatedExpenses
-                        .map((e) => e.categoryId)
-                        .toSet(),
-                    onTapCategory: (cat) {
-                      _addEmptyExpenseAndScroll(
-                        category: cat.name,
-                        categoryId: cat.id,
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
+              ),
             ),
           ),
-          _buildExpensesBottomBar(),
         ],
       ),
     );
   }
 
-  Widget _buildExpensesBottomBar() {
+  Widget _buildBudgetStep() {
+    return Container(
+      color: const Color(0xFFF8FAFC),
+      child: Column(
+        children: [
+          Expanded(
+            child: Obx(() {
+              _syncAmountControllers();
+              final expenses = _wizardController.estimatedExpenses.toList();
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+                children: [
+                  _BudgetSummaryCard(
+                    income: _wizardController.monthlyIncome.value,
+                    estimatedExpenseTotal:
+                        _wizardController.estimatedExpenseTotal,
+                    remainingAmount: _wizardController.remainingAmount,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    '2. Nhập ngân sách cho từng danh mục',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.text1,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Bạn có thể nhập số tiền hoặc chọn nhanh theo % thu nhập.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.text3,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ...expenses.map(_buildBudgetExpenseCard),
+                ],
+              );
+            }),
+          ),
+          _buildBudgetBottomBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBudgetExpenseCard(EstimatedExpenseEntity expense) {
+    final category = _wizardController.expenseCategories.firstWhereOrNull(
+      (item) => item.id == expense.categoryId,
+    );
+    final categoryId = expense.categoryId;
+    final controller = categoryId != null
+        ? _amountControllers[categoryId]
+        : TextEditingController();
+    final income = _wizardController.monthlyIncome.value;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderSecondary),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _CategoryIcon(category: category),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  expense.category ?? category?.name ?? 'Khoản chi',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    color: AppColors.text1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (controller != null)
+            AppCurrencyFormField(
+              controller: controller,
+              label: 'Số tiền mỗi tháng',
+              icon: Icons.payments_outlined,
+              hintText: 'VD: 1.000.000',
+              onChanged: (value) {
+                if (categoryId == null) return;
+                _wizardController.updateExpenseAmountByCategoryId(
+                  categoryId,
+                  _parseMoney(value),
+                );
+              },
+            ),
+          const SizedBox(height: 10),
+          Row(
+            children: const [5, 10, 15, 20, 25].map((percent) {
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: percent == 25 ? 0 : 6),
+                  child: _PercentChip(
+                    percent: percent,
+                    onPressed: categoryId == null
+                        ? null
+                        : () {
+                            final amount = income * percent / 100;
+                            controller?.text = amount.round().toString();
+                            _wizardController.updateExpenseAmountByCategoryId(
+                              categoryId,
+                              amount,
+                            );
+                          },
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBudgetBottomBar() {
     return Obx(() {
       final isOver = _wizardController.remainingAmount < 0;
       final canSave = _wizardController.canSave;
       final isSaving = widget.isSaving;
+      final message = isOver
+          ? 'Chi phí đang vượt thu nhập, hãy chỉnh lại trước khi lưu.'
+          : _wizardController.hasUnfilledExpenses
+          ? 'Vui lòng nhập số tiền cho tất cả danh mục đã chọn.'
+          : null;
 
-      return Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: const Border(
-            top: BorderSide(color: AppColors.borderSecondary, width: 0.8),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (isOver)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 12),
-                child: Text(
-                  'Chi phí đang vượt thu nhập, hãy chỉnh lại trước khi lưu.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w600,
+      return _BottomActionBar(
+        message: message,
+        child: FilledButton(
+          style: _primaryButtonStyle(),
+          onPressed: canSave && !isSaving
+              ? () async {
+                  await _wizardController.saveEssentialCategoryPreferences();
+                  await widget.onSave(
+                    _wizardController.monthlyIncome.value,
+                    _wizardController.estimatedExpenses.toList(),
+                    _wizardController,
+                  );
+                }
+              : null,
+          child: isSaving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Text(
+                  widget.saveButtonText,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
                   ),
                 ),
-              ),
-            if (!isOver && _wizardController.hasUnfilledExpenses)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 12),
-                child: Text(
-                  'Vui lòng nhập số tiền cho tất cả khoản chi.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onPressed: canSave && !isSaving
-                        ? () => widget.onSave(
-                            _wizardController.monthlyIncome.value,
-                            _wizardController.estimatedExpenses.toList(),
-                            _wizardController,
-                          )
-                        : null,
-                    child: isSaving
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : Text(
-                            widget.saveButtonText,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
       );
     });
   }
 
-  void _scrollToExpenseList() {
-    if (!_expensesScrollController.hasClients) return;
-    _expensesScrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOut,
-    );
-  }
+  void _syncAmountControllers() {
+    final activeIds = _wizardController.estimatedExpenses
+        .map((expense) => expense.categoryId)
+        .whereType<int>()
+        .toSet();
 
-  void _addEmptyExpenseAndScroll({
-    required String category,
-    required int? categoryId,
-  }) {
-    // Nếu đã có khoản cùng category chưa nhập tiền thì không thêm nữa
-    final alreadyExists = _wizardController.estimatedExpenses.any(
-      (e) => e.categoryId == categoryId && e.amount <= 0,
-    );
-    if (alreadyExists) {
-      _scrollToExpenseList();
-      return;
+    final staleIds = _amountControllers.keys
+        .where((id) => !activeIds.contains(id))
+        .toList();
+    for (final id in staleIds) {
+      _amountControllers.remove(id)?.dispose();
     }
-    _wizardController.addEmptyExpense(
-      category: category,
-      categoryId: categoryId,
-    );
-    Future.delayed(const Duration(milliseconds: 80), _scrollToExpenseList);
+
+    for (final expense in _wizardController.estimatedExpenses) {
+      final categoryId = expense.categoryId;
+      if (categoryId == null) continue;
+      final controller = _amountControllers.putIfAbsent(
+        categoryId,
+        () => TextEditingController(),
+      );
+      if (controller.text.isEmpty && expense.amount > 0) {
+        controller.text = expense.amount.round().toString();
+      }
+    }
   }
 
-  Future<void> _openExpenseSheet({
-    int? index,
-    EstimatedExpenseEntity? initial,
-  }) async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => EstimatedExpenseEditSheet(
-        initialDraft: initial,
-        onSave: (request) async {
-          _wizardController.saveDraftExpense(index: index, request: request);
-          return true;
-        },
+  double _parseMoney(String value) {
+    return double.tryParse(value.replaceAll('.', '').replaceAll(',', '')) ?? 0;
+  }
+
+  ButtonStyle _primaryButtonStyle() {
+    return FilledButton.styleFrom(
+      backgroundColor: AppColors.primary,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    );
+  }
+}
+
+class _PercentChip extends StatelessWidget {
+  final int percent;
+  final VoidCallback? onPressed;
+
+  const _PercentChip({required this.percent, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          padding: EdgeInsets.zero,
+          backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+          side: BorderSide(color: AppColors.primary.withValues(alpha: 0.18)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          minimumSize: Size.zero,
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            '$percent%',
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryIntroCard extends StatelessWidget {
+  final int selectedCount;
+
+  const _CategoryIntroCard({required this.selectedCount});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.auto_awesome_rounded, color: AppColors.primary),
+          const Spacer(),
+          const Text(
+            'Danh mục AI cần ưu tiên',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
+              color: AppColors.text1,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Đã chọn $selectedCount danh mục',
+            style: const TextStyle(fontSize: 12, color: AppColors.text3),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EssentialCategoryTile extends StatelessWidget {
+  final CategoryEntity category;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _EssentialCategoryTile({
+    required this.category,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final iconColor = selected ? AppColors.primary : AppColors.text3;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.borderSecondary,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _CategoryIcon(category: category, color: iconColor),
+                const Spacer(),
+                Icon(
+                  selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                  size: 20,
+                  color: selected ? AppColors.primary : AppColors.text4,
+                ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              category.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+                color: selected ? AppColors.primary : AppColors.text1,
+                height: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryIcon extends StatelessWidget {
+  final CategoryEntity? category;
+  final Color? color;
+
+  const _CategoryIcon({this.category, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final iconColor = color ?? category?.color ?? AppColors.primary;
+    final iconName = category?.icon ?? '';
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: iconColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: iconName.isNotEmpty
+            ? AppSvgIcon(iconName: iconName, color: iconColor, size: 20)
+            : Icon(Icons.receipt_long_outlined, color: iconColor, size: 20),
+      ),
+    );
+  }
+}
+
+class _BudgetSummaryCard extends StatelessWidget {
+  final double income;
+  final double estimatedExpenseTotal;
+  final double remainingAmount;
+
+  const _BudgetSummaryCard({
+    required this.income,
+    required this.estimatedExpenseTotal,
+    required this.remainingAmount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isOver = remainingAmount < 0;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderSecondary),
+      ),
+      child: Column(
+        children: [
+          _AmountRow(label: 'Thu nhập', value: income),
+          _AmountRow(
+            label: 'Tổng ngân sách đã nhập',
+            value: estimatedExpenseTotal,
+          ),
+          _AmountRow(
+            label: isOver ? 'Vượt ngân sách' : 'Số dư còn lại',
+            value: remainingAmount.abs(),
+            color: isOver ? AppColors.error : AppColors.primary,
+            prefix: isOver ? '-' : null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AmountRow extends StatelessWidget {
+  final String label;
+  final double value;
+  final String? prefix;
+  final Color? color;
+
+  const _AmountRow({
+    required this.label,
+    required this.value,
+    this.prefix,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.text2,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Text(
+            '${prefix ?? ''}${AppHelperFunction.formatAmount(value)}',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+              color: color ?? AppColors.text1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomActionBar extends StatelessWidget {
+  final String? message;
+  final Widget child;
+
+  const _BottomActionBar({required this.child, this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: const Border(
+          top: BorderSide(color: AppColors.borderSecondary, width: 0.8),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (message != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                message!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          child,
+        ],
       ),
     );
   }

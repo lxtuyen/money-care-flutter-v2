@@ -40,6 +40,19 @@ class TransactionFormController extends GetxController {
 
   TransactionEntity? initialItem;
 
+  void _clearFormState() {
+    amountController.clear();
+    categoryController.clear();
+    subCategoryController.clear();
+    walletNameController.clear();
+    noteController.clear();
+    selectedDate.value = null;
+    selectedCategoryId.value = null;
+    selectedSubCategoryId.value = null;
+    selectedWalletId.value = null;
+    selectedCategory = null;
+  }
+
   void changeTransactionType(String type) {
     transactionType = type;
     selectedCategoryId.value = null;
@@ -50,6 +63,7 @@ class TransactionFormController extends GetxController {
   }
 
   void init(TransactionEntity? item, [String type = 'expense']) {
+    _clearFormState();
     transactionType = type;
     initialItem = item;
 

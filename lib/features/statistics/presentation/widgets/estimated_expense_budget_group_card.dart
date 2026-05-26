@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
@@ -12,7 +11,6 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
   final int daysInMonth;
   final List<EstimatedExpenseEntity> expenses;
   final void Function(EstimatedExpenseEntity)? onExpenseTap;
-  final BudgetCategoryGoalImpact? goalImpact;
 
   const EstimatedExpenseBudgetGroupCard({
     super.key,
@@ -20,7 +18,6 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
     required this.daysInMonth,
     required this.expenses,
     this.onExpenseTap,
-    this.goalImpact,
   });
 
   static Map<String, List<EstimatedExpenseEntity>> groupExpenses(
@@ -203,107 +200,6 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
       (item) => item.name.toLowerCase() == categoryName.toLowerCase(),
     );
     return category?.icon ?? '';
-  }
-
-  String _formatMoney(double value) {
-    return AppHelperFunction.formatAmount(value);
-  }
-}
-
-class _EstimatedExpenseBudgetGroupItem extends StatelessWidget {
-  final EstimatedExpenseEntity expense;
-  final int daysInMonth;
-  final VoidCallback? onTap;
-
-  const _EstimatedExpenseBudgetGroupItem({
-    required this.expense,
-    required this.daysInMonth,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final themeColors = AppThemeColors.of(context);
-
-    final child = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 6,
-          height: 6,
-          margin: const EdgeInsets.only(top: 8),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.7),
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _displayName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: themeColors.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              if (_dailyLimit > 0) ...[
-                const SizedBox(height: 2),
-                Text(
-                  '${_formatMoney(expense.todaySpent)} / ${_formatMoney(_dailyLimit)} hôm nay',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: expense.dailyOverAmount > 0
-                        ? AppColors.expense
-                        : themeColors.textMuted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-
-    if (onTap != null) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(padding: const EdgeInsets.all(6), child: child),
-          ),
-        ),
-      );
-    }
-
-    return Padding(padding: const EdgeInsets.only(top: 10), child: child);
-  }
-
-  String get _displayName {
-    final subCategory = expense.subCategory?.trim();
-    if (subCategory != null && subCategory.isNotEmpty) return subCategory;
-    return expense.displayName;
-  }
-
-  double get _dailyLimit {
-    if (expense.dailyLimit != null && expense.dailyLimit! > 0) {
-      return expense.dailyLimit!;
-    }
-    if (expense.frequencyType.toLowerCase() == 'daily') {
-      return expense.amount * _frequencyValue;
-    }
-    return 0;
-  }
-
-  int get _frequencyValue {
-    return expense.frequencyValue <= 0 ? 1 : expense.frequencyValue;
   }
 
   String _formatMoney(double value) {

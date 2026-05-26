@@ -96,7 +96,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         controller: controller.scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         itemCount: messages.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final m = messages[index];
           if (!m.isUser && m.metadata != null) {

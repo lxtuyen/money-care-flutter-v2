@@ -3,19 +3,16 @@ import 'package:get/get.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
-import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 
 class BudgetTrackingSection extends StatelessWidget {
   final SpendingPlanStatsEntity stats;
   final Map<String, List<EstimatedExpenseEntity>> groupedExpenses;
-  final GoalPlanImpact? planImpact;
 
   const BudgetTrackingSection({
     super.key,
     required this.stats,
     required this.groupedExpenses,
-    this.planImpact,
   });
 
   @override
@@ -39,22 +36,11 @@ class BudgetTrackingSection extends StatelessWidget {
                 categoryName: entry.key,
                 daysInMonth: daysInMonth,
                 expenses: entry.value,
-                goalImpact: _categoryImpactFor(planImpact, entry.key),
               );
             }),
           ],
         ],
       ),
-    );
-  }
-
-  BudgetCategoryGoalImpact? _categoryImpactFor(
-    GoalPlanImpact? impact,
-    String categoryName,
-  ) {
-    if (impact == null) return null;
-    return impact.categories.firstWhereOrNull(
-      (item) => item.name == categoryName,
     );
   }
 }

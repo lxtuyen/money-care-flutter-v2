@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -8,10 +10,32 @@ import 'package:money_care/features/chatbot/presentation/controllers/chat_contro
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_stat_chip.dart';
 
-class SavingGoalProposalBubble extends StatelessWidget {
+class SavingGoalProposalBubble extends StatefulWidget {
   final Map<String, dynamic> metadata;
 
   const SavingGoalProposalBubble({super.key, required this.metadata});
+
+  @override
+  State<SavingGoalProposalBubble> createState() =>
+      _SavingGoalProposalBubbleState();
+}
+
+class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
+  late List<SavingGoalBudgetItem> budgetItems;
+
+  @override
+  void initState() {
+    super.initState();
+    budgetItems = SavingGoalProposal.fromMap(widget.metadata).budgetItems;
+  }
+
+  @override
+  void didUpdateWidget(covariant SavingGoalProposalBubble oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.metadata, widget.metadata)) {
+      budgetItems = SavingGoalProposal.fromMap(widget.metadata).budgetItems;
+    }
+  }
 
   String _formatShortAmount(double amount) {
     if (amount >= 1000000) {
@@ -36,8 +60,12 @@ class SavingGoalProposalBubble extends StatelessWidget {
     final chatController = Get.find<ChatController>();
     final appController = Get.find<AppController>();
 
-    final proposal = SavingGoalProposal.fromMap(metadata);
+    final proposal = SavingGoalProposal.fromMap(widget.metadata);
     final userId = appController.userId.value ?? 0;
+    final budgetTotal = _budgetTotal;
+    final confirmTotalAmount = proposal.totalAmount > 0
+        ? proposal.totalAmount
+        : budgetTotal + proposal.suggestedMonthlySaving;
     final themeColor = proposal.isImpossible
         ? AppColors.error
         : proposal.isWarning
@@ -138,17 +166,17 @@ class SavingGoalProposalBubble extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               SavingGoalStatChip(
-                label: "${proposal.months} tháng",
-                subtitle: "Thời gian",
+                label: proposal.durationLabel,
+                subtitle: "Dự kiến",
                 colors: colors,
               ),
               if (proposal.hasPlan && proposal.capacity > 0) ...[
                 const SizedBox(width: 8),
                 SavingGoalStatChip(
                   label: AppHelperFunction.formatAmount(
-                    proposal.suggestedMonthlySaving,
+                    proposal.suggestedDailySaving,
                   ),
-                  subtitle: "Đề xuất/tháng",
+                  subtitle: "Cần/ngày",
                   colors: colors,
                 ),
               ],
@@ -180,7 +208,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "Dự kiến hoàn thành: ${DateFormat('MM/yyyy').format(proposal.endDate!)}",
+                        "Dự kiến hoàn thành: ${DateFormat('dd/MM/yyyy').format(proposal.endDate!)}",
                         style: const TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w700,
@@ -200,7 +228,7 @@ class SavingGoalProposalBubble extends StatelessWidget {
             const SizedBox(height: 14),
             _DurationOptions(
               options: proposal.durationOptions,
-              selectedMonths: proposal.months,
+              selectedDays: proposal.daysEstimate,
               name: proposal.name,
               target: proposal.target,
               userId: userId,
@@ -210,6 +238,19 @@ class SavingGoalProposalBubble extends StatelessWidget {
               isDisabled: proposal.isFinalized,
               initFund: proposal.initFund,
               sourceWalletId: proposal.sourceWalletId,
+            ),
+          ],
+
+          if (budgetItems.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            _BudgetItemsPreview(
+              items: budgetItems,
+              colors: colors,
+              savingAmount: proposal.suggestedMonthlySaving,
+              budgetTotal: budgetTotal,
+              totalAmount: confirmTotalAmount,
+              onEdit: _updateBudgetItem,
+              onDelete: _deleteBudgetItem,
             ),
           ],
 
@@ -247,16 +288,20 @@ class SavingGoalProposalBubble extends StatelessWidget {
                 ],
               ),
             ),
-          ] else if (proposal.isWarning) ...[
+          ] else ...[
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: proposal.isImpossible
                     ? null
                     : () {
+                        final payload = proposal.toConfirmPayload(
+                          budgetItems: budgetItems,
+                          totalAmount: confirmTotalAmount,
+                        );
                         chatController.sendCustomMessage(
                           "Tôi đồng ý với đề xuất trên",
-                          '/confirm_saving_goal {"name": "${proposal.name}", "target": ${proposal.target}, "months": ${proposal.months}, "initFund": ${proposal.initFund}, "sourceWalletId": ${proposal.sourceWalletId}}',
+                          '/confirm_saving_goal ${jsonEncode(payload)}',
                           userId,
                         );
                       },
@@ -291,11 +336,27 @@ class SavingGoalProposalBubble extends StatelessWidget {
       ),
     );
   }
+
+  double get _budgetTotal {
+    return budgetItems.fold(0, (sum, item) => sum + item.monthlyLimit);
+  }
+
+  void _updateBudgetItem(int index, SavingGoalBudgetItem item) {
+    setState(() {
+      budgetItems[index] = item;
+    });
+  }
+
+  void _deleteBudgetItem(int index) {
+    setState(() {
+      budgetItems.removeAt(index);
+    });
+  }
 }
 
 class _DurationOptions extends StatelessWidget {
   final List<SavingGoalDurationOption> options;
-  final int selectedMonths;
+  final int selectedDays;
   final String name;
   final double target;
   final int userId;
@@ -308,7 +369,7 @@ class _DurationOptions extends StatelessWidget {
 
   const _DurationOptions({
     required this.options,
-    required this.selectedMonths,
+    required this.selectedDays,
     required this.name,
     required this.target,
     required this.userId,
@@ -324,9 +385,11 @@ class _DurationOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: options.map((option) {
-        final months = option.months;
+        final days = option.days;
         final monthlySaving = option.monthlySaving;
+        final dailySaving = option.dailySaving;
         final label = option.label;
+        final durationText = option.durationText;
         final isRecommended = option.isRecommended;
         final needsWarning =
             maxMonthlySaving > 0 && monthlySaving > maxMonthlySaving;
@@ -340,16 +403,16 @@ class _DurationOptions extends StatelessWidget {
                 : () {
                     if (needsWarning) {
                       controller.sendCustomMessage(
-                        "Tôi muốn hoàn thành trong $months tháng",
-                        '/change_saving_goal_duration {"name": "$name", "target": $target, "months": $months, "initFund": $initFund, "sourceWalletId": $sourceWalletId}',
+                        "Tôi muốn hoàn thành trong $durationText",
+                        '/change_saving_goal_duration ${jsonEncode({'name': name, 'target': target, 'days': days, 'initFund': initFund, 'sourceWalletId': sourceWalletId})}',
                         userId,
                       );
                       return;
                     }
 
                     controller.sendCustomMessage(
-                      "Tôi đồng ý tạo mục tiêu trong $months tháng",
-                      '/confirm_saving_goal {"name": "$name", "target": $target, "months": $months, "initFund": $initFund, "sourceWalletId": $sourceWalletId}',
+                      "Tôi muốn hoàn thành trong $durationText",
+                      '/change_saving_goal_duration ${jsonEncode({'name': name, 'target': target, 'days': days, 'initFund': initFund, 'sourceWalletId': sourceWalletId})}',
                       userId,
                     );
                   },
@@ -372,7 +435,7 @@ class _DurationOptions extends StatelessWidget {
                 ),
               ),
               child: Text(
-                "$label: $months tháng - cần ${AppHelperFunction.formatAmount(monthlySaving)}/tháng",
+                "$label: $durationText - cần ${AppHelperFunction.formatAmount(dailySaving)}/ngày",
                 style: TextStyle(
                   fontSize: 12.2,
                   fontWeight: isRecommended ? FontWeight.w800 : FontWeight.w600,
@@ -387,12 +450,262 @@ class _DurationOptions extends StatelessWidget {
   }
 }
 
+class _BudgetItemsPreview extends StatelessWidget {
+  final List<SavingGoalBudgetItem> items;
+  final AppThemeColors colors;
+  final double savingAmount;
+  final double budgetTotal;
+  final double totalAmount;
+  final void Function(int, SavingGoalBudgetItem) onEdit;
+  final void Function(int) onDelete;
+
+  const _BudgetItemsPreview({
+    required this.items,
+    required this.colors,
+    required this.savingAmount,
+    required this.budgetTotal,
+    required this.totalAmount,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.surfaceBackground.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: colors.borderSecondary.withValues(alpha: 0.7),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 16,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Ngân sách đề xuất',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _BudgetSummaryRow(
+            label: 'T\u1ed5ng ti\u1ec1n k\u1ebf ho\u1ea1ch',
+            amount: totalAmount,
+            colors: colors,
+            isStrong: true,
+          ),
+          const SizedBox(height: 6),
+          _BudgetSummaryRow(
+            label: 'Chi ph\u00ed \u0111\u1ec1 xu\u1ea5t',
+            amount: budgetTotal,
+            colors: colors,
+          ),
+          const SizedBox(height: 6),
+          _BudgetSummaryRow(
+            label: 'T\u00edch l\u0169y m\u1ee5c ti\u00eau',
+            amount: savingAmount,
+            colors: colors,
+          ),
+          const SizedBox(height: 12),
+          ...items.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+              decoration: BoxDecoration(
+                color: colors.cardBackground,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colors.borderSecondary.withValues(alpha: 0.65),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.categoryName,
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          AppHelperFunction.formatAmount(item.monthlyLimit),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Ch\u1ec9nh s\u1eeda',
+                    onPressed: () => _showEditDialog(context, index, item),
+                    icon: Icon(
+                      Icons.edit_rounded,
+                      size: 18,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'X\u00f3a',
+                    onPressed: () => onDelete(index),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      size: 19,
+                      color: AppColors.error,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  void _showEditDialog(
+    BuildContext context,
+    int index,
+    SavingGoalBudgetItem item,
+  ) {
+    final controller = TextEditingController(
+      text: item.monthlyLimit.toInt().toString(),
+    );
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            item.categoryName,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: colors.textPrimary,
+            ),
+          ),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Ng\u00e2n s\u00e1ch/th\u00e1ng',
+              suffixText: '\u0111',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('H\u1ee7y'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final rawAmount = controller.text.replaceAll(
+                  RegExp(r'[^0-9]'),
+                  '',
+                );
+                final amount = double.tryParse(rawAmount) ?? 0;
+
+                onEdit(
+                  index,
+                  item.copyWith(amount: amount, monthlyLimit: amount),
+                );
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('L\u01b0u'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _BudgetSummaryRow extends StatelessWidget {
+  final String label;
+  final double amount;
+  final AppThemeColors colors;
+  final bool isStrong;
+
+  const _BudgetSummaryRow({
+    required this.label,
+    required this.amount,
+    required this.colors,
+    this.isStrong = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: isStrong
+            ? AppColors.primary.withValues(alpha: 0.08)
+            : colors.surfaceBackground.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isStrong ? FontWeight.w800 : FontWeight.w600,
+                color: isStrong ? AppColors.primary : colors.textSecondary,
+              ),
+            ),
+          ),
+          Text(
+            AppHelperFunction.formatAmount(amount),
+            style: TextStyle(
+              fontSize: 12.2,
+              fontWeight: FontWeight.w800,
+              color: isStrong ? AppColors.primary : colors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class SavingGoalProposal {
   final String name;
   final double target;
   final int months;
+  final int daysEstimate;
   final double capacity;
   final double suggestedMonthlySaving;
+  final double suggestedDailySaving;
   final List<SavingGoalDurationOption> durationOptions;
   final String aiMessage;
   final DateTime? endDate;
@@ -404,13 +717,17 @@ class SavingGoalProposal {
   final double initFund;
   final int sourceWalletId;
   final double remainingTarget;
+  final double totalAmount;
+  final List<SavingGoalBudgetItem> budgetItems;
 
   SavingGoalProposal({
     required this.name,
     required this.target,
     required this.months,
+    required this.daysEstimate,
     required this.capacity,
     required this.suggestedMonthlySaving,
+    required this.suggestedDailySaving,
     required this.durationOptions,
     required this.aiMessage,
     this.endDate,
@@ -422,10 +739,15 @@ class SavingGoalProposal {
     required this.initFund,
     required this.sourceWalletId,
     required this.remainingTarget,
+    required this.totalAmount,
+    required this.budgetItems,
   });
 
   factory SavingGoalProposal.fromMap(Map<String, dynamic> map) {
     final months = (map['monthsEstimate'] as num?)?.toInt() ?? 0;
+    final daysEstimate =
+        (map['daysEstimate'] as num?)?.toInt() ??
+        (months > 0 ? months * 30 : 0);
     final target = (map['target'] as num?)?.toDouble() ?? 0;
     final endDateStr = map['endDate'];
     final rawOptions = map['durationOptions'];
@@ -433,6 +755,7 @@ class SavingGoalProposal {
     final sourceWalletId = (map['sourceWalletId'] as num?)?.toInt() ?? 0;
     final remainingTarget =
         (map['remainingTarget'] as num?)?.toDouble() ?? target;
+    final rawBudgetItems = map['budgetItems'];
 
     List<SavingGoalDurationOption> parsedOptions = [];
     if (rawOptions is List && rawOptions.isNotEmpty) {
@@ -443,22 +766,26 @@ class SavingGoalProposal {
               Map<String, dynamic>.from(option),
               remainingTarget,
               months,
+              daysEstimate,
             ),
           )
           .toList();
     } else if (remainingTarget > 0 && months > 0) {
-      final optionMonths = <int>{
-        if (months > 1) months - 1,
-        months,
-        months + 1,
+      final optionDays = <int>{
+        if (daysEstimate > 1) daysEstimate - 1,
+        daysEstimate,
+        daysEstimate + 7,
       }.toList();
 
-      parsedOptions = optionMonths.map((m) {
-        final type = m < months
+      parsedOptions = optionDays.map((days) {
+        final type = days < daysEstimate
             ? 'faster'
-            : m == months
+            : days == daysEstimate
             ? 'recommended'
             : 'relaxed';
+        final dailySaving = (remainingTarget / days).ceilToDouble();
+        final optionMonths = (days / 30).ceil();
+        final monthlySaving = (remainingTarget / (days / 30)).ceilToDouble();
 
         return SavingGoalDurationOption(
           type: type,
@@ -467,8 +794,11 @@ class SavingGoalProposal {
               : type == 'recommended'
               ? 'Khuyến nghị'
               : 'Thoải mái',
-          months: m,
-          monthlySaving: (remainingTarget / m).ceilToDouble(),
+          months: optionMonths,
+          days: days,
+          durationText: _formatDuration(days),
+          monthlySaving: monthlySaving,
+          dailySaving: dailySaving,
           isRecommended: type == 'recommended',
         );
       }).toList();
@@ -478,10 +808,14 @@ class SavingGoalProposal {
       name: map['name'] ?? 'Mục tiêu',
       target: target,
       months: months,
+      daysEstimate: daysEstimate,
       capacity: (map['monthlySavingCapacity'] as num?)?.toDouble() ?? 0,
       suggestedMonthlySaving:
           (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
           (months > 0 ? remainingTarget / months : 0),
+      suggestedDailySaving:
+          (map['suggestedDailySaving'] as num?)?.toDouble() ??
+          (daysEstimate > 0 ? remainingTarget / daysEstimate : 0),
       durationOptions: parsedOptions,
       aiMessage: map['aiMessage'] ?? '',
       endDate: endDateStr != null ? DateTime.tryParse(endDateStr) : null,
@@ -494,6 +828,109 @@ class SavingGoalProposal {
       initFund: initFund,
       sourceWalletId: sourceWalletId,
       remainingTarget: remainingTarget,
+      totalAmount: (map['totalAmount'] as num?)?.toDouble() ?? 0,
+      budgetItems: rawBudgetItems is List
+          ? rawBudgetItems
+                .whereType<Map>()
+                .map(
+                  (item) => SavingGoalBudgetItem.fromMap(
+                    Map<String, dynamic>.from(item),
+                  ),
+                )
+                .toList()
+          : const [],
+    );
+  }
+
+  Map<String, dynamic> toConfirmPayload({
+    List<SavingGoalBudgetItem>? budgetItems,
+    double? totalAmount,
+  }) {
+    final selectedBudgetItems = budgetItems ?? this.budgetItems;
+
+    return {
+      'name': name,
+      'target': target,
+      'months': months,
+      'days': daysEstimate,
+      'initFund': initFund,
+      'sourceWalletId': sourceWalletId,
+      'totalAmount': totalAmount ?? this.totalAmount,
+      'budgetItems': selectedBudgetItems.map((item) => item.toJson()).toList(),
+    };
+  }
+
+  String get durationLabel => _formatDuration(daysEstimate);
+
+  static String _formatDuration(int daysValue) {
+    final days = daysValue <= 0 ? 0 : daysValue;
+    if (days <= 0) return '0 ngày';
+    if (days < 30) return '$days ngày';
+
+    final months = days ~/ 30;
+    final remainingDays = days % 30;
+    if (remainingDays == 0) return '$months tháng';
+    return '$months tháng $remainingDays ngày';
+  }
+}
+
+class SavingGoalBudgetItem {
+  final int? categoryId;
+  final String categoryName;
+  final double amount;
+  final double monthlyLimit;
+  final String frequencyType;
+  final int frequencyValue;
+
+  const SavingGoalBudgetItem({
+    required this.categoryId,
+    required this.categoryName,
+    required this.amount,
+    required this.monthlyLimit,
+    required this.frequencyType,
+    required this.frequencyValue,
+  });
+
+  factory SavingGoalBudgetItem.fromMap(Map<String, dynamic> map) {
+    return SavingGoalBudgetItem(
+      categoryId: (map['categoryId'] as num?)?.toInt(),
+      categoryName: map['categoryName']?.toString() ?? '',
+      amount: (map['amount'] as num?)?.toDouble() ?? 0,
+      monthlyLimit:
+          (map['monthlyLimit'] as num?)?.toDouble() ??
+          (map['amount'] as num?)?.toDouble() ??
+          0,
+      frequencyType: map['frequencyType']?.toString() ?? 'monthly',
+      frequencyValue: (map['frequencyValue'] as num?)?.toInt() ?? 1,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (categoryId != null) 'categoryId': categoryId,
+      'categoryName': categoryName,
+      'amount': amount,
+      'monthlyLimit': monthlyLimit,
+      'frequencyType': frequencyType,
+      'frequencyValue': frequencyValue,
+    };
+  }
+
+  SavingGoalBudgetItem copyWith({
+    int? categoryId,
+    String? categoryName,
+    double? amount,
+    double? monthlyLimit,
+    String? frequencyType,
+    int? frequencyValue,
+  }) {
+    return SavingGoalBudgetItem(
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      amount: amount ?? this.amount,
+      monthlyLimit: monthlyLimit ?? this.monthlyLimit,
+      frequencyType: frequencyType ?? this.frequencyType,
+      frequencyValue: frequencyValue ?? this.frequencyValue,
     );
   }
 }
@@ -502,14 +939,20 @@ class SavingGoalDurationOption {
   final String type;
   final String label;
   final int months;
+  final int days;
+  final String durationText;
   final double monthlySaving;
+  final double dailySaving;
   final bool isRecommended;
 
   SavingGoalDurationOption({
     required this.type,
     required this.label,
     required this.months,
+    required this.days,
+    required this.durationText,
     required this.monthlySaving,
+    required this.dailySaving,
     required this.isRecommended,
   });
 
@@ -517,19 +960,32 @@ class SavingGoalDurationOption {
     Map<String, dynamic> map,
     double fallbackTarget,
     int fallbackMonths,
+    int fallbackDays,
   ) {
     final m = (map['months'] as num?)?.toInt() ?? fallbackMonths;
+    final days =
+        (map['days'] as num?)?.toInt() ??
+        (map['daysEstimate'] as num?)?.toInt() ??
+        (m > 0 ? m * 30 : fallbackDays);
+    final dailySaving =
+        (map['dailySaving'] as num?)?.toDouble() ??
+        (days > 0 ? fallbackTarget / days : 0);
     return SavingGoalDurationOption(
       type: map['type']?.toString() ?? 'recommended',
       label: map['label']?.toString() ?? 'Khuyến nghị',
       months: m,
+      days: days,
+      durationText:
+          map['durationText']?.toString() ??
+          SavingGoalProposal._formatDuration(days),
       monthlySaving:
           (map['monthlySaving'] as num?)?.toDouble() ??
-          (m > 0 ? fallbackTarget / m : 0),
+          (days > 0 ? fallbackTarget / (days / 30) : 0),
+      dailySaving: dailySaving,
       isRecommended:
           map['isRecommended'] == true ||
           map['type'] == 'recommended' ||
-          m == fallbackMonths,
+          days == fallbackDays,
     );
   }
 }

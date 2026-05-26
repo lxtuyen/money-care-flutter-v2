@@ -128,6 +128,11 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
   }
 
   void _confirmDelete() {
+    if (wallet.balance != 0) {
+      AppHelperFunction.showWarningSnackBar("Không thể xóa ví đang có số dư");
+      return;
+    }
+
     AppConfirmDialog.show(
       title: "Xác nhận xóa",
       message:
@@ -135,8 +140,10 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
       confirmText: "Xóa",
       cancelText: "Hủy",
       onConfirm: () async {
-        await walletController.deleteWallet(wallet.id);
-        Get.back();
+        final deleted = await walletController.deleteWallet(wallet.id);
+        if (deleted) {
+          Get.back();
+        }
       },
     );
   }

@@ -88,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 fit: BoxFit.cover,
                                                 width: 100,
                                                 height: 100,
-                                                errorBuilder: (_, __, ___) =>
+                                                errorBuilder: (_, _, _) =>
                                                     _AvatarFallback(
                                                       initials: initials,
                                                     ),

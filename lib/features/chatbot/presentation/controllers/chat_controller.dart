@@ -12,8 +12,6 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
-import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:image_picker/image_picker.dart';
@@ -439,18 +437,6 @@ class ChatController extends GetxController {
 
   void onCategoryTap() {
     Get.toNamed(RoutePath.categoryManagement);
-  }
-
-  void onTransactionTap(Map<String, dynamic> metadata) {
-    if (metadata.isEmpty) return;
-    final context = Get.context;
-    if (context == null) return;
-
-    final userId = appController.userId.value;
-    if (userId == null) return;
-
-    final transaction = TransactionEntity.fromMap(metadata);
-    TransactionDetail.show(context, item: transaction, userId: userId);
   }
 
   @override

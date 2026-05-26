@@ -92,14 +92,22 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<void> deleteWallet(int id) async {
+  Future<bool> deleteWallet(int id) async {
+    final wallet = wallets.firstWhereOrNull((item) => item.id == id);
+    if (wallet != null && wallet.balance != 0) {
+      AppHelperFunction.showWarningSnackBar('Không thể xóa ví đang có số dư');
+      return false;
+    }
+
     isLoading.value = true;
     try {
       await repository.delete(id);
       await refreshWallets();
       AppHelperFunction.showSuccessSnackBar('Đã xóa ví thành công');
+      return true;
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Xóa ví thất bại: $e');
+      return false;
     } finally {
       isLoading.value = false;
     }

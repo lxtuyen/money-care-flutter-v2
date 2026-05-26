@@ -20,7 +20,6 @@ import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
 import 'package:money_care/features/statistics/presentation/widgets/budget_tracking_section.dart';
-import 'package:money_care/features/statistics/presentation/widgets/statistics_export_sheet.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -78,16 +77,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               AppHeader(
                 title: 'statistics.title'.tr,
-                actions: [
-                  IconButton(
-                    onPressed: () =>
-                        Get.bottomSheet(const StatisticsExportSheet()),
-                    icon: const Icon(
-                      Icons.file_download_outlined,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
                 child: Obx(() {
                   final data = statisticsController.totalByType.value;
                   final selectedType = statisticsController.selectedType.value;
@@ -334,7 +323,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     EstimatedExpenseBudgetGroupCard.groupExpenses(
                       stats.estimatedExpenses,
                     );
-                final planImpact = _buildGoalPlanImpact(stats, groupedExpenses);
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,7 +344,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     BudgetTrackingSection(
                       stats: stats,
                       groupedExpenses: groupedExpenses,
-                      planImpact: planImpact,
                     ),
                     const SizedBox(height: 25),
                   ],

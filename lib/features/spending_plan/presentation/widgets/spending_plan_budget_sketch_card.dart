@@ -5,7 +5,6 @@ import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
-import 'package:money_care/features/spending_plan/domain/entities/spending_plan_request.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 
@@ -166,8 +165,6 @@ class SpendingPlanBudgetAllocationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final fixedFlex = (fixedRatio * 1000).round().clamp(0, 1000);
     final flexibleFlex = (flexibleRatio * 1000).round().clamp(0, 1000);
-    final fixedPct = (fixedRatio * 100).toStringAsFixed(0);
-    final flexPct = (flexibleRatio * 100).toStringAsFixed(0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

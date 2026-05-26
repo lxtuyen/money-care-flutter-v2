@@ -26,7 +26,11 @@ import 'package:money_care/features/gamification/domain/usecases/usecases.dart';
 import 'package:money_care/features/gamification/presentation/controllers/gamification_controller.dart';
 
 import 'package:money_care/features/transaction/data/datasources/transaction_remote_datasource.dart';
+import 'package:money_care/features/transaction/data/datasources/category_preference_remote_datasource.dart';
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
+import 'package:money_care/features/transaction/data/repositories/category_preference_repository_impl.dart';
+import 'package:money_care/features/transaction/domain/repositories/category_preference_repository.dart';
+import 'package:money_care/features/transaction/domain/usecases/category_preference_usecases.dart';
 import 'package:money_care/features/transaction/domain/usecases/create_transaction_usecase.dart';
 import 'package:money_care/features/transaction/domain/usecases/delete_transaction_usecase.dart';
 import 'package:money_care/features/transaction/domain/usecases/filter_transactions_usecase.dart';
@@ -45,7 +49,6 @@ import 'package:money_care/features/user/data/repositories/user_repository_impl.
 import 'package:money_care/features/user/domain/usecases/user_usecase.dart';
 import 'package:money_care/app/controllers/user_controller.dart';
 import 'package:money_care/features/home/presentation/controllers/home_controller.dart';
-import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource.dart';
 import 'package:money_care/features/spending_plan/data/datasources/spending_plan_remote_datasource_impl.dart';
 import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
 import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
@@ -130,6 +133,24 @@ class AppBinding extends Bindings {
 
     final transactionRemoteDs = TransactionRemoteDatasourceImpl(
       api: apiService,
+    );
+    final categoryPreferenceRemoteDs = CategoryPreferenceRemoteDatasourceImpl(
+      api: apiService,
+    );
+    final categoryPreferenceRepo = CategoryPreferenceRepositoryImpl(
+      remoteDatasource: categoryPreferenceRemoteDs,
+    );
+    Get.put<CategoryPreferenceRepository>(
+      categoryPreferenceRepo,
+      permanent: true,
+    );
+    Get.put<GetEssentialExpenseCategoryIdsUseCase>(
+      GetEssentialExpenseCategoryIdsUseCase(categoryPreferenceRepo),
+      permanent: true,
+    );
+    Get.put<SaveEssentialExpenseCategoryIdsUseCase>(
+      SaveEssentialExpenseCategoryIdsUseCase(categoryPreferenceRepo),
+      permanent: true,
     );
     final transactionRepo = TransactionRepositoryImpl(
       remoteDatasource: transactionRemoteDs,

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -62,47 +60,17 @@ class AppHelperFunction {
     }
   }
 
-  static final List<String> _colorNames = [
-    'Green',
-    'Red',
-    'Blue',
-    'Grey',
-    'Purple',
-    'Brown',
-    'Teal',
-    'Indigo',
-    'DeepOrange',
-    'DeepPurple',
-    'BlueGrey',
-    'Black',
-    'Custom1',
-    'Custom2',
-    'Custom3',
-  ];
-
   static final List<Color> _chartColors = [
     const Color(0xFF2D9CDB),
-    const Color(0xFF27AE60),
     const Color(0xFFF2994A),
     const Color(0xFFEB5757),
     const Color(0xFF9B51E0),
-    const Color(0xFF2DCEB3),
     const Color(0xFF3D5AFE),
     const Color(0xFF8D6E63),
-    const Color(0xFF00897B),
     const Color(0xFF5C6BC0),
   ];
 
-  static Color getRandomColor() {
-    final random = Random();
-    final colorName = _colorNames[random.nextInt(_colorNames.length)];
-    return getColor(colorName)!;
-  }
-
   static Color getChartColorByIndex(int index) {
-    if (_chartColors.isEmpty) {
-      return AppHelperFunction.getRandomColor();
-    }
     return _chartColors[index % _chartColors.length];
   }
 

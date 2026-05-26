@@ -250,7 +250,6 @@ class _TransactionFormState extends State<TransactionForm> {
                                   },
                                   readOnly: true,
                                 ),
-                                _buildSubCategoryField(),
                                 const SizedBox(height: 20),
                                 AppTextFormField(
                                   controller: controller.noteController,
@@ -300,60 +299,5 @@ class _TransactionFormState extends State<TransactionForm> {
         ),
       ),
     );
-  }
-
-  Widget _buildSubCategoryField() {
-    return Obx(() {
-      final subCategories =
-          controller.selectedCategory?.subCategories ?? const [];
-      if (subCategories.isEmpty) {
-        return const SizedBox.shrink();
-      }
-
-      return Column(
-        children: [
-          const SizedBox(height: 20),
-          AppTextFormField(
-            controller: controller.subCategoryController,
-            label: 'Danh mục con',
-            icon: Icons.account_tree_outlined,
-            suffixIcon: const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: AppColors.text3,
-            ),
-            hintText: 'Chọn danh mục con',
-            readOnly: true,
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => SelectionDialog(
-                  title: 'Danh mục con',
-                  description: 'Chọn nhóm chi tiết cho giao dịch',
-                  clearButtonText: 'common.delete',
-                  options: subCategories
-                      .where((item) => item.id != null)
-                      .map(
-                        (item) => SelectionOption(
-                          id: item.id.toString(),
-                          label:
-                              '${item.icon.isNotEmpty ? '${item.icon} ' : ''}${item.name}',
-                        ),
-                      )
-                      .toList(),
-                  initialSelectedId: controller.selectedSubCategoryId.value
-                      ?.toString(),
-                  onSelect: (id, label) {
-                    final selected = subCategories.firstWhereOrNull(
-                      (item) => item.id?.toString() == id,
-                    );
-                    controller.setSubCategory(selected);
-                  },
-                ),
-              );
-            },
-          ),
-        ],
-      );
-    });
   }
 }

@@ -10,6 +10,11 @@ import 'package:money_care/features/chatbot/presentation/controllers/chat_contro
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_stat_chip.dart';
 
+double _roundVndUp(num amount, {int unit = 1000}) {
+  if (amount <= 0) return 0;
+  return (amount / unit).ceilToDouble() * unit;
+}
+
 class SavingGoalProposalBubble extends StatefulWidget {
   final Map<String, dynamic> metadata;
 
@@ -174,9 +179,9 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
                 const SizedBox(width: 8),
                 SavingGoalStatChip(
                   label: AppHelperFunction.formatAmount(
-                    proposal.suggestedDailySaving,
+                    proposal.suggestedDailySpending,
                   ),
-                  subtitle: "Cần/ngày",
+                  subtitle: "Chi/ngày",
                   colors: colors,
                 ),
               ],
@@ -222,9 +227,11 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
             ),
           ],
 
-          if (proposal.durationOptions.isNotEmpty &&
-              !proposal.isImpossible &&
-              !proposal.isWarning) ...[
+          if (!proposal.isImpossible &&
+              ((proposal.durationOptions.isNotEmpty &&
+                      !proposal.isWarning &&
+                      !proposal.isRequestedDuration) ||
+                  proposal.isRequestedDuration)) ...[
             const SizedBox(height: 14),
             _DurationOptions(
               options: proposal.durationOptions,
@@ -238,10 +245,12 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
               isDisabled: proposal.isFinalized,
               initFund: proposal.initFund,
               sourceWalletId: proposal.sourceWalletId,
+              totalAmount: proposal.totalAmount,
+              showPresetOptions: !proposal.isRequestedDuration,
             ),
           ],
 
-          if (budgetItems.isNotEmpty) ...[
+          if (budgetItems.isNotEmpty && !proposal.preserveCurrentBudget) ...[
             const SizedBox(height: 14),
             _BudgetItemsPreview(
               items: budgetItems,
@@ -366,6 +375,8 @@ class _DurationOptions extends StatelessWidget {
   final bool isDisabled;
   final double initFund;
   final int sourceWalletId;
+  final double totalAmount;
+  final bool showPresetOptions;
 
   const _DurationOptions({
     required this.options,
@@ -379,73 +390,172 @@ class _DurationOptions extends StatelessWidget {
     required this.isDisabled,
     required this.initFund,
     required this.sourceWalletId,
+    required this.totalAmount,
+    this.showPresetOptions = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: options.map((option) {
-        final days = option.days;
-        final monthlySaving = option.monthlySaving;
-        final dailySaving = option.dailySaving;
-        final label = option.label;
-        final durationText = option.durationText;
-        final isRecommended = option.isRecommended;
-        final needsWarning =
-            maxMonthlySaving > 0 && monthlySaving > maxMonthlySaving;
+    final widgets =
+        (showPresetOptions ? options.take(2) : const <SavingGoalDurationOption>[]).map((
+          option,
+        ) {
+          final days = option.days;
+          final monthlySaving = option.monthlySaving;
+          final dailySpending = _dailySpendingLimit(monthlySaving);
+          final label = option.label;
+          final durationText = option.durationText;
+          final isRecommended = option.isRecommended;
+          final needsWarning =
+              maxMonthlySaving > 0 && monthlySaving > maxMonthlySaving;
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: isDisabled
-                ? null
-                : () {
-                    if (needsWarning) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: isDisabled
+                  ? null
+                  : () {
                       controller.sendCustomMessage(
                         "Tôi muốn hoàn thành trong $durationText",
-                        '/change_saving_goal_duration ${jsonEncode({'name': name, 'target': target, 'days': days, 'initFund': initFund, 'sourceWalletId': sourceWalletId})}',
+                        '/confirm_saving_goal ${jsonEncode({'name': name, 'target': target, 'months': option.months, 'days': days, 'initFund': initFund, 'sourceWalletId': sourceWalletId, 'budgetItems': [], 'preserveCurrentBudget': option.preserveCurrentBudget})}',
                         userId,
                       );
-                      return;
-                    }
-
-                    controller.sendCustomMessage(
-                      "Tôi muốn hoàn thành trong $durationText",
-                      '/change_saving_goal_duration ${jsonEncode({'name': name, 'target': target, 'days': days, 'initFund': initFund, 'sourceWalletId': sourceWalletId})}',
-                      userId,
-                    );
-                  },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: isRecommended
-                    ? AppColors.primary.withValues(alpha: 0.08)
-                    : needsWarning
-                    ? AppColors.warning.withValues(alpha: 0.08)
-                    : colors.surfaceBackground.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isRecommended
-                      ? AppColors.primary.withValues(alpha: 0.35)
-                      : needsWarning
-                      ? AppColors.warning.withValues(alpha: 0.35)
-                      : colors.borderSecondary.withValues(alpha: 0.7),
+                    },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
                 ),
-              ),
-              child: Text(
-                "$label: $durationText - cần ${AppHelperFunction.formatAmount(dailySaving)}/ngày",
-                style: TextStyle(
-                  fontSize: 12.2,
-                  fontWeight: isRecommended ? FontWeight.w800 : FontWeight.w600,
-                  color: isRecommended ? AppColors.primary : colors.textPrimary,
+                decoration: BoxDecoration(
+                  color: isRecommended
+                      ? AppColors.primary.withValues(alpha: 0.08)
+                      : needsWarning
+                      ? AppColors.warning.withValues(alpha: 0.08)
+                      : colors.surfaceBackground.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isRecommended
+                        ? AppColors.primary.withValues(alpha: 0.35)
+                        : needsWarning
+                        ? AppColors.warning.withValues(alpha: 0.35)
+                        : colors.borderSecondary.withValues(alpha: 0.7),
+                  ),
+                ),
+                child: Text(
+                  "$label: $durationText - chi TB ${AppHelperFunction.formatAmount(dailySpending)}/ngày",
+                  style: TextStyle(
+                    fontSize: 12.2,
+                    fontWeight: isRecommended
+                        ? FontWeight.w800
+                        : FontWeight.w600,
+                    color: isRecommended
+                        ? AppColors.primary
+                        : colors.textPrimary,
+                  ),
                 ),
               ),
             ),
+          );
+        }).toList();
+
+    widgets.add(
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: isDisabled
+              ? null
+              : () async {
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now().add(
+                      Duration(days: selectedDays <= 0 ? 30 : selectedDays),
+                    ),
+                    firstDate: DateTime.now().add(const Duration(days: 1)),
+                    lastDate: DateTime.now().add(
+                      const Duration(days: 365 * 10),
+                    ),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: AppColors.primary,
+                            onPrimary: Colors.white,
+                            onSurface: colors.textPrimary,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (pickedDate != null) {
+                    final now = DateTime.now();
+                    final today = DateTime(now.year, now.month, now.day);
+                    final targetDate = DateTime(
+                      pickedDate.year,
+                      pickedDate.month,
+                      pickedDate.day,
+                    );
+                    int days = targetDate.difference(today).inDays;
+                    if (days <= 0) days = 1;
+
+                    final formattedDate = DateFormat(
+                      'dd/MM/yyyy',
+                    ).format(pickedDate);
+                    controller.sendCustomMessage(
+                      "Tôi muốn hoàn thành vào ngày $formattedDate",
+                      '/change_saving_goal_duration ${jsonEncode({'name': name, 'target': target, 'days': days, 'initFund': initFund, 'sourceWalletId': sourceWalletId})}',
+                      userId,
+                    );
+                  }
+                },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: colors.surfaceBackground.withValues(alpha: 0.35),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colors.borderSecondary.withValues(alpha: 0.7),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Tự chọn ngày kết thúc",
+                  style: TextStyle(
+                    fontSize: 12.2,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const Icon(
+                  Icons.calendar_today_rounded,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ],
+            ),
           ),
-        );
-      }).toList(),
+        ),
+      ),
+    );
+
+    return Column(children: widgets);
+  }
+
+  double _dailySpendingLimit(double monthlySaving) {
+    if (totalAmount <= 0) return 0;
+    return _roundVndUp(
+      (totalAmount - monthlySaving).clamp(0, double.infinity) / 30,
     );
   }
 }
@@ -706,6 +816,7 @@ class SavingGoalProposal {
   final double capacity;
   final double suggestedMonthlySaving;
   final double suggestedDailySaving;
+  final double suggestedDailySpending;
   final List<SavingGoalDurationOption> durationOptions;
   final String aiMessage;
   final DateTime? endDate;
@@ -719,6 +830,8 @@ class SavingGoalProposal {
   final double remainingTarget;
   final double totalAmount;
   final List<SavingGoalBudgetItem> budgetItems;
+  final bool preserveCurrentBudget;
+  final bool isRequestedDuration;
 
   SavingGoalProposal({
     required this.name,
@@ -728,6 +841,7 @@ class SavingGoalProposal {
     required this.capacity,
     required this.suggestedMonthlySaving,
     required this.suggestedDailySaving,
+    required this.suggestedDailySpending,
     required this.durationOptions,
     required this.aiMessage,
     this.endDate,
@@ -741,6 +855,8 @@ class SavingGoalProposal {
     required this.remainingTarget,
     required this.totalAmount,
     required this.budgetItems,
+    required this.preserveCurrentBudget,
+    required this.isRequestedDuration,
   });
 
   factory SavingGoalProposal.fromMap(Map<String, dynamic> map) {
@@ -756,6 +872,7 @@ class SavingGoalProposal {
     final remainingTarget =
         (map['remainingTarget'] as num?)?.toDouble() ?? target;
     final rawBudgetItems = map['budgetItems'];
+    final isRequestedDuration = map['isRequestedDuration'] == true;
 
     List<SavingGoalDurationOption> parsedOptions = [];
     if (rawOptions is List && rawOptions.isNotEmpty) {
@@ -770,7 +887,7 @@ class SavingGoalProposal {
             ),
           )
           .toList();
-    } else if (remainingTarget > 0 && months > 0) {
+    } else if (!isRequestedDuration && remainingTarget > 0 && months > 0) {
       final optionDays = <int>{
         if (daysEstimate > 1) daysEstimate - 1,
         daysEstimate,
@@ -783,9 +900,9 @@ class SavingGoalProposal {
             : days == daysEstimate
             ? 'recommended'
             : 'relaxed';
-        final dailySaving = (remainingTarget / days).ceilToDouble();
+        final dailySaving = _roundVndUp(remainingTarget / days);
         final optionMonths = (days / 30).ceil();
-        final monthlySaving = (remainingTarget / (days / 30)).ceilToDouble();
+        final monthlySaving = _roundVndUp(remainingTarget / (days / 30));
 
         return SavingGoalDurationOption(
           type: type,
@@ -800,9 +917,30 @@ class SavingGoalProposal {
           monthlySaving: monthlySaving,
           dailySaving: dailySaving,
           isRecommended: type == 'recommended',
+          preserveCurrentBudget: false,
         );
       }).toList();
     }
+
+    final totalAmount = (map['totalAmount'] as num?)?.toDouble() ?? 0;
+    final suggestedMonthlySaving = _roundVndUp(
+      (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
+          (months > 0 ? remainingTarget / months : 0),
+    );
+    final suggestedDailySaving = _roundVndUp(
+      (map['suggestedDailySaving'] as num?)?.toDouble() ??
+          (daysEstimate > 0 ? remainingTarget / daysEstimate : 0),
+    );
+    final suggestedDailySpending = _roundVndUp(
+      (map['suggestedDailySpending'] as num?)?.toDouble() ??
+          (totalAmount > 0
+              ? (totalAmount - suggestedMonthlySaving).clamp(
+                      0,
+                      double.infinity,
+                    ) /
+                    30
+              : suggestedDailySaving),
+    );
 
     return SavingGoalProposal(
       name: map['name'] ?? 'Mục tiêu',
@@ -810,12 +948,9 @@ class SavingGoalProposal {
       months: months,
       daysEstimate: daysEstimate,
       capacity: (map['monthlySavingCapacity'] as num?)?.toDouble() ?? 0,
-      suggestedMonthlySaving:
-          (map['suggestedMonthlySaving'] as num?)?.toDouble() ??
-          (months > 0 ? remainingTarget / months : 0),
-      suggestedDailySaving:
-          (map['suggestedDailySaving'] as num?)?.toDouble() ??
-          (daysEstimate > 0 ? remainingTarget / daysEstimate : 0),
+      suggestedMonthlySaving: suggestedMonthlySaving,
+      suggestedDailySaving: suggestedDailySaving,
+      suggestedDailySpending: suggestedDailySpending,
       durationOptions: parsedOptions,
       aiMessage: map['aiMessage'] ?? '',
       endDate: endDateStr != null ? DateTime.tryParse(endDateStr) : null,
@@ -828,7 +963,7 @@ class SavingGoalProposal {
       initFund: initFund,
       sourceWalletId: sourceWalletId,
       remainingTarget: remainingTarget,
-      totalAmount: (map['totalAmount'] as num?)?.toDouble() ?? 0,
+      totalAmount: totalAmount,
       budgetItems: rawBudgetItems is List
           ? rawBudgetItems
                 .whereType<Map>()
@@ -839,6 +974,8 @@ class SavingGoalProposal {
                 )
                 .toList()
           : const [],
+      preserveCurrentBudget: map['preserveCurrentBudget'] == true,
+      isRequestedDuration: isRequestedDuration,
     );
   }
 
@@ -857,6 +994,7 @@ class SavingGoalProposal {
       'sourceWalletId': sourceWalletId,
       'totalAmount': totalAmount ?? this.totalAmount,
       'budgetItems': selectedBudgetItems.map((item) => item.toJson()).toList(),
+      'preserveCurrentBudget': preserveCurrentBudget,
     };
   }
 
@@ -944,6 +1082,7 @@ class SavingGoalDurationOption {
   final double monthlySaving;
   final double dailySaving;
   final bool isRecommended;
+  final bool preserveCurrentBudget;
 
   SavingGoalDurationOption({
     required this.type,
@@ -954,6 +1093,7 @@ class SavingGoalDurationOption {
     required this.monthlySaving,
     required this.dailySaving,
     required this.isRecommended,
+    required this.preserveCurrentBudget,
   });
 
   factory SavingGoalDurationOption.fromMap(
@@ -967,25 +1107,37 @@ class SavingGoalDurationOption {
         (map['days'] as num?)?.toInt() ??
         (map['daysEstimate'] as num?)?.toInt() ??
         (m > 0 ? m * 30 : fallbackDays);
-    final dailySaving =
-        (map['dailySaving'] as num?)?.toDouble() ??
-        (days > 0 ? fallbackTarget / days : 0);
+    final dailySaving = _roundVndUp(
+      (map['dailySaving'] as num?)?.toDouble() ??
+          (days > 0 ? fallbackTarget / days : 0),
+    );
+    final type = map['type']?.toString() ?? 'recommended';
+    final label = map['label']?.toString() ?? 'Khuyến nghị';
+    final normalizedLabel = label.toLowerCase();
+    final isKeepBudgetOption =
+        normalizedLabel.contains('giữ ngân sách') ||
+        normalizedLabel.contains('giu ngan sach');
+    final isRecommended =
+        map['isRecommended'] == true ||
+        type == 'recommended' ||
+        days == fallbackDays;
+
     return SavingGoalDurationOption(
-      type: map['type']?.toString() ?? 'recommended',
-      label: map['label']?.toString() ?? 'Khuyến nghị',
+      type: type,
+      label: label,
       months: m,
       days: days,
       durationText:
           map['durationText']?.toString() ??
           SavingGoalProposal._formatDuration(days),
-      monthlySaving:
-          (map['monthlySaving'] as num?)?.toDouble() ??
-          (days > 0 ? fallbackTarget / (days / 30) : 0),
+      monthlySaving: _roundVndUp(
+        (map['monthlySaving'] as num?)?.toDouble() ??
+            (days > 0 ? fallbackTarget / (days / 30) : 0),
+      ),
       dailySaving: dailySaving,
-      isRecommended:
-          map['isRecommended'] == true ||
-          map['type'] == 'recommended' ||
-          days == fallbackDays,
+      isRecommended: isRecommended,
+      preserveCurrentBudget:
+          map['preserveCurrentBudget'] == true || isKeepBudgetOption,
     );
   }
 }

@@ -29,6 +29,7 @@ import 'package:money_care/features/transaction/data/datasources/transaction_rem
 import 'package:money_care/features/transaction/data/datasources/category_preference_remote_datasource.dart';
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
 import 'package:money_care/features/transaction/data/repositories/category_preference_repository_impl.dart';
+import 'package:money_care/features/transaction/domain/repositories/transaction_repository.dart';
 import 'package:money_care/features/transaction/domain/repositories/category_preference_repository.dart';
 import 'package:money_care/features/transaction/domain/usecases/category_preference_usecases.dart';
 import 'package:money_care/features/transaction/domain/usecases/create_transaction_usecase.dart';
@@ -155,9 +156,13 @@ class AppBinding extends Bindings {
     final transactionRepo = TransactionRepositoryImpl(
       remoteDatasource: transactionRemoteDs,
     );
+    Get.put<TransactionRepository>(transactionRepo, permanent: true);
+    final filterTransactionsUseCase = FilterTransactionsUseCase(transactionRepo);
+    Get.put<FilterTransactionsUseCase>(filterTransactionsUseCase, permanent: true);
+
     Get.put<TransactionController>(
       TransactionController(
-        filterTransactionsUseCase: FilterTransactionsUseCase(transactionRepo),
+        filterTransactionsUseCase: filterTransactionsUseCase,
         createTransactionUseCase: CreateTransactionUseCase(transactionRepo),
         updateTransactionUseCase: UpdateTransactionUseCase(transactionRepo),
         deleteTransactionUseCase: DeleteTransactionUseCase(transactionRepo),

@@ -4,6 +4,7 @@ import 'package:money_care/features/chatbot/data/datasources/chat_remote_datasou
 import 'package:money_care/features/chatbot/data/repositories/chat_repository_impl.dart';
 import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
+import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 
 class ChatBinding extends Bindings {
   @override
@@ -15,6 +16,7 @@ class ChatBinding extends Bindings {
     Get.lazyPut(
       () => ChatController(
         sendToChatbotUseCase: SendToChatbotUseCase(repository),
+        filterTransactionsUseCase: Get.find<FilterTransactionsUseCase>(),
       ),
       fenix: true,
     );

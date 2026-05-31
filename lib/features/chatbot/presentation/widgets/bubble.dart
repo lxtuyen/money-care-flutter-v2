@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'typing_indicator.dart';
+
 class Bubble extends StatelessWidget {
   final bool isUser;
   final String text;
@@ -50,14 +52,28 @@ class Bubble extends StatelessWidget {
                   ),
                 ),
               ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: bg,
-                borderRadius: BorderRadius.circular(12),
+            if (text.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: !isUser && text == '...'
+                    ? TypingIndicator(dotColor: fg)
+                    : (!isUser && text.endsWith('...')
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(text, style: TextStyle(color: fg)),
+                              ),
+                              const SizedBox(width: 8),
+                              TypingIndicator(dotColor: fg),
+                            ],
+                          )
+                        : Text(text, style: TextStyle(color: fg))),
               ),
-              child: Text(text, style: TextStyle(color: fg)),
-            ),
           ],
         ),
       ),

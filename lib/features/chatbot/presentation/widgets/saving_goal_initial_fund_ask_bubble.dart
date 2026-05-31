@@ -5,6 +5,7 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 
 class SavingGoalInitialFundAskBubble extends StatefulWidget {
   final Map<String, dynamic> metadata;
@@ -16,37 +17,10 @@ class SavingGoalInitialFundAskBubble extends StatefulWidget {
       _SavingGoalInitialFundAskBubbleState();
 }
 
-class _ChatbotWallet {
-  final int id;
-  final String name;
-  final double balance;
-  final String type;
-
-  _ChatbotWallet({
-    required this.id,
-    required this.name,
-    required this.balance,
-    required this.type,
-  });
-
-  factory _ChatbotWallet.fromMap(Map<String, dynamic> map) {
-    return _ChatbotWallet(
-      id: (map['id'] as num?)?.toInt() ?? 0,
-      name: map['name']?.toString() ?? '',
-      balance: (map['balance'] as num?)?.toDouble() ?? 0,
-      type: map['type']?.toString() ?? 'general',
-    );
-  }
-}
 
 class _SavingGoalInitialFundAskBubbleState
     extends State<SavingGoalInitialFundAskBubble> {
-  late String name;
-  late double target;
-  late List<_ChatbotWallet> wallets;
-  late double totalBalance;
-  late int selectedWalletId;
-  late int requestedMonths;
+  late ChatSavingGoalInitialFundAskEntity model;
 
   int activeWalletIndex = 0;
   double customAmount = 0;
@@ -57,29 +31,10 @@ class _SavingGoalInitialFundAskBubbleState
   @override
   void initState() {
     super.initState();
-    name = widget.metadata['name'] ?? 'Mục tiêu tiết kiệm';
-    target = (widget.metadata['target'] as num?)?.toDouble() ?? 0;
-    totalBalance = (widget.metadata['totalBalance'] as num?)?.toDouble() ?? 0;
-    requestedMonths =
-        (widget.metadata['requestedMonths'] as num?)?.toInt() ?? 0;
+    model = ChatSavingGoalInitialFundAskEntity.fromMap(widget.metadata);
 
-    final rawWallets = widget.metadata['wallets'];
-    if (rawWallets is List) {
-      wallets = rawWallets
-          .map(
-            (item) => _ChatbotWallet.fromMap(Map<String, dynamic>.from(item)),
-          )
-          .toList();
-    } else {
-      wallets = [];
-    }
-
-    final suggestedId =
-        (widget.metadata['suggestedWalletId'] as num?)?.toInt() ?? 0;
-    activeWalletIndex = wallets.indexWhere((w) => w.id == suggestedId);
-    if (activeWalletIndex == -1 && wallets.isNotEmpty) {
-      activeWalletIndex = 0;
-    }
+    final idx = model.wallets.indexWhere((w) => w.id == model.suggestedWalletId);
+    activeWalletIndex = idx != -1 ? idx : 0;
   }
 
   @override
@@ -89,21 +44,12 @@ class _SavingGoalInitialFundAskBubbleState
     super.dispose();
   }
 
-  double get selectedWalletBalance {
-    if (wallets.isEmpty ||
-        activeWalletIndex < 0 ||
-        activeWalletIndex >= wallets.length) {
-      return 0;
-    }
-    return wallets[activeWalletIndex].balance;
-  }
+  double get selectedWalletBalance =>
+      activeWalletIndex < model.wallets.length ? model.wallets[activeWalletIndex].balance : 0;
 
   double get initFundValue {
-    if (selectedPercent == 'custom') {
-      return customAmount;
-    }
-    final double percent =
-        double.tryParse(selectedPercent.replaceAll('%', '')) ?? 0;
+    if (selectedPercent == 'custom') return customAmount;
+    final percent = double.tryParse(selectedPercent.replaceAll('%', '')) ?? 0;
     return (selectedWalletBalance * percent / 100).floorToDouble();
   }
 
@@ -145,9 +91,8 @@ class _SavingGoalInitialFundAskBubbleState
     final chatController = Get.find<ChatController>();
     final appController = Get.find<AppController>();
     final userId = appController.userId.value ?? 0;
-    final isFinalized = widget.metadata['isFinalized'] == true;
 
-    if (wallets.isEmpty) return const SizedBox.shrink();
+    if (model.wallets.isEmpty) return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -197,7 +142,7 @@ class _SavingGoalInitialFundAskBubbleState
                       ),
                     ),
                     Text(
-                      name,
+                      model.name,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -217,7 +162,7 @@ class _SavingGoalInitialFundAskBubbleState
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  AppHelperFunction.formatAmount(target),
+                  AppHelperFunction.formatAmount(model.target),
                   style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
@@ -232,7 +177,7 @@ class _SavingGoalInitialFundAskBubbleState
 
           // Question Text
           Text(
-            "Bạn có tổng cộng ${AppHelperFunction.formatAmount(totalBalance)} trong các ví hoạt động. Bạn có muốn trích một phần số tiền này làm vốn tích lũy ban đầu để giảm bớt áp lực tài chính hàng tháng không?",
+            "Bạn có tổng cộng ${AppHelperFunction.formatAmount(model.totalBalance)} trong các ví hoạt động. Bạn có muốn trích một phần số tiền này làm vốn tích lũy ban đầu để giảm bớt áp lực tài chính hàng tháng không?",
             style: TextStyle(
               fontSize: 13,
               color: colors.textSecondary,
@@ -259,12 +204,12 @@ class _SavingGoalInitialFundAskBubbleState
             height: 60,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: wallets.length,
+              itemCount: model.wallets.length,
               itemBuilder: (context, idx) {
-                final wallet = wallets[idx];
+                final wallet = model.wallets[idx];
                 final isSelected = activeWalletIndex == idx;
                 return GestureDetector(
-                  onTap: isFinalized
+                  onTap: model.isFinalized
                       ? null
                       : () {
                           setState(() {
@@ -358,7 +303,7 @@ class _SavingGoalInitialFundAskBubbleState
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: OutlinedButton(
-                    onPressed: isFinalized
+                    onPressed: model.isFinalized
                         ? null
                         : () => _onPercentSelected(val),
                     style: OutlinedButton.styleFrom(
@@ -399,7 +344,7 @@ class _SavingGoalInitialFundAskBubbleState
             TextField(
               controller: amountController,
               focusNode: amountFocusNode,
-              enabled: !isFinalized,
+              enabled: !model.isFinalized,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: 'Nhập số tiền muốn trích...',
@@ -435,7 +380,7 @@ class _SavingGoalInitialFundAskBubbleState
           const SizedBox(height: 16),
 
           // Submit / Status Section
-          if (isFinalized) ...[
+          if (model.isFinalized) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -472,13 +417,13 @@ class _SavingGoalInitialFundAskBubbleState
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  final wallet = wallets[activeWalletIndex];
+                  final wallet = model.wallets[activeWalletIndex];
                   final fund = initFundValue;
                   final displayMsg = fund > 0
                       ? "Tôi muốn trích ${AppHelperFunction.formatAmount(fund)} từ ví ${wallet.name} để tích lũy ban đầu."
                       : "Tôi không muốn trích vốn ban đầu.";
                   final payload =
-                      '/saving_goal_init_fund {"name": "$name", "target": $target, "initFund": $fund, "sourceWalletId": ${wallet.id}, "requestedMonths": $requestedMonths}';
+                      '/saving_goal_init_fund {"name": "${model.name}", "target": ${model.target}, "initFund": $fund, "sourceWalletId": ${wallet.id}, "requestedMonths": ${model.requestedMonths}}';
 
                   chatController.sendCustomMessage(displayMsg, payload, userId);
                 },

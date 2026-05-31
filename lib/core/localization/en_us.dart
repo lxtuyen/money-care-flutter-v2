@@ -321,7 +321,6 @@ const Map<String, String> enUS = {
   'chatbot.categoryListError': 'Cannot display category list.',
   'chatbot.categoryCreated': '✅ New category created successfully!',
   'chatbot.connectionError': 'Connection error: @error',
-  'chatbot.sendingReceipt': 'Processing receipt...',
   'chatbot.imageTooBlurry':
       'The receipt image seems too blurry or lacks information. Please try capturing a clearer photo or send another one!',
 

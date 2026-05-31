@@ -320,24 +320,12 @@ const Map<String, String> viVN = {
   'chatbot.categoryListError': 'Không thể hiển thị danh sách hạng mục.',
   'chatbot.categoryCreated': 'Đã tạo hạng mục mới thành công!',
   'chatbot.connectionError': 'Lỗi kết nối: @error',
-  'chatbot.sendingReceipt': 'Đang xử lý hóa đơn...',
   'chatbot.imageTooBlurry':
       'Ảnh có vẻ không phải hóa đơn hoặc quá mờ để nhận diện. Bạn hãy thử chụp lại rõ nét hơn hoặc gửi tấm ảnh khác nhé!',
 
   // ============ Notification ============
   'notification.title': 'Thông báo',
   'notification.empty': 'Bạn chưa có thông báo nào.',
-
-  // ============ Dashboard Customization ============
-  'dashboard.customizeTitle': 'Tùy chỉnh Dashboard',
-  'dashboard.customizeDesc': 'Kéo thả để sắp xếp hoặc ẩn/hiện các mục',
-  'dashboard.section.quickStatus': 'Trạng thái nhanh (Chuỗi ngày)',
-  'dashboard.section.spendingSummary': 'Tổng quan Thu/Chi',
-  'dashboard.section.recentTransactions': 'Giao dịch gần đây',
-  'dashboard.section.spendingOverview': 'Biểu đồ chi tiêu',
-  'dashboard.section.monthlySpending': 'Chi tiêu theo danh mục',
-  'dashboard.section.monthlyIncome': 'Thu nhập theo danh mục',
-  'dashboard.saveSuccess': 'Đã cập nhật giao diện Dashboard!',
 
   // ============ Widget Settings ============
   'widget.settingTitle': 'Cài đặt Widget',

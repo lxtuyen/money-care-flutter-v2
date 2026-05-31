@@ -84,7 +84,6 @@ class SavingGoalCreatedBubble extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // Stats grid
           Row(
             children: [
               SavingGoalStatChip(

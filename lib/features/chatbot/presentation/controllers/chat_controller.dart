@@ -17,11 +17,18 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:image_picker/image_picker.dart';
 import 'package:money_care/core/services/ocr_service.dart';
 import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
+import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 
 class ChatController extends GetxController {
   final SendToChatbotUseCase sendToChatbotUseCase;
+  final FilterTransactionsUseCase filterTransactionsUseCase;
 
-  ChatController({required this.sendToChatbotUseCase});
+  ChatController({
+    required this.sendToChatbotUseCase,
+    required this.filterTransactionsUseCase,
+  });
 
   final AppController appController = Get.find<AppController>();
   final SavingGoalController savingGoalController =
@@ -71,6 +78,9 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     initSpeech();
+    ever(transactionController.transactionChangedCount, (_) {
+      _syncMessagesWithDatabase();
+    });
   }
 
   Future<void> initSpeech() async {
@@ -156,8 +166,7 @@ class ChatController extends GetxController {
 
     try {
       isLoading.value = true;
-      addUserMessage('chatbot.sendingReceipt'.tr, imagePath: image.path);
-      addBotMessage('...');
+      addUserMessage('', imagePath: image.path);
       scrollToBottom();
 
       final recognizedText = await _ocrService.processImage(image.path);
@@ -430,6 +439,155 @@ class ChatController extends GetxController {
         imagePath: messages[i].imagePath,
         metadata: updatedMetadata,
       );
+    }
+  }
+
+  void _syncMessagesWithDatabase() async {
+    final userId = appController.userId.value;
+    if (userId == null) return;
+
+    try {
+      final result = await filterTransactionsUseCase(
+        userId,
+        const TransactionFilterDto(),
+      );
+
+      final allTrans = [...result.incomeTransactions, ...result.expenseTransactions];
+
+      bool updatedAny = false;
+      for (var i = 0; i < messages.length; i++) {
+        final msg = messages[i];
+        final metadata = msg.metadata;
+        if (metadata == null) continue;
+
+        final type = metadata['__type'];
+        if (type == 'transaction_saved') {
+          final transId = metadata['id'];
+          if (transId != null) {
+            TransactionEntity? dbTrans;
+            for (final t in allTrans) {
+              if (t.id == transId) {
+                dbTrans = t;
+                break;
+              }
+            }
+
+            if (dbTrans != null) {
+              final newMetadata = Map<String, dynamic>.from(metadata);
+              newMetadata['amount'] = dbTrans.amount;
+              newMetadata['note'] = dbTrans.note;
+              newMetadata['date'] = dbTrans.transactionDate?.toIso8601String();
+              newMetadata['walletId'] = dbTrans.walletId;
+              newMetadata['walletName'] = dbTrans.walletName;
+              if (dbTrans.category != null) {
+                newMetadata['category'] = {
+                  'id': dbTrans.category!.id,
+                  'name': dbTrans.category!.name,
+                  'icon': dbTrans.category!.icon,
+                };
+              }
+              if (dbTrans.subCategory != null) {
+                newMetadata['subCategory'] = {
+                  'id': dbTrans.subCategory!.id,
+                  'name': dbTrans.subCategory!.name,
+                  'icon': dbTrans.subCategory!.icon,
+                };
+              } else {
+                newMetadata['subCategory'] = null;
+              }
+
+              messages[i] = ChatMessageEntity(
+                isUser: msg.isUser,
+                text: msg.text,
+                imagePath: msg.imagePath,
+                metadata: newMetadata,
+              );
+              updatedAny = true;
+            } else {
+              final newMetadata = Map<String, dynamic>.from(metadata);
+              newMetadata['isDeleted'] = true;
+              messages[i] = ChatMessageEntity(
+                isUser: msg.isUser,
+                text: msg.text,
+                imagePath: msg.imagePath,
+                metadata: newMetadata,
+              );
+              updatedAny = true;
+            }
+          }
+        } else if (type == 'transaction_list') {
+          final list = metadata['transactions'] as List? ?? [];
+          final newList = [];
+          bool listUpdated = false;
+
+          for (var item in list) {
+            if (item is Map) {
+              final transId = item['id'];
+              if (transId != null) {
+                TransactionEntity? dbTrans;
+                for (final t in allTrans) {
+                  if (t.id == transId) {
+                    dbTrans = t;
+                    break;
+                  }
+                }
+
+                if (dbTrans != null) {
+                  final newItem = Map<String, dynamic>.from(item);
+                  newItem['amount'] = dbTrans.amount;
+                  newItem['note'] = dbTrans.note;
+                  newItem['date'] = dbTrans.transactionDate?.toIso8601String();
+                  newItem['walletId'] = dbTrans.walletId;
+                  newItem['walletName'] = dbTrans.walletName;
+                  if (dbTrans.category != null) {
+                    newItem['category'] = {
+                      'id': dbTrans.category!.id,
+                      'name': dbTrans.category!.name,
+                      'icon': dbTrans.category!.icon,
+                    };
+                  }
+                  if (dbTrans.subCategory != null) {
+                    newItem['subCategory'] = {
+                      'id': dbTrans.subCategory!.id,
+                      'name': dbTrans.subCategory!.name,
+                      'icon': dbTrans.subCategory!.icon,
+                    };
+                  } else {
+                    newItem['subCategory'] = null;
+                  }
+                  newList.add(newItem);
+                  listUpdated = true;
+                } else {
+                  listUpdated = true;
+                }
+              } else {
+                newList.add(item);
+              }
+            } else {
+              newList.add(item);
+            }
+          }
+
+          if (listUpdated) {
+            final newMetadata = Map<String, dynamic>.from(metadata);
+            newMetadata['transactions'] = newList;
+            newMetadata['total'] = newList.length;
+
+            messages[i] = ChatMessageEntity(
+              isUser: msg.isUser,
+              text: msg.text,
+              imagePath: msg.imagePath,
+              metadata: newMetadata,
+            );
+            updatedAny = true;
+          }
+        }
+      }
+      if (updatedAny) {
+        messages.refresh();
+      }
+    } catch (e) {
+      debugPrint('Lỗi đồng bộ tin nhắn chatbot: $e');
     }
   }
 

@@ -8,12 +8,14 @@ class StatisticsTimeNavigator extends StatelessWidget {
   final DateTime? focusedMonth;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+  final VoidCallback? onTap;
 
   const StatisticsTimeNavigator({
     super.key,
     this.focusedMonth,
     this.onPrevious,
     this.onNext,
+    this.onTap,
   });
 
   @override
@@ -22,6 +24,36 @@ class StatisticsTimeNavigator extends StatelessWidget {
       final label = AppHelperFunction.getFormattedDate(
         focusedMonth!,
         format: 'yyyy/MM',
+      );
+
+      final middleWidget = Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.primary, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
       );
 
       return Padding(
@@ -34,35 +66,16 @@ class StatisticsTimeNavigator extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppColors.primary, width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
+              child: onTap != null
+                  ? Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onTap,
+                        borderRadius: BorderRadius.circular(24),
+                        child: middleWidget,
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                    )
+                  : middleWidget,
             ),
             const SizedBox(width: 12),
             _buildNavButton(
@@ -90,6 +103,46 @@ class StatisticsTimeNavigator extends StatelessWidget {
         );
       }
 
+      final middleWidget = Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.primary, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (statisticsController.periodType.value == 'hàng ngày')
+              Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.only(right: 8),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      );
+
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
@@ -100,45 +153,16 @@ class StatisticsTimeNavigator extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppColors.primary, width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (statisticsController.periodType.value == 'hàng ngày')
-                      Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.only(right: 8),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
+              child: onTap != null
+                  ? Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onTap,
+                        borderRadius: BorderRadius.circular(24),
+                        child: middleWidget,
                       ),
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                    )
+                  : middleWidget,
             ),
             const SizedBox(width: 12),
             _buildNavButton(

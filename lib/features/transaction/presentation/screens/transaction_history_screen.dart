@@ -12,6 +12,8 @@ import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/search_filter.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_history_filter_sheet.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -137,16 +139,46 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return _buildEmptyView();
       }
 
+      final Map<String, List<TransactionEntity>> grouped = {};
+      for (final t in filtered) {
+        final date = t.transactionDate ?? DateTime.now();
+        final header = AppHelperFunction.getGroupHeader(date);
+        grouped.putIfAbsent(header, () => []).add(t);
+      }
+
+      final List<Widget> listItems = [];
+      grouped.forEach((header, txs) {
+        listItems.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 8),
+            child: Text(
+              header,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppThemeColors.of(context).textPrimary.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+        );
+
+        for (int i = 0; i < txs.length; i++) {
+          final tx = txs[i];
+          listItems.add(
+            TransactionItem(
+              item: tx,
+              isShowDate: false,
+              isShowDivider: i < txs.length - 1,
+              onTap: () => _showTransactionDetail(context, tx),
+            ),
+          );
+        }
+      });
+
       return ListView(
         key: const ValueKey('chi'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: filtered.asMap().entries.map((entry) {
-          return TransactionItem(
-            item: entry.value,
-            isShowDate: true,
-            onTap: () => _showTransactionDetail(context, entry.value),
-          );
-        }).toList(),
+        children: listItems,
       );
     });
   }
@@ -177,16 +209,46 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return _buildEmptyView();
       }
 
+      final Map<String, List<TransactionEntity>> grouped = {};
+      for (final t in filtered) {
+        final date = t.transactionDate ?? DateTime.now();
+        final header = AppHelperFunction.getGroupHeader(date);
+        grouped.putIfAbsent(header, () => []).add(t);
+      }
+
+      final List<Widget> listItems = [];
+      grouped.forEach((header, txs) {
+        listItems.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 8),
+            child: Text(
+              header,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppThemeColors.of(context).textPrimary.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+        );
+
+        for (int i = 0; i < txs.length; i++) {
+          final tx = txs[i];
+          listItems.add(
+            TransactionItem(
+              item: tx,
+              isShowDate: false,
+              isShowDivider: i < txs.length - 1,
+              onTap: () => _showTransactionDetail(context, tx),
+            ),
+          );
+        }
+      });
+
       return ListView(
         key: const ValueKey('thu'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: filtered.asMap().entries.map((entry) {
-          return TransactionItem(
-            item: entry.value,
-            isShowDate: true,
-            onTap: () => _showTransactionDetail(context, entry.value),
-          );
-        }).toList(),
+        children: listItems,
       );
     });
   }

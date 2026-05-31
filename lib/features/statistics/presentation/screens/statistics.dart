@@ -164,7 +164,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
               const SizedBox(height: 8),
 
-              const StatisticsTimeNavigator(),
+              StatisticsTimeNavigator(
+                onTap: () => Get.toNamed(RoutePath.streakCalendar),
+              ),
 
               const SizedBox(height: 20),
 

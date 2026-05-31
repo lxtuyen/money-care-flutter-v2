@@ -271,7 +271,7 @@ const Map<String, String> viVN = {
   'budget.onTrack': 'Đang tốt',
 
   // ============ Streak / Calendar ============
-  'streak.calendarTitle': 'Lịch Thành Tích',
+  'streak.calendarTitle': 'Lịch giao dịch',
   'streak.hasTransaction': 'Có giao dịch',
   'streak.today': 'Hôm nay',
   'streak.mon': 'T2',
@@ -285,6 +285,9 @@ const Map<String, String> viVN = {
   'streak.transactionOnDay': 'Giao dịch ngày @day',
   'streak.transactionCount': '@count giao dịch',
   'streak.noTransactionOnDay': 'Không có giao dịch nào',
+  'streak.heatmapLegend': 'Tần suất',
+  'streak.less': 'Ít',
+  'streak.more': 'Nhiều',
 
   // ============ Category Management ============
   'categoryMgmt.title': 'Quản lý danh mục',

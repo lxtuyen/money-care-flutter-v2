@@ -274,7 +274,7 @@ const Map<String, String> enUS = {
   'budget.onTrack': 'On track',
 
   // ============ Streak / Calendar ============
-  'streak.calendarTitle': 'Achievement Calendar',
+  'streak.calendarTitle': 'Transaction Calendar',
   'streak.hasTransaction': 'Has transactions',
   'streak.today': 'Today',
   'streak.mon': 'Mon',
@@ -288,6 +288,9 @@ const Map<String, String> enUS = {
   'streak.transactionOnDay': 'Transactions on @day',
   'streak.transactionCount': '@count transactions',
   'streak.noTransactionOnDay': 'No transactions found',
+  'streak.heatmapLegend': 'Frequency',
+  'streak.less': 'Less',
+  'streak.more': 'More',
 
   // ============ Category Management ============
   'categoryMgmt.title': 'Category Management',

@@ -33,8 +33,6 @@ class _CategorySheetState extends State<CategorySheet> {
 
   List<CategoryEntity> _filteredCategories() {
     var list = widget.categories.where((c) {
-      if (c.type == 'others') return true;
-
       if (widget.transactionType != null && c.type != null) {
         return c.type == widget.transactionType;
       }

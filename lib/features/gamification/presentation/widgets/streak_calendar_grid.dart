@@ -53,12 +53,26 @@ class StreakCalendarGrid extends StatelessWidget {
             final isToday = controller.isToday(dayNum);
             final isSelected = controller.selectedDay.value == dayNum;
 
+            final txCountOnDay = controller.dailyTxCount[dayNum] ?? 0;
+            final maxTxCount = controller.maxDailyTxCount.value;
+
+            double intensityRatio = 0.0;
+            if (txCountOnDay > 0) {
+              if (maxTxCount <= 1) {
+                intensityRatio = 0.2;
+              } else {
+                intensityRatio = 0.15 +
+                    ((txCountOnDay - 1) / (maxTxCount - 1)) * 0.70;
+              }
+            }
+
             return _DayCell(
               day: dayNum,
               hasTx: hasTx,
               net: net,
               isToday: isToday,
               isSelected: isSelected,
+              intensityRatio: intensityRatio,
               onTap: () => controller.selectDay(dayNum),
             );
           },
@@ -74,6 +88,7 @@ class _DayCell extends StatelessWidget {
   final int net;
   final bool isToday;
   final bool isSelected;
+  final double intensityRatio;
   final VoidCallback onTap;
 
   const _DayCell({
@@ -82,6 +97,7 @@ class _DayCell extends StatelessWidget {
     required this.net,
     required this.isToday,
     required this.isSelected,
+    required this.intensityRatio,
     required this.onTap,
   });
 
@@ -115,7 +131,7 @@ class _DayCell extends StatelessWidget {
                   : isSelected
                   ? AppColors.primary.withValues(alpha: 0.15)
                   : hasTx
-                  ? const Color(0xFFFFF3E0)
+                  ? AppColors.secondaryOrange.withValues(alpha: intensityRatio)
                   : Colors.transparent,
               shape: BoxShape.circle,
               border: isToday
@@ -123,7 +139,12 @@ class _DayCell extends StatelessWidget {
                   : isSelected
                   ? Border.all(color: AppColors.primary, width: 2)
                   : hasTx
-                  ? Border.all(color: AppColors.secondaryOrange, width: 1.5)
+                  ? Border.all(
+                      color: AppColors.secondaryOrange.withValues(
+                        alpha: intensityRatio.clamp(0.4, 1.0),
+                      ),
+                      width: 1.5,
+                    )
                   : null,
             ),
             child: Center(
@@ -139,7 +160,9 @@ class _DayCell extends StatelessWidget {
                       : isSelected
                       ? AppColors.primary
                       : hasTx
-                      ? AppColors.secondaryOrange
+                      ? (intensityRatio > 0.55
+                          ? Colors.white
+                          : AppColors.secondaryOrange)
                       : AppThemeColors.of(context).textSecondary,
                 ),
               ),

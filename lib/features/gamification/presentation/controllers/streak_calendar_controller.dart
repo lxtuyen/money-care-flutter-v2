@@ -13,6 +13,8 @@ class StreakCalendarController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxMap<int, int> dailyNet = <int, int>{}.obs;
   final RxSet<int> daysWithTx = <int>{}.obs;
+  final RxMap<int, int> dailyTxCount = <int, int>{}.obs;
+  final RxInt maxDailyTxCount = 0.obs;
 
   final RxInt selectedDay = 0.obs;
   final RxList<TransactionEntity> selectedDayTransactions =
@@ -58,6 +60,7 @@ class StreakCalendarController extends GetxController {
 
       final Map<int, int> net = {};
       final Set<int> days = {};
+      final Map<int, int> txCount = {};
 
       void process(List<TransactionEntity> txs, int multiplier) {
         for (final tx in txs) {
@@ -69,6 +72,7 @@ class StreakCalendarController extends GetxController {
           }
           days.add(d.day);
           net[d.day] = (net[d.day] ?? 0) + (tx.amount * multiplier);
+          txCount[d.day] = (txCount[d.day] ?? 0) + 1;
         }
       }
 
@@ -82,6 +86,11 @@ class StreakCalendarController extends GetxController {
 
       dailyNet.assignAll(net);
       daysWithTx.assignAll(days);
+      dailyTxCount.assignAll(txCount);
+
+      maxDailyTxCount.value = txCount.isEmpty
+          ? 0
+          : txCount.values.reduce((a, b) => a > b ? a : b);
 
       if (selectedDay.value > 0) {
         selectDay(selectedDay.value);

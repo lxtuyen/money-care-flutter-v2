@@ -376,6 +376,45 @@ class AppHelperFunction {
     });
     return text;
   }
+
+  static String getDayOfWeekText(int weekday) {
+    switch (weekday) {
+      case 1:
+        return 'Thứ 2';
+      case 2:
+        return 'Thứ 3';
+      case 3:
+        return 'Thứ 4';
+      case 4:
+        return 'Thứ 5';
+      case 5:
+        return 'Thứ 6';
+      case 6:
+        return 'Thứ 7';
+      case 7:
+        return 'Chủ Nhật';
+      default:
+        return '';
+    }
+  }
+
+  static String getGroupHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final txDate = DateTime(date.year, date.month, date.day);
+
+    final formattedDate = getFormattedDate(date);
+
+    if (txDate == today) {
+      return 'Hôm nay ($formattedDate)';
+    } else if (txDate == yesterday) {
+      return 'Hôm qua ($formattedDate)';
+    } else {
+      final dayOfWeek = getDayOfWeekText(date.weekday);
+      return '$dayOfWeek, $formattedDate';
+    }
+  }
 }
 
 class _SnackBarContent extends StatelessWidget {

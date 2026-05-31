@@ -31,17 +31,13 @@ class AppSvgIcon extends StatelessWidget {
     final iconHeight = height ?? size;
 
     if (iconName != null && _isEmoji(iconName!)) {
-      return SizedBox(
-        width: iconWidth,
-        height: iconHeight,
-        child: Center(
-          child: Text(
-            iconName!,
-            style: TextStyle(
-              fontSize: (size ?? width ?? 20) * 0.9,
-              fontFamily: 'Apple Color Emoji',
-            ),
-          ),
+      return Text(
+        iconName!,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: size ?? width ?? 20,
+          fontFamily: 'Apple Color Emoji',
+          height: 1.0,
         ),
       );
     }

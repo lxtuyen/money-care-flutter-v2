@@ -138,7 +138,7 @@ class StreakDialog extends StatelessWidget {
                   Get.toNamed(RoutePath.streakCalendar);
                 },
                 child: Text(
-                  'Xem thành tích',
+                  'Xem lịch giao dịch',
                   style: TextStyle(
                     color: Colors.grey.shade500,
                     decoration: TextDecoration.underline,

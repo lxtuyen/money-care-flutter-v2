@@ -706,7 +706,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(name: 'required_monthly_saving', fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProjectionModel() when $default != null:
 return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
@@ -727,7 +727,7 @@ return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.mo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(name: 'required_monthly_saving', fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)  $default,) {final _that = this;
 switch (_that) {
 case _ProjectionModel():
 return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:
@@ -747,7 +747,7 @@ return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.mo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(name: 'required_monthly_saving', fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseDouble)  double monthlySavingCapacity, @JsonKey(fromJson: NumParser.parseDouble)  double requiredMonthlySaving, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsRemaining,  DateTime? projectedDate,  bool? isOnTrack, @JsonKey(fromJson: NumParser.parseIntNullable)  int? monthsDiff,  bool hasPlan)?  $default,) {final _that = this;
 switch (_that) {
 case _ProjectionModel() when $default != null:
 return $default(_that.monthlySavingCapacity,_that.requiredMonthlySaving,_that.monthsRemaining,_that.projectedDate,_that.isOnTrack,_that.monthsDiff,_that.hasPlan);case _:

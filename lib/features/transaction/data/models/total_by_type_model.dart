@@ -6,6 +6,7 @@ part 'total_by_type_model.g.dart';
 
 @freezed
 abstract class TotalByTypeModel with _$TotalByTypeModel {
+  // ignore: invalid_annotation_target
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory TotalByTypeModel({
     @JsonKey(name: 'income_total') required int income,

@@ -19,6 +19,12 @@ class ApiClient {
     };
   }
 
+  Uri _buildUri(String path) {
+    final cleanBase = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return Uri.parse('$cleanBase/$cleanPath');
+  }
+
   Future<ApiResponse<T>> post<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -26,7 +32,7 @@ class ApiClient {
     List<dynamic>? bodyList,
     T Function(dynamic)? fromJsonT,
   }) async {
-    final uri = Uri.parse('$baseUrl/$path').replace(
+    final uri = _buildUri(path).replace(
       queryParameters: queryParameters?.map(
         (key, value) => MapEntry(key, value.toString()),
       ),
@@ -46,7 +52,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final token = _storage.getToken();
-    final uri = Uri.parse('$baseUrl/$path');
+    final uri = _buildUri(path);
     final request = http.MultipartRequest('POST', uri);
 
     final headers = {'Accept': 'application/json'};
@@ -77,7 +83,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     T Function(dynamic)? fromJsonT,
   }) async {
-    final uri = Uri.parse('$baseUrl/$path').replace(
+    final uri = _buildUri(path).replace(
       queryParameters: queryParameters?.map(
         (key, value) => MapEntry(key, value.toString()),
       ),
@@ -92,7 +98,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/$path'),
+      _buildUri(path),
       headers: _headers(),
       body: jsonEncode(body ?? {}),
     );
@@ -105,7 +111,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/$path'),
+      _buildUri(path),
       headers: _headers(),
       body: body != null ? jsonEncode(body) : null,
     );
@@ -118,7 +124,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final response = await http.patch(
-      Uri.parse('$baseUrl/$path'),
+      _buildUri(path),
       headers: _headers(),
       body: jsonEncode(body ?? {}),
     );

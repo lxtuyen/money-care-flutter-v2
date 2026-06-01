@@ -84,7 +84,9 @@ class AppHelperFunction {
 
     final resolvedType = type ?? _inferSnackBarType(message);
 
-    Get.closeAllSnackbars();
+    try {
+      Get.closeAllSnackbars();
+    } catch (_) {}
 
     Future.delayed(const Duration(milliseconds: 10), () {
       Get.showSnackbar(
@@ -407,12 +409,12 @@ class AppHelperFunction {
     final formattedDate = getFormattedDate(date);
 
     if (txDate == today) {
-      return 'Hôm nay ($formattedDate)';
+      return 'Hôm nay - $formattedDate';
     } else if (txDate == yesterday) {
-      return 'Hôm qua ($formattedDate)';
+      return 'Hôm qua - $formattedDate';
     } else {
       final dayOfWeek = getDayOfWeekText(date.weekday);
-      return '$dayOfWeek, $formattedDate';
+      return '$dayOfWeek - $formattedDate';
     }
   }
 }

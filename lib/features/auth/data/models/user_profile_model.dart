@@ -6,6 +6,7 @@ part 'user_profile_model.g.dart';
 
 @freezed
 abstract class UserProfileModel with _$UserProfileModel {
+  // ignore: invalid_annotation_target
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory UserProfileModel({
     int? id,

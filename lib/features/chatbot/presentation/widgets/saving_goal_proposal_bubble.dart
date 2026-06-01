@@ -1115,7 +1115,7 @@ class SavingGoalDurationOption {
     final label = map['label']?.toString() ?? 'Khuyến nghị';
     final normalizedLabel = label.toLowerCase();
     final isKeepBudgetOption =
-        normalizedLabel.contains('giữ ngân sách') ||
+        normalizedLabel.contains('') ||
         normalizedLabel.contains('giu ngan sach');
     final isRecommended =
         map['isRecommended'] == true ||

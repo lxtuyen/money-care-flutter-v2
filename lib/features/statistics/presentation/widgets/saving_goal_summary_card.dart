@@ -537,7 +537,7 @@ class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
       borderColor = AppColors.income.withValues(alpha: 0.16);
       textColor = AppColors.income;
       icon = Icons.trending_up_rounded;
-      label = 'Dự kiến sớm $diff ngày';
+      label = 'Dự kiến sớm ${diff.abs()} ngày';
     } else if (status == 'delayed') {
       badgeBgColor = AppColors.expense.withValues(alpha: 0.08);
       borderColor = AppColors.expense.withValues(alpha: 0.16);

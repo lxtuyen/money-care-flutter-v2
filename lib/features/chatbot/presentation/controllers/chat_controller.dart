@@ -167,6 +167,7 @@ class ChatController extends GetxController {
     try {
       isLoading.value = true;
       addUserMessage('', imagePath: image.path);
+      addBotMessage('...');
       scrollToBottom();
 
       final recognizedText = await _ocrService.processImage(image.path);
@@ -307,6 +308,27 @@ class ChatController extends GetxController {
       } catch (e) {
         replaceLastBotMessage('chatbot.transactionListError'.tr);
       }
+      try {
+        transactionController.refreshAllData(userId);
+
+        if (Get.isRegistered<WalletController>()) {
+          Get.find<WalletController>().refreshWallets();
+        }
+
+        if (savingGoalController.goalId.value > 0) {
+          savingGoalController.loadGoalById();
+        }
+
+        if (Get.isRegistered<StatisticsController>()) {
+          Get.find<StatisticsController>().refreshStatisticsData(userId);
+        }
+
+        if (Get.isRegistered<GamificationController>()) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            Get.find<GamificationController>().recordDailyTransaction();
+          });
+        }
+      } catch (_) {}
     } else if (reply.startsWith('__SAVING_GOAL_INITIAL_FUND_ASK__')) {
       final jsonStr = reply.replaceFirst(
         '__SAVING_GOAL_INITIAL_FUND_ASK__',
@@ -503,16 +525,6 @@ class ChatController extends GetxController {
                 metadata: newMetadata,
               );
               updatedAny = true;
-            } else {
-              final newMetadata = Map<String, dynamic>.from(metadata);
-              newMetadata['isDeleted'] = true;
-              messages[i] = ChatMessageEntity(
-                isUser: msg.isUser,
-                text: msg.text,
-                imagePath: msg.imagePath,
-                metadata: newMetadata,
-              );
-              updatedAny = true;
             }
           }
         } else if (type == 'transaction_list') {
@@ -558,7 +570,7 @@ class ChatController extends GetxController {
                   newList.add(newItem);
                   listUpdated = true;
                 } else {
-                  listUpdated = true;
+                  newList.add(item);
                 }
               } else {
                 newList.add(item);

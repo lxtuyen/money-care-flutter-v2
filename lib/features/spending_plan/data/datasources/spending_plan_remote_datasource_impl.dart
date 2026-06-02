@@ -126,9 +126,17 @@ class SpendingPlanRemoteDatasourceImpl implements SpendingPlanRemoteDatasource {
   }
 
   @override
-  Future<SpendingPlanStatsModel?> getActivePlanStatistics() async {
+  Future<SpendingPlanStatsModel?> getActivePlanStatistics({
+    int? month,
+    int? year,
+  }) async {
+    final Map<String, dynamic> queryParams = {};
+    if (month != null) queryParams['month'] = month.toString();
+    if (year != null) queryParams['year'] = year.toString();
+
     final res = await api.get<SpendingPlanStatsModel?>(
       '${ApiRoutes.spendingPlans}/active/statistics',
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
       fromJsonT: (json) =>
           json == null ? null : SpendingPlanStatsModel.fromJson(json),
     );

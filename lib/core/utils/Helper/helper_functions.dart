@@ -242,15 +242,18 @@ class AppHelperFunction {
   }
 
   static String formatDateTime(DateTime dateTime) {
+    final localDateTime = dateTime.toLocal();
     final now = DateTime.now();
-    final diff = now.difference(dateTime);
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final targetDate = DateTime(localDateTime.year, localDateTime.month, localDateTime.day);
 
-    if (diff.inDays == 0) {
+    if (targetDate == today) {
       return 'common.today'.tr;
-    } else if (diff.inDays == 1) {
+    } else if (targetDate == yesterday) {
       return 'common.yesterday'.tr;
     } else {
-      return DateFormat('dd/MM/yyyy').format(dateTime.toLocal());
+      return DateFormat('dd/MM/yyyy').format(localDateTime);
     }
   }
 
@@ -401,19 +404,20 @@ class AppHelperFunction {
   }
 
   static String getGroupHeader(DateTime date) {
+    final localDate = date.toLocal();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    final txDate = DateTime(date.year, date.month, date.day);
+    final txDate = DateTime(localDate.year, localDate.month, localDate.day);
 
-    final formattedDate = getFormattedDate(date);
+    final formattedDate = getFormattedDate(localDate);
 
     if (txDate == today) {
       return 'Hôm nay - $formattedDate';
     } else if (txDate == yesterday) {
       return 'Hôm qua - $formattedDate';
     } else {
-      final dayOfWeek = getDayOfWeekText(date.weekday);
+      final dayOfWeek = getDayOfWeekText(localDate.weekday);
       return '$dayOfWeek - $formattedDate';
     }
   }

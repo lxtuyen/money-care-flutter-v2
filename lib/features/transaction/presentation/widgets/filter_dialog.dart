@@ -375,7 +375,18 @@ class _FilterDialogState extends State<FilterDialog> {
       selectedDateLabel = null;
     });
 
-    filterController.clearAll();
+    if (widget.categories != null) {
+      filterController.updateCategory(null);
+    } else if (widget.wallets != null) {
+      filterController.updateWallet(null);
+    } else {
+      filterController.updateDateRange(
+        null,
+        null,
+        label: FilterController.defaultDateLabel,
+      );
+    }
+
     widget.onApply(
       FilterResult(selectedId: '', startDate: null, endDate: null),
     );

@@ -172,7 +172,6 @@ class TransactionController extends GetxController {
     if (Get.isRegistered<StatisticsController>()) {
       Get.find<StatisticsController>().refreshStatisticsData(
         userId,
-        skipMainTotals: true,
       );
     }
     if (Get.isRegistered<SpendingPlanController>()) {

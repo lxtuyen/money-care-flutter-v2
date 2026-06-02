@@ -114,9 +114,15 @@ class SpendingPlanRepositoryImpl implements SpendingPlanRepository {
 
   @override
   Future<Either<Failure, SpendingPlanStatsEntity?>>
-  getActivePlanStatistics() async {
+  getActivePlanStatistics({
+    int? month,
+    int? year,
+  }) async {
     try {
-      final model = await remoteDatasource.getActivePlanStatistics();
+      final model = await remoteDatasource.getActivePlanStatistics(
+        month: month,
+        year: year,
+      );
       return Right(model?.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

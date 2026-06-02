@@ -23,5 +23,8 @@ abstract class SpendingPlanRemoteDatasource {
     CreateEstimatedExpenseRequest request,
   );
   Future<SpendingPlanModel> removePlanExpense(int planId, int expenseId);
-  Future<SpendingPlanStatsModel?> getActivePlanStatistics();
+  Future<SpendingPlanStatsModel?> getActivePlanStatistics({
+    int? month,
+    int? year,
+  });
 }

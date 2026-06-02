@@ -79,8 +79,15 @@ class _SavingGoalInitialFundAskBubbleState
         );
       });
     } else {
+      final formatted = AppHelperFunction.formatCurrency(cleanVal);
       setState(() {
         customAmount = amt;
+        if (amountController.text != formatted) {
+          amountController.value = TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
+        }
       });
     }
   }

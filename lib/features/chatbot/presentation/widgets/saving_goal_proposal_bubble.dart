@@ -444,7 +444,10 @@ class _DurationOptions extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  "$label: $durationText - chi TB ${AppHelperFunction.formatAmount(dailySpending)}/ngày",
+                  (label.toLowerCase().contains('giữ ngân sách') ||
+                          label.toLowerCase().contains('giu ngan sach'))
+                      ? "$durationText - chi TB ${AppHelperFunction.formatAmount(dailySpending)}/ngày"
+                      : "$label: $durationText - chi TB ${AppHelperFunction.formatAmount(dailySpending)}/ngày",
                   style: TextStyle(
                     fontSize: 12.2,
                     fontWeight: isRecommended
@@ -1115,7 +1118,7 @@ class SavingGoalDurationOption {
     final label = map['label']?.toString() ?? 'Khuyến nghị';
     final normalizedLabel = label.toLowerCase();
     final isKeepBudgetOption =
-        normalizedLabel.contains('') ||
+        normalizedLabel.contains('giữ ngân sách') ||
         normalizedLabel.contains('giu ngan sach');
     final isRecommended =
         map['isRecommended'] == true ||

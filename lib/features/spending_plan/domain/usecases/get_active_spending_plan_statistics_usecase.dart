@@ -8,6 +8,9 @@ class GetActiveSpendingPlanStatisticsUseCase {
 
   GetActiveSpendingPlanStatisticsUseCase(this.repository);
 
-  Future<Either<Failure, SpendingPlanStatsEntity?>> call() =>
-      repository.getActivePlanStatistics();
+  Future<Either<Failure, SpendingPlanStatsEntity?>> call({
+    int? month,
+    int? year,
+  }) =>
+      repository.getActivePlanStatistics(month: month, year: year);
 }

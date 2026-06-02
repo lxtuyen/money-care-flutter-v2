@@ -25,6 +25,17 @@ class ApiClient {
     return Uri.parse('$cleanBase/$cleanPath');
   }
 
+  Map<String, String>? _cleanQueryParams(Map<String, dynamic>? queryParameters) {
+    if (queryParameters == null) return null;
+    final clean = <String, String>{};
+    queryParameters.forEach((key, value) {
+      if (value != null) {
+        clean[key] = value.toString();
+      }
+    });
+    return clean.isNotEmpty ? clean : null;
+  }
+
   Future<ApiResponse<T>> post<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -33,9 +44,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final uri = _buildUri(path).replace(
-      queryParameters: queryParameters?.map(
-        (key, value) => MapEntry(key, value.toString()),
-      ),
+      queryParameters: _cleanQueryParams(queryParameters),
     );
     final response = await http.post(
       uri,
@@ -84,9 +93,7 @@ class ApiClient {
     T Function(dynamic)? fromJsonT,
   }) async {
     final uri = _buildUri(path).replace(
-      queryParameters: queryParameters?.map(
-        (key, value) => MapEntry(key, value.toString()),
-      ),
+      queryParameters: _cleanQueryParams(queryParameters),
     );
     final response = await http.get(uri, headers: _headers());
     return _handleResponse(response, fromJsonT);

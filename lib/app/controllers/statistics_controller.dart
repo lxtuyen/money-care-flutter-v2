@@ -9,6 +9,7 @@ import 'package:money_care/features/transaction/domain/entities/entities.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/widget_service.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/statistics/data/models/goal_plan_insight_model.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
@@ -447,6 +448,11 @@ class StatisticsController extends GetxController {
           _loadMonthlyCategories(userId),
           _loadPreviousTotalByType(userId),
           _loadStatisticsSummary(userId),
+          if (Get.isRegistered<SpendingPlanController>())
+            Get.find<SpendingPlanController>().loadStatsSummary(
+              month: currentStartDate.month,
+              year: currentStartDate.year,
+            ),
         ]);
 
         final activeGoalId = savingGoalController.goalId.value;
@@ -482,6 +488,11 @@ class StatisticsController extends GetxController {
         futures.addAll([
           _loadPreviousTotalByType(userId),
           _loadStatisticsSummary(userId),
+          if (Get.isRegistered<SpendingPlanController>())
+            Get.find<SpendingPlanController>().loadStatsSummary(
+              month: currentStartDate.month,
+              year: currentStartDate.year,
+            ),
         ]);
 
         final activeGoalId = savingGoalController.goalId.value;
@@ -623,19 +634,10 @@ class StatisticsController extends GetxController {
 
   TransactionTotalsDto _createTotalsDto(DateTime start, DateTime end) {
     final backendType = selectedType.value == 'chi' ? 'expense' : 'income';
-    final now = DateTime.now();
-
-    // Check if it is the current month range (standard 1st to end of month)
-    final isCurrentMonth =
-        start.year == now.year &&
-        start.month == now.month &&
-        start.day == 1 &&
-        end.year == now.year &&
-        end.month == now.month;
 
     return TransactionTotalsDto(
-      startDate: isCurrentMonth ? null : start.toUtc().toIso8601String(),
-      endDate: isCurrentMonth ? null : end.toUtc().toIso8601String(),
+      startDate: start.toUtc().toIso8601String(),
+      endDate: end.toUtc().toIso8601String(),
       type: backendType,
     );
   }

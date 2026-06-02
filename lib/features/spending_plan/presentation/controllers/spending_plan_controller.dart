@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
@@ -123,7 +124,11 @@ class SpendingPlanController extends GetxController {
     return request;
   }
 
-  Future<void> loadStatsSummary({bool loadActiveIfMissing = false}) async {
+  Future<void> loadStatsSummary({
+    bool loadActiveIfMissing = false,
+    int? month,
+    int? year,
+  }) async {
     if (loadActiveIfMissing && activePlan.value == null) {
       await _loadActivePlanOnly();
     }
@@ -138,7 +143,18 @@ class SpendingPlanController extends GetxController {
 
     isLoadingStats.value = true;
     final request = () async {
-      final result = await getActiveSpendingPlanStatisticsUseCase();
+      int? targetMonth = month;
+      int? targetYear = year;
+      if (targetMonth == null && Get.isRegistered<StatisticsController>()) {
+        final statsCtrl = Get.find<StatisticsController>();
+        targetMonth = statsCtrl.currentStartDate.month;
+        targetYear = statsCtrl.currentStartDate.year;
+      }
+
+      final result = await getActiveSpendingPlanStatisticsUseCase(
+        month: targetMonth,
+        year: targetYear,
+      );
       result.fold(
         (failure) {
           statsSummary.value = null;

@@ -128,6 +128,7 @@ class _TransactionFormState extends State<TransactionForm> {
                                             'transaction.walletSelectionTitle',
                                         description:
                                             'transaction.walletSelectionDesc',
+                                        clearButtonText: 'common.delete',
                                         options: wallets
                                             .map(
                                               (w) => SelectionOption(

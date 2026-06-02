@@ -395,6 +395,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                         title: 'Chọn ví nhận tiền',
                         description:
                             'Bạn đã hoàn thành mục tiêu! Chọn một ví chính để chuyển ${AppHelperFunction.formatAmount(r.walletBalance, currency: 'VND')} về nhé.',
+                        clearButtonText: 'common.delete',
                         options: options,
                         onSelect: (id, label) {
                           if (id != null) {

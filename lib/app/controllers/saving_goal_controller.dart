@@ -53,6 +53,8 @@ class SavingGoalController extends GetxController {
   RxBool hasExpiredGoal = false.obs;
   Rxn<SavingGoalReportModel> goalReport = Rxn<SavingGoalReportModel>();
   RxBool isLoadingReport = false.obs;
+  Future<SavingGoalReportModel?>? _activeReportFuture;
+  int? _activeReportId;
 
   @override
   void onInit() {
@@ -360,22 +362,39 @@ class SavingGoalController extends GetxController {
 
   Future<SavingGoalReportModel?> loadGoalReport(int id) async {
     if (id <= 0) return null;
+
+    if (_activeReportId == id && _activeReportFuture != null) {
+      return _activeReportFuture;
+    }
+
+    _activeReportId = id;
     isLoadingReport.value = true;
-    SavingGoalReportModel? resultReport;
-    final result = await getSavingGoalReportUseCase(id);
-    result.fold(_handleFailure, (report) {
-      goalReport.value = report;
-      resultReport = report;
-      if ((report.isCompleted || report.isTargetAchieved) &&
-          !report.completionNotified &&
-          !_notifiedGoalIds.contains(id) &&
-          !(Get.isDialogOpen ?? false)) {
-        _notifiedGoalIds.add(id);
-        GoalCompletionDialog.show(report);
-      }
+
+    _activeReportFuture = getSavingGoalReportUseCase(id).then((result) {
+      return result.fold(
+        (failure) {
+          _handleFailure(failure);
+          return null;
+        },
+        (report) {
+          goalReport.value = report;
+          if ((report.isCompleted || report.isTargetAchieved) &&
+              !report.completionNotified &&
+              !_notifiedGoalIds.contains(id) &&
+              !(Get.isDialogOpen ?? false)) {
+            _notifiedGoalIds.add(id);
+            GoalCompletionDialog.show(report);
+          }
+          return report;
+        },
+      );
+    }).whenComplete(() {
+      isLoadingReport.value = false;
+      _activeReportFuture = null;
+      _activeReportId = null;
     });
-    isLoadingReport.value = false;
-    return resultReport;
+
+    return _activeReportFuture;
   }
 
   Future<void> completeGoalEarly(int id) async {

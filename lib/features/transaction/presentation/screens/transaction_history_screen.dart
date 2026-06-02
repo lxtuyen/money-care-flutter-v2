@@ -14,6 +14,7 @@ import 'package:money_care/features/transaction/presentation/widgets/transaction
 import 'package:money_care/features/transaction/presentation/widgets/transaction_history_filter_sheet.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/constants/colors.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -69,19 +70,30 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               final data = statisticsController.totalByType.value;
               final selectedType = statisticsController.selectedType.value;
 
-              if (transactionController.isLoading.value ||
-                  statisticsController.isLoading.value) {
-                return const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              return TransactionTypeToggle(
-                selected: selectedType,
-                onSelected: (value) => statisticsController.changeType(value),
-                spendText: data?.expenseTotal ?? 0,
-                incomeText: data?.incomeTotal ?? 0,
+              return Stack(
+                children: [
+                  TransactionTypeToggle(
+                    selected: selectedType,
+                    onSelected: (value) =>
+                        statisticsController.changeType(value),
+                    spendText: data?.expenseTotal ?? 0,
+                    incomeText: data?.incomeTotal ?? 0,
+                  ),
+                  if (transactionController.isLoading.value ||
+                      statisticsController.isLoading.value)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.primary.withValues(alpha: 0.5),
+                        ),
+                        minHeight: 2,
+                      ),
+                    ),
+                ],
               );
             }),
           ),

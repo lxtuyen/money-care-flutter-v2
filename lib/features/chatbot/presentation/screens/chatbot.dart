@@ -13,6 +13,8 @@ import 'package:money_care/features/chatbot/presentation/widgets/transaction_lis
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_created_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_proposal_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_initial_fund_ask_bubble.dart';
+import 'package:money_care/features/voice_chat/presentation/controllers/voice_chat_controller.dart';
+import 'package:money_care/features/voice_chat/presentation/widgets/voice_chat_panel.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -23,6 +25,7 @@ class ChatbotScreen extends StatefulWidget {
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
   final ChatController controller = Get.find<ChatController>();
+  final VoiceChatController voiceController = Get.find<VoiceChatController>();
   final AppController appController = Get.find<AppController>();
   int? userId;
 
@@ -48,6 +51,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             const Divider(height: 1),
             Expanded(child: _buildMessageList()),
             const Divider(height: 1),
+            VoiceChatPanel(controller: voiceController, userId: userId ?? 0),
             _buildInputArea(),
           ],
         ),

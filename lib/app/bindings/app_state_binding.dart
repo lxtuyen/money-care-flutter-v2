@@ -7,6 +7,10 @@ import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/statistics/data/datasources/goal_plan_insight_remote_datasource.dart';
 import 'package:money_care/features/statistics/data/repositories/goal_plan_insight_repository_impl.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
+import 'package:money_care/features/statistics/data/repositories/analytics_repository_impl.dart';
+import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
+import 'package:money_care/features/ai_feedback/data/repositories/ai_feedback_repository_impl.dart';
+import 'package:money_care/features/ai_feedback/domain/usecases/send_ai_feedback_usecase.dart';
 
 class AppStateBinding extends Bindings {
   final ApiClient apiClient;
@@ -25,6 +29,8 @@ class AppStateBinding extends Bindings {
     final goalPlanInsightRepo = GoalPlanInsightRepositoryImpl(
       remoteDatasource: goalPlanInsightRemoteDs,
     );
+    final analyticsRepo = AnalyticsRepositoryImpl(api: apiClient);
+    final aiFeedbackRepo = AiFeedbackRepositoryImpl(api: apiClient);
 
     Get.put<StatisticsController>(
       StatisticsController(
@@ -37,6 +43,10 @@ class AppStateBinding extends Bindings {
         getGoalPlanInsightUseCase: GetGoalPlanInsightUseCase(
           goalPlanInsightRepo,
         ),
+        getFinancialAnalyticsUseCase: GetFinancialAnalyticsUseCase(
+          analyticsRepo,
+        ),
+        sendAiFeedbackUseCase: SendAiFeedbackUseCase(aiFeedbackRepo),
       ),
       permanent: true,
     );

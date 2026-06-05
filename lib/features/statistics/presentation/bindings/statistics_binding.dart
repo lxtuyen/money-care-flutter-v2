@@ -5,7 +5,9 @@ import 'package:money_care/features/transaction/data/datasources/transaction_rem
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/features/statistics/data/datasources/goal_plan_insight_remote_datasource.dart';
+import 'package:money_care/features/statistics/data/repositories/analytics_repository_impl.dart';
 import 'package:money_care/features/statistics/data/repositories/goal_plan_insight_repository_impl.dart';
+import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
 
 class StatisticsBinding extends Bindings {
@@ -25,6 +27,7 @@ class StatisticsBinding extends Bindings {
     final goalPlanInsightRepo = GoalPlanInsightRepositoryImpl(
       remoteDatasource: goalPlanInsightRemoteDs,
     );
+    final analyticsRepo = AnalyticsRepositoryImpl(api: apiClient);
 
     Get.lazyPut(
       () => StatisticsController(
@@ -36,6 +39,9 @@ class StatisticsBinding extends Bindings {
         ),
         getGoalPlanInsightUseCase: GetGoalPlanInsightUseCase(
           goalPlanInsightRepo,
+        ),
+        getFinancialAnalyticsUseCase: GetFinancialAnalyticsUseCase(
+          analyticsRepo,
         ),
       ),
       fenix: true,

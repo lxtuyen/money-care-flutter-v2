@@ -32,6 +32,18 @@ class ApiRoutes {
   static const goalPlanInsight = 'ai/goal-plan-insight';
   static const initialFinancialPlanSuggest =
       'ai/initial-financial-plan/suggest';
+  static const financialAnalytics = 'analytics/financial-summary';
+  static const aiFeedback = 'ai-feedback';
+  static const aiFeedbackSummary = 'ai-feedback/summary';
+  static const personalizationProfile = 'personalization/profile';
+  static const personalizationProfileRebuild =
+      'personalization/profile/rebuild';
+  static const modelEvaluation = 'analytics/model-evaluation';
+  static const modelEvaluationForecasting =
+      'analytics/model-evaluation/forecasting';
+  static const modelEvaluationBudgeting =
+      'analytics/model-evaluation/budgeting';
+  static const modelEvaluationRun = 'analytics/model-evaluation/run';
 
   static const splitSession = 'split-session';
   static const gamification = 'gamification';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -139,7 +140,66 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               ],
             ),
           ),
-
+          Obx(() {
+            if (!Get.isRegistered<StatisticsController>()) {
+              return const SizedBox.shrink();
+            }
+            final analytics = Get.find<StatisticsController>().analyticsData.value;
+            if (analytics == null) {
+              return const SizedBox.shrink();
+            }
+            dynamic proj;
+            try {
+              proj = analytics.savingGoalProjections.firstWhere((p) => p.goalId == goal.id);
+            } catch (_) {
+              proj = null;
+            }
+            if (proj == null) {
+              return const SizedBox.shrink();
+            }
+            final statusColor = proj.isOnTrack ? AppColors.success : AppColors.warning;
+            return Container(
+              margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    proj.isOnTrack ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded,
+                    color: statusColor,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Dự báo tiến độ AI",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "${proj.statusText}. Thời gian còn lại: ${proj.monthsRemaining} tháng.",
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
           Expanded(
             child: Obx(() {
               if (savingGoalController.isLoadingReport.value) {

@@ -142,7 +142,7 @@ class ApiClient {
     http.Response response,
     T Function(dynamic)? fromJsonT,
   ) {
-    final rawBody = response.body.trim();
+    final rawBody = utf8.decode(response.bodyBytes).trim();
 
     if (rawBody.isEmpty) {
       return ApiResponse<T>(

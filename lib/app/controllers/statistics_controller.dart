@@ -13,6 +13,11 @@ import 'package:money_care/features/spending_plan/presentation/controllers/spend
 import 'package:money_care/features/statistics/data/models/goal_plan_insight_model.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
+import 'package:money_care/features/statistics/data/models/analytics_model.dart';
+import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
+import 'package:money_care/features/ai_feedback/data/models/ai_feedback_dto.dart';
+import 'package:money_care/features/ai_feedback/domain/usecases/send_ai_feedback_usecase.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 class StatisticsController extends GetxController {
   final GetTotalByTypeUseCase getTotalByTypeUseCase;
@@ -20,6 +25,8 @@ class StatisticsController extends GetxController {
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
   final GetGoalPlanInsightUseCase? getGoalPlanInsightUseCase;
+  final GetFinancialAnalyticsUseCase getFinancialAnalyticsUseCase;
+  final SendAiFeedbackUseCase sendAiFeedbackUseCase;
 
   SavingGoalController get savingGoalController =>
       Get.find<SavingGoalController>();
@@ -40,6 +47,12 @@ class StatisticsController extends GetxController {
   final isLoadingGoalPlanInsight = false.obs;
   final goalPlanInsightError = ''.obs;
   String? _goalPlanInsightKey;
+
+  final analyticsData = Rxn<AnalyticsModel>();
+  final isLoadingAnalytics = false.obs;
+  final analyticsError = ''.obs;
+  final submittedFeedbackIds = <String>{}.obs;
+  final sendingFeedbackIds = <String>{}.obs;
 
   RxList<FlSpot> chartSpots = <FlSpot>[].obs;
   RxList<String> chartLabels = <String>[].obs;
@@ -146,8 +159,72 @@ class StatisticsController extends GetxController {
     required this.getTotalByCateUseCase,
     required this.getTotalByDateEntityUseCase,
     required this.getStatisticsSummaryUseCase,
+    required this.getFinancialAnalyticsUseCase,
+    required this.sendAiFeedbackUseCase,
     this.getGoalPlanInsightUseCase,
   });
+
+  Future<void> loadFinancialAnalytics() async {
+    isLoadingAnalytics.value = true;
+    analyticsError.value = '';
+    try {
+      final res = await getFinancialAnalyticsUseCase();
+      analyticsData.value = res;
+    } catch (e) {
+      analyticsData.value = null;
+      analyticsError.value = e.toString();
+    } finally {
+      isLoadingAnalytics.value = false;
+    }
+  }
+
+  Future<void> sendBudgetRecommendationFeedback(
+    AiBudgetRecommendationItemModel item,
+    String action, {
+    double? finalLimitAmount,
+  }) async {
+    if (submittedFeedbackIds.contains(item.recommendationId) ||
+        sendingFeedbackIds.contains(item.recommendationId)) {
+      return;
+    }
+
+    sendingFeedbackIds.add(item.recommendationId);
+    try {
+      await sendAiFeedbackUseCase(
+        AiFeedbackDto(
+          recommendationType: 'budget',
+          recommendationId: item.recommendationId,
+          sourceModel: 'gradient_boosting_budgeting',
+          sourceModelVersion: 'v1',
+          userAction: action,
+          sourcePayload: {
+            'categoryName': item.categoryName,
+            'currentLimitAmount': item.currentLimitAmount,
+            'recommendedLimitAmount': item.recommendedLimitAmount,
+            'predictedSpendAmount': item.predictedSpendAmount,
+            'spentAmount': item.spentAmount,
+            'confidence': item.confidence,
+            'reason': item.reason,
+            'actionType': item.actionType,
+            'riskBefore': item.riskBefore,
+            'riskAfter': item.riskAfter,
+            'elasticity': item.elasticity,
+            'reasonCodes': item.reasonCodes,
+          },
+          modifiedPayload: finalLimitAmount == null
+              ? null
+              : {'finalLimitAmount': finalLimitAmount},
+          contextPayload: {'screen': 'statistics', 'riskLevel': item.riskLevel},
+        ),
+      );
+      submittedFeedbackIds.add(item.recommendationId);
+      AppHelperFunction.showSuccessSnackBar('Da ghi nhan phan hoi AI');
+    } catch (e) {
+      AppHelperFunction.showErrorSnackBar('Khong the gui phan hoi AI: $e');
+    } finally {
+      sendingFeedbackIds.remove(item.recommendationId);
+    }
+  }
 
   Future<void> loadGoalPlanInsight(GoalPlanInsightSnapshot snapshot) async {
     final useCase = getGoalPlanInsightUseCase;
@@ -459,6 +536,8 @@ class StatisticsController extends GetxController {
         if (activeGoalId > 0) {
           futures.add(savingGoalController.loadGoalReport(activeGoalId));
         }
+
+        futures.add(loadFinancialAnalytics());
 
         await Future.wait(futures);
         if (currentRefresh == _refreshCounter) {

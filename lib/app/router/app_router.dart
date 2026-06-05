@@ -37,6 +37,10 @@ import 'package:money_care/features/saving_goal/presentation/bindings/saving_goa
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
+import 'package:money_care/features/personalization/presentation/screens/personal_finance_profile_screen.dart';
+import 'package:money_care/features/personalization/presentation/bindings/personalization_binding.dart';
+import 'package:money_care/features/statistics/presentation/screens/model_evaluation_screen.dart';
+import 'package:money_care/features/statistics/presentation/bindings/model_evaluation_binding.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -196,6 +200,18 @@ final List<GetPage> appPages = [
     name: RoutePath.spendingPlanDetail,
     page: () => const SpendingPlanDetailScreen(),
     binding: SpendingPlanBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.personalFinanceProfile,
+    page: () => const PersonalFinanceProfileScreen(),
+    binding: PersonalizationBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.modelEvaluation,
+    page: () => const ModelEvaluationScreen(),
+    binding: ModelEvaluationBinding(),
     transition: Transition.rightToLeft,
   ),
 ];

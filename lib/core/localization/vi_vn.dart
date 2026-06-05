@@ -102,6 +102,8 @@ const Map<String, String> viVN = {
   'profile.savingGoals': 'Mục tiêu tiết kiệm',
   'profile.expiredGoals': 'Mục tiêu đã hết hạn',
   'profile.categoryManagement': 'Quản lý danh mục',
+  'profile.personalFinanceProfile': 'Hồ sơ tài chính (Test)',
+  'profile.modelEvaluation': 'Đánh giá mô hình (Test)',
   'profile.darkMode': 'Chế độ tối',
   'profile.language': 'Ngôn ngữ',
   'profile.targetTitle': 'Mục tiêu tiết kiệm',

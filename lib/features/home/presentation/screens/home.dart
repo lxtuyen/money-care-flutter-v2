@@ -235,6 +235,7 @@ class HomeScreen extends GetView<HomeController> {
 
             _buildQuickStatus(),
             _buildSpendingSummary(),
+            _buildAiInsightsBanner(),
             _buildRecentTransactions(),
             _buildSpendingOverview(),
             _buildMonthlySpending(),
@@ -463,6 +464,62 @@ class HomeScreen extends GetView<HomeController> {
           }),
           const SizedBox(height: AppSizes.defaultSpace),
         ],
+      );
+    });
+  }
+
+  Widget _buildAiInsightsBanner() {
+    final statsController = controller.statisticsController;
+    return Obx(() {
+      final analytics = statsController.analyticsData.value;
+      if (analytics == null || analytics.insights.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      final insight = analytics.insights.first;
+      Color color = AppColors.info;
+      IconData icon = Icons.info_outline;
+      if (insight.severity == 'success') {
+        color = AppColors.success;
+        icon = Icons.check_circle_outline;
+      } else if (insight.severity == 'warning') {
+        color = AppColors.warning;
+        icon = Icons.warning_amber_rounded;
+      }
+
+      return Container(
+        margin: const EdgeInsets.only(bottom: AppSizes.defaultSpace),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    insight.title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: color == AppColors.warning ? const Color(0xFFC07000) : color,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    insight.message,
+                    style: const TextStyle(fontSize: 11, color: AppColors.text2),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       );
     });
   }

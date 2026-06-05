@@ -102,6 +102,8 @@ const Map<String, String> enUS = {
   'profile.savingGoals': 'Saving Goals',
   'profile.expiredGoals': 'Expired Goals',
   'profile.categoryManagement': 'Category Management',
+  'profile.personalFinanceProfile': 'Financial Profile (Test)',
+  'profile.modelEvaluation': 'Model Evaluation (Test)',
   'profile.darkMode': 'Dark Mode',
   'profile.language': 'Language',
   'profile.targetTitle': 'Saving Target',

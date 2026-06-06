@@ -73,22 +73,26 @@ class _ScenarioPlanningScreenState extends State<ScenarioPlanningScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 146,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            final item = controller.templates[index];
-                            return ScenarioTemplateCard(
-                              template: item,
-                              selected:
-                                  item.scenarioType == template.scenarioType,
-                              onTap: () => controller.selectTemplate(item),
-                            );
-                          },
-                          separatorBuilder: (_, _) => const SizedBox(width: 10),
-                          itemCount: controller.templates.length,
-                        ),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio: 1.08,
+                            ),
+                        itemBuilder: (context, index) {
+                          final item = controller.templates[index];
+                          return ScenarioTemplateCard(
+                            template: item,
+                            selected:
+                                item.scenarioType == template.scenarioType,
+                            onTap: () => controller.selectTemplate(item),
+                          );
+                        },
+                        itemCount: controller.templates.length,
                       ),
                       const SizedBox(height: 18),
                       _ScenarioInputPanel(

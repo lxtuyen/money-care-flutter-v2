@@ -379,6 +379,15 @@ class ChatController extends GetxController {
           }
         }
       } catch (_) {}
+    } else if (reply.startsWith('__SCENARIO_SIMULATION__')) {
+      final jsonStr = reply.replaceFirst('__SCENARIO_SIMULATION__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'scenario_simulation';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage(reply.replaceFirst('__SCENARIO_SIMULATION__', ''));
+      }
     } else {
       replaceLastBotMessage(reply);
     }

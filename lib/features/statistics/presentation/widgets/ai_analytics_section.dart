@@ -42,9 +42,16 @@ class AiAnalyticsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _OverviewPanel(data: data),
-            if (data.forecasting != null) ...[
+            if (data.currentMonthProjection != null) ...[
+              const SizedBox(height: 14),
+              _MonthlyProjectionPanel(projection: data.currentMonthProjection!),
+            ] else if (data.forecasting != null) ...[
               const SizedBox(height: 14),
               _ForecastingPanel(forecasting: data.forecasting!),
+            ],
+            if (data.nextMonthForecast != null) ...[
+              const SizedBox(height: 14),
+              _NextMonthForecastPanel(forecast: data.nextMonthForecast!),
             ],
             if (data.aiBudgeting != null) ...[
               const SizedBox(height: 14),
@@ -193,12 +200,462 @@ class _OverviewPanel extends StatelessWidget {
             const Divider(height: 24, color: Color(0xFFD6EAF8)),
             _MetricRow(
               label: 'Dự báo chi tiêu 30 ngày tới',
-              value:
-                  '${AppHelperFunction.formatAmount(data.monthlyForecast)} VND',
+              value: AppHelperFunction.formatAmount(data.monthlyForecast),
               valueColor: AppColors.expense,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _MonthlyProjectionPanel extends StatelessWidget {
+  final ForecastingModel projection;
+
+  const _MonthlyProjectionPanel({required this.projection});
+
+  @override
+  Widget build(BuildContext context) {
+    final isWeeklyExpanded = false.obs;
+    final isCategoriesExpanded = false.obs;
+
+    final color = _riskColor(projection.riskLevel);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _panelDecoration(color),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(
+            icon: Icons.donut_large_rounded,
+            title:
+                'Dự phòng tháng ${projection.targetMonth}/${projection.targetYear}',
+            color: color,
+          ),
+          const SizedBox(height: 12),
+          _MetricRow(
+            label: 'Đã chi (Thực tế)',
+            value: AppHelperFunction.formatAmount(projection.actualAmount),
+            valueColor: AppColors.text1,
+          ),
+          _MetricRow(
+            label: 'Dự báo chi phần còn lại',
+            value: AppHelperFunction.formatAmount(
+              projection.predictedRemainingAmount,
+            ),
+            valueColor: AppColors.text2,
+          ),
+          _MetricRow(
+            label: 'Tổng dự phòng cả tháng',
+            value: AppHelperFunction.formatAmount(projection.totalForecast),
+            valueColor: color,
+          ),
+          _MetricRow(
+            label: 'Độ tin cậy mô hình',
+            value: '${(projection.confidence * 100).round()}%',
+            valueColor: AppColors.info,
+          ),
+          _MetricRow(
+            label: 'Mức độ rủi ro',
+            value: projection.riskLevel == 'high'
+                ? 'CAO'
+                : (projection.riskLevel == 'medium' ? 'TRUNG BÌNH' : 'THẤP'),
+            valueColor: color,
+          ),
+          const SizedBox(height: 10),
+
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: SizedBox(
+              height: 10,
+              width: double.infinity,
+              child: Builder(
+                builder: (context) {
+                  final total = projection.totalForecast;
+                  if (total <= 0) return Container(color: Colors.grey.shade200);
+                  final actualPct = projection.actualAmount / total;
+                  return Row(
+                    children: [
+                      if (actualPct > 0)
+                        Expanded(
+                          flex: (actualPct * 100).round(),
+                          child: Container(color: color),
+                        ),
+                      if (actualPct < 1)
+                        Expanded(
+                          flex: ((1 - actualPct) * 100).round(),
+                          child: Container(
+                            color: color.withValues(alpha: 0.25),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            projection.modelNotes,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.text3,
+              height: 1.35,
+            ),
+          ),
+
+          // Risk windows
+          if (projection.riskWindows.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...projection.riskWindows.map((rw) => _RiskWindowCard(rw: rw)),
+          ],
+
+          const Divider(height: 24),
+
+          // Expandable Weekly Forecasts
+          Obx(
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: isWeeklyExpanded.toggle,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Xem dự báo theo tuần',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.text2,
+                        ),
+                      ),
+                      Icon(
+                        isWeeklyExpanded.value
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        size: 18,
+                        color: AppColors.text3,
+                      ),
+                    ],
+                  ),
+                ),
+                if (isWeeklyExpanded.value) ...[
+                  const SizedBox(height: 8),
+                  ...projection.weeklyForecasts.map(
+                    (w) => _WeeklyForecastRow(w: w),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const Divider(height: 24),
+
+          // Expandable Category Forecasts
+          Obx(
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: isCategoriesExpanded.toggle,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Xem dự báo theo danh mục',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.text2,
+                        ),
+                      ),
+                      Icon(
+                        isCategoriesExpanded.value
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        size: 18,
+                        color: AppColors.text3,
+                      ),
+                    ],
+                  ),
+                ),
+                if (isCategoriesExpanded.value) ...[
+                  const SizedBox(height: 8),
+                  ...projection.categoryForecasts.map(
+                    (c) => _CategoryMonthlyForecastRow(c: c),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WeeklyForecastRow extends StatelessWidget {
+  final WeeklyForecastModel w;
+
+  const _WeeklyForecastRow({required this.w});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _riskColor(w.riskLevel);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              'Tuần ${w.weekIndex} (${w.periodStart.substring(5)} - ${w.periodEnd.substring(5)})',
+              style: const TextStyle(fontSize: 11, color: AppColors.text2),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Dự báo: ${AppHelperFunction.formatAmount(w.predictedAmount)}',
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (w.actualAmount > 0)
+                Text(
+                  'Đã chi: ${AppHelperFunction.formatAmount(w.actualAmount)}',
+                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                ),
+            ],
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              w.riskLevel == 'high'
+                  ? 'CAO'
+                  : (w.riskLevel == 'medium' ? 'T.BÌNH' : 'THẤP'),
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryMonthlyForecastRow extends StatelessWidget {
+  final CategoryForecastModel c;
+
+  const _CategoryMonthlyForecastRow({required this.c});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _riskColor(c.riskLevel ?? 'low');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              c.categoryName,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text2,
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Dự báo: ${AppHelperFunction.formatAmount(c.predictedAmount)}',
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (c.actualAmount != null && c.actualAmount! > 0)
+                Text(
+                  'Đã chi: ${AppHelperFunction.formatAmount(c.actualAmount!)}',
+                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                ),
+            ],
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              (c.riskLevel ?? 'low') == 'high'
+                  ? 'CAO'
+                  : ((c.riskLevel ?? 'low') == 'medium' ? 'T.BÌNH' : 'THẤP'),
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RiskWindowCard extends StatelessWidget {
+  final ForecastRiskWindowModel rw;
+
+  const _RiskWindowCard({required this.rw});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _riskColor(rw.riskLevel);
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.warning_amber_rounded, color: color, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Cảnh báo rủi ro chi tiêu (${rw.periodStart.substring(5)} - ${rw.periodEnd.substring(5)})',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  rw.reason,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: AppColors.text2,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NextMonthForecastPanel extends StatelessWidget {
+  final ForecastingModel forecast;
+
+  const _NextMonthForecastPanel({required this.forecast});
+
+  @override
+  Widget build(BuildContext context) {
+    final topCategories = forecast.categoryForecasts.take(3).toList();
+    final color = AppColors.success;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _panelDecoration(color),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(
+            icon: Icons.next_plan_outlined,
+            title:
+                'Dự báo tháng sau (${forecast.targetMonth}/${forecast.targetYear})',
+            color: color,
+          ),
+          const SizedBox(height: 12),
+          _MetricRow(
+            label: 'Tổng chi tiêu dự kiến',
+            value: AppHelperFunction.formatAmount(forecast.totalForecast),
+            valueColor: color,
+          ),
+          _MetricRow(
+            label: 'Độ tin cậy',
+            value: '${(forecast.confidence * 100).round()}%',
+            valueColor: AppColors.info,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            forecast.modelNotes,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.text3,
+              height: 1.35,
+            ),
+          ),
+          if (topCategories.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Danh mục chi tiêu chính dự báo:',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text2,
+              ),
+            ),
+            const SizedBox(height: 4),
+            ...topCategories.map(
+              (c) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      c.categoryName,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.text2,
+                      ),
+                    ),
+                    Text(
+                      AppHelperFunction.formatAmount(c.predictedAmount),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -277,20 +734,23 @@ class _AiBudgetingPanel extends StatelessWidget {
           const SizedBox(height: 12),
           _MetricRow(
             label: 'Ngân sách đề xuất',
-            value:
-                '${AppHelperFunction.formatAmount(aiBudgeting.recommendedTotalBudget)} VND',
+            value: AppHelperFunction.formatAmount(
+              aiBudgeting.recommendedTotalBudget,
+            ),
             valueColor: AppColors.success,
           ),
           _MetricRow(
             label: 'Tiết kiệm kỳ vọng',
-            value:
-                '${AppHelperFunction.formatAmount(aiBudgeting.expectedSavingsAmount)} VND',
+            value: AppHelperFunction.formatAmount(
+              aiBudgeting.expectedSavingsAmount,
+            ),
             valueColor: AppColors.info,
           ),
           _MetricRow(
             label: 'Mục tiêu tiết kiệm',
-            value:
-                '${AppHelperFunction.formatAmount(aiBudgeting.targetSavingsAmount)} VND',
+            value: AppHelperFunction.formatAmount(
+              aiBudgeting.targetSavingsAmount,
+            ),
             valueColor: AppColors.text1,
           ),
           _MetricRow(
@@ -413,7 +873,7 @@ class _AnomaliesPanel extends StatelessWidget {
             (a) => Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(
-                '${a.date}: Chi ${AppHelperFunction.formatAmount(a.amount)} VND ở mục "${a.categoryName}". Lý do: ${a.reason}',
+                '${a.date}: Chi ${AppHelperFunction.formatAmount(a.amount)} ở mục "${a.categoryName}". Lý do: ${a.reason}',
                 style: const TextStyle(
                   fontSize: 11,
                   color: AppColors.text2,
@@ -636,7 +1096,7 @@ class _CategoryForecastRow extends StatelessWidget {
             ),
           ),
           Text(
-            '${AppHelperFunction.formatAmount(item.predictedAmount)} VND',
+            AppHelperFunction.formatAmount(item.predictedAmount),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -690,7 +1150,7 @@ class _BudgetRecommendationRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Đề xuất: ${AppHelperFunction.formatAmount(item.recommendedLimitAmount)} VND',
+                        'Đề xuất: ${AppHelperFunction.formatAmount(item.recommendedLimitAmount)}',
                         style: const TextStyle(
                           fontSize: 11,
                           color: AppColors.text3,
@@ -698,7 +1158,7 @@ class _BudgetRecommendationRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '${_actionTypeText(item.actionType)} ${AppHelperFunction.formatAmount(item.adjustmentAmount.abs())} VND',
+                        '${_actionTypeText(item.actionType)} ${AppHelperFunction.formatAmount(item.adjustmentAmount.abs())}',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,

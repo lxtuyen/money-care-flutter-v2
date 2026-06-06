@@ -150,6 +150,10 @@ class CategoryForecastModel {
   final double confidence;
   final String trend;
   final int dataPoints;
+  final double? actualAmount;
+  final double? remainingForecastAmount;
+  final String? riskLevel;
+  final List<String> reasonCodes;
 
   const CategoryForecastModel({
     required this.categoryName,
@@ -157,60 +161,158 @@ class CategoryForecastModel {
     required this.confidence,
     required this.trend,
     required this.dataPoints,
+    this.actualAmount,
+    this.remainingForecastAmount,
+    this.riskLevel,
+    required this.reasonCodes,
   });
 
   factory CategoryForecastModel.fromJson(Map<String, dynamic> json) {
     return CategoryForecastModel(
-      categoryName: json['categoryName']?.toString() ?? '',
-      predictedAmount: (json['predictedAmount'] as num? ?? 0.0).toDouble(),
+      categoryName: json['categoryName']?.toString() ?? json['category_name']?.toString() ?? '',
+      predictedAmount: (json['predictedAmount'] as num? ?? json['predicted_amount'] as num? ?? 0.0).toDouble(),
       confidence: (json['confidence'] as num? ?? 0.0).toDouble(),
       trend: json['trend']?.toString() ?? 'stable',
-      dataPoints: json['dataPoints'] as int? ?? 0,
+      dataPoints: json['dataPoints'] as int? ?? json['data_points'] as int? ?? 0,
+      actualAmount: json['actualAmount'] != null 
+          ? (json['actualAmount'] as num).toDouble() 
+          : (json['actual_amount'] != null ? (json['actual_amount'] as num).toDouble() : null),
+      remainingForecastAmount: json['remainingForecastAmount'] != null 
+          ? (json['remainingForecastAmount'] as num).toDouble() 
+          : (json['remaining_forecast_amount'] != null ? (json['remaining_forecast_amount'] as num).toDouble() : null),
+      riskLevel: json['riskLevel']?.toString() ?? json['risk_level']?.toString(),
+      reasonCodes: (json['reasonCodes'] as List? ?? json['reason_codes'] as List?)?.map((e) => e.toString()).toList() ?? <String>[],
+    );
+  }
+}
+
+class WeeklyForecastModel {
+  final int weekIndex;
+  final String periodStart;
+  final String periodEnd;
+  final double predictedAmount;
+  final double actualAmount;
+  final String riskLevel;
+
+  const WeeklyForecastModel({
+    required this.weekIndex,
+    required this.periodStart,
+    required this.periodEnd,
+    required this.predictedAmount,
+    required this.actualAmount,
+    required this.riskLevel,
+  });
+
+  factory WeeklyForecastModel.fromJson(Map<String, dynamic> json) {
+    return WeeklyForecastModel(
+      weekIndex: json['weekIndex'] as int? ?? json['week_index'] as int? ?? 1,
+      periodStart: json['periodStart']?.toString() ?? json['period_start']?.toString() ?? '',
+      periodEnd: json['periodEnd']?.toString() ?? json['period_end']?.toString() ?? '',
+      predictedAmount: (json['predictedAmount'] as num? ?? json['predicted_amount'] as num? ?? 0.0).toDouble(),
+      actualAmount: (json['actualAmount'] as num? ?? json['actual_amount'] as num? ?? 0.0).toDouble(),
+      riskLevel: json['riskLevel']?.toString() ?? json['risk_level']?.toString() ?? 'low',
+    );
+  }
+}
+
+class ForecastRiskWindowModel {
+  final String periodStart;
+  final String periodEnd;
+  final String riskLevel;
+  final double predictedAmount;
+  final String reason;
+  final List<String> reasonCodes;
+
+  const ForecastRiskWindowModel({
+    required this.periodStart,
+    required this.periodEnd,
+    required this.riskLevel,
+    required this.predictedAmount,
+    required this.reason,
+    required this.reasonCodes,
+  });
+
+  factory ForecastRiskWindowModel.fromJson(Map<String, dynamic> json) {
+    return ForecastRiskWindowModel(
+      periodStart: json['periodStart']?.toString() ?? json['period_start']?.toString() ?? '',
+      periodEnd: json['periodEnd']?.toString() ?? json['period_end']?.toString() ?? '',
+      riskLevel: json['riskLevel']?.toString() ?? json['risk_level']?.toString() ?? 'low',
+      predictedAmount: (json['predictedAmount'] as num? ?? json['predicted_amount'] as num? ?? 0.0).toDouble(),
+      reason: json['reason']?.toString() ?? '',
+      reasonCodes: (json['reasonCodes'] as List? ?? json['reason_codes'] as List?)?.map((e) => e.toString()).toList() ?? <String>[],
     );
   }
 }
 
 class ForecastingModel {
   final String method;
-  final int horizonDays;
+  final String modelVersion;
+  final String periodType;
+  final String forecastMode;
+  final int targetMonth;
+  final int targetYear;
+  final String periodStart;
+  final String periodEnd;
+  final double actualAmount;
+  final double predictedRemainingAmount;
   final double totalForecast;
   final double confidence;
+  final String riskLevel;
+  final String modelNotes;
   final List<ForecastPointModel> dailyPoints;
   final List<CategoryForecastModel> categoryForecasts;
-  final String modelNotes;
+  final List<WeeklyForecastModel> weeklyForecasts;
+  final List<ForecastRiskWindowModel> riskWindows;
 
   const ForecastingModel({
     required this.method,
-    required this.horizonDays,
+    required this.modelVersion,
+    required this.periodType,
+    required this.forecastMode,
+    required this.targetMonth,
+    required this.targetYear,
+    required this.periodStart,
+    required this.periodEnd,
+    required this.actualAmount,
+    required this.predictedRemainingAmount,
     required this.totalForecast,
     required this.confidence,
+    required this.riskLevel,
+    required this.modelNotes,
     required this.dailyPoints,
     required this.categoryForecasts,
-    required this.modelNotes,
+    required this.weeklyForecasts,
+    required this.riskWindows,
   });
 
   factory ForecastingModel.fromJson(Map<String, dynamic> json) {
     return ForecastingModel(
       method: json['method']?.toString() ?? '',
-      horizonDays: json['horizonDays'] as int? ?? 30,
-      totalForecast: (json['totalForecast'] as num? ?? 0.0).toDouble(),
+      modelVersion: json['modelVersion']?.toString() ?? json['model_version']?.toString() ?? 'v1',
+      periodType: json['periodType']?.toString() ?? json['period_type']?.toString() ?? 'day',
+      forecastMode: json['forecastMode']?.toString() ?? json['forecast_mode']?.toString() ?? 'legacy_30_days',
+      targetMonth: json['targetMonth'] as int? ?? json['target_month'] as int? ?? DateTime.now().month,
+      targetYear: json['targetYear'] as int? ?? json['target_year'] as int? ?? DateTime.now().year,
+      periodStart: json['periodStart']?.toString() ?? json['period_start']?.toString() ?? '',
+      periodEnd: json['periodEnd']?.toString() ?? json['period_end']?.toString() ?? '',
+      actualAmount: (json['actualAmount'] as num? ?? json['actual_amount'] as num? ?? 0.0).toDouble(),
+      predictedRemainingAmount: (json['predictedRemainingAmount'] as num? ?? json['predicted_remaining_amount'] as num? ?? 0.0).toDouble(),
+      totalForecast: (json['totalForecast'] as num? ?? json['total_forecast'] as num? ?? 0.0).toDouble(),
       confidence: (json['confidence'] as num? ?? 0.0).toDouble(),
-      dailyPoints:
-          (json['dailyPoints'] as List?)
-              ?.map(
-                (e) => ForecastPointModel.fromJson(e as Map<String, dynamic>),
-              )
-              .toList() ??
-          <ForecastPointModel>[],
-      categoryForecasts:
-          (json['categoryForecasts'] as List?)
-              ?.map(
-                (e) =>
-                    CategoryForecastModel.fromJson(e as Map<String, dynamic>),
-              )
-              .toList() ??
-          <CategoryForecastModel>[],
-      modelNotes: json['modelNotes']?.toString() ?? '',
+      riskLevel: json['riskLevel']?.toString() ?? json['risk_level']?.toString() ?? 'low',
+      modelNotes: json['modelNotes']?.toString() ?? json['model_notes']?.toString() ?? '',
+      dailyPoints: (json['dailyPoints'] as List? ?? json['daily_points'] as List?)
+              ?.map((e) => ForecastPointModel.fromJson(e as Map<String, dynamic>))
+              .toList() ?? <ForecastPointModel>[],
+      categoryForecasts: (json['categoryForecasts'] as List? ?? json['category_forecasts'] as List?)
+              ?.map((e) => CategoryForecastModel.fromJson(e as Map<String, dynamic>))
+              .toList() ?? <CategoryForecastModel>[],
+      weeklyForecasts: (json['weeklyForecasts'] as List? ?? json['weekly_forecasts'] as List?)
+              ?.map((e) => WeeklyForecastModel.fromJson(e as Map<String, dynamic>))
+              .toList() ?? <WeeklyForecastModel>[],
+      riskWindows: (json['riskWindows'] as List? ?? json['risk_windows'] as List?)
+              ?.map((e) => ForecastRiskWindowModel.fromJson(e as Map<String, dynamic>))
+              .toList() ?? <ForecastRiskWindowModel>[],
     );
   }
 }
@@ -359,6 +461,8 @@ class AnalyticsModel {
   final List<InsightModel> insights;
   final ForecastingModel? forecasting;
   final AiBudgetingModel? aiBudgeting;
+  final ForecastingModel? currentMonthProjection;
+  final ForecastingModel? nextMonthForecast;
 
   const AnalyticsModel({
     required this.financialHealthScore,
@@ -370,6 +474,8 @@ class AnalyticsModel {
     required this.insights,
     this.forecasting,
     this.aiBudgeting,
+    this.currentMonthProjection,
+    this.nextMonthForecast,
   });
 
   factory AnalyticsModel.fromJson(Map<String, dynamic> json) {
@@ -398,9 +504,23 @@ class AnalyticsModel {
         ? BudgetRiskModel.fromJson(json['budgetRisk'] as Map<String, dynamic>)
         : const BudgetRiskModel(riskLevel: 'low', message: '', items: []);
 
-    final forecastingObj = json['forecasting'] != null
-        ? ForecastingModel.fromJson(json['forecasting'] as Map<String, dynamic>)
-        : null;
+    final forecastingJson = json['forecasting'] as Map<String, dynamic>?;
+    ForecastingModel? currentMonthProjectionObj;
+    ForecastingModel? nextMonthForecastObj;
+    ForecastingModel? forecastingLegacy;
+
+    if (forecastingJson != null) {
+      if (forecastingJson.containsKey('currentMonthProjection') || forecastingJson.containsKey('nextMonthForecast')) {
+        if (forecastingJson['currentMonthProjection'] != null) {
+          currentMonthProjectionObj = ForecastingModel.fromJson(forecastingJson['currentMonthProjection'] as Map<String, dynamic>);
+        }
+        if (forecastingJson['nextMonthForecast'] != null) {
+          nextMonthForecastObj = ForecastingModel.fromJson(forecastingJson['nextMonthForecast'] as Map<String, dynamic>);
+        }
+      } else {
+        forecastingLegacy = ForecastingModel.fromJson(forecastingJson);
+      }
+    }
 
     final aiBudgetingObj = json['aiBudgeting'] != null
         ? AiBudgetingModel.fromJson(json['aiBudgeting'] as Map<String, dynamic>)
@@ -414,8 +534,10 @@ class AnalyticsModel {
       budgetRisk: budgetRiskObj,
       savingGoalProjections: savingProjectionsList,
       insights: insightsList,
-      forecasting: forecastingObj,
+      forecasting: forecastingLegacy ?? currentMonthProjectionObj,
       aiBudgeting: aiBudgetingObj,
+      currentMonthProjection: currentMonthProjectionObj,
+      nextMonthForecast: nextMonthForecastObj,
     );
   }
 }

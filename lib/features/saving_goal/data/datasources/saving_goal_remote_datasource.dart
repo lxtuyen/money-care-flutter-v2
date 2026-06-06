@@ -17,6 +17,8 @@ abstract class SavingGoalRemoteDatasource {
     DateTime? newStartDate,
   });
   Future<SavingGoalReportModel> getSavingGoalReport(int id);
+  Future<GoalAchievementPredictionModel> getGoalPrediction(int id);
+  Future<GoalAchievementPredictionSummaryModel> getGoalPredictions();
 }
 
 class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
@@ -124,6 +126,26 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     final res = await api.get<SavingGoalReportModel>(
       '${ApiRoutes.savingGoal}/$id/report',
       fromJsonT: (json) => SavingGoalReportModel.fromJson(json),
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<GoalAchievementPredictionModel> getGoalPrediction(int id) async {
+    final res = await api.get<GoalAchievementPredictionModel>(
+      '${ApiRoutes.savingGoal}/$id/prediction',
+      fromJsonT: (json) => GoalAchievementPredictionModel.fromJson(json),
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<GoalAchievementPredictionSummaryModel> getGoalPredictions() async {
+    final res = await api.get<GoalAchievementPredictionSummaryModel>(
+      ApiRoutes.savingGoalPredictions,
+      fromJsonT: (json) => GoalAchievementPredictionSummaryModel.fromJson(
+        json as Map<String, dynamic>,
+      ),
     );
     return res.unwrap();
   }

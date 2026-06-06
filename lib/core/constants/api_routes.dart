@@ -9,6 +9,7 @@ class ApiRoutes {
 
   static const savingGoal = 'saving-goals';
   static const getSavingGoals = 'saving-goals/user';
+  static const savingGoalPredictions = 'saving-goals/predictions';
   static const selectSavingGoal = 'saving-goals/select';
   static const checkExpiredSavingGoal = 'saving-goals/check-expired';
   static const spendingPlans = 'spending-plans';
@@ -44,6 +45,8 @@ class ApiRoutes {
   static const modelEvaluationBudgeting =
       'analytics/model-evaluation/budgeting';
   static const modelEvaluationRun = 'analytics/model-evaluation/run';
+  static const scenarioPlanningSimulate = 'scenario-planning/simulate';
+  static const scenarioPlanningTemplates = 'scenario-planning/templates';
 
   static const splitSession = 'split-session';
   static const gamification = 'gamification';

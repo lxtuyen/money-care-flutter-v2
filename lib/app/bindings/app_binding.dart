@@ -54,6 +54,11 @@ import 'package:money_care/features/spending_plan/data/datasources/spending_plan
 import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
 import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
+import 'package:money_care/features/scenario_planning/data/datasources/scenario_planning_remote_datasource.dart';
+import 'package:money_care/features/scenario_planning/data/repositories/scenario_planning_repository_impl.dart';
+import 'package:money_care/features/scenario_planning/domain/repositories/scenario_planning_repository.dart';
+import 'package:money_care/features/scenario_planning/domain/usecases/usecases.dart';
+import 'package:money_care/features/scenario_planning/presentation/controllers/scenario_planning_controller.dart';
 
 class AppBinding extends Bindings {
   final LocalStorage storage;
@@ -128,6 +133,8 @@ class AppBinding extends Bindings {
         markAsNotifiedUseCase: MarkAsNotifiedUseCase(savingGoalRepo),
         extendSavingGoalUseCase: ExtendSavingGoalUseCase(savingGoalRepo),
         getSavingGoalReportUseCase: GetSavingGoalReportUseCase(savingGoalRepo),
+        getGoalPredictionUseCase: GetGoalPredictionUseCase(savingGoalRepo),
+        getGoalPredictionsUseCase: GetGoalPredictionsUseCase(savingGoalRepo),
       ),
       permanent: true,
     );
@@ -157,8 +164,13 @@ class AppBinding extends Bindings {
       remoteDatasource: transactionRemoteDs,
     );
     Get.put<TransactionRepository>(transactionRepo, permanent: true);
-    final filterTransactionsUseCase = FilterTransactionsUseCase(transactionRepo);
-    Get.put<FilterTransactionsUseCase>(filterTransactionsUseCase, permanent: true);
+    final filterTransactionsUseCase = FilterTransactionsUseCase(
+      transactionRepo,
+    );
+    Get.put<FilterTransactionsUseCase>(
+      filterTransactionsUseCase,
+      permanent: true,
+    );
 
     Get.put<TransactionController>(
       TransactionController(
@@ -203,6 +215,23 @@ class AppBinding extends Bindings {
         addPlanExpenseUseCase: AddPlanExpenseUseCase(spendingPlanRepo),
         updatePlanExpenseUseCase: UpdatePlanExpenseUseCase(spendingPlanRepo),
         removePlanExpenseUseCase: RemovePlanExpenseUseCase(spendingPlanRepo),
+      ),
+      permanent: true,
+    );
+
+    final scenarioPlanningRemoteDs = ScenarioPlanningRemoteDatasourceImpl(
+      api: apiService,
+    );
+    final scenarioPlanningRepo = ScenarioPlanningRepositoryImpl(
+      remoteDatasource: scenarioPlanningRemoteDs,
+    );
+    Get.put<ScenarioPlanningRepository>(scenarioPlanningRepo, permanent: true);
+    Get.put<ScenarioPlanningController>(
+      ScenarioPlanningController(
+        getScenarioTemplatesUseCase: GetScenarioTemplatesUseCase(
+          scenarioPlanningRepo,
+        ),
+        simulateScenarioUseCase: SimulateScenarioUseCase(scenarioPlanningRepo),
       ),
       permanent: true,
     );

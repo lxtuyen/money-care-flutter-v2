@@ -25,4 +25,9 @@ abstract class SavingGoalRepository {
     DateTime? newStartDate,
   });
   Future<Either<Failure, SavingGoalReportModel>> getSavingGoalReport(int id);
+  Future<Either<Failure, GoalAchievementPredictionModel>> getGoalPrediction(
+    int id,
+  );
+  Future<Either<Failure, GoalAchievementPredictionSummaryModel>>
+  getGoalPredictions();
 }

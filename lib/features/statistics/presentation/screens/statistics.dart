@@ -26,6 +26,7 @@ import 'package:money_care/features/saving_goal/domain/entities/saving_goal_enti
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+import 'package:money_care/features/scenario_planning/presentation/widgets/scenario_entry_panel.dart';
 
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
@@ -319,7 +320,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 if (statisticsController.periodType.value != 'hàng tháng') {
                   return const SizedBox.shrink();
                 }
-                return const AiAnalyticsSection();
+                return const Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      child: ScenarioEntryPanel(),
+                    ),
+                    AiAnalyticsSection(),
+                  ],
+                );
               }),
               const SizedBox(height: 10),
               Obx(() {
@@ -378,6 +390,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   planImpact,
                   fund,
                 );
+                final prediction = savingGoalController.goalPrediction.value;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -395,6 +408,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       isLoading: savingGoalController.isLoadingReport.value,
                       planImpact: planImpact,
                       insightSnapshot: insightSnapshot,
+                      prediction: prediction?.goalId == fund.id
+                          ? prediction
+                          : null,
                     ),
                     const SizedBox(height: 25),
                   ],

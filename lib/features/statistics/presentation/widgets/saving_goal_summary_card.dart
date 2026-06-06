@@ -9,6 +9,7 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
+import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
@@ -22,6 +23,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
   final bool isLoading;
   final GoalPlanImpact? planImpact;
   final GoalPlanInsightSnapshot? insightSnapshot;
+  final GoalAchievementPredictionModel? prediction;
 
   const SavingGoalSummaryCard({
     super.key,
@@ -30,6 +32,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
     this.isLoading = false,
     this.planImpact,
     this.insightSnapshot,
+    this.prediction,
   });
 
   @override
@@ -149,6 +152,10 @@ class SavingGoalSummaryCard extends StatelessWidget {
             const SizedBox(height: 12),
             _PlanImpactLine(impact: planImpact!),
           ],
+          if (_matchingPrediction != null) ...[
+            const SizedBox(height: 12),
+            _GoalAchievementPredictionBlock(prediction: _matchingPrediction!),
+          ],
           if (insightSnapshot != null) ...[
             const SizedBox(height: 12),
             _GoalPlanAiInsight(snapshot: insightSnapshot!),
@@ -187,6 +194,10 @@ class SavingGoalSummaryCard extends StatelessWidget {
           if (insightSnapshot != null) ...[
             const SizedBox(height: 12),
             _GoalPlanAiInsight(snapshot: insightSnapshot!),
+          ],
+          if (_matchingPrediction != null) ...[
+            const SizedBox(height: 12),
+            _GoalAchievementPredictionBlock(prediction: _matchingPrediction!),
           ],
           const SizedBox(height: 16),
           const Divider(height: 1),
@@ -433,6 +444,150 @@ class SavingGoalSummaryCard extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  GoalAchievementPredictionModel? get _matchingPrediction {
+    final value = prediction;
+    if (value == null || value.goalId != fund.id) return null;
+    return value;
+  }
+}
+
+class _GoalAchievementPredictionBlock extends StatelessWidget {
+  final GoalAchievementPredictionModel prediction;
+
+  const _GoalAchievementPredictionBlock({required this.prediction});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _predictionRiskColor(prediction.riskLevel);
+    final themeColors = AppThemeColors.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.flag_circle_outlined, size: 18, color: color),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Dự báo mục tiêu',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: themeColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              Text(
+                _predictionStatusText(prediction.status),
+                style: TextStyle(
+                  color: color,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _PredictionInfoRow(
+            label: 'Dự kiến hoàn thành',
+            value: prediction.predictedCompletionDate != null
+                ? _formatPredictionDate(prediction.predictedCompletionDate!)
+                : 'Chưa đủ dữ liệu',
+            valueColor: color,
+          ),
+          _PredictionInfoRow(
+            label: 'Còn thiếu',
+            value: AppHelperFunction.formatAmount(
+              prediction.remainingAmount,
+              currency: 'VND',
+            ),
+          ),
+          _PredictionInfoRow(
+            label: 'Cần mỗi tháng',
+            value: AppHelperFunction.formatAmount(
+              prediction.requiredMonthlySavingRate,
+              currency: 'VND',
+            ),
+          ),
+          _PredictionInfoRow(
+            label: 'Tốc độ hiện tại',
+            value: AppHelperFunction.formatAmount(
+              prediction.currentMonthlySavingRate,
+              currency: 'VND',
+            ),
+          ),
+          _PredictionInfoRow(
+            label: 'Lệch hạn',
+            value: _predictionDifferenceText(prediction),
+            valueColor: color,
+          ),
+          _PredictionInfoRow(
+            label: 'Nguồn dữ liệu',
+            value: _predictionSourceText(
+              prediction.supportingData['savingVelocitySource']?.toString(),
+            ),
+            valueColor: AppColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PredictionInfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  const _PredictionInfoRow({
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final themeColors = AppThemeColors.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: themeColors.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: valueColor ?? themeColors.textPrimary,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1010,4 +1165,50 @@ class _SmallStat extends StatelessWidget {
       ],
     );
   }
+}
+
+Color _predictionRiskColor(String riskLevel) {
+  return switch (riskLevel) {
+    'high' => AppColors.expense,
+    'medium' => AppColors.secondaryOrange,
+    _ => AppColors.income,
+  };
+}
+
+String _predictionStatusText(String status) {
+  return switch (status) {
+    'completed' => 'Hoàn thành',
+    'on_track' => 'Đúng hạn',
+    'slightly_at_risk' || 'at_risk' => 'Rủi ro',
+    'off_track' || 'overdue' || 'unlikely' => 'Lệch tiến độ',
+    _ => 'Theo dõi',
+  };
+}
+
+String _predictionDifferenceText(GoalAchievementPredictionModel prediction) {
+  final days = prediction.daysDifference;
+  if (prediction.status == 'completed') return 'Đã hoàn thành';
+  if (prediction.status == 'unlikely') return 'Chưa thể dự báo';
+  if (days == null) return 'Không có hạn';
+  if (days < 0) return 'Sớm ${days.abs()} ngày';
+  if (days == 0) return 'Đúng hạn';
+  return 'Trễ $days ngày';
+}
+
+String _predictionSourceText(String? source) {
+  return switch (source) {
+    'profile_average_savings' => 'Hồ sơ tài chính',
+    'spending_plan_capacity' => 'Kế hoạch chi tiêu',
+    'net_balance_fallback' => 'Giao dịch',
+    'goal_contribution_history' => 'Lịch sử nạp mục tiêu',
+    _ => 'Chưa đủ dữ liệu',
+  };
+}
+
+String _formatPredictionDate(String value) {
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) return value;
+  final day = parsed.day.toString().padLeft(2, '0');
+  final month = parsed.month.toString().padLeft(2, '0');
+  return '$day/$month/${parsed.year}';
 }

@@ -25,6 +25,8 @@ class SavingGoalController extends GetxController {
   final MarkAsNotifiedUseCase markAsNotifiedUseCase;
   final ExtendSavingGoalUseCase extendSavingGoalUseCase;
   final GetSavingGoalReportUseCase getSavingGoalReportUseCase;
+  final GetGoalPredictionUseCase getGoalPredictionUseCase;
+  final GetGoalPredictionsUseCase getGoalPredictionsUseCase;
   final AppController appController = Get.find<AppController>();
 
   SavingGoalController({
@@ -37,6 +39,8 @@ class SavingGoalController extends GetxController {
     required this.markAsNotifiedUseCase,
     required this.extendSavingGoalUseCase,
     required this.getSavingGoalReportUseCase,
+    required this.getGoalPredictionUseCase,
+    required this.getGoalPredictionsUseCase,
   });
 
   RxList<SavingGoalEntity> goals = <SavingGoalEntity>[].obs;
@@ -55,6 +59,13 @@ class SavingGoalController extends GetxController {
   RxBool isLoadingReport = false.obs;
   Future<SavingGoalReportModel?>? _activeReportFuture;
   int? _activeReportId;
+  Rxn<GoalAchievementPredictionModel> goalPrediction =
+      Rxn<GoalAchievementPredictionModel>();
+  Rxn<GoalAchievementPredictionSummaryModel> goalPredictionSummary =
+      Rxn<GoalAchievementPredictionSummaryModel>();
+  RxBool isLoadingPrediction = false.obs;
+  Future<GoalAchievementPredictionModel?>? _activePredictionFuture;
+  int? _activePredictionId;
 
   @override
   void onInit() {
@@ -96,6 +107,7 @@ class SavingGoalController extends GetxController {
     goalId.value = 0;
     selectedGoalIndex.value = -1;
     goalReport.value = null;
+    goalPrediction.value = null;
   }
 
   Future<void> loadGoals([int? manualUserId]) async {
@@ -158,6 +170,7 @@ class SavingGoalController extends GetxController {
       (goal) {
         currentGoal.value = goal;
         loadGoalReport(goal.id);
+        loadGoalPrediction(goal.id);
       },
     );
     isLoadingCurrent.value = false;
@@ -370,31 +383,82 @@ class SavingGoalController extends GetxController {
     _activeReportId = id;
     isLoadingReport.value = true;
 
-    _activeReportFuture = getSavingGoalReportUseCase(id).then((result) {
-      return result.fold(
-        (failure) {
-          _handleFailure(failure);
-          return null;
-        },
-        (report) {
-          goalReport.value = report;
-          if ((report.isCompleted || report.isTargetAchieved) &&
-              !report.completionNotified &&
-              !_notifiedGoalIds.contains(id) &&
-              !(Get.isDialogOpen ?? false)) {
-            _notifiedGoalIds.add(id);
-            GoalCompletionDialog.show(report);
-          }
-          return report;
-        },
-      );
-    }).whenComplete(() {
-      isLoadingReport.value = false;
-      _activeReportFuture = null;
-      _activeReportId = null;
-    });
+    _activeReportFuture = getSavingGoalReportUseCase(id)
+        .then((result) {
+          return result.fold(
+            (failure) {
+              _handleFailure(failure);
+              return null;
+            },
+            (report) {
+              goalReport.value = report;
+              if ((report.isCompleted || report.isTargetAchieved) &&
+                  !report.completionNotified &&
+                  !_notifiedGoalIds.contains(id) &&
+                  !(Get.isDialogOpen ?? false)) {
+                _notifiedGoalIds.add(id);
+                GoalCompletionDialog.show(report);
+              }
+              return report;
+            },
+          );
+        })
+        .whenComplete(() {
+          isLoadingReport.value = false;
+          _activeReportFuture = null;
+          _activeReportId = null;
+        });
 
     return _activeReportFuture;
+  }
+
+  Future<GoalAchievementPredictionModel?> loadGoalPrediction(int id) async {
+    if (id <= 0) return null;
+
+    if (_activePredictionId == id && _activePredictionFuture != null) {
+      return _activePredictionFuture;
+    }
+
+    _activePredictionId = id;
+    isLoadingPrediction.value = true;
+    if (goalPrediction.value?.goalId != id) {
+      goalPrediction.value = null;
+    }
+
+    _activePredictionFuture = getGoalPredictionUseCase(id)
+        .then((result) {
+          return result.fold(
+            (failure) {
+              _handleFailure(failure);
+              return null;
+            },
+            (prediction) {
+              goalPrediction.value = prediction;
+              return prediction;
+            },
+          );
+        })
+        .whenComplete(() {
+          isLoadingPrediction.value = false;
+          _activePredictionFuture = null;
+          _activePredictionId = null;
+        });
+
+    return _activePredictionFuture;
+  }
+
+  Future<GoalAchievementPredictionSummaryModel?> loadGoalPredictions() async {
+    final result = await getGoalPredictionsUseCase();
+    return result.fold(
+      (failure) {
+        _handleFailure(failure);
+        return null;
+      },
+      (summary) {
+        goalPredictionSummary.value = summary;
+        return summary;
+      },
+    );
   }
 
   Future<void> completeGoalEarly(int id) async {
@@ -411,6 +475,7 @@ class SavingGoalController extends GetxController {
       }
 
       loadGoalReport(id);
+      loadGoalPrediction(id);
 
       final userId = appController.userId.value;
       if (userId != null) {

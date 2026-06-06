@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
-import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -14,6 +13,8 @@ import 'package:money_care/features/home/presentation/widgets/transaction/transa
 import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
+import 'package:money_care/features/saving_goal/data/models/models.dart';
+import 'package:money_care/features/scenario_planning/presentation/widgets/scenario_entry_panel.dart';
 
 class SavingGoalDetailScreen extends StatefulWidget {
   const SavingGoalDetailScreen({super.key});
@@ -33,6 +34,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
     goal = Get.arguments as SavingGoalEntity;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       savingGoalController.loadGoalReport(goal.id);
+      savingGoalController.loadGoalPrediction(goal.id);
     });
   }
 
@@ -140,66 +142,11 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               ],
             ),
           ),
-          Obx(() {
-            if (!Get.isRegistered<StatisticsController>()) {
-              return const SizedBox.shrink();
-            }
-            final analytics = Get.find<StatisticsController>().analyticsData.value;
-            if (analytics == null) {
-              return const SizedBox.shrink();
-            }
-            dynamic proj;
-            try {
-              proj = analytics.savingGoalProjections.firstWhere((p) => p.goalId == goal.id);
-            } catch (_) {
-              proj = null;
-            }
-            if (proj == null) {
-              return const SizedBox.shrink();
-            }
-            final statusColor = proj.isOnTrack ? AppColors.success : AppColors.warning;
-            return Container(
-              margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: statusColor.withValues(alpha: 0.2)),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    proj.isOnTrack ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded,
-                    color: statusColor,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Dự báo tiến độ AI",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          "${proj.statusText}. Thời gian còn lại: ${proj.monthsRemaining} tháng.",
-                          style: TextStyle(
-                            color: colors.textSecondary,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: ScenarioEntryPanel(goalId: goal.id),
+          ),
+          Obx(() => _buildPredictionCard(colors)),
           Expanded(
             child: Obx(() {
               if (savingGoalController.isLoadingReport.value) {
@@ -251,13 +198,10 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final tx = transactions[index];
-                            return TransactionItem(item: tx, onTap: () {});
-                          },
-                          childCount: transactions.length,
-                        ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final tx = transactions[index];
+                          return TransactionItem(item: tx, onTap: () {});
+                        }, childCount: transactions.length),
                       ),
                     ),
 
@@ -326,6 +270,186 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
     );
   }
 
+  Widget _buildPredictionCard(AppThemeColors colors) {
+    if (savingGoalController.isLoadingPrediction.value &&
+        savingGoalController.goalPrediction.value == null) {
+      return Container(
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colors.cardBackground,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+        ),
+        child: const Row(
+          children: [
+            SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            SizedBox(width: 12),
+            Text(
+              'Đang tải dự báo mục tiêu...',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final prediction = savingGoalController.goalPrediction.value;
+    if (prediction == null) {
+      return const SizedBox.shrink();
+    }
+
+    final statusColor = _predictionRiskColor(prediction.riskLevel);
+    final completionText = prediction.predictedCompletionDate != null
+        ? _formatIsoDate(prediction.predictedCompletionDate!)
+        : 'Chưa đủ dữ liệu';
+    final differenceText = _predictionDifferenceText(prediction);
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: statusColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: statusColor.withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                _predictionStatusIcon(prediction.status),
+                color: statusColor,
+                size: 22,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Dự báo mục tiêu',
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  _riskText(prediction.riskLevel),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _predictionMetric(
+            label: 'Dự kiến hoàn thành',
+            value: completionText,
+            colors: colors,
+          ),
+          _predictionMetric(
+            label: 'Lệch hạn',
+            value: differenceText,
+            colors: colors,
+            valueColor: statusColor,
+          ),
+          _predictionMetric(
+            label: 'Cần tiết kiệm mỗi ngày',
+            value: AppHelperFunction.formatAmount(
+              prediction.requiredDailySavingRate,
+            ),
+            colors: colors,
+          ),
+          _predictionMetric(
+            label: 'Tốc độ hiện tại mỗi tháng',
+            value: AppHelperFunction.formatAmount(
+              prediction.currentMonthlySavingRate,
+            ),
+            colors: colors,
+          ),
+          if (prediction.recommendedActions.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            ...prediction.recommendedActions
+                .take(2)
+                .map(
+                  (action) => Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline_rounded,
+                          color: statusColor,
+                          size: 15,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            action.message,
+                            style: TextStyle(
+                              color: colors.textSecondary,
+                              fontSize: 11,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _predictionMetric({
+    required String label,
+    required String value,
+    required AppThemeColors colors,
+    Color? valueColor,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: valueColor ?? colors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDetailRow(
     String label,
     String value,
@@ -361,4 +485,45 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
       ],
     );
   }
+}
+
+Color _predictionRiskColor(String riskLevel) {
+  return switch (riskLevel) {
+    'high' => AppColors.error,
+    'medium' => AppColors.warning,
+    _ => AppColors.success,
+  };
+}
+
+IconData _predictionStatusIcon(String status) {
+  return switch (status) {
+    'completed' || 'on_track' => Icons.check_circle_outline_rounded,
+    'slightly_at_risk' || 'at_risk' => Icons.warning_amber_rounded,
+    'off_track' || 'overdue' || 'unlikely' => Icons.error_outline_rounded,
+    _ => Icons.timeline_rounded,
+  };
+}
+
+String _riskText(String riskLevel) {
+  return switch (riskLevel) {
+    'high' => 'Rủi ro cao',
+    'medium' => 'Rủi ro TB',
+    _ => 'Rủi ro thấp',
+  };
+}
+
+String _predictionDifferenceText(GoalAchievementPredictionModel prediction) {
+  final days = prediction.daysDifference;
+  if (prediction.status == 'completed') return 'Đã hoàn thành';
+  if (prediction.status == 'unlikely') return 'Chưa thể dự báo';
+  if (days == null) return 'Không có hạn';
+  if (days < 0) return 'Sớm ${days.abs()} ngày';
+  if (days == 0) return 'Đúng hạn';
+  return 'Trễ $days ngày';
+}
+
+String _formatIsoDate(String value) {
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) return value;
+  return DateFormat('dd/MM/yyyy').format(parsed);
 }

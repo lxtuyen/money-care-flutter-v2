@@ -534,7 +534,10 @@ class StatisticsController extends GetxController {
 
         final activeGoalId = savingGoalController.goalId.value;
         if (activeGoalId > 0) {
-          futures.add(savingGoalController.loadGoalReport(activeGoalId));
+          futures.addAll([
+            savingGoalController.loadGoalReport(activeGoalId),
+            savingGoalController.loadGoalPrediction(activeGoalId),
+          ]);
         }
 
         futures.add(loadFinancialAnalytics());
@@ -576,7 +579,10 @@ class StatisticsController extends GetxController {
 
         final activeGoalId = savingGoalController.goalId.value;
         if (activeGoalId > 0) {
-          futures.add(savingGoalController.loadGoalReport(activeGoalId));
+          futures.addAll([
+            savingGoalController.loadGoalReport(activeGoalId),
+            savingGoalController.loadGoalPrediction(activeGoalId),
+          ]);
         }
 
         await Future.wait(futures);

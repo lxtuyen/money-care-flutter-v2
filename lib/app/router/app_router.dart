@@ -41,6 +41,7 @@ import 'package:money_care/features/personalization/presentation/screens/persona
 import 'package:money_care/features/personalization/presentation/bindings/personalization_binding.dart';
 import 'package:money_care/features/statistics/presentation/screens/model_evaluation_screen.dart';
 import 'package:money_care/features/statistics/presentation/bindings/model_evaluation_binding.dart';
+import 'package:money_care/features/scenario_planning/presentation/screens/scenario_planning_screen.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -212,6 +213,11 @@ final List<GetPage> appPages = [
     name: RoutePath.modelEvaluation,
     page: () => const ModelEvaluationScreen(),
     binding: ModelEvaluationBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.scenarioPlanning,
+    page: () => const ScenarioPlanningScreen(),
     transition: Transition.rightToLeft,
   ),
 ];

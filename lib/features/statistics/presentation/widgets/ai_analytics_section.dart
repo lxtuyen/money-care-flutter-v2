@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/saving_goal/data/models/models.dart';
 import 'package:money_care/features/statistics/data/models/analytics_model.dart';
 
 class AiAnalyticsSection extends StatelessWidget {
@@ -57,6 +58,10 @@ class AiAnalyticsSection extends StatelessWidget {
               const SizedBox(height: 14),
               _AiBudgetingPanel(aiBudgeting: data.aiBudgeting!),
             ],
+            if (data.goalAchievement != null) ...[
+              const SizedBox(height: 14),
+              _GoalAchievementPanel(summary: data.goalAchievement!),
+            ],
             const SizedBox(height: 18),
             const Padding(
               padding: EdgeInsets.only(left: 4, bottom: 10),
@@ -78,6 +83,218 @@ class AiAnalyticsSection extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class _GoalAchievementPanel extends StatelessWidget {
+  final GoalAchievementPredictionSummaryModel summary;
+
+  const _GoalAchievementPanel({required this.summary});
+
+  @override
+  Widget build(BuildContext context) {
+    final predictions = [...summary.predictions]..sort(_compareGoalRisk);
+    final visiblePredictions = predictions.take(3).toList();
+    final color = _summaryRiskColor(summary);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _panelDecoration(color),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(
+            icon: Icons.flag_circle_outlined,
+            title: 'Dự báo mục tiêu tiết kiệm',
+            color: color,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _GoalSummaryTile(
+                  label: 'Đúng hạn',
+                  value: summary.onTrackGoals.toString(),
+                  color: AppColors.success,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _GoalSummaryTile(
+                  label: 'Rủi ro',
+                  value: summary.atRiskGoals.toString(),
+                  color: AppColors.warning,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _GoalSummaryTile(
+                  label: 'Lệch tiến độ',
+                  value: summary.offTrackGoals.toString(),
+                  color: AppColors.error,
+                ),
+              ),
+            ],
+          ),
+          if (visiblePredictions.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...visiblePredictions.map(
+              (prediction) => _GoalPredictionRow(prediction: prediction),
+            ),
+            if (predictions.length > visiblePredictions.length)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  '+${predictions.length - visiblePredictions.length} mục tiêu khác',
+                  style: const TextStyle(
+                    color: AppColors.text3,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _GoalPredictionRow extends StatelessWidget {
+  final GoalAchievementPredictionModel prediction;
+
+  const _GoalPredictionRow({required this.prediction});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _riskColor(prediction.riskLevel);
+    final source = _goalSourceText(
+      prediction.supportingData['savingVelocitySource']?.toString(),
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  prediction.name,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.text1,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              _InlineBadge(
+                icon: Icons.flag_circle_outlined,
+                color: color,
+                text: _goalStatusText(prediction.status),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          _MetricRow(
+            label: 'Còn thiếu',
+            value: AppHelperFunction.formatAmount(prediction.remainingAmount),
+            valueColor: AppColors.text1,
+          ),
+          _MetricRow(
+            label: 'Hạn mục tiêu',
+            value: prediction.deadline != null
+                ? _formatGoalDate(prediction.deadline!)
+                : 'Chưa đặt',
+            valueColor: AppColors.text2,
+          ),
+          _MetricRow(
+            label: 'Dự kiến hoàn thành',
+            value: prediction.predictedCompletionDate != null
+                ? _formatGoalDate(prediction.predictedCompletionDate!)
+                : 'Chưa đủ dữ liệu',
+            valueColor: color,
+          ),
+          _MetricRow(
+            label: 'Cần tiết kiệm',
+            value:
+                '${AppHelperFunction.formatAmount(prediction.requiredMonthlySavingRate)}/tháng • ${AppHelperFunction.formatAmount(prediction.requiredDailySavingRate)}/ngày',
+            valueColor: AppColors.text1,
+          ),
+          if (source.isNotEmpty)
+            _MetricRow(
+              label: 'Nguồn dữ liệu',
+              value: source,
+              valueColor: AppColors.info,
+            ),
+          if (prediction.recommendedActions.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                prediction.recommendedActions.first.message,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.text3,
+                  height: 1.3,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GoalSummaryTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _GoalSummaryTile({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.text3,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -1515,5 +1732,62 @@ String _reasonCodeText(String code) {
     'high_elasticity_cut' => 'Cắt nhóm linh hoạt trước',
     'insufficient_data_conservative' => 'Dữ liệu chưa đủ',
     _ => code.replaceAll('_', ' '),
+  };
+}
+
+String _formatGoalDate(String value) {
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) return value;
+  final day = parsed.day.toString().padLeft(2, '0');
+  final month = parsed.month.toString().padLeft(2, '0');
+  return '$day/$month/${parsed.year}';
+}
+
+Color _summaryRiskColor(GoalAchievementPredictionSummaryModel summary) {
+  if (summary.offTrackGoals > 0) return AppColors.error;
+  if (summary.atRiskGoals > 0) return AppColors.warning;
+  return AppColors.success;
+}
+
+int _compareGoalRisk(
+  GoalAchievementPredictionModel a,
+  GoalAchievementPredictionModel b,
+) {
+  final riskDiff = _riskRank(b.riskLevel) - _riskRank(a.riskLevel);
+  if (riskDiff != 0) return riskDiff;
+
+  final daysDiff = (b.daysDifference ?? -9999) - (a.daysDifference ?? -9999);
+  if (daysDiff != 0) return daysDiff;
+
+  final aDeadline = DateTime.tryParse(a.deadline ?? '')?.millisecondsSinceEpoch;
+  final bDeadline = DateTime.tryParse(b.deadline ?? '')?.millisecondsSinceEpoch;
+  return (aDeadline ?? 9999999999999).compareTo(bDeadline ?? 9999999999999);
+}
+
+int _riskRank(String riskLevel) {
+  return switch (riskLevel) {
+    'high' => 3,
+    'medium' => 2,
+    _ => 1,
+  };
+}
+
+String _goalStatusText(String status) {
+  return switch (status) {
+    'completed' => 'Hoàn thành',
+    'on_track' => 'Đúng hạn',
+    'slightly_at_risk' || 'at_risk' => 'Rủi ro',
+    'off_track' || 'overdue' || 'unlikely' => 'Lệch tiến độ',
+    _ => 'Theo dõi',
+  };
+}
+
+String _goalSourceText(String? source) {
+  return switch (source) {
+    'profile_average_savings' => 'Hồ sơ tài chính',
+    'spending_plan_capacity' => 'Kế hoạch chi tiêu',
+    'net_balance_fallback' => 'Giao dịch',
+    'goal_contribution_history' => 'Lịch sử nạp mục tiêu',
+    _ => '',
   };
 }

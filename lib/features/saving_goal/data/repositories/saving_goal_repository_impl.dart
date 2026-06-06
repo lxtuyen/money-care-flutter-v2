@@ -151,4 +151,31 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, GoalAchievementPredictionModel>> getGoalPrediction(
+    int id,
+  ) async {
+    try {
+      final model = await remoteDatasource.getGoalPrediction(id);
+      return Right(model);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, GoalAchievementPredictionSummaryModel>>
+  getGoalPredictions() async {
+    try {
+      final model = await remoteDatasource.getGoalPredictions();
+      return Right(model);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

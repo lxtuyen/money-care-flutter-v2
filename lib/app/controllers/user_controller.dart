@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fpdart/fpdart.dart';
-import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/user/data/models/profile_update_dto.dart';
 import 'package:get/get.dart';

@@ -445,7 +445,6 @@ class _RecommendationItemCard extends StatelessWidget {
     final currentLimit = (item['currentLimitAmount'] as num?)?.toDouble() ?? 0;
     final recommendedLimit = (item['recommendedLimitAmount'] as num?)?.toDouble() ?? 0;
     final predictedSpend = (item['predictedSpendAmount'] as num?)?.toDouble() ?? 0;
-    final adjustmentAmount = (item['adjustmentAmount'] as num?)?.toDouble() ?? 0;
 
     final canApply = item['canApply'] as bool? ?? false;
 

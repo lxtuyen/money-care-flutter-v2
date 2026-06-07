@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:fpdart/fpdart.dart';
-import 'package:money_care/core/errors/failure.dart';
 
 import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 import 'package:money_care/features/chatbot/data/models/models.dart';

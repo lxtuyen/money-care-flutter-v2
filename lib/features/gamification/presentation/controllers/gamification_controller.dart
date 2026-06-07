@@ -9,7 +9,9 @@ import 'package:money_care/features/gamification/presentation/widgets/streak_dia
 class GamificationController extends GetxController {
   final GetGamificationUseCase _getGamificationUseCase;
   final RecordDailyTransactionUseCase _recordDailyTransactionUseCase;
+  // ignore: unused_field
   final CheckAndAwardBadgesUseCase _checkAndAwardBadgesUseCase;
+  // ignore: unused_field
   final NotificationService _notificationService;
   final AppController _appController;
 

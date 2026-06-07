@@ -44,6 +44,7 @@ class ModelEvaluationRepositoryImpl implements ModelEvaluationRepository {
   }) async {
     final res = await api.post<ManualEvaluationResultModel>(
       ApiRoutes.modelEvaluationRun,
+      // ignore: use_null_aware_elements
       body: {if (modelType != null) 'modelType': modelType},
       fromJsonT: (json) =>
           ManualEvaluationResultModel.fromJson(json as Map<String, dynamic>),

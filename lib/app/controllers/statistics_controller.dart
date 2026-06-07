@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-import 'package:fpdart/fpdart.dart';
-import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/app/controllers/app_controller.dart';

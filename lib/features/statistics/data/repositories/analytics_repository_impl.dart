@@ -1,19 +1,26 @@
-import 'package:money_care/core/constants/api_routes.dart';
-import 'package:money_care/core/network/api_client.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:money_care/core/errors/exceptions.dart';
+import 'package:money_care/core/errors/failure.dart';
+import 'package:money_care/features/statistics/data/datasources/analytics_remote_datasource.dart';
 import 'package:money_care/features/statistics/data/models/analytics_model.dart';
 import 'package:money_care/features/statistics/domain/repositories/analytics_repository.dart';
 
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
-  final ApiClient api;
+  final AnalyticsRemoteDataSource remoteDataSource;
 
-  const AnalyticsRepositoryImpl({required this.api});
+  const AnalyticsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<AnalyticsModel> getFinancialAnalytics() async {
-    final res = await api.get<AnalyticsModel>(
-      ApiRoutes.financialAnalytics,
-      fromJsonT: (json) => AnalyticsModel.fromJson(json as Map<String, dynamic>),
-    );
-    return res.unwrap();
+  Future<Either<Failure, AnalyticsModel>> getFinancialAnalytics() async {
+    try {
+      final model = await remoteDataSource.getFinancialAnalytics();
+      return Right(model);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

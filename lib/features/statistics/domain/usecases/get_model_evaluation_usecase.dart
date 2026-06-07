@@ -18,7 +18,11 @@ class GetModelEvaluationUseCase {
     return repository.getBudgetingEvaluation();
   }
 
-  Future<void> runManualEvaluation({String? modelType}) {
+  Future<ManualEvaluationResultModel> runManualEvaluation({String? modelType}) {
     return repository.runManualEvaluation(modelType: modelType);
+  }
+
+  Future<ForecastingTrainingResultModel> trainForecastingModel() {
+    return repository.trainForecastingModel();
   }
 }

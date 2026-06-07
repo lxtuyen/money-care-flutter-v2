@@ -1,3 +1,5 @@
+import 'package:fpdart/fpdart.dart';
+import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/user/data/models/profile_update_dto.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
 import 'package:money_care/features/user/domain/repositories/user_repository.dart';
@@ -6,7 +8,7 @@ class UpdateMyProfileUseCase {
   final UserRepository repository;
   UpdateMyProfileUseCase(this.repository);
 
-  Future<UserProfileEntity> call(ProfileUpdateDto dto) {
+  Future<Either<Failure, UserProfileEntity>> call(ProfileUpdateDto dto) {
     return repository.updateMyProfile(dto);
   }
 }

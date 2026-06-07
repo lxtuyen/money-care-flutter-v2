@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:money_care/core/errors/failure.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/user/data/models/profile_update_dto.dart';
 import 'package:get/get.dart';
 import 'package:money_care/features/user/domain/entities/user_profile_entity.dart';
@@ -46,15 +49,24 @@ class UserController extends GetxController {
   var userProfile = Rxn<UserProfileEntity>();
   var isLoading = false.obs;
 
-  Future<void> updateProfile() async {
+  Future<bool> updateProfile() async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
       final dto = ProfileUpdateDto(
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
       );
-      final updated = await updateMyProfileUseCase(dto);
-      userProfile.value = updated;
+      final result = await updateMyProfileUseCase(dto);
+      return result.fold(
+        (failure) {
+          AppHelperFunction.showErrorSnackBar(failure.message);
+          return false;
+        },
+        (updated) {
+          userProfile.value = updated;
+          return true;
+        },
+      );
     } finally {
       isLoading.value = false;
     }

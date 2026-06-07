@@ -45,6 +45,8 @@ class ApiRoutes {
   static const modelEvaluationBudgeting =
       'analytics/model-evaluation/budgeting';
   static const modelEvaluationRun = 'analytics/model-evaluation/run';
+  static const modelTrainingForecasting =
+      'analytics/model-training/forecasting';
   static const scenarioPlanningSimulate = 'scenario-planning/simulate';
   static const scenarioPlanningTemplates = 'scenario-planning/templates';
 

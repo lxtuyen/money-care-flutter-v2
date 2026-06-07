@@ -57,9 +57,12 @@ class GamificationRepositoryImpl implements GamificationRepository {
     BadgeEntity badge,
   ) async {
     try {
-      // Lấy trạng thái hiện tại, cấp badge (idempotent), lưu lại — Requirement 8.9
-      final model = await remoteDatasource.recordDay(userId, badge.awardedAt);
-      return Right(model.toEntity().awardBadge(badge));
+      final model = await remoteDatasource.recordDay(
+        userId,
+        badge.awardedAt,
+        badge: badge,
+      );
+      return Right(model.toEntity());
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
     } on UnauthorizedException catch (e) {

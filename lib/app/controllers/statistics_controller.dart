@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
@@ -167,15 +169,17 @@ class StatisticsController extends GetxController {
   Future<void> loadFinancialAnalytics() async {
     isLoadingAnalytics.value = true;
     analyticsError.value = '';
-    try {
-      final res = await getFinancialAnalyticsUseCase();
-      analyticsData.value = res;
-    } catch (e) {
-      analyticsData.value = null;
-      analyticsError.value = e.toString();
-    } finally {
-      isLoadingAnalytics.value = false;
-    }
+    final result = await getFinancialAnalyticsUseCase();
+    result.fold(
+      (failure) {
+        analyticsData.value = null;
+        analyticsError.value = failure.message;
+      },
+      (data) {
+        analyticsData.value = data;
+      },
+    );
+    isLoadingAnalytics.value = false;
   }
 
   Future<void> sendBudgetRecommendationFeedback(
@@ -194,8 +198,8 @@ class StatisticsController extends GetxController {
         AiFeedbackDto(
           recommendationType: 'budget',
           recommendationId: item.recommendationId,
-          sourceModel: 'gradient_boosting_budgeting',
-          sourceModelVersion: 'v1',
+          sourceModel: 'personalized_budget_optimizer',
+          sourceModelVersion: 'v2',
           userAction: action,
           sourcePayload: {
             'categoryName': item.categoryName,
@@ -237,14 +241,17 @@ class StatisticsController extends GetxController {
     isLoadingGoalPlanInsight.value = true;
     goalPlanInsightError.value = '';
 
-    try {
-      goalPlanInsight.value = await useCase(snapshot);
-    } catch (error) {
-      goalPlanInsight.value = null;
-      goalPlanInsightError.value = error.toString();
-    } finally {
-      isLoadingGoalPlanInsight.value = false;
-    }
+    final result = await useCase(snapshot);
+    result.fold(
+      (failure) {
+        goalPlanInsight.value = null;
+        goalPlanInsightError.value = failure.message;
+      },
+      (data) {
+        goalPlanInsight.value = data;
+      },
+    );
+    isLoadingGoalPlanInsight.value = false;
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/core/services/ocr_service.dart';
 import 'package:money_care/features/chatbot/data/datasources/chat_remote_datasource.dart';
 import 'package:money_care/features/chatbot/data/repositories/chat_repository_impl.dart';
 import 'package:money_care/features/chatbot/domain/usecases/chat_usecases.dart';
@@ -17,6 +18,7 @@ class ChatBinding extends Bindings {
       () => ChatController(
         sendToChatbotUseCase: SendToChatbotUseCase(repository),
         filterTransactionsUseCase: Get.find<FilterTransactionsUseCase>(),
+        ocrService: OCRService(),
       ),
       fenix: true,
     );

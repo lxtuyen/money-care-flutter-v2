@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/bubble.dart';
@@ -14,6 +13,8 @@ import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_cre
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_proposal_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_initial_fund_ask_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/scenario_simulation_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_bubble.dart';
+import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -120,6 +121,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             if (m.metadata!['__type'] == 'scenario_simulation') {
               return ScenarioSimulationBubble(metadata: m.metadata!);
             }
+            if (m.metadata!['__type'] == 'budget_recommendation') {
+              return BudgetRecommendationBubble(metadata: m.metadata!);
+            }
 
             return AnalysisBubble(metadata: m.metadata!);
           }
@@ -190,6 +194,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   Widget _buildSuggestionChips() {
+    final colors = AppThemeColors.of(context);
     return Container(
       height: 52,
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -205,7 +210,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           return Container(
             margin: const EdgeInsets.only(right: 8),
             child: Material(
-              color: AppColors.white,
+              color: colors.cardBackground,
               borderRadius: BorderRadius.circular(20),
               child: InkWell(
                 onTap: () => controller.fillTemplate(template),
@@ -217,10 +222,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.borderSecondary),
+                    border: Border.all(color: colors.borderSecondary),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.text1.withValues(alpha: 0.01),
+                        color: Colors.black.withValues(alpha: 0.01),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -231,10 +236,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.text2,
+                          color: colors.textPrimary,
                         ),
                       ),
                     ],

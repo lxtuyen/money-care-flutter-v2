@@ -4,11 +4,14 @@ import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/transaction/data/datasources/transaction_remote_datasource.dart';
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
+import 'package:money_care/features/statistics/data/datasources/analytics_remote_datasource.dart';
 import 'package:money_care/features/statistics/data/datasources/goal_plan_insight_remote_datasource.dart';
 import 'package:money_care/features/statistics/data/repositories/analytics_repository_impl.dart';
 import 'package:money_care/features/statistics/data/repositories/goal_plan_insight_repository_impl.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
+import 'package:money_care/features/ai_feedback/data/repositories/ai_feedback_repository_impl.dart';
+import 'package:money_care/features/ai_feedback/domain/usecases/send_ai_feedback_usecase.dart';
 
 class StatisticsBinding extends Bindings {
   final ApiClient apiClient;
@@ -27,7 +30,9 @@ class StatisticsBinding extends Bindings {
     final goalPlanInsightRepo = GoalPlanInsightRepositoryImpl(
       remoteDatasource: goalPlanInsightRemoteDs,
     );
-    final analyticsRepo = AnalyticsRepositoryImpl(api: apiClient);
+    final analyticsRemoteDs = AnalyticsRemoteDataSourceImpl(api: apiClient);
+    final analyticsRepo = AnalyticsRepositoryImpl(remoteDataSource: analyticsRemoteDs);
+    final aiFeedbackRepo = AiFeedbackRepositoryImpl(api: apiClient);
 
     Get.lazyPut(
       () => StatisticsController(
@@ -43,6 +48,7 @@ class StatisticsBinding extends Bindings {
         getFinancialAnalyticsUseCase: GetFinancialAnalyticsUseCase(
           analyticsRepo,
         ),
+        sendAiFeedbackUseCase: SendAiFeedbackUseCase(aiFeedbackRepo),
       ),
       fenix: true,
     );

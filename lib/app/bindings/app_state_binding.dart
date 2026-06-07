@@ -4,6 +4,7 @@ import 'package:money_care/features/transaction/data/datasources/transaction_rem
 import 'package:money_care/features/transaction/data/repositories/transaction_repository_impl.dart';
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/features/statistics/data/datasources/analytics_remote_datasource.dart';
 import 'package:money_care/features/statistics/data/datasources/goal_plan_insight_remote_datasource.dart';
 import 'package:money_care/features/statistics/data/repositories/goal_plan_insight_repository_impl.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
@@ -29,7 +30,8 @@ class AppStateBinding extends Bindings {
     final goalPlanInsightRepo = GoalPlanInsightRepositoryImpl(
       remoteDatasource: goalPlanInsightRemoteDs,
     );
-    final analyticsRepo = AnalyticsRepositoryImpl(api: apiClient);
+    final analyticsRemoteDs = AnalyticsRemoteDataSourceImpl(api: apiClient);
+    final analyticsRepo = AnalyticsRepositoryImpl(remoteDataSource: analyticsRemoteDs);
     final aiFeedbackRepo = AiFeedbackRepositoryImpl(api: apiClient);
 
     Get.put<StatisticsController>(

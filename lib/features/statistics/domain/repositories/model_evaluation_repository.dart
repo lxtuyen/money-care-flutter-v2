@@ -4,5 +4,6 @@ abstract class ModelEvaluationRepository {
   Future<ModelEvaluationSummaryModel> getEvaluationSummary();
   Future<ForecastingEvaluationModel> getForecastingEvaluation();
   Future<BudgetingEvaluationModel> getBudgetingEvaluation();
-  Future<void> runManualEvaluation({String? modelType});
+  Future<ManualEvaluationResultModel> runManualEvaluation({String? modelType});
+  Future<ForecastingTrainingResultModel> trainForecastingModel();
 }

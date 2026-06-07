@@ -164,39 +164,8 @@ class GamificationController extends GetxController {
 
       updateWeeklyProgress();
 
-      await checkAndAwardBadges();
-
       if (isNewDay) {
         showStreakDialogTrigger.value = true;
-      }
-    });
-  }
-
-  Future<void> checkAndAwardBadges({bool goalCompleted = false}) async {
-    final entity = _cachedEntity;
-    if (entity == null) return;
-
-    final badgesBefore = List<BadgeEntity>.from(entity.badges);
-
-    final result = await _checkAndAwardBadgesUseCase(
-      entity,
-      goalCompleted: goalCompleted,
-    );
-
-    await result.fold((_) async {}, (updated) async {
-      _cachedEntity = updated;
-      badges.value = updated.badges;
-
-      final newBadges = updated.badges
-          .where((b) => !badgesBefore.any((old) => old.key == b.key))
-          .toList();
-
-      for (final badge in newBadges) {
-        await _notificationService.showLocalNotification(
-          id: badge.key.hashCode,
-          title: 'Huy hiệu mới!',
-          body: 'Chúc mừng! Bạn đã đạt được huy hiệu "${badge.name}"',
-        );
       }
     });
   }

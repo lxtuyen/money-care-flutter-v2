@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:money_care/core/errors/failure.dart';
 
 import 'package:money_care/features/chatbot/domain/entities/entities.dart';
 import 'package:money_care/features/chatbot/data/models/models.dart';
@@ -24,11 +26,13 @@ import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 class ChatController extends GetxController {
   final SendToChatbotUseCase sendToChatbotUseCase;
   final FilterTransactionsUseCase filterTransactionsUseCase;
+  final OCRService _ocrService;
 
   ChatController({
     required this.sendToChatbotUseCase,
     required this.filterTransactionsUseCase,
-  });
+    required OCRService ocrService,
+  }) : _ocrService = ocrService;
 
   final AppController appController = Get.find<AppController>();
   final SavingGoalController savingGoalController =
@@ -41,7 +45,6 @@ class ChatController extends GetxController {
   final errorMessage = RxnString();
   final RxList<ChatMessageEntity> messages = <ChatMessageEntity>[].obs;
 
-  final OCRService _ocrService = OCRService();
   final ImagePicker _picker = ImagePicker();
 
   List<QuickOption> get options => [
@@ -216,9 +219,17 @@ class ChatController extends GetxController {
         ocrText: ocrText,
         ocrLines: ocrLines,
       );
-      final reply = await sendToChatbotUseCase(dto);
+      final result = await sendToChatbotUseCase(dto);
 
-      _handleBotReply(reply, userId);
+      result.fold(
+        (failure) {
+          errorMessage.value = failure.message;
+          replaceLastBotMessage(
+            'chatbot.connectionError'.tr.replaceAll('@error', failure.message),
+          );
+        },
+        (reply) => _handleBotReply(reply, userId),
+      );
     } catch (e) {
       errorMessage.value = e.toString();
       replaceLastBotMessage(
@@ -245,9 +256,15 @@ class ChatController extends GetxController {
       errorMessage.value = null;
 
       final dto = ChatDto(message: payloadMsg, userId: userId);
-      final reply = await sendToChatbotUseCase(dto);
+      final result = await sendToChatbotUseCase(dto);
 
-      _handleBotReply(reply, userId);
+      result.fold(
+        (failure) {
+          errorMessage.value = failure.message;
+          replaceLastBotMessage('Có lỗi xảy ra: ${failure.message}');
+        },
+        (reply) => _handleBotReply(reply, userId),
+      );
     } catch (e) {
       errorMessage.value = e.toString();
       replaceLastBotMessage('Có lỗi xảy ra: $e');
@@ -387,6 +404,15 @@ class ChatController extends GetxController {
         replaceLastBotMessageWithMetadata('', data);
       } catch (e) {
         replaceLastBotMessage(reply.replaceFirst('__SCENARIO_SIMULATION__', ''));
+      }
+    } else if (reply.startsWith('__BUDGET_RECOMMENDATION__')) {
+      final jsonStr = reply.replaceFirst('__BUDGET_RECOMMENDATION__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'budget_recommendation';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage(reply.replaceFirst('__BUDGET_RECOMMENDATION__', ''));
       }
     } else {
       replaceLastBotMessage(reply);

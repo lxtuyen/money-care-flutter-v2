@@ -12,7 +12,8 @@ class ModelEvaluationRepositoryImpl implements ModelEvaluationRepository {
   Future<ModelEvaluationSummaryModel> getEvaluationSummary() async {
     final res = await api.get<ModelEvaluationSummaryModel>(
       ApiRoutes.modelEvaluation,
-      fromJsonT: (json) => ModelEvaluationSummaryModel.fromJson(json as Map<String, dynamic>),
+      fromJsonT: (json) =>
+          ModelEvaluationSummaryModel.fromJson(json as Map<String, dynamic>),
     );
     return res.unwrap();
   }
@@ -21,7 +22,8 @@ class ModelEvaluationRepositoryImpl implements ModelEvaluationRepository {
   Future<ForecastingEvaluationModel> getForecastingEvaluation() async {
     final res = await api.get<ForecastingEvaluationModel>(
       ApiRoutes.modelEvaluationForecasting,
-      fromJsonT: (json) => ForecastingEvaluationModel.fromJson(json as Map<String, dynamic>),
+      fromJsonT: (json) =>
+          ForecastingEvaluationModel.fromJson(json as Map<String, dynamic>),
     );
     return res.unwrap();
   }
@@ -30,17 +32,32 @@ class ModelEvaluationRepositoryImpl implements ModelEvaluationRepository {
   Future<BudgetingEvaluationModel> getBudgetingEvaluation() async {
     final res = await api.get<BudgetingEvaluationModel>(
       ApiRoutes.modelEvaluationBudgeting,
-      fromJsonT: (json) => BudgetingEvaluationModel.fromJson(json as Map<String, dynamic>),
+      fromJsonT: (json) =>
+          BudgetingEvaluationModel.fromJson(json as Map<String, dynamic>),
     );
     return res.unwrap();
   }
 
   @override
-  Future<void> runManualEvaluation({String? modelType}) async {
-    await api.post<void>(
+  Future<ManualEvaluationResultModel> runManualEvaluation({
+    String? modelType,
+  }) async {
+    final res = await api.post<ManualEvaluationResultModel>(
       ApiRoutes.modelEvaluationRun,
-      body: {'modelType': ?modelType},
-      fromJsonT: (_) {},
+      body: {if (modelType != null) 'modelType': modelType},
+      fromJsonT: (json) =>
+          ManualEvaluationResultModel.fromJson(json as Map<String, dynamic>),
     );
+    return res.unwrap();
+  }
+
+  @override
+  Future<ForecastingTrainingResultModel> trainForecastingModel() async {
+    final res = await api.post<ForecastingTrainingResultModel>(
+      ApiRoutes.modelTrainingForecasting,
+      fromJsonT: (json) =>
+          ForecastingTrainingResultModel.fromJson(json as Map<String, dynamic>),
+    );
+    return res.unwrap();
   }
 }

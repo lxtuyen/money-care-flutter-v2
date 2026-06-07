@@ -18,6 +18,7 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
           final summary = controller.summary.value;
           final isLoading = controller.isLoading.value;
           final isRunning = controller.isRunningEvaluation.value;
+          final isTraining = controller.isTrainingForecasting.value;
 
           return Column(
             children: [
@@ -30,7 +31,10 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                        ),
                         onPressed: () => Get.back(),
                       ),
                       const Text(
@@ -61,6 +65,8 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
                             const SizedBox(height: 16),
                             _buildBudgetingSection(summary?.budgeting),
                             const SizedBox(height: 24),
+                            _buildTrainForecastingButton(isTraining),
+                            const SizedBox(height: 12),
                             _buildManualEvaluateButton(isRunning),
                             const SizedBox(height: 32),
                           ],
@@ -75,8 +81,10 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
   }
 
   Widget _buildOverviewCard(ModelEvaluationSummaryModel? summary) {
-    final hasForecasting = summary?.forecasting != null && summary!.forecasting!.evaluatedRuns > 0;
-    final hasBudgeting = summary?.budgeting != null && summary!.budgeting!.evaluatedRuns > 0;
+    final hasForecasting =
+        summary?.forecasting != null && summary!.forecasting!.evaluatedRuns > 0;
+    final hasBudgeting =
+        summary?.budgeting != null && summary!.budgeting!.evaluatedRuns > 0;
 
     if (!hasForecasting && !hasBudgeting) {
       return _buildEmptyOverview();
@@ -122,7 +130,9 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
                 Expanded(
                   child: _buildOverviewMetric(
                     'Sai số dự báo',
-                    forecastMape != null ? '${forecastMape.toStringAsFixed(1)}%' : 'N/A',
+                    forecastMape != null
+                        ? '${forecastMape.toStringAsFixed(1)}%'
+                        : 'N/A',
                     _getMapeColor(forecastMape),
                     Icons.timeline,
                   ),
@@ -132,7 +142,9 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
                 Expanded(
                   child: _buildOverviewMetric(
                     'Vượt ngân sách',
-                    budgetOverrun != null ? '${budgetOverrun.toStringAsFixed(1)}%' : 'N/A',
+                    budgetOverrun != null
+                        ? '${budgetOverrun.toStringAsFixed(1)}%'
+                        : 'N/A',
                     _getOverrunColor(budgetOverrun),
                     Icons.account_balance_wallet,
                   ),
@@ -144,7 +156,12 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
     );
   }
 
-  Widget _buildOverviewMetric(String label, String value, Color color, IconData icon) {
+  Widget _buildOverviewMetric(
+    String label,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -165,7 +182,10 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
             ),
           ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(color: Colors.white60, fontSize: 11)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white60, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -188,7 +208,11 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
           SizedBox(height: 12),
           Text(
             'Chưa đủ dữ liệu để đánh giá',
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           SizedBox(height: 8),
           Text(
@@ -225,7 +249,11 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
               const SizedBox(width: 10),
               const Text(
                 'Đánh giá dự báo chi tiêu',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.text1),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text1,
+                ),
               ),
             ],
           ),
@@ -233,25 +261,36 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
           if (forecasting == null || forecasting.evaluatedRuns == 0)
             _buildNoDataRow('Chưa có dự báo nào được đánh giá')
           else ...[
-            _buildMetricRow('Số lần đánh giá', '${forecasting.evaluatedRuns}', Icons.check_circle_outline, Colors.green),
+            _buildMetricRow(
+              'Số lần đánh giá',
+              '${forecasting.evaluatedRuns}',
+              Icons.check_circle_outline,
+              Colors.green,
+            ),
             const SizedBox(height: 10),
             _buildMetricRow(
               'MAE (Sai số tuyệt đối TB)',
-              forecasting.mae != null ? AppHelperFunction.formatAmount(forecasting.mae!) : 'N/A',
+              forecasting.mae != null
+                  ? AppHelperFunction.formatAmount(forecasting.mae!)
+                  : 'N/A',
               Icons.straighten,
               Colors.orange,
             ),
             const SizedBox(height: 10),
             _buildMetricRow(
               'RMSE',
-              forecasting.rmse != null ? AppHelperFunction.formatAmount(forecasting.rmse!) : 'N/A',
+              forecasting.rmse != null
+                  ? AppHelperFunction.formatAmount(forecasting.rmse!)
+                  : 'N/A',
               Icons.square_foot,
               Colors.deepOrange,
             ),
             const SizedBox(height: 10),
             _buildMetricRow(
               'MAPE (Sai số %)',
-              forecasting.mape != null ? '${forecasting.mape!.toStringAsFixed(1)}%' : 'N/A',
+              forecasting.mape != null
+                  ? '${forecasting.mape!.toStringAsFixed(1)}%'
+                  : 'N/A',
               Icons.percent,
               _getMapeColor(forecasting.mape),
             ),
@@ -286,12 +325,20 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
                   color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.account_balance_wallet, color: Colors.green, size: 18),
+                child: const Icon(
+                  Icons.account_balance_wallet,
+                  color: Colors.green,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 10),
               const Text(
                 'Đánh giá gợi ý ngân sách',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.text1),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text1,
+                ),
               ),
             ],
           ),
@@ -299,11 +346,18 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
           if (budgeting == null || budgeting.evaluatedRuns == 0)
             _buildNoDataRow('Chưa có gợi ý ngân sách nào được đánh giá')
           else ...[
-            _buildMetricRow('Số lần đánh giá', '${budgeting.evaluatedRuns}', Icons.check_circle_outline, Colors.green),
+            _buildMetricRow(
+              'Số lần đánh giá',
+              '${budgeting.evaluatedRuns}',
+              Icons.check_circle_outline,
+              Colors.green,
+            ),
             const SizedBox(height: 10),
             _buildMetricRow(
               'Tỷ lệ vượt ngân sách',
-              budgeting.overrunRate != null ? '${budgeting.overrunRate!.toStringAsFixed(1)}%' : 'N/A',
+              budgeting.overrunRate != null
+                  ? '${budgeting.overrunRate!.toStringAsFixed(1)}%'
+                  : 'N/A',
               Icons.trending_up,
               _getOverrunColor(budgeting.overrunRate),
             ),
@@ -311,7 +365,9 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
             _buildMetricRow(
               'Số tiền vượt TB',
               budgeting.averageOverrunAmount != null
-                  ? AppHelperFunction.formatAmount(budgeting.averageOverrunAmount!)
+                  ? AppHelperFunction.formatAmount(
+                      budgeting.averageOverrunAmount!,
+                    )
                   : 'N/A',
               Icons.money_off,
               Colors.red,
@@ -319,7 +375,9 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
             const SizedBox(height: 10),
             _buildMetricRow(
               'Tỷ lệ áp dụng gợi ý',
-              budgeting.adoptionRate != null ? '${budgeting.adoptionRate!.toStringAsFixed(1)}%' : 'N/A',
+              budgeting.adoptionRate != null
+                  ? '${budgeting.adoptionRate!.toStringAsFixed(1)}%'
+                  : 'N/A',
               Icons.thumb_up_outlined,
               Colors.blue,
             ),
@@ -329,7 +387,12 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
     );
   }
 
-  Widget _buildMetricRow(String label, String value, IconData icon, Color color) {
+  Widget _buildMetricRow(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -337,12 +400,19 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
           children: [
             Icon(icon, color: color, size: 16),
             const SizedBox(width: 8),
-            Text(label, style: const TextStyle(fontSize: 12, color: AppColors.text3)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: AppColors.text3),
+            ),
           ],
         ),
         Text(
           value,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );
@@ -369,14 +439,19 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
         onPressed: isRunning ? null : () => controller.runManualEvaluation(),
         child: isRunning
             ? const SizedBox(
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
               )
             : const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -385,6 +460,44 @@ class ModelEvaluationScreen extends GetView<ModelEvaluationController> {
                   SizedBox(width: 8),
                   Text(
                     'Chạy đánh giá thủ công',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildTrainForecastingButton(bool isTraining) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        onPressed: isTraining ? null : () => controller.trainForecastingModel(),
+        child: isTraining
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.model_training, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Train forecasting model',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ],

@@ -11,9 +11,15 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   const AnalyticsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, AnalyticsModel>> getFinancialAnalytics() async {
+  Future<Either<Failure, AnalyticsModel>> getFinancialAnalytics({
+    int? targetMonth,
+    int? targetYear,
+  }) async {
     try {
-      final model = await remoteDataSource.getFinancialAnalytics();
+      final model = await remoteDataSource.getFinancialAnalytics(
+        targetMonth: targetMonth,
+        targetYear: targetYear,
+      );
       return Right(model);
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));

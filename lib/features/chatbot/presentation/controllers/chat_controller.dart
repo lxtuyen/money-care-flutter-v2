@@ -219,15 +219,12 @@ class ChatController extends GetxController {
       );
       final result = await sendToChatbotUseCase(dto);
 
-      result.fold(
-        (failure) {
-          errorMessage.value = failure.message;
-          replaceLastBotMessage(
-            'chatbot.connectionError'.tr.replaceAll('@error', failure.message),
-          );
-        },
-        (reply) => _handleBotReply(reply, userId),
-      );
+      result.fold((failure) {
+        errorMessage.value = failure.message;
+        replaceLastBotMessage(
+          'chatbot.connectionError'.tr.replaceAll('@error', failure.message),
+        );
+      }, (reply) => _handleBotReply(reply, userId));
     } catch (e) {
       errorMessage.value = e.toString();
       replaceLastBotMessage(
@@ -256,13 +253,10 @@ class ChatController extends GetxController {
       final dto = ChatDto(message: payloadMsg, userId: userId);
       final result = await sendToChatbotUseCase(dto);
 
-      result.fold(
-        (failure) {
-          errorMessage.value = failure.message;
-          replaceLastBotMessage('Có lỗi xảy ra: ${failure.message}');
-        },
-        (reply) => _handleBotReply(reply, userId),
-      );
+      result.fold((failure) {
+        errorMessage.value = failure.message;
+        replaceLastBotMessage('Có lỗi xảy ra: ${failure.message}');
+      }, (reply) => _handleBotReply(reply, userId));
     } catch (e) {
       errorMessage.value = e.toString();
       replaceLastBotMessage('Có lỗi xảy ra: $e');
@@ -277,7 +271,13 @@ class ChatController extends GetxController {
       final jsonStr = reply.replaceFirst('__STRUCTURED_ANALYSIS__', '');
       try {
         final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
-        final summary = data['summary'] ?? 'chatbot.financialAnalysis'.tr;
+        if (data['version'] == 2 && data['type'] == 'expense_analysis') {
+          data['__type'] = 'expense_analysis_cards';
+        }
+        final summary =
+            data['message'] ??
+            data['summary'] ??
+            'chatbot.financialAnalysis'.tr;
         replaceLastBotMessageWithMetadata(summary, data);
       } catch (e) {
         replaceLastBotMessage(
@@ -401,7 +401,9 @@ class ChatController extends GetxController {
         data['__type'] = 'scenario_simulation';
         replaceLastBotMessageWithMetadata('', data);
       } catch (e) {
-        replaceLastBotMessage(reply.replaceFirst('__SCENARIO_SIMULATION__', ''));
+        replaceLastBotMessage(
+          reply.replaceFirst('__SCENARIO_SIMULATION__', ''),
+        );
       }
     } else if (reply.startsWith('__BUDGET_RECOMMENDATION__')) {
       final jsonStr = reply.replaceFirst('__BUDGET_RECOMMENDATION__', '');
@@ -410,7 +412,9 @@ class ChatController extends GetxController {
         data['__type'] = 'budget_recommendation';
         replaceLastBotMessageWithMetadata('', data);
       } catch (e) {
-        replaceLastBotMessage(reply.replaceFirst('__BUDGET_RECOMMENDATION__', ''));
+        replaceLastBotMessage(
+          reply.replaceFirst('__BUDGET_RECOMMENDATION__', ''),
+        );
       }
     } else {
       replaceLastBotMessage(reply);
@@ -507,7 +511,10 @@ class ChatController extends GetxController {
         const TransactionFilterDto(),
       );
 
-      final allTrans = [...result.incomeTransactions, ...result.expenseTransactions];
+      final allTrans = [
+        ...result.incomeTransactions,
+        ...result.expenseTransactions,
+      ];
 
       bool updatedAny = false;
       for (var i = 0; i < messages.length; i++) {

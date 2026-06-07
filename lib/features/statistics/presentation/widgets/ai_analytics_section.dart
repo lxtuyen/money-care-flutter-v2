@@ -1,11 +1,16 @@
 // ignore_for_file: unused_element
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/saving_goal/data/models/models.dart';
 import 'package:money_care/features/statistics/data/models/analytics_model.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 
 class AiAnalyticsSection extends StatelessWidget {
   const AiAnalyticsSection({super.key});
@@ -49,10 +54,10 @@ class AiAnalyticsSection extends StatelessWidget {
               const SizedBox(height: 14),
               _ForecastingPanel(forecasting: data.forecasting!),
             ],
-            if (data.nextMonthForecast != null) ...[
+            /*if (data.nextMonthForecast != null) ...[
               const SizedBox(height: 14),
               _NextMonthForecastPanel(forecast: data.nextMonthForecast!),
-            ],
+            ],*/
             const SizedBox(height: 18),
             const Padding(
               padding: EdgeInsets.only(left: 4, bottom: 10),
@@ -65,7 +70,7 @@ class AiAnalyticsSection extends StatelessWidget {
                 ),
               ),
             ),
-            ...data.insights.map((insight) => _InsightPanel(insight: insight)),
+            //...data.insights.map((insight) => _InsightPanel(insight: insight)),
             if (data.anomalies.isNotEmpty) ...[
               const SizedBox(height: 12),
               _AnomaliesPanel(anomalies: data.anomalies),
@@ -74,144 +79,6 @@ class AiAnalyticsSection extends StatelessWidget {
         ),
       );
     });
-  }
-}
-
-class _GoalPredictionRow extends StatelessWidget {
-  final GoalAchievementPredictionModel prediction;
-
-  const _GoalPredictionRow({required this.prediction});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _riskColor(prediction.riskLevel);
-    final source = _goalSourceText(
-      prediction.supportingData['savingVelocitySource']?.toString(),
-    );
-
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withValues(alpha: 0.16)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  prediction.name,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.text1,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              _InlineBadge(
-                icon: Icons.flag_circle_outlined,
-                color: color,
-                text: _goalStatusText(prediction.status),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          _MetricRow(
-            label: 'Còn thiếu',
-            value: AppHelperFunction.formatAmount(prediction.remainingAmount),
-            valueColor: AppColors.text1,
-          ),
-          _MetricRow(
-            label: 'Hạn mục tiêu',
-            value: prediction.deadline != null
-                ? _formatGoalDate(prediction.deadline!)
-                : 'Chưa đặt',
-            valueColor: AppColors.text2,
-          ),
-          _MetricRow(
-            label: 'Dự kiến hoàn thành',
-            value: prediction.predictedCompletionDate != null
-                ? _formatGoalDate(prediction.predictedCompletionDate!)
-                : 'Chưa đủ dữ liệu',
-            valueColor: color,
-          ),
-          _MetricRow(
-            label: 'Cần tiết kiệm',
-            value:
-                '${AppHelperFunction.formatAmount(prediction.requiredMonthlySavingRate)}/tháng • ${AppHelperFunction.formatAmount(prediction.requiredDailySavingRate)}/ngày',
-            valueColor: AppColors.text1,
-          ),
-          if (source.isNotEmpty)
-            _MetricRow(
-              label: 'Nguồn dữ liệu',
-              value: source,
-              valueColor: AppColors.info,
-            ),
-          if (prediction.recommendedActions.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(
-                prediction.recommendedActions.first.message,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: AppColors.text3,
-                  height: 1.3,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GoalSummaryTile extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color color;
-
-  const _GoalSummaryTile({
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppColors.text3,
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -837,8 +704,130 @@ class _AnomaliesPanel extends StatelessWidget {
 
   const _AnomaliesPanel({required this.anomalies});
 
+  TransactionEntity _getOrCreateTransaction(
+    AnomalyModel anomaly,
+    TransactionController txController,
+  ) {
+    TransactionEntity? found;
+    for (final tx in txController.allTransactions) {
+      if (tx.id == anomaly.transactionId) {
+        found = tx;
+        break;
+      }
+    }
+    if (found != null) {
+      return found;
+    }
+
+    DateTime? parsedDate = DateTime.tryParse(anomaly.date);
+    return TransactionEntity(
+      id: anomaly.transactionId,
+      amount: anomaly.amount.toInt(),
+      type: 'expense',
+      transactionDate: parsedDate,
+      note: anomaly.reason,
+      category: CategoryEntity(
+        id: null,
+        name: anomaly.categoryName,
+        icon: _guessCategoryIcon(anomaly.categoryName),
+        type: 'expense',
+      ),
+    );
+  }
+
+  String _guessCategoryIcon(String categoryName) {
+    final name = categoryName.trim().toLowerCase();
+    if (name.contains('chợ') ||
+        name.contains('siêu thị') ||
+        name.contains('rau') ||
+        name.contains('thực phẩm')) {
+      return '🥬';
+    }
+    if (name.contains('ăn') ||
+        name.contains('uống') ||
+        name.contains('nhà hàng') ||
+        name.contains('cà phê') ||
+        name.contains('cafe')) {
+      return '🍽️';
+    }
+    if (name.contains('di chuyển') ||
+        name.contains('xe') ||
+        name.contains('bus') ||
+        name.contains('grab') ||
+        name.contains('taxi') ||
+        name.contains('xăng')) {
+      return '🚌';
+    }
+    if (name.contains('mua sắm') ||
+        name.contains('shopping') ||
+        name.contains('áo') ||
+        name.contains('quần') ||
+        name.contains('giày')) {
+      return '🛒';
+    }
+    if (name.contains('giải trí') ||
+        name.contains('phim') ||
+        name.contains('game') ||
+        name.contains('du lịch') ||
+        name.contains('chơi')) {
+      return '🎬';
+    }
+    if (name.contains('làm đẹp') ||
+        name.contains('spa') ||
+        name.contains('tóc') ||
+        name.contains('mỹ phẩm')) {
+      return '💄';
+    }
+    if (name.contains('sức khỏe') ||
+        name.contains('y tế') ||
+        name.contains('thuốc') ||
+        name.contains('bác sĩ') ||
+        name.contains('khám')) {
+      return '💊';
+    }
+    if (name.contains('từ thiện') || name.contains('quyên góp')) {
+      return '❤️';
+    }
+    if (name.contains('hóa đơn') ||
+        name.contains('điện') ||
+        name.contains('nước') ||
+        name.contains('internet') ||
+        name.contains('cước')) {
+      return '🧾';
+    }
+    if (name.contains('nhà') ||
+        name.contains('phòng') ||
+        name.contains('thuê') ||
+        name.contains('sửa')) {
+      return '🏠';
+    }
+    if (name.contains('người thân') ||
+        name.contains('gia đình') ||
+        name.contains('bố') ||
+        name.contains('mẹ') ||
+        name.contains('con')) {
+      return '👪';
+    }
+    if (name.contains('đầu tư') ||
+        name.contains('chứng khoán') ||
+        name.contains('vàng')) {
+      return '📈';
+    }
+    if (name.contains('học') ||
+        name.contains('sách') ||
+        name.contains('trường') ||
+        name.contains('khóa học') ||
+        name.contains('giáo dục')) {
+      return '📚';
+    }
+    return '⚠️';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final transactionController = Get.find<TransactionController>();
+    final appController = Get.find<AppController>();
+
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: _panelDecoration(AppColors.error),
@@ -851,58 +840,70 @@ class _AnomaliesPanel extends StatelessWidget {
             color: AppColors.error,
           ),
           const SizedBox(height: 8),
-          ...anomalies.map(
-            (a) => Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                '${a.date}: Chi ${AppHelperFunction.formatAmount(a.amount)} ở mục "${a.categoryName}". Lý do: ${a.reason}',
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.text2,
-                  height: 1.3,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class _InlineBadge extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String text;
-
-  const _InlineBadge({
-    required this.icon,
-    required this.color,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+          Obx(() {
+            final _ = transactionController.transactionChangedCount.value;
+            
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: anomalies.length,
+              itemBuilder: (context, index) {
+                final a = anomalies[index];
+                final tx = _getOrCreateTransaction(a, transactionController);
+                return TransactionItem(
+                  item: tx,
+                  isShowDate: true,
+                  isShowDivider: index < anomalies.length - 1,
+                  onTap: () {
+                    final userId = appController.userId.value ?? 0;
+                    TransactionDetail.show(
+                      context,
+                      item: tx,
+                      userId: userId,
+                      isExpense: true,
+                    );
+                  },
+                  detail: Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: AppColors.error.withValues(alpha: 0.15),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          size: 12,
+                          color: AppColors.error,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            a.reason,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.error,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );
@@ -1046,33 +1047,5 @@ Color _riskColor(String riskLevel) {
     'high' => AppColors.error,
     'medium' => AppColors.warning,
     _ => AppColors.success,
-  };
-}
-
-String _formatGoalDate(String value) {
-  final parsed = DateTime.tryParse(value);
-  if (parsed == null) return value;
-  final day = parsed.day.toString().padLeft(2, '0');
-  final month = parsed.month.toString().padLeft(2, '0');
-  return '$day/$month/${parsed.year}';
-}
-
-String _goalStatusText(String status) {
-  return switch (status) {
-    'completed' => 'Hoàn thành',
-    'on_track' => 'Đúng hạn',
-    'slightly_at_risk' || 'at_risk' => 'Rủi ro',
-    'off_track' || 'overdue' || 'unlikely' => 'Lệch tiến độ',
-    _ => 'Theo dõi',
-  };
-}
-
-String _goalSourceText(String? source) {
-  return switch (source) {
-    'profile_average_savings' => 'Hồ sơ tài chính',
-    'spending_plan_capacity' => 'Kế hoạch chi tiêu',
-    'net_balance_fallback' => 'Giao dịch',
-    'goal_contribution_history' => 'Lịch sử nạp mục tiêu',
-    _ => '',
   };
 }

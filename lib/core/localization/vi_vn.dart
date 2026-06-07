@@ -305,7 +305,7 @@ const Map<String, String> viVN = {
   'chatbot.analysisDesc':
       'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',
   'chatbot.analysisTemplate':
-      'Phân tích chi tiêu gần đây của tôi và cho tôi lời khuyên tiết kiệm.',
+      'Phân tích chi tiêu tháng này của tôi và cho tôi lời khuyên tiết kiệm.',
   'chatbot.budgetTitle': '🎯 Gợi ý ngân sách',
   'chatbot.budgetDesc':
       'AI sẽ giúp bạn lên kế hoạch ngân sách thông minh cho tháng tới.',

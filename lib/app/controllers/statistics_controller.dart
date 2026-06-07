@@ -167,7 +167,11 @@ class StatisticsController extends GetxController {
   Future<void> loadFinancialAnalytics() async {
     isLoadingAnalytics.value = true;
     analyticsError.value = '';
-    final result = await getFinancialAnalyticsUseCase();
+    final targetDate = currentStartDate;
+    final result = await getFinancialAnalyticsUseCase(
+      targetMonth: targetDate.month,
+      targetYear: targetDate.year,
+    );
     result.fold(
       (failure) {
         analyticsData.value = null;

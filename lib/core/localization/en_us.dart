@@ -308,7 +308,7 @@ const Map<String, String> enUS = {
   'chatbot.analysisDesc':
       'Get feedback and saving advice based on actual spending.',
   'chatbot.analysisTemplate':
-      'Analyze my recent spending and give me saving advice.',
+      'Analyze my spending this month and give me saving advice.',
   'chatbot.budgetTitle': '🎯 Budget Suggestions',
   'chatbot.budgetDesc': 'AI will help you plan a smart budget for next month.',
   'chatbot.budgetTemplate':

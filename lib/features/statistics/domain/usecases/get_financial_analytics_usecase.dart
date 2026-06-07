@@ -8,7 +8,13 @@ class GetFinancialAnalyticsUseCase {
 
   const GetFinancialAnalyticsUseCase(this.repository);
 
-  Future<Either<Failure, AnalyticsModel>> call() {
-    return repository.getFinancialAnalytics();
+  Future<Either<Failure, AnalyticsModel>> call({
+    int? targetMonth,
+    int? targetYear,
+  }) {
+    return repository.getFinancialAnalytics(
+      targetMonth: targetMonth,
+      targetYear: targetYear,
+    );
   }
 }

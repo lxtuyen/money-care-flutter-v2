@@ -5,6 +5,7 @@ import 'package:money_care/features/chatbot/presentation/controllers/chat_contro
 import 'package:money_care/features/chatbot/presentation/widgets/bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/welcome_option.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/analysis_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/expense_analysis_cards_bubble.dart';
 
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_saved_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/transaction_list_bubble.dart';
@@ -123,6 +124,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             }
             if (m.metadata!['__type'] == 'budget_recommendation') {
               return BudgetRecommendationBubble(metadata: m.metadata!);
+            }
+            if (m.metadata!['__type'] == 'expense_analysis_cards') {
+              return ExpenseAnalysisCardsBubble(metadata: m.metadata!);
             }
 
             return AnalysisBubble(metadata: m.metadata!);

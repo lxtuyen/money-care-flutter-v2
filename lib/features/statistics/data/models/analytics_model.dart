@@ -1,10 +1,17 @@
 import 'package:money_care/features/saving_goal/data/models/models.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class AnomalyModel {
   final int transactionId;
   final double amount;
   final String date;
   final String categoryName;
+  final int? categoryId;
+  final String? categoryIcon;
+  final String type;
+  final String? note;
+  final int? walletId;
+  final String? walletName;
   final String reason;
 
   const AnomalyModel({
@@ -12,6 +19,12 @@ class AnomalyModel {
     required this.amount,
     required this.date,
     required this.categoryName,
+    this.categoryId,
+    this.categoryIcon,
+    this.type = 'expense',
+    this.note,
+    this.walletId,
+    this.walletName,
     required this.reason,
   });
 
@@ -21,7 +34,32 @@ class AnomalyModel {
       amount: (json['amount'] as num? ?? 0.0).toDouble(),
       date: json['date']?.toString() ?? '',
       categoryName: json['categoryName']?.toString() ?? '',
+      categoryId: json['categoryId'] as int?,
+      categoryIcon: json['categoryIcon']?.toString(),
+      type: json['type']?.toString() ?? 'expense',
+      note: json['note']?.toString(),
+      walletId: json['walletId'] as int?,
+      walletName: json['walletName']?.toString(),
       reason: json['reason']?.toString() ?? '',
+    );
+  }
+
+  /// Chuyển anomaly thành TransactionEntity để hiển thị trong danh sách.
+  TransactionEntity toTransactionEntity() {
+    return TransactionEntity(
+      id: transactionId,
+      amount: amount.toInt(),
+      type: type,
+      transactionDate: DateTime.tryParse(date),
+      note: note ?? reason,
+      walletId: walletId,
+      walletName: walletName,
+      category: CategoryEntity(
+        id: categoryId,
+        name: categoryName,
+        icon: categoryIcon ?? '⚠️',
+        type: type,
+      ),
     );
   }
 }

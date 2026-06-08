@@ -16,7 +16,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/ai_analytics_section.dart';
+import 'package:money_care/features/statistics/presentation/widgets/anomalies_panel.dart';
 import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
@@ -319,7 +319,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 if (statisticsController.periodType.value != 'hàng tháng') {
                   return const SizedBox.shrink();
                 }
-                return const AiAnalyticsSection();
+                final data = statisticsController.analyticsData.value;
+                if (data == null || data.anomalies.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  child: AnomaliesPanel(anomalies: data.anomalies),
+                );
               }),
               const SizedBox(height: 10),
               Obx(() {

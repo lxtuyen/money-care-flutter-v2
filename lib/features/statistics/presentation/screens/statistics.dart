@@ -16,7 +16,6 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_overview_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/anomalies_panel.dart';
 import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
@@ -29,6 +28,8 @@ import 'package:money_care/features/transaction/presentation/controllers/user_ca
 
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
+import 'package:money_care/features/statistics/data/models/analytics_model.dart'
+    show BudgetExceedPredictionModel;
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -316,28 +317,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 );
               }),
               Obx(() {
-                if (statisticsController.periodType.value != 'hàng tháng') {
-                  return const SizedBox.shrink();
-                }
-                final data = statisticsController.analyticsData.value;
-                if (data == null || data.anomalies.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  child: AnomaliesPanel(anomalies: data.anomalies),
-                );
-              }),
-              const SizedBox(height: 10),
-              Obx(() {
                 if (statisticsController.selectedType.value != 'chi') {
                   return const SizedBox.shrink();
                 }
                 final stats = spendingPlanController.statsSummary.value;
                 if (stats == null) return const SizedBox.shrink();
+                final analyticsData = statisticsController.analyticsData.value;
+                final exceedPredictions =
+                    analyticsData?.aiBudgeting?.budgetExceedPredictions ??
+                    const <BudgetExceedPredictionModel>[];
+                final anomalies = analyticsData?.anomalies ?? const [];
+                final anomalyCount = anomalies.length;
+
                 final groupedExpenses =
                     EstimatedExpenseBudgetGroupCard.groupExpenses(
                       stats.estimatedExpenses,
@@ -346,23 +337,35 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: AppSectionHeading(
-                        title: 'Theo dõi ngân sách',
-                        showActionButton: stats.estimatedExpenses.length > 5,
-                        onPressed: () {
-                          Get.toNamed(
-                            RoutePath.spendingPlanDetail,
-                            arguments: stats.planId,
-                          );
-                        },
+                    if (stats.estimatedExpenses.length < 0)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: AppSectionHeading(
+                          title: 'Theo dõi ngân sách',
+                          showActionButton: stats.estimatedExpenses.length > 5,
+                          onPressed: () {
+                            Get.toNamed(
+                              RoutePath.spendingPlanDetail,
+                              arguments: stats.planId,
+                            );
+                          },
+                        ),
                       ),
-                    ),
                     const SizedBox(height: 10),
                     BudgetTrackingSection(
                       stats: stats,
                       groupedExpenses: groupedExpenses,
+                      exceedPredictions: exceedPredictions,
+                      anomalyCount: anomalyCount,
+                      anomalies: anomalies,
+                      onViewDetail: stats.estimatedExpenses.length > 5
+                          ? () {
+                              Get.toNamed(
+                                RoutePath.spendingPlanDetail,
+                                arguments: stats.planId,
+                              );
+                            }
+                          : null,
                     ),
                     const SizedBox(height: 25),
                   ],

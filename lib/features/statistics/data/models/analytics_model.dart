@@ -457,8 +457,72 @@ class ForecastingModel {
   }
 }
 
-class AiBudgetRecommendationItemModel {
-  final String recommendationId;
+class BudgetExceedPredictionModel {
+  final String categoryName;
+  final double limitAmount;
+  final double actualAmount;
+  final double totalForecast;
+  final double exceedAmount;
+  final bool willExceed;
+  final double exceedProbability;
+  final double confidence;
+  final String trend;
+  final String riskLevel;
+  final double actualRatio;
+  final double forecastRatio;
+  final double? expectedTodayRatio;
+  final double? expectedTodayAmount;
+  final double? dailyForecastAmount;
+  final bool isFrequent;
+
+  const BudgetExceedPredictionModel({
+    required this.categoryName,
+    required this.limitAmount,
+    required this.actualAmount,
+    required this.totalForecast,
+    required this.exceedAmount,
+    required this.willExceed,
+    required this.exceedProbability,
+    required this.confidence,
+    required this.trend,
+    required this.riskLevel,
+    required this.actualRatio,
+    required this.forecastRatio,
+    this.expectedTodayRatio,
+    this.expectedTodayAmount,
+    this.dailyForecastAmount,
+    this.isFrequent = false,
+  });
+
+  factory BudgetExceedPredictionModel.fromJson(Map<String, dynamic> json) {
+    return BudgetExceedPredictionModel(
+      categoryName: json['categoryName']?.toString() ?? '',
+      limitAmount: (json['limitAmount'] as num? ?? 0.0).toDouble(),
+      actualAmount: (json['actualAmount'] as num? ?? 0.0).toDouble(),
+      totalForecast: (json['totalForecast'] as num? ?? 0.0).toDouble(),
+      exceedAmount: (json['exceedAmount'] as num? ?? 0.0).toDouble(),
+      willExceed: json['willExceed'] as bool? ?? false,
+      exceedProbability: (json['exceedProbability'] as num? ?? 0.0).toDouble(),
+      confidence: (json['confidence'] as num? ?? 0.0).toDouble(),
+      trend: json['trend']?.toString() ?? 'stable',
+      riskLevel: json['riskLevel']?.toString() ?? 'low',
+      actualRatio: (json['actualRatio'] as num? ?? 0.0).toDouble(),
+      forecastRatio: (json['forecastRatio'] as num? ?? 0.0).toDouble(),
+      expectedTodayRatio: json['expectedTodayRatio'] != null
+          ? (json['expectedTodayRatio'] as num).toDouble()
+          : null,
+      expectedTodayAmount: json['expectedTodayAmount'] != null
+          ? (json['expectedTodayAmount'] as num).toDouble()
+          : null,
+      dailyForecastAmount: json['dailyForecastAmount'] != null
+          ? (json['dailyForecastAmount'] as num).toDouble()
+          : null,
+      isFrequent: json['isFrequent'] as bool? ?? false,
+    );
+  }
+}
+
+class AiBudgetRecommendationItemModel {  final String recommendationId;
   final String categoryName;
   final double currentLimitAmount;
   final double spentAmount;
@@ -551,6 +615,7 @@ class AiBudgetingModel {
   final double confidence;
   final String strategy;
   final List<AiBudgetRecommendationItemModel> items;
+  final List<BudgetExceedPredictionModel> budgetExceedPredictions;
   final String summary;
 
   const AiBudgetingModel({
@@ -562,6 +627,7 @@ class AiBudgetingModel {
     required this.confidence,
     required this.strategy,
     required this.items,
+    required this.budgetExceedPredictions,
     required this.summary,
   });
 
@@ -586,6 +652,15 @@ class AiBudgetingModel {
               )
               .toList() ??
           <AiBudgetRecommendationItemModel>[],
+      budgetExceedPredictions:
+          (json['budgetExceedPredictions'] as List?)
+              ?.map(
+                (e) => BudgetExceedPredictionModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
+              .toList() ??
+          <BudgetExceedPredictionModel>[],
       summary: json['summary']?.toString() ?? '',
     );
   }

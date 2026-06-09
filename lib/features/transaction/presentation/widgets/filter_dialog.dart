@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -188,21 +189,13 @@ class _FilterDialogState extends State<FilterDialog> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: PrimaryButton(
+                      label: 'common.apply'.tr,
                       onPressed: _applySelection,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        'common.apply'.tr,
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
+                      height: 48,
+                      borderRadius: 16,
+                      fontSize: 14,
+                      elevation: 0,
                     ),
                   ),
                 ],

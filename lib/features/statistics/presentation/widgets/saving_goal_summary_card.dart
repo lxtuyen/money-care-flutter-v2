@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
@@ -201,7 +202,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
          /* const Divider(height: 1),
           const SizedBox(height: 12),*/
           // TODO: tạm ẩn card thông tin ví
-          if (false) ...[
+          /*if (false) ...[
             const SizedBox(height: 16),
             Row(
               children: [
@@ -237,7 +238,7 @@ class SavingGoalSummaryCard extends StatelessWidget {
                 ),
               ],
             ),
-          ],
+          ],*/
 
           if (r.milestones.isNotEmpty) ...[
             const SizedBox(height: 24),
@@ -260,7 +261,8 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: ElevatedButton.icon(
+                child: PrimaryButton(
+                  label: 'Hoàn thành mục tiêu',
                   onPressed: () {
                     final walletController = Get.find<WalletController>();
                     final options = walletController.wallets
@@ -306,19 +308,11 @@ class SavingGoalSummaryCard extends StatelessWidget {
                     Icons.check_circle_outline_rounded,
                     size: 20,
                   ),
-                  label: const Text(
-                    'Hoàn thành mục tiêu',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.income,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
+                  backgroundColor: AppColors.income,
+                  height: 48,
+                  borderRadius: 12,
+                  fontSize: 13,
+                  elevation: 0,
                 ),
               ),
             ),
@@ -677,7 +671,7 @@ class _CircleMetric extends StatelessWidget {
   }
 }
 
-class _QuickStat extends StatelessWidget {
+/*class _QuickStat extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
@@ -716,7 +710,7 @@ class _QuickStat extends StatelessWidget {
       ],
     );
   }
-}
+}*/
 
 class _BudgetRow extends StatelessWidget {
   final String label;

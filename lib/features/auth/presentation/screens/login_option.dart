@@ -41,47 +41,22 @@ class LoginOptionScreen extends GetView<LoginOptionController> {
                 ),
 
                 const SizedBox(height: 20),
-                Obx(() {
-                  if (controller.isLoading.value) {
-                    return PrimaryButton(
+                 Obx(() => PrimaryButton(
                       label: AppTexts.loginWithGoogle,
                       onPressed: controller.loginWithGoogleAndNavigate,
-                      isLoading: true,
-                    );
-                  }
-
-                  return ElevatedButton(
-                    onPressed: controller.loginWithGoogleAndNavigate,
-                    style: ElevatedButton.styleFrom(
+                      isLoading: controller.isLoading.value,
                       backgroundColor: Colors.white,
-                      foregroundColor: AppColors.text1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(color: AppColors.borderPrimary),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      textColor: AppColors.text1,
+                      borderRadius: 12,
                       elevation: 1,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularImages(
-                          image: AppImages.google,
-                          width: 40,
-                          height: 40,
-                        ),
-                        const SizedBox(width: 16),
-                        Text(
-                          AppTexts.loginWithGoogle,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                      side: const BorderSide(color: AppColors.borderPrimary),
+                      fontSize: 16,
+                      icon: CircularImages(
+                        image: AppImages.google,
+                        width: 40,
+                        height: 40,
+                      ),
+                    )),
                 const SizedBox(height: 20),
                 AuthRedirectText(
                   leadingText: AppTexts.alreadyHaveAccount,

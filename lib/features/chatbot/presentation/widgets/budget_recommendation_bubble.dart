@@ -10,6 +10,7 @@ import 'package:money_care/features/spending_plan/domain/entities/spending_plan_
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_request.dart';
 import 'package:money_care/features/ai_feedback/data/models/ai_feedback_dto.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 enum StagedAction { applied, removed }
 
@@ -174,56 +175,15 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
                     const SizedBox(height: 16),
                     const Divider(height: 1, thickness: 0.8),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _isSaving ? null : _commitStagedChanges,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 2,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: _isSaving
-                            ? const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Đang lưu...',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.save_rounded, size: 16),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Lưu thay đổi (${_stagedChanges.length})',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
+                    PrimaryButton(
+                      label: 'Lưu thay đổi (${_stagedChanges.length})',
+                      onPressed: _commitStagedChanges,
+                      isLoading: _isSaving,
+                      icon: const Icon(Icons.save_rounded, size: 16),
+                      height: 48,
+                      fontSize: 13,
+                      borderRadius: 12,
+                      elevation: 2,
                     ),
                   ],
                 ],
@@ -885,7 +845,8 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: ElevatedButton(
+                    child: PrimaryButton(
+                      label: 'Lưu',
                       onPressed: () {
                         final amount = double.tryParse(
                           AppHelperFunction.unformatCurrency(
@@ -900,11 +861,10 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
                         }
                         Get.back<double>(result: amount);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text('Lưu'),
+                      height: 45,
+                      fontSize: 14,
+                      borderRadius: 12,
+                      elevation: 0,
                     ),
                   ),
                 ],
@@ -1243,36 +1203,20 @@ class _RecommendationItemCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Sửa button
                     if (isSameLimit)
-                      ElevatedButton(
+                      PrimaryButton(
+                        label: 'Sửa',
                         onPressed: isSending
                             ? null
                             : () => parentState._showModifySheet(context, item),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          minimumSize: const Size(64, 28),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.edit_rounded, size: 12),
-                            SizedBox(width: 4),
-                            Text(
-                              'Sửa',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                        icon: const Icon(Icons.edit_rounded, size: 12),
+                        height: 28,
+                        width: 64,
+                        fontSize: 11,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                       )
                     else
@@ -1307,35 +1251,19 @@ class _RecommendationItemCard extends StatelessWidget {
                       ),
                     if (!isSameLimit) ...[
                       const SizedBox(width: 8),
-                      // Áp dụng button
-                      ElevatedButton(
+                      PrimaryButton(
+                        label: 'Áp dụng',
                         onPressed: isSending
                             ? null
                             : () => parentState.stageApply(item),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          minimumSize: const Size(64, 28),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check_rounded, size: 12),
-                            SizedBox(width: 4),
-                            Text(
-                              'Áp dụng',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                        icon: const Icon(Icons.check_rounded, size: 12),
+                        height: 28,
+                        width: 64,
+                        fontSize: 11,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                       ),
                     ],

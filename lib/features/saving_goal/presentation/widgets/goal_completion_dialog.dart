@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
@@ -68,29 +69,19 @@ class GoalCompletionDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  final controller = Get.find<SavingGoalController>();
-                  controller.markAsNotified(report.id);
-                  controller.deselectGoal();
-                  Get.back();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Tuyệt vời!',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+            PrimaryButton(
+              label: 'Tuyệt vời!',
+              onPressed: () {
+                final controller = Get.find<SavingGoalController>();
+                controller.markAsNotified(report.id);
+                controller.deselectGoal();
+                Get.back();
+              },
+              backgroundColor: AppColors.success,
+              height: 48,
+              borderRadius: 12,
+              fontSize: 14,
+              elevation: 0,
             ),
           ],
         ),

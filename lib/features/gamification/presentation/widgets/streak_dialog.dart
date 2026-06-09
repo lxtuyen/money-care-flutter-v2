@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/sizes.dart';
@@ -107,28 +108,14 @@ class StreakDialog extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              SizedBox(
-                width: double.infinity,
+              PrimaryButton(
+                label: 'Tiếp tục',
+                onPressed: () => Get.back(),
+                backgroundColor: const Color(0xFF00CED1),
                 height: 56,
-                child: ElevatedButton(
-                  onPressed: () => Get.back(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00CED1),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Tiếp tục',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ),
+                borderRadius: 16,
+                fontSize: 16,
+                elevation: 0,
               ),
               const SizedBox(height: 16),
 

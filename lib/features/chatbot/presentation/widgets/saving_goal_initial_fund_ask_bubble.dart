@@ -6,6 +6,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/domain/entities/entities.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 class SavingGoalInitialFundAskBubble extends StatefulWidget {
   final Map<String, dynamic> metadata;
@@ -420,45 +421,25 @@ class _SavingGoalInitialFundAskBubbleState
               ),
             ),
           ] else ...[
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  final wallet = model.wallets[activeWalletIndex];
-                  final fund = initFundValue;
-                  final displayMsg = fund > 0
-                      ? "Tôi muốn trích ${AppHelperFunction.formatAmount(fund)} từ ví ${wallet.name} để tích lũy ban đầu."
-                      : "Tôi không muốn trích vốn ban đầu.";
-                  final payload =
-                      '/saving_goal_init_fund {"name": "${model.name}", "target": ${model.target}, "initFund": $fund, "sourceWalletId": ${wallet.id}, "requestedMonths": ${model.requestedMonths}}';
+            PrimaryButton(
+              label: initFundValue > 0
+                  ? "Trích ${AppHelperFunction.formatAmount(initFundValue)} & Xem lộ trình"
+                  : "Không trích vốn & Xem lộ trình",
+              onPressed: () {
+                final wallet = model.wallets[activeWalletIndex];
+                final fund = initFundValue;
+                final displayMsg = fund > 0
+                    ? "Tôi muốn trích ${AppHelperFunction.formatAmount(fund)} từ ví ${wallet.name} để tích lũy ban đầu."
+                    : "Tôi không muốn trích vốn ban đầu.";
+                final payload =
+                    '/saving_goal_init_fund {"name": "${model.name}", "target": ${model.target}, "initFund": $fund, "sourceWalletId": ${wallet.id}, "requestedMonths": ${model.requestedMonths}}';
 
-                  chatController.sendCustomMessage(displayMsg, payload, userId);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      initFundValue > 0
-                          ? "Trích ${AppHelperFunction.formatAmount(initFundValue)} & Xem lộ trình"
-                          : "Không trích vốn & Xem lộ trình",
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                chatController.sendCustomMessage(displayMsg, payload, userId);
+              },
+              height: 48,
+              fontSize: 13,
+              borderRadius: 14,
+              elevation: 0,
             ),
           ],
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
@@ -173,30 +174,15 @@ class GoalPredictionActionButtons extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 flex: 3,
-                child: ElevatedButton.icon(
+                child: PrimaryButton(
+                  label: 'Điều chỉnh ngân sách',
                   onPressed: _openChatbotForBudgetAdjust,
                   icon: const Icon(Icons.tune_rounded, size: 15),
-                  label: const Text(
-                    'Điều chỉnh ngân sách',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 11,
-                      horizontal: 8,
-                    ),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
+                  height: 40,
+                  borderRadius: 10,
+                  fontSize: 12,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
               ),
             ],

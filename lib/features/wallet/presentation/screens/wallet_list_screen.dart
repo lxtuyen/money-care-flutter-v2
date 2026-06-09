@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
@@ -75,20 +76,15 @@ class WalletListScreen extends GetView<WalletController> {
               if (controller.wallets.isEmpty) {
                 return AppEmptyState(
                   message: "Bạn chưa có ví nào",
-                  action: ElevatedButton(
+                  action: PrimaryButton(
+                    label: "Tạo ví ngay",
                     onPressed: () => controller.createWallet(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Tạo ví ngay"),
+                    backgroundColor: AppColors.primary,
+                    width: 160,
+                    height: 48,
+                    borderRadius: 12,
+                    fontSize: 14,
+                    elevation: 0,
                   ),
                 );
               }

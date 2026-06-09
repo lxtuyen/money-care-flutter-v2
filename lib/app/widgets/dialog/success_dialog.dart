@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 class SuccessDialog extends StatelessWidget {
   final String message;
@@ -59,21 +60,14 @@ class SuccessDialog extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: SizedBox(
+                    child: PrimaryButton(
+                      label: 'Tạo mới',
+                      onPressed: onCreateNew,
+                      backgroundColor: AppColors.buttonPrimary,
                       height: 45,
-                      child: ElevatedButton(
-                        onPressed: onCreateNew,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.buttonPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Text(
-                          'Tạo mới',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                      borderRadius: 20,
+                      fontSize: 14,
+                      elevation: 0,
                     ),
                   ),
                 ],

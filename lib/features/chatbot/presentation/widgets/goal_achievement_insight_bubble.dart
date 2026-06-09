@@ -6,6 +6,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_bubble.dart';
 import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 class GoalAchievementInsightBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -340,34 +341,21 @@ class _WalletTransferHint extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _openTransfer(
-                fromWalletId: fromWalletId,
-                toWalletId: goalWalletId,
-                amount: amount,
-              ),
-              icon: const Icon(Icons.swap_horiz_rounded, size: 16),
-              label: Text(
-                'Chuyển ${AppHelperFunction.formatAmount(amount)} vào ví tiết kiệm',
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 0,
-              ),
+          PrimaryButton(
+            label: 'Chuyển ${AppHelperFunction.formatAmount(amount)} vào ví tiết kiệm',
+            onPressed: () => _openTransfer(
+              fromWalletId: fromWalletId,
+              toWalletId: goalWalletId,
+              amount: amount,
+            ),
+            icon: const Icon(Icons.swap_horiz_rounded, size: 16),
+            height: 40,
+            fontSize: 12.5,
+            borderRadius: 10,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
             ),
           ),
         ],
@@ -383,8 +371,8 @@ class _WalletTransferHint extends StatelessWidget {
     Get.toNamed(
       RoutePath.walletTransfer,
       arguments: {
-        if (fromWalletId != null) 'fromWalletId': fromWalletId,
-        if (toWalletId != null) 'toWalletId': toWalletId,
+        'fromWalletId': ?fromWalletId,
+        'toWalletId': ?toWalletId,
         if (amount > 0) 'amount': amount,
       },
     );

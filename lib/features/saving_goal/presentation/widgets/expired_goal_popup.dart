@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
@@ -87,70 +88,46 @@ class ExpiredGoalPopup extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Main Actions
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Get.back();
-                  Get.toNamed(RoutePath.createSavingGoal);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text(
-                  'Tạo mục tiêu mới',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+            PrimaryButton(
+              label: 'Tạo mục tiêu mới',
+              onPressed: () {
+                Get.back();
+                Get.toNamed(RoutePath.createSavingGoal);
+              },
+              backgroundColor: AppColors.success,
+              height: 48,
+              borderRadius: 12,
+              fontSize: 14,
+              elevation: 0,
             ),
 
             const SizedBox(height: 12),
 
             if (!isSuccess) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final baseDate = goal.endDate ?? DateTime.now();
-                    final newDate = await showStyledDatePicker(
-                      context: context,
-                      initialDate: baseDate.add(const Duration(days: 30)),
-                      firstDate: baseDate.add(const Duration(days: 1)),
+              PrimaryButton(
+                label: 'Gia hạn mục tiêu',
+                onPressed: () async {
+                  final baseDate = goal.endDate ?? DateTime.now();
+                  final newDate = await showStyledDatePicker(
+                    context: context,
+                    initialDate: baseDate.add(const Duration(days: 30)),
+                    firstDate: baseDate.add(const Duration(days: 1)),
+                  );
+                  if (newDate != null) {
+                    final success = await controller.extendGoal(
+                      goal.id,
+                      newDate,
                     );
-                    if (newDate != null) {
-                      final success = await controller.extendGoal(
-                        goal.id,
-                        newDate,
-                      );
-                      if (success) {
-                        Get.back();
-                      }
+                    if (success) {
+                      Get.back();
                     }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: const Text(
-                    'Gia hạn mục tiêu',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                  }
+                },
+                backgroundColor: AppColors.primary,
+                height: 48,
+                borderRadius: 12,
+                fontSize: 14,
+                elevation: 0,
               ),
               const SizedBox(height: 12),
             ],

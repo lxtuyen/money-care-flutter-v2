@@ -7,6 +7,15 @@ class PrimaryButton extends StatelessWidget {
   final bool isLoading;
   final bool isEnabled;
   final Widget? icon;
+  final double? height;
+  final double? width;
+  final double? fontSize;
+  final double? borderRadius;
+  final double? elevation;
+  final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final BorderSide? side;
 
   const PrimaryButton({
     super.key,
@@ -15,17 +24,29 @@ class PrimaryButton extends StatelessWidget {
     this.isLoading = false,
     this.isEnabled = true,
     this.icon,
+    this.height,
+    this.width,
+    this.fontSize,
+    this.borderRadius,
+    this.elevation,
+    this.padding,
+    this.backgroundColor,
+    this.textColor,
+    this.side,
   });
 
   @override
   Widget build(BuildContext context) {
     final canPress = isEnabled && !isLoading;
+    final double buttonHeight = height ?? 56;
+    final double btnBorderRadius = borderRadius ?? 12;
+    final double btnElevation = elevation ?? (canPress ? 4 : 0);
 
     final Widget child = isLoading
-        ? const SizedBox(
-            height: 24,
-            width: 24,
-            child: CircularProgressIndicator(
+        ? SizedBox(
+            height: buttonHeight * 0.43,
+            width: buttonHeight * 0.43,
+            child: const CircularProgressIndicator(
               color: Colors.white,
               strokeWidth: 2,
             ),
@@ -33,17 +54,21 @@ class PrimaryButton extends StatelessWidget {
         : Text(
             label,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: fontSize ?? 18,
               fontWeight: FontWeight.bold,
-              color: canPress ? Colors.white : Colors.grey[600],
+              color: textColor ?? (canPress ? Colors.white : Colors.grey[600]),
             ),
           );
 
     final buttonStyle = ElevatedButton.styleFrom(
-      minimumSize: const Size.fromHeight(56),
-      backgroundColor: canPress ? AppColors.primary : Colors.grey[400],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: canPress ? 4 : 0,
+      minimumSize: width != null ? Size(width!, buttonHeight) : Size.fromHeight(buttonHeight),
+      padding: padding,
+      backgroundColor: backgroundColor ?? (canPress ? AppColors.primary : Colors.grey[400]),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(btnBorderRadius),
+        side: side ?? BorderSide.none,
+      ),
+      elevation: btnElevation,
     );
 
     if (icon != null && !isLoading) {

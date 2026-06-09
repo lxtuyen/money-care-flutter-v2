@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -95,7 +96,8 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
+                   PrimaryButton(
+                    label: "Lưu",
                     onPressed: () async {
                       final name = nameController.text.trim();
                       if (name.isNotEmpty) {
@@ -109,14 +111,11 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                         Navigator.pop(context);
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Lưu"),
+                    width: 80,
+                    height: 40,
+                    borderRadius: 12,
+                    fontSize: 14,
+                    elevation: 0,
                   ),
                 ],
               ),

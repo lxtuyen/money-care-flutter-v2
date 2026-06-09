@@ -9,6 +9,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_stat_chip.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 double _roundVndUp(num amount, {int unit = 1000}) {
   if (amount <= 0) return 0;
@@ -299,47 +300,33 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
               ),
             ),
           ] else ...[
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: proposal.isImpossible
-                    ? null
-                    : () {
-                        final payload = proposal.toConfirmPayload(
-                          budgetItems: budgetItems,
-                          totalAmount: confirmTotalAmount,
-                        );
-                        chatController.sendCustomMessage(
-                          "Tôi đồng ý với đề xuất trên",
-                          '/confirm_saving_goal ${jsonEncode(payload)}',
-                          userId,
-                        );
-                      },
-                icon: const Icon(
-                  Icons.check_circle_rounded,
-                  size: 16,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  "Đồng ý tạo",
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: proposal.isImpossible
-                      ? Colors.grey
-                      : AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
+            PrimaryButton(
+              label: "Đồng ý tạo",
+              onPressed: proposal.isImpossible
+                  ? null
+                  : () {
+                      final payload = proposal.toConfirmPayload(
+                        budgetItems: budgetItems,
+                        totalAmount: confirmTotalAmount,
+                      );
+                      chatController.sendCustomMessage(
+                        "Tôi đồng ý với đề xuất trên",
+                        '/confirm_saving_goal ${jsonEncode(payload)}',
+                        userId,
+                      );
+                    },
+              icon: const Icon(
+                Icons.check_circle_rounded,
+                size: 16,
+                color: Colors.white,
               ),
+              backgroundColor: proposal.isImpossible
+                  ? Colors.grey
+                  : AppColors.primary,
+              height: 48,
+              fontSize: 13,
+              borderRadius: 14,
+              elevation: 0,
             ),
           ],
         ],

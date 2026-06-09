@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 enum ConfirmDialogType { danger, warning, info }
 
@@ -153,24 +154,18 @@ class AppConfirmDialog extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton(
+                  child: PrimaryButton(
+                    label: confirmText,
                     onPressed: () {
                       Get.back();
                       onConfirm();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: btnColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      confirmText,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    backgroundColor: btnColor,
+                    textColor: Colors.white,
+                    height: 48,
+                    fontSize: 14,
+                    borderRadius: 14,
+                    elevation: 0,
                   ),
                 ),
               ],

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
 
 class SelectionOption {
   final String id;
@@ -182,7 +183,8 @@ class _SelectionDialogState extends State<SelectionDialog> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: PrimaryButton(
+                      label: 'common.apply'.tr,
                       onPressed: () {
                         final selectedOption = widget.options.firstWhereOrNull(
                           (o) => o.id == selectedId,
@@ -190,19 +192,10 @@ class _SelectionDialogState extends State<SelectionDialog> {
                         widget.onSelect(selectedId, selectedOption?.label);
                         Get.back();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        'common.apply'.tr,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
+                      height: 48,
+                      fontSize: 14,
+                      borderRadius: 16,
+                      elevation: 0,
                     ),
                   ),
                 ],

@@ -389,32 +389,6 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   'transaction.selectTypeDesc'.tr,
                   style: const TextStyle(fontSize: 13, color: AppColors.text4),
                 ),
-                /*
-                const SizedBox(height: 18),
-                _buildTransactionOptionTile(
-                  icon: Icons.north_east_rounded,
-                  iconColor: AppColors.success,
-                  iconBackground: AppColors.success.withValues(alpha:0.12),
-                  title: 'Tạo thu',
-                  subtitle: 'Ghi nhận khoản tiền bạn nhận được',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Get.toNamed(RoutePath.income);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _buildTransactionOptionTile(
-                  icon: Icons.south_east_rounded,
-                  iconColor: AppColors.secondaryOrange,
-                  iconBackground: AppColors.secondaryOrange.withValues(alpha:0.12),
-                  title: 'Tạo chi',
-                  subtitle: 'Ghi lại khoản chi tiêu của bạn',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Get.toNamed(RoutePath.expense);
-                  },
-                ),
-                */
                 const SizedBox(height: 12),
                 _buildTransactionOptionTile(
                   icon: Icons.receipt_long_outlined,

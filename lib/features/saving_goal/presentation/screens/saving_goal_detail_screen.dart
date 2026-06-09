@@ -14,7 +14,6 @@ import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/saving_goal/data/models/models.dart';
-import 'package:money_care/features/scenario_planning/presentation/widgets/scenario_entry_panel.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/goal_prediction_action_buttons.dart';
 
 class SavingGoalDetailScreen extends StatefulWidget {
@@ -142,10 +141,6 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                 ),
               ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: ScenarioEntryPanel(goalId: goal.id),
           ),
           Obx(() => _buildPredictionCard(colors)),
           Expanded(

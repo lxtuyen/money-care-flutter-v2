@@ -10,9 +10,6 @@ import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/widget_service.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
-import 'package:money_care/features/statistics/data/models/goal_plan_insight_model.dart';
-import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
-import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
 import 'package:money_care/features/statistics/data/models/analytics_model.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
 import 'package:money_care/features/ai_feedback/data/models/ai_feedback_dto.dart';
@@ -24,7 +21,6 @@ class StatisticsController extends GetxController {
   final GetTotalByCateUseCase getTotalByCateUseCase;
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
-  final GetGoalPlanInsightUseCase? getGoalPlanInsightUseCase;
   final GetFinancialAnalyticsUseCase getFinancialAnalyticsUseCase;
   final SendAiFeedbackUseCase sendAiFeedbackUseCase;
 
@@ -43,10 +39,6 @@ class StatisticsController extends GetxController {
   var totalByDate = Rxn<TotalsByDateEntity>();
   var totalByDateLstMonth = Rxn<TotalsByDateEntity>();
   var statisticsSummary = Rxn<StatisticsSummaryEntity>();
-  final goalPlanInsight = Rxn<GoalPlanInsightModel>();
-  final isLoadingGoalPlanInsight = false.obs;
-  final goalPlanInsightError = ''.obs;
-  String? _goalPlanInsightKey;
 
   final analyticsData = Rxn<AnalyticsModel>();
   final isLoadingAnalytics = false.obs;
@@ -161,7 +153,6 @@ class StatisticsController extends GetxController {
     required this.getStatisticsSummaryUseCase,
     required this.getFinancialAnalyticsUseCase,
     required this.sendAiFeedbackUseCase,
-    this.getGoalPlanInsightUseCase,
   });
 
   Future<void> loadFinancialAnalytics() async {
@@ -232,29 +223,7 @@ class StatisticsController extends GetxController {
     }
   }
 
-  Future<void> loadGoalPlanInsight(GoalPlanInsightSnapshot snapshot) async {
-    final useCase = getGoalPlanInsightUseCase;
-    if (useCase == null) return;
 
-    final key = snapshot.toJson().toString();
-    if (_goalPlanInsightKey == key && goalPlanInsight.value != null) return;
-    _goalPlanInsightKey = key;
-    goalPlanInsight.value = null;
-    isLoadingGoalPlanInsight.value = true;
-    goalPlanInsightError.value = '';
-
-    final result = await useCase(snapshot);
-    result.fold(
-      (failure) {
-        goalPlanInsight.value = null;
-        goalPlanInsightError.value = failure.message;
-      },
-      (data) {
-        goalPlanInsight.value = data;
-      },
-    );
-    isLoadingGoalPlanInsight.value = false;
-  }
 
   @override
   void onInit() {
@@ -495,10 +464,6 @@ class StatisticsController extends GetxController {
     int userId, {
     bool skipMainTotals = false,
   }) async {
-    goalPlanInsight.value = null;
-    goalPlanInsightError.value = '';
-    _goalPlanInsightKey = null;
-
     final int currentRefresh = ++_refreshCounter;
 
     if (totalByDate.value == null) {

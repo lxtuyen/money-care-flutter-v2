@@ -16,12 +16,17 @@ class UserBinding extends Bindings {
 
     Get.lazyPut<PersonalizationRepository>(
       () => PersonalizationRepositoryImpl(api: apiClient),
+      fenix: true,
     );
     Get.lazyPut<GetPersonalFinanceProfileUseCase>(
       () => GetPersonalFinanceProfileUseCase(Get.find<PersonalizationRepository>()),
+      fenix: true,
     );
-    Get.lazyPut<PersonalizationController>(
-      () => PersonalizationController(useCase: Get.find<GetPersonalFinanceProfileUseCase>()),
-    );
+    if (!Get.isRegistered<PersonalizationController>()) {
+      Get.put<PersonalizationController>(
+        PersonalizationController(useCase: Get.find<GetPersonalFinanceProfileUseCase>()),
+        permanent: true,
+      );
+    }
   }
 }

@@ -5,9 +5,6 @@ import 'package:money_care/features/transaction/data/repositories/transaction_re
 import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/statistics/data/datasources/analytics_remote_datasource.dart';
-import 'package:money_care/features/statistics/data/datasources/goal_plan_insight_remote_datasource.dart';
-import 'package:money_care/features/statistics/data/repositories/goal_plan_insight_repository_impl.dart';
-import 'package:money_care/features/statistics/domain/usecases/get_goal_plan_insight_usecase.dart';
 import 'package:money_care/features/statistics/data/repositories/analytics_repository_impl.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
 import 'package:money_care/features/ai_feedback/data/repositories/ai_feedback_repository_impl.dart';
@@ -24,12 +21,6 @@ class AppStateBinding extends Bindings {
     final repository = TransactionRepositoryImpl(
       remoteDatasource: remoteDatasource,
     );
-    final goalPlanInsightRemoteDs = GoalPlanInsightRemoteDatasourceImpl(
-      api: apiClient,
-    );
-    final goalPlanInsightRepo = GoalPlanInsightRepositoryImpl(
-      remoteDatasource: goalPlanInsightRemoteDs,
-    );
     final analyticsRemoteDs = AnalyticsRemoteDataSourceImpl(api: apiClient);
     final analyticsRepo = AnalyticsRepositoryImpl(remoteDataSource: analyticsRemoteDs);
     final aiFeedbackRepo = AiFeedbackRepositoryImpl(api: apiClient);
@@ -41,9 +32,6 @@ class AppStateBinding extends Bindings {
         getTotalByDateEntityUseCase: GetTotalByDateEntityUseCase(repository),
         getStatisticsSummaryUseCase: GetStatisticsSummaryUseCase(
           repository: repository,
-        ),
-        getGoalPlanInsightUseCase: GetGoalPlanInsightUseCase(
-          goalPlanInsightRepo,
         ),
         getFinancialAnalyticsUseCase: GetFinancialAnalyticsUseCase(
           analyticsRepo,

@@ -88,4 +88,33 @@ class PersonalFinanceProfileModel {
       profileVersion: json['profileVersion'] ?? 'v1',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'periodStart': periodStart?.toIso8601String(),
+      'periodEnd': periodEnd?.toIso8601String(),
+      'generatedAt': generatedAt?.toIso8601String(),
+      'averageMonthlyIncome': averageMonthlyIncome,
+      'averageMonthlyExpense': averageMonthlyExpense,
+      'averageMonthlySavings': averageMonthlySavings,
+      'savingsRate': savingsRate,
+      'expenseVolatilityScore': expenseVolatilityScore,
+      'budgetDisciplineScore': budgetDisciplineScore,
+      'financialHealthScore': financialHealthScore,
+      'riskLevel': riskLevel,
+      'spendingStyle': spendingStyle,
+      'topExpenseCategories': topExpenseCategories,
+      'essentialCategories': essentialCategories,
+      'recurringExpenseHints': recurringExpenseHints,
+      'frequentExpenseDays': frequentExpenseDays,
+      'monthlyIncomeTrend': monthlyIncomeTrend,
+      'monthlyExpenseTrend': monthlyExpenseTrend,
+      'preferredBudgetBufferPct': preferredBudgetBufferPct,
+      'confidenceScore': confidenceScore,
+      'feedbackSummary': feedbackSummary,
+      'profileVersion': profileVersion,
+    };
+  }
 }

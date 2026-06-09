@@ -34,6 +34,8 @@ class BudgetTrackingSection extends StatelessWidget {
     final statisticsController = Get.find<StatisticsController>();
     final selMonth = statisticsController.selectedMonth.value;
     final daysInMonth = DateTime(selMonth.year, selMonth.month + 1, 0).day;
+    final now = DateTime.now();
+    final isCurrentMonth = selMonth.year == now.year && selMonth.month == now.month;
 
     final predictionMap = <String, BudgetExceedPredictionModel>{
       for (final p in exceedPredictions) p.categoryName.toLowerCase(): p,
@@ -80,17 +82,19 @@ class BudgetTrackingSection extends StatelessWidget {
               showActionButton: false,
             ),
             const SizedBox(height: 12),
-            // Card tổng quan
-            _BudgetSummaryCard(
-              plannedIncome: plannedIncome,
-              totalLimit: totalLimit,
-              totalSpent: totalSpent,
-              totalForecast: totalForecast > 0 ? totalForecast : null,
-              forecastedSaving: forecastedSaving,
-              anomalyCount: anomalyCount,
-              onViewDetail: onViewDetail,
-            ),
-            const SizedBox(height: 12),
+            if (isCurrentMonth) ...[
+              // Card tổng quan
+              _BudgetSummaryCard(
+                plannedIncome: plannedIncome,
+                totalLimit: totalLimit,
+                totalSpent: totalSpent,
+                totalForecast: totalForecast > 0 ? totalForecast : null,
+                forecastedSaving: forecastedSaving,
+                anomalyCount: anomalyCount,
+                onViewDetail: onViewDetail,
+              ),
+              const SizedBox(height: 12),
+            ],
             // Anomalies panel (nếu có)
             if (anomalies.isNotEmpty) ...[
               AnomaliesPanel(anomalies: anomalies),

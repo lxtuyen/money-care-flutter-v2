@@ -20,57 +20,6 @@ class BudgetCategoryGoalImpact {
   });
 }
 
-class GoalPlanInsightSnapshot {
-  final int userId;
-  final String selectedMonth;
-  final String goalName;
-  final GoalPlanImpactStatus goalStatus;
-  final String planName;
-  final GoalPlanImpactStatus planStatus;
-  final double planPlannedToDate;
-  final double planActualSpent;
-  final double planOverAmount;
-  final List<BudgetCategoryGoalImpact> categories;
-
-  const GoalPlanInsightSnapshot({
-    required this.userId,
-    required this.selectedMonth,
-    required this.goalName,
-    required this.goalStatus,
-    required this.planName,
-    required this.planStatus,
-    required this.planPlannedToDate,
-    required this.planActualSpent,
-    required this.planOverAmount,
-    required this.categories,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'userId': userId,
-      'selectedMonth': selectedMonth,
-      'goal': {'name': goalName, 'status': goalStatus.apiValue},
-      'plan': {
-        'name': planName,
-        'status': planStatus.apiValue,
-        'plannedToDate': planPlannedToDate,
-        'actualSpent': planActualSpent,
-        'overAmount': planOverAmount,
-      },
-      'categories': categories
-          .map(
-            (item) => {
-              'name': item.name,
-              'status': item.status.apiValue,
-              'plannedToDate': item.plannedToDate,
-              'actualSpent': item.actualSpent,
-              'overAmount': item.overAmount,
-            },
-          )
-          .toList(),
-    };
-  }
-}
 
 class GoalPlanImpact {
   final GoalPlanImpactStatus status;
@@ -181,25 +130,6 @@ class GoalPlanImpact {
     );
   }
 
-  GoalPlanInsightSnapshot toInsightSnapshot({
-    required int userId,
-    required SavingGoalEntity goal,
-    SavingGoalReportModel? report,
-  }) {
-    return GoalPlanInsightSnapshot(
-      userId: userId,
-      selectedMonth:
-          '${selectedMonth.year}-${selectedMonth.month.toString().padLeft(2, '0')}',
-      goalName: report?.name ?? goal.name,
-      goalStatus: status,
-      planName: stats.planName,
-      planStatus: status,
-      planPlannedToDate: plannedToDate,
-      planActualSpent: actualSpent,
-      planOverAmount: overAmount,
-      categories: categories,
-    );
-  }
 
   static int _daysPassedInSelectedMonth(
     DateTime selectedMonth,

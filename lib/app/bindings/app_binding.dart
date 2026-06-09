@@ -54,12 +54,6 @@ import 'package:money_care/features/spending_plan/data/datasources/spending_plan
 import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
 import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
-import 'package:money_care/features/scenario_planning/data/datasources/scenario_planning_remote_datasource.dart';
-import 'package:money_care/features/scenario_planning/data/repositories/scenario_planning_repository_impl.dart';
-import 'package:money_care/features/scenario_planning/domain/repositories/scenario_planning_repository.dart';
-import 'package:money_care/features/scenario_planning/domain/usecases/usecases.dart';
-import 'package:money_care/features/scenario_planning/presentation/controllers/scenario_planning_controller.dart';
-
 class AppBinding extends Bindings {
   final LocalStorage storage;
 
@@ -219,22 +213,7 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-    final scenarioPlanningRemoteDs = ScenarioPlanningRemoteDatasourceImpl(
-      api: apiService,
-    );
-    final scenarioPlanningRepo = ScenarioPlanningRepositoryImpl(
-      remoteDatasource: scenarioPlanningRemoteDs,
-    );
-    Get.put<ScenarioPlanningRepository>(scenarioPlanningRepo, permanent: true);
-    Get.put<ScenarioPlanningController>(
-      ScenarioPlanningController(
-        getScenarioTemplatesUseCase: GetScenarioTemplatesUseCase(
-          scenarioPlanningRepo,
-        ),
-        simulateScenarioUseCase: SimulateScenarioUseCase(scenarioPlanningRepo),
-      ),
-      permanent: true,
-    );
+
 
     final userRemoteDs = UserRemoteDatasourceImpl(api: apiService);
     final userRepo = UserRepositoryImpl(remoteDatasource: userRemoteDs);

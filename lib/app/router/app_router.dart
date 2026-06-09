@@ -37,9 +37,6 @@ import 'package:money_care/features/saving_goal/presentation/bindings/saving_goa
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
-import 'package:money_care/features/statistics/presentation/screens/model_evaluation_screen.dart';
-import 'package:money_care/features/statistics/presentation/bindings/model_evaluation_binding.dart';
-import 'package:money_care/features/scenario_planning/presentation/screens/scenario_planning_screen.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -201,15 +198,5 @@ final List<GetPage> appPages = [
     binding: SpendingPlanBinding(),
     transition: Transition.rightToLeft,
   ),
-  GetPage(
-    name: RoutePath.modelEvaluation,
-    page: () => const ModelEvaluationScreen(),
-    binding: ModelEvaluationBinding(),
-    transition: Transition.rightToLeft,
-  ),
-  GetPage(
-    name: RoutePath.scenarioPlanning,
-    page: () => const ScenarioPlanningScreen(),
-    transition: Transition.rightToLeft,
-  ),
+
 ];

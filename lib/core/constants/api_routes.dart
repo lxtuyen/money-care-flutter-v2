@@ -39,16 +39,7 @@ class ApiRoutes {
   static const personalizationProfile = 'personalization/profile';
   static const personalizationProfileRebuild =
       'personalization/profile/rebuild';
-  static const modelEvaluation = 'analytics/model-evaluation';
-  static const modelEvaluationForecasting =
-      'analytics/model-evaluation/forecasting';
-  static const modelEvaluationBudgeting =
-      'analytics/model-evaluation/budgeting';
-  static const modelEvaluationRun = 'analytics/model-evaluation/run';
-  static const modelTrainingForecasting =
-      'analytics/model-training/forecasting';
-  static const scenarioPlanningSimulate = 'scenario-planning/simulate';
-  static const scenarioPlanningTemplates = 'scenario-planning/templates';
+
 
   static const splitSession = 'split-session';
   static const gamification = 'gamification';

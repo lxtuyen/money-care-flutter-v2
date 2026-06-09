@@ -464,14 +464,12 @@ class _ListRow extends StatelessWidget {
   final String title;
   final String value;
   final String subtitle;
-  final Widget? trailing;
   final Color? leadingDotColor;
 
   const _ListRow({
     required this.title,
     required this.value,
     required this.subtitle,
-    this.trailing,
     this.leadingDotColor,
   });
 
@@ -519,10 +517,6 @@ class _ListRow extends StatelessWidget {
                           color: colors.textPrimary,
                         ),
                       ),
-                    if (trailing != null) ...[
-                      const SizedBox(width: 6),
-                      trailing!,
-                    ],
                   ],
                 ),
                 if (subtitle.isNotEmpty) ...[
@@ -545,27 +539,6 @@ class _ListRow extends StatelessWidget {
   }
 }
 
-class _TrendChip extends StatelessWidget {
-  final String trend;
-
-  const _TrendChip({required this.trend});
-
-  @override
-  Widget build(BuildContext context) {
-    final normalized = trend.toLowerCase();
-    final icon = normalized == 'up'
-        ? Icons.arrow_upward_rounded
-        : normalized == 'down'
-        ? Icons.arrow_downward_rounded
-        : Icons.remove_rounded;
-    final color = normalized == 'up'
-        ? Colors.orange
-        : normalized == 'down'
-        ? Colors.green
-        : Colors.blueGrey;
-    return Icon(icon, size: 14, color: color);
-  }
-}
 
 class _StatusPill extends StatelessWidget {
   final String label;

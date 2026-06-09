@@ -771,48 +771,6 @@ class _BudgetRow extends StatelessWidget {
   }
 }
 
-class _SmallStat extends StatelessWidget {
-  final String label;
-  final String value;
-  final BuildContext context;
-
-  const _SmallStat({
-    required this.label,
-    required this.value,
-    required this.context,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: AppThemeColors.of(context).textPrimary,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 9,
-                color: AppThemeColors.of(context).textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
 
 Color _predictionRiskColor(String riskLevel) {
   return switch (riskLevel) {

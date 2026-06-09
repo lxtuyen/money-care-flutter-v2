@@ -147,7 +147,7 @@ class ScenarioSimulationBubble extends StatelessWidget {
                   style: TextStyle(fontSize: 11.5, color: colors.textSecondary),
                 ),
                 Text(
-                  '${AppHelperFunction.formatAmount(spentSoFar)} / ${AppHelperFunction.formatAmount(limit!)}',
+                  '${AppHelperFunction.formatAmount(spentSoFar)} / ${AppHelperFunction.formatAmount(limit)}',
                   style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.bold,
@@ -205,7 +205,7 @@ class ScenarioSimulationBubble extends StatelessWidget {
                 style: TextStyle(fontSize: 11.5, color: colors.textSecondary),
               ),
               Text(
-                '${AppHelperFunction.formatAmount(after!)} / ${AppHelperFunction.formatAmount(limit!)}',
+                '${AppHelperFunction.formatAmount(after)} / ${AppHelperFunction.formatAmount(limit)}',
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.bold,
@@ -310,24 +310,24 @@ class ScenarioSimulationBubble extends StatelessWidget {
     final String name = goal['goalName'] ?? 'mục tiêu';
     final String statusBefore = _goalStatusText(goal['currentStatus']);
     final String statusAfter = _goalStatusText(goal['newStatus']);
-    final String dateBefore = _formatDate(goal['currentPredictedCompletionDate']);
-    final String dateAfter = _formatDate(goal['newPredictedCompletionDate']);
-    
-    final double rateBefore = goal['currentMonthlySavingRate'] != null
-        ? (goal['currentMonthlySavingRate'] as num).toDouble()
-        : 0;
-    final double rateAfter = goal['newMonthlySavingRate'] != null
-        ? (goal['newMonthlySavingRate'] as num).toDouble()
-        : 0;
-    final double reqBefore = goal['requiredMonthlySavingRate'] != null
-        ? (goal['requiredMonthlySavingRate'] as num).toDouble()
-        : 0;
-    final double reqAfter = goal['newRequiredMonthlySavingRate'] != null
-        ? (goal['newRequiredMonthlySavingRate'] as num).toDouble()
-        : 0;
-
-    final String diffBefore = _goalDifferenceText(goal['currentDaysDifference']);
-    final String diffAfter = _goalDifferenceText(goal['newDaysDifference']);
+    // final String dateBefore = _formatDate(goal['currentPredictedCompletionDate']);
+    // final String dateAfter = _formatDate(goal['newPredictedCompletionDate']);
+    // 
+    // final double rateBefore = goal['currentMonthlySavingRate'] != null
+    //     ? (goal['currentMonthlySavingRate'] as num).toDouble()
+    //     : 0;
+    // final double rateAfter = goal['newMonthlySavingRate'] != null
+    //     ? (goal['newMonthlySavingRate'] as num).toDouble()
+    //     : 0;
+    // final double reqBefore = goal['requiredMonthlySavingRate'] != null
+    //     ? (goal['requiredMonthlySavingRate'] as num).toDouble()
+    //     : 0;
+    // final double reqAfter = goal['newRequiredMonthlySavingRate'] != null
+    //     ? (goal['newRequiredMonthlySavingRate'] as num).toDouble()
+    //     : 0;
+    // 
+    // final String diffBefore = _goalDifferenceText(goal['currentDaysDifference']);
+    // final String diffAfter = _goalDifferenceText(goal['newDaysDifference']);
 
     final statusColor = _statusColor(goal['newStatus']);
 
@@ -496,33 +496,33 @@ class ScenarioSimulationBubble extends StatelessWidget {
     }
   }
 
-  String _goalDifferenceText(dynamic diffVal) {
-    if (diffVal == null) return 'Đúng hạn';
-    final diff = (diffVal as num).toInt();
-    if (diff == 999) return 'Trễ vô hạn';
-    if (diff > 0) return 'trễ $diff ngày';
-    if (diff < 0) return 'sớm ${diff.abs()} ngày';
-    return 'đúng hạn';
-  }
+  // String _goalDifferenceText(dynamic diffVal) {
+  //   if (diffVal == null) return 'Đúng hạn';
+  //   final diff = (diffVal as num).toInt();
+  //   if (diff == 999) return 'Trễ vô hạn';
+  //   if (diff > 0) return 'trễ $diff ngày';
+  //   if (diff < 0) return 'sớm ${diff.abs()} ngày';
+  //   return 'đúng hạn';
+  // }
+  // 
+  // String _formatDate(String? dateStr) {
+  //   if (dateStr == null || dateStr.isEmpty) return '';
+  //   try {
+  //     final date = DateTime.parse(dateStr);
+  //     return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString().substring(2)}";
+  //   } catch (_) {
+  //     return dateStr;
+  //   }
+  // }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return '';
-    try {
-      final date = DateTime.parse(dateStr);
-      return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString().substring(2)}";
-    } catch (_) {
-      return dateStr;
-    }
-  }
-
-  String _formatMoneyShort(double amount) {
-    if (amount >= 1000000) {
-      double value = amount / 1000000;
-      return "${value.toStringAsFixed(value == value.toInt() ? 0 : 1)}M";
-    } else if (amount >= 1000) {
-      double value = amount / 1000;
-      return "${value.toStringAsFixed(value == value.toInt() ? 0 : 1)}k";
-    }
-    return amount.toInt().toString();
-  }
+  // String _formatMoneyShort(double amount) {
+  //   if (amount >= 1000000) {
+  //     double value = amount / 1000000;
+  //     return "${value.toStringAsFixed(value == value.toInt() ? 0 : 1)}M";
+  //   } else if (amount >= 1000) {
+  //     double value = amount / 1000;
+  //     return "${value.toStringAsFixed(value == value.toInt() ? 0 : 1)}k";
+  //   }
+  //   return amount.toInt().toString();
+  //   }
 }

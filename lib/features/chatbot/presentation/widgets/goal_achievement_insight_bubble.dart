@@ -294,7 +294,6 @@ class _WalletTransferHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletName = action.walletName ?? 'ví';
     final amount = action.amount ?? 0;
     final fromWalletId = action.walletId;
 

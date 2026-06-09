@@ -21,7 +21,6 @@ import 'package:money_care/features/statistics/presentation/widgets/estimated_ex
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
 import 'package:money_care/features/statistics/presentation/widgets/budget_tracking_section.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
-import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
@@ -337,21 +336,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (stats.estimatedExpenses.length < 0)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: AppSectionHeading(
-                          title: 'Theo dõi ngân sách',
-                          showActionButton: stats.estimatedExpenses.length > 5,
-                          onPressed: () {
-                            Get.toNamed(
-                              RoutePath.spendingPlanDetail,
-                              arguments: stats.planId,
-                            );
-                          },
-                        ),
-                      ),
-                    const SizedBox(height: 10),
+
                     BudgetTrackingSection(
                       stats: stats,
                       groupedExpenses: groupedExpenses,

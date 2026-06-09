@@ -14,6 +14,7 @@ import 'package:money_care/app/widgets/button/app_action_button.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/saving_goal/data/models/models.dart';
+import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/goal_prediction_action_buttons.dart';
 
 class SavingGoalDetailScreen extends StatefulWidget {

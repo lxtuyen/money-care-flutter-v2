@@ -320,6 +320,12 @@ const Map<String, String> enUS = {
   'chatbot.savingGoalTitle': '🎯 Set Goal',
   'chatbot.savingGoalDesc': 'AI will help you set up a saving goal quickly.',
   'chatbot.savingGoalTemplate': 'I want to save 500k for traveling',
+  'chatbot.goalProgressTitle': '📈 Goal Progress',
+  'chatbot.goalProgressDesc':
+      'AI analyzes whether your saving goal is on track.',
+  'chatbot.goalProgressTemplate': 'will I reach my saving goal on time',
+  'chatbot.goalBudgetAdjustTemplate':
+      'help me adjust my budget to reach my saving goal',
   'chatbot.financialAnalysis': 'Financial Analysis',
   'chatbot.transactionSaved': '✅ Transaction recorded successfully!',
   'chatbot.transactionListError': 'Cannot display transaction list.',

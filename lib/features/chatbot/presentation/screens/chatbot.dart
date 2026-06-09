@@ -15,6 +15,7 @@ import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_pro
 import 'package:money_care/features/chatbot/presentation/widgets/saving_goal_initial_fund_ask_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/scenario_simulation_bubble.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/goal_achievement_insight_bubble.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 
 class ChatbotScreen extends StatefulWidget {
@@ -124,6 +125,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             }
             if (m.metadata!['__type'] == 'budget_recommendation') {
               return BudgetRecommendationBubble(metadata: m.metadata!);
+            }
+            if (m.metadata!['__type'] == 'goal_achievement_insight') {
+              return GoalAchievementInsightBubble(metadata: m.metadata!);
             }
             if (m.metadata!['__type'] == 'expense_analysis_cards') {
               return ExpenseAnalysisCardsBubble(metadata: m.metadata!);

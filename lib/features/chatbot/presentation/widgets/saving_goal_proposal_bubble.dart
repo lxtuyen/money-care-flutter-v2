@@ -127,6 +127,42 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
           const SizedBox(height: 14),
 
           // AI message
+          if (proposal.hasAnalyticsInsight) ...[
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (proposal.analyticsSource == 'analytics-service')
+                  _analyticsChip(
+                    colors,
+                    'Phân tích AI',
+                    AppColors.primary,
+                  ),
+                if (proposal.confidence > 0)
+                  _analyticsChip(
+                    colors,
+                    'Tin cậy ${(proposal.confidence * 100).toStringAsFixed(0)}%',
+                    AppColors.info,
+                  ),
+                if (proposal.projectedMonthlySavings > 0)
+                  _analyticsChip(
+                    colors,
+                    'Dự kiến ${AppHelperFunction.formatAmount(proposal.projectedMonthlySavings)}/tháng',
+                    AppColors.success,
+                  ),
+                if (proposal.goalReadinessStatus.isNotEmpty)
+                  _analyticsChip(
+                    colors,
+                    _goalReadinessLabel(proposal.goalReadinessStatus),
+                    proposal.goalReadinessFeasible
+                        ? AppColors.success
+                        : AppColors.warning,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+
           if (proposal.aiMessage.isNotEmpty)
             Container(
               width: double.infinity,
@@ -360,6 +396,39 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
     setState(() {
       budgetItems.removeAt(index);
     });
+  }
+
+  Widget _analyticsChip(
+    AppThemeColors colors,
+    String label,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  String _goalReadinessLabel(String status) {
+    return switch (status) {
+      'on_track' => 'Khả thi',
+      'slightly_at_risk' => 'Hơi căng',
+      'at_risk' => 'Có rủi ro',
+      'unlikely' => 'Khó khả thi',
+      _ => 'Đang đánh giá',
+    };
   }
 }
 
@@ -835,6 +904,17 @@ class SavingGoalProposal {
   final List<SavingGoalBudgetItem> budgetItems;
   final bool preserveCurrentBudget;
   final bool isRequestedDuration;
+  final String analyticsSource;
+  final double projectedMonthlySavings;
+  final double confidence;
+  final String goalReadinessStatus;
+  final bool goalReadinessFeasible;
+  final String budgetStrategy;
+
+  bool get hasAnalyticsInsight =>
+      analyticsSource == 'analytics-service' ||
+      projectedMonthlySavings > 0 ||
+      confidence > 0;
 
   SavingGoalProposal({
     required this.name,
@@ -860,6 +940,12 @@ class SavingGoalProposal {
     required this.budgetItems,
     required this.preserveCurrentBudget,
     required this.isRequestedDuration,
+    required this.analyticsSource,
+    required this.projectedMonthlySavings,
+    required this.confidence,
+    required this.goalReadinessStatus,
+    required this.goalReadinessFeasible,
+    required this.budgetStrategy,
   });
 
   factory SavingGoalProposal.fromMap(Map<String, dynamic> map) {
@@ -876,6 +962,9 @@ class SavingGoalProposal {
         (map['remainingTarget'] as num?)?.toDouble() ?? target;
     final rawBudgetItems = map['budgetItems'];
     final isRequestedDuration = map['isRequestedDuration'] == true;
+    final goalReadiness = map['goalReadiness'];
+    final goalReadinessMap =
+        goalReadiness is Map ? Map<String, dynamic>.from(goalReadiness) : null;
 
     List<SavingGoalDurationOption> parsedOptions = [];
     if (rawOptions is List && rawOptions.isNotEmpty) {
@@ -979,6 +1068,14 @@ class SavingGoalProposal {
           : const [],
       preserveCurrentBudget: map['preserveCurrentBudget'] == true,
       isRequestedDuration: isRequestedDuration,
+      analyticsSource: map['analyticsSource']?.toString() ?? '',
+      projectedMonthlySavings:
+          (map['projectedMonthlySavings'] as num?)?.toDouble() ?? 0,
+      confidence: (map['confidence'] as num?)?.toDouble() ?? 0,
+      goalReadinessStatus:
+          goalReadinessMap?['status']?.toString() ?? '',
+      goalReadinessFeasible: goalReadinessMap?['isFeasible'] == true,
+      budgetStrategy: map['budgetStrategy']?.toString() ?? '',
     );
   }
 

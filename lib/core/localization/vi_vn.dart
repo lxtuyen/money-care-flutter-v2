@@ -319,6 +319,12 @@ const Map<String, String> viVN = {
   'chatbot.savingGoalDesc':
       'AI sẽ giúp bạn thiết lập một mục tiêu tiết kiệm nhanh chóng.',
   'chatbot.savingGoalTemplate': 'tôi muốn tiết kiệm 500k đi du lịch',
+  'chatbot.goalProgressTitle': '📈 Tiến độ mục tiêu',
+  'chatbot.goalProgressDesc':
+      'AI phân tích khả năng hoàn thành mục tiêu tiết kiệm của bạn.',
+  'chatbot.goalProgressTemplate': 'mục tiêu của tôi có kịp hạn không',
+  'chatbot.goalBudgetAdjustTemplate':
+      'giúp tôi điều chỉnh ngân sách để đạt mục tiêu',
   'chatbot.financialAnalysis': 'Phân tích tài chính',
   'chatbot.transactionSaved': 'Đã ghi nhận giao dịch thành công!',
   'chatbot.transactionListError': 'Không thể hiển thị danh sách giao dịch.',

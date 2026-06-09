@@ -7,13 +7,12 @@ import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
-import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
 import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/goal_prediction_action_buttons.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
-import 'package:money_care/features/statistics/data/models/goal_plan_insight_model.dart';
 import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
@@ -22,7 +21,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
   final SavingGoalReportModel? report;
   final bool isLoading;
   final GoalPlanImpact? planImpact;
-  final GoalPlanInsightSnapshot? insightSnapshot;
   final GoalAchievementPredictionModel? prediction;
 
   const SavingGoalSummaryCard({
@@ -31,7 +29,6 @@ class SavingGoalSummaryCard extends StatelessWidget {
     this.report,
     this.isLoading = false,
     this.planImpact,
-    this.insightSnapshot,
     this.prediction,
   });
 
@@ -154,11 +151,11 @@ class SavingGoalSummaryCard extends StatelessWidget {
           ],
           if (_matchingPrediction != null) ...[
             const SizedBox(height: 12),
-            _GoalAchievementPredictionBlock(prediction: _matchingPrediction!),
-          ],
-          if (insightSnapshot != null) ...[
-            const SizedBox(height: 12),
-            _GoalPlanAiInsight(snapshot: insightSnapshot!),
+            _GoalAchievementPredictionBlock(
+              prediction: _matchingPrediction!,
+              goalId: fund.id,
+              goalEndDate: fund.endDate,
+            ),
           ],
         ],
       ),
@@ -191,13 +188,13 @@ class SavingGoalSummaryCard extends StatelessWidget {
             ],
           ),
 
-          if (insightSnapshot != null) ...[
-            const SizedBox(height: 12),
-            _GoalPlanAiInsight(snapshot: insightSnapshot!),
-          ],
           if (_matchingPrediction != null) ...[
             const SizedBox(height: 12),
-            _GoalAchievementPredictionBlock(prediction: _matchingPrediction!),
+            _GoalAchievementPredictionBlock(
+              prediction: _matchingPrediction!,
+              goalId: fund.id,
+              goalEndDate: fund.endDate ?? r.endDate,
+            ),
           ],
           const SizedBox(height: 16),
           const Divider(height: 1),
@@ -458,8 +455,14 @@ class SavingGoalSummaryCard extends StatelessWidget {
 
 class _GoalAchievementPredictionBlock extends StatelessWidget {
   final GoalAchievementPredictionModel prediction;
+  final int goalId;
+  final DateTime? goalEndDate;
 
-  const _GoalAchievementPredictionBlock({required this.prediction});
+  const _GoalAchievementPredictionBlock({
+    required this.prediction,
+    required this.goalId,
+    this.goalEndDate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -523,7 +526,9 @@ class _GoalAchievementPredictionBlock extends StatelessWidget {
             ),
           ),
           _PredictionInfoRow(
-            label: 'Tốc độ hiện tại',
+            label: _predictionVelocityLabel(
+              prediction.supportingData['savingVelocitySource']?.toString(),
+            ),
             value: AppHelperFunction.formatAmount(
               prediction.currentMonthlySavingRate,
               currency: 'VND',
@@ -534,12 +539,11 @@ class _GoalAchievementPredictionBlock extends StatelessWidget {
             value: _predictionDifferenceText(prediction),
             valueColor: color,
           ),
-          _PredictionInfoRow(
-            label: 'Nguồn dữ liệu',
-            value: _predictionSourceText(
-              prediction.supportingData['savingVelocitySource']?.toString(),
-            ),
-            valueColor: AppColors.primary,
+
+          GoalPredictionActionButtons(
+            prediction: prediction,
+            goalId: goalId,
+            currentEndDate: goalEndDate,
           ),
         ],
       ),
@@ -654,290 +658,6 @@ class _PlanImpactLine extends StatelessWidget {
       return 'Chậm tiến độ vì chi tiêu đã vượt phần kế hoạch lũy tiến $amount.';
     }
     return 'Đúng tiến độ vì chi tiêu vẫn nằm trong phần kế hoạch lũy tiến.';
-  }
-}
-
-class _GoalPlanAiInsight extends StatefulWidget {
-  final GoalPlanInsightSnapshot snapshot;
-
-  const _GoalPlanAiInsight({required this.snapshot});
-
-  @override
-  State<_GoalPlanAiInsight> createState() => _GoalPlanAiInsightState();
-}
-
-class _GoalPlanAiInsightState extends State<_GoalPlanAiInsight> {
-  late final StatisticsController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = Get.find<StatisticsController>();
-  }
-
-  Widget _buildPremiumBadge(
-    BuildContext context,
-    GoalPlanInsightModel insight,
-  ) {
-    final status = insight.projectionStatus;
-    final diff = insight.projectedDaysDiff ?? 0;
-
-    Color badgeBgColor;
-    Color borderColor;
-    Color textColor;
-    IconData icon;
-    String label;
-
-    if (status == 'early') {
-      badgeBgColor = AppColors.income.withValues(alpha: 0.08);
-      borderColor = AppColors.income.withValues(alpha: 0.16);
-      textColor = AppColors.income;
-      icon = Icons.trending_up_rounded;
-      label = 'Dự kiến sớm ${diff.abs()} ngày';
-    } else if (status == 'delayed') {
-      badgeBgColor = AppColors.expense.withValues(alpha: 0.08);
-      borderColor = AppColors.expense.withValues(alpha: 0.16);
-      textColor = AppColors.expense;
-      icon = diff == 999
-          ? Icons.warning_amber_rounded
-          : Icons.trending_down_rounded;
-      label = diff == 999
-          ? 'Không thể hoàn thành chặng (tiêu lạm vốn)'
-          : 'Dự kiến trễ $diff ngày';
-    } else {
-      badgeBgColor = AppColors.primary.withValues(alpha: 0.08);
-      borderColor = AppColors.primary.withValues(alpha: 0.16);
-      textColor = AppColors.primary;
-      icon = Icons.check_circle_outline_rounded;
-      label = 'Đúng tiến độ chặng';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: badgeBgColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor, width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: textColor),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent(
-    BuildContext context,
-    GoalPlanInsightModel? insight,
-    bool isLoading,
-    bool hasError,
-    AppThemeColors themeColors,
-  ) {
-    if (isLoading) {
-      return Text(
-        'AI đang phân tích...',
-        key: const ValueKey('loading'),
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: themeColors.textSecondary,
-          fontWeight: FontWeight.w600,
-        ),
-      );
-    }
-
-    if (insight == null) {
-      return Column(
-        key: const ValueKey('no_insight'),
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'AI phân tích',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: themeColors.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              if (hasError)
-                Text(
-                  'Lỗi phân tích',
-                  style: TextStyle(
-                    color: AppColors.expense,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          InkWell(
-            onTap: () {
-              _controller.loadGoalPlanInsight(widget.snapshot);
-            },
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.play_arrow_rounded,
-                    size: 14,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Phân tích ngay',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      key: const ValueKey('loaded'),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'AI phân tích',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: themeColors.textPrimary,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        _buildPremiumBadge(context, insight),
-        const SizedBox(height: 4),
-        Text(
-          insight.summary,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: themeColors.textSecondary,
-            fontWeight: FontWeight.w700,
-            height: 1.35,
-          ),
-        ),
-        if (insight.reason.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            insight.reason,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: themeColors.textSecondary,
-              fontWeight: FontWeight.w500,
-              height: 1.35,
-            ),
-          ),
-        ],
-        if (insight.suggestion.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            insight.suggestion,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w700,
-              height: 1.35,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeColors = AppThemeColors.of(context);
-
-    return Obx(() {
-      final insight = _controller.goalPlanInsight.value;
-      final isLoading = _controller.isLoadingGoalPlanInsight.value;
-      final hasError = _controller.goalPlanInsightError.value.isNotEmpty;
-
-      return AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.12),
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                Icons.auto_awesome_rounded,
-                size: 18,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
-                  switchInCurve: Curves.easeOutBack,
-                  switchOutCurve: Curves.easeIn,
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0.0, 0.1),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          ),
-                        );
-                      },
-                  child: _buildContent(
-                    context,
-                    insight,
-                    isLoading,
-                    hasError,
-                    themeColors,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    });
   }
 }
 
@@ -1195,15 +915,16 @@ String _predictionDifferenceText(GoalAchievementPredictionModel prediction) {
   return 'Trễ $days ngày';
 }
 
-String _predictionSourceText(String? source) {
+String _predictionVelocityLabel(String? source) {
   return switch (source) {
-    'profile_average_savings' => 'Hồ sơ tài chính',
-    'spending_plan_capacity' => 'Kế hoạch chi tiêu',
-    'net_balance_fallback' => 'Giao dịch',
-    'goal_contribution_history' => 'Lịch sử nạp mục tiêu',
-    _ => 'Chưa đủ dữ liệu',
+    'forecasted_monthly_savings' => 'Tiết kiệm dự kiến tháng này',
+    'spending_plan_capacity' => 'Tiết kiệm theo kế hoạch',
+    'profile_average_savings' => 'Tiết kiệm TB hàng tháng',
+    'net_balance_fallback' => 'Tiết kiệm ước tính',
+    _ => 'Tiết kiệm dự kiến tháng này',
   };
 }
+
 
 String _formatPredictionDate(String value) {
   final parsed = DateTime.tryParse(value);

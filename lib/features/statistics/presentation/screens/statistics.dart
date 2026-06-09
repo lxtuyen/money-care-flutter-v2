@@ -387,10 +387,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         const [],
                   ),
                 );
-                final insightSnapshot = _buildGoalPlanInsightSnapshot(
-                  planImpact,
-                  fund,
-                );
                 final prediction = savingGoalController.goalPrediction.value;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,7 +404,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       report: savingGoalController.goalReport.value,
                       isLoading: savingGoalController.isLoadingReport.value,
                       planImpact: planImpact,
-                      insightSnapshot: insightSnapshot,
                       prediction: prediction?.goalId == fund.id
                           ? prediction
                           : null,
@@ -437,19 +432,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       report: savingGoalController.goalReport.value,
       selectedMonth: statisticsController.selectedMonth.value,
       groupedExpenses: groupedExpenses,
-    );
-  }
-
-  GoalPlanInsightSnapshot? _buildGoalPlanInsightSnapshot(
-    GoalPlanImpact? impact,
-    SavingGoalEntity fund,
-  ) {
-    final userId = appController.userId.value;
-    if (impact == null || userId == null) return null;
-    return impact.toInsightSnapshot(
-      userId: userId,
-      goal: fund,
-      report: savingGoalController.goalReport.value,
     );
   }
 }

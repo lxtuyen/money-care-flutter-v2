@@ -15,6 +15,7 @@ import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/saving_goal/data/models/models.dart';
 import 'package:money_care/features/scenario_planning/presentation/widgets/scenario_entry_panel.dart';
+import 'package:money_care/features/saving_goal/presentation/widgets/goal_prediction_action_buttons.dart';
 
 class SavingGoalDetailScreen extends StatefulWidget {
   const SavingGoalDetailScreen({super.key});
@@ -375,7 +376,9 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
             colors: colors,
           ),
           _predictionMetric(
-            label: 'Tốc độ hiện tại mỗi tháng',
+            label: _predictionVelocityLabel(
+              prediction.supportingData['savingVelocitySource']?.toString(),
+            ),
             value: AppHelperFunction.formatAmount(
               prediction.currentMonthlySavingRate,
             ),
@@ -412,6 +415,11 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                   ),
                 ),
           ],
+          GoalPredictionActionButtons(
+            prediction: prediction,
+            goalId: goal.id,
+            currentEndDate: goal.endDate,
+          ),
         ],
       ),
     );
@@ -509,6 +517,16 @@ String _riskText(String riskLevel) {
     'high' => 'Rủi ro cao',
     'medium' => 'Rủi ro TB',
     _ => 'Rủi ro thấp',
+  };
+}
+
+String _predictionVelocityLabel(String? source) {
+  return switch (source) {
+    'forecasted_monthly_savings' => 'Tiết kiệm dự kiến tháng này',
+    'spending_plan_capacity' => 'Tiết kiệm theo kế hoạch',
+    'profile_average_savings' => 'Tiết kiệm TB hàng tháng',
+    'net_balance_fallback' => 'Tiết kiệm ước tính',
+    _ => 'Tiết kiệm dự kiến tháng này',
   };
 }
 

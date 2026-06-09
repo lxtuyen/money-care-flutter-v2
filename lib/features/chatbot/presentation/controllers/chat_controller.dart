@@ -66,6 +66,11 @@ class ChatController extends GetxController {
       subtitle: 'chatbot.budgetDesc'.tr,
       template: 'chatbot.budgetTemplate'.tr,
     ),
+    QuickOption(
+      title: 'chatbot.goalProgressTitle'.tr,
+      subtitle: 'chatbot.goalProgressDesc'.tr,
+      template: 'chatbot.goalProgressTemplate'.tr,
+    ),
   ];
 
   final stt.SpeechToText _speech = stt.SpeechToText();
@@ -414,6 +419,17 @@ class ChatController extends GetxController {
       } catch (e) {
         replaceLastBotMessage(
           reply.replaceFirst('__BUDGET_RECOMMENDATION__', ''),
+        );
+      }
+    } else if (reply.startsWith('__GOAL_ACHIEVEMENT_INSIGHT__')) {
+      final jsonStr = reply.replaceFirst('__GOAL_ACHIEVEMENT_INSIGHT__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'goal_achievement_insight';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage(
+          reply.replaceFirst('__GOAL_ACHIEVEMENT_INSIGHT__', ''),
         );
       }
     } else {

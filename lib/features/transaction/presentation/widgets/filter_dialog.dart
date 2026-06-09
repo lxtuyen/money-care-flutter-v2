@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
@@ -172,7 +173,8 @@ class _FilterDialogState extends State<FilterDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: AppOutlineButton(
+                      label: '',
                       onPressed: _clearFilter,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,

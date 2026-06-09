@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 
@@ -41,7 +42,8 @@ class SuccessDialog extends StatelessWidget {
                   Expanded(
                     child: SizedBox(
                       height: 45,
-                      child: OutlinedButton(
+                      child: AppOutlineButton(
+                        label: '',
                         onPressed: onBack,
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(

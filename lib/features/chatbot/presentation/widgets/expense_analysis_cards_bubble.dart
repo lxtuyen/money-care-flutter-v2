@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/data/models/chatbot_expense_analysis_model.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/expense_analysis_components.dart';
 
 class ExpenseAnalysisCardsBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -79,8 +79,8 @@ class _OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _statusColor(overview.cashFlowTrend);
-    return _CardShell(
+    final statusColor = getExpenseAnalysisStatusColor(overview.cashFlowTrend);
+    return ExpenseAnalysisCardShell(
       icon: Iconsax.chart_2_copy,
       title: 'Tổng quan',
       accentColor: statusColor,
@@ -90,16 +90,16 @@ class _OverviewCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _MetricBlock(
+                child: ExpenseAnalysisMetricBlock(
                   label: 'Sức khỏe',
                   value: '${overview.financialHealthScore}/100',
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _MetricBlock(
+                child: ExpenseAnalysisMetricBlock(
                   label: 'Dự báo chi',
-                  value: _formatAmount(overview.monthlyForecast),
+                  value: AppHelperFunction.formatAmount(overview.monthlyForecast),
                 ),
               ),
             ],
@@ -110,9 +110,9 @@ class _OverviewCard extends StatelessWidget {
               children: [
                 if (overview.expenseTotal != null)
                   Expanded(
-                    child: _MetricBlock(
+                    child: ExpenseAnalysisMetricBlock(
                       label: 'Đã chi',
-                      value: _formatAmount(overview.expenseTotal!),
+                      value: AppHelperFunction.formatAmount(overview.expenseTotal!),
                     ),
                   ),
                 if (overview.expenseTotal != null &&
@@ -120,9 +120,9 @@ class _OverviewCard extends StatelessWidget {
                   const SizedBox(width: 8),
                 if (overview.incomeTotal != null)
                   Expanded(
-                    child: _MetricBlock(
+                    child: ExpenseAnalysisMetricBlock(
                       label: 'Thu nhập',
-                      value: _formatAmount(overview.incomeTotal!),
+                      value: AppHelperFunction.formatAmount(overview.incomeTotal!),
                     ),
                   ),
               ],
@@ -149,10 +149,10 @@ class _ForecastCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final projection = forecast.currentMonthProjection!;
-    return _CardShell(
+    return ExpenseAnalysisCardShell(
       icon: Iconsax.activity_copy,
       title: 'Dự báo',
-      accentColor: _statusColor(projection.riskLevel),
+      accentColor: getExpenseAnalysisStatusColor(projection.riskLevel),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -160,9 +160,9 @@ class _ForecastCard extends StatelessWidget {
             children: [
               if (projection.totalForecast != null)
                 Expanded(
-                  child: _MetricBlock(
+                  child: ExpenseAnalysisMetricBlock(
                     label: 'Cuối tháng',
-                    value: _formatAmount(projection.totalForecast!),
+                    value: AppHelperFunction.formatAmount(projection.totalForecast!),
                   ),
                 ),
               if (projection.totalForecast != null &&
@@ -170,9 +170,9 @@ class _ForecastCard extends StatelessWidget {
                 const SizedBox(width: 8),
               if (projection.predictedRemainingAmount != null)
                 Expanded(
-                  child: _MetricBlock(
+                  child: ExpenseAnalysisMetricBlock(
                     label: 'Còn phát sinh',
-                    value: _formatAmount(projection.predictedRemainingAmount!),
+                    value: AppHelperFunction.formatAmount(projection.predictedRemainingAmount!),
                   ),
                 ),
             ],
@@ -180,9 +180,9 @@ class _ForecastCard extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              _StatusPill(label: 'Rủi ro', value: projection.riskLevel),
+              ExpenseAnalysisStatusPill(label: 'Rủi ro', value: projection.riskLevel),
               const SizedBox(width: 8),
-              _StatusPill(
+              ExpenseAnalysisStatusPill(
                 label: 'Tin cậy',
                 value: '${(projection.confidence * 100).round()}%',
               ),
@@ -202,11 +202,11 @@ class _ForecastCard extends StatelessWidget {
             ...forecast.riskWindows
                 .take(2)
                 .map(
-                  (item) => _ListRow(
+                  (item) => ExpenseAnalysisListRow(
                     title: _formatPeriod(item.periodStart, item.periodEnd),
                     value: item.predictedAmount == null
                         ? item.riskLevel
-                        : _formatAmount(item.predictedAmount!),
+                        : AppHelperFunction.formatAmount(item.predictedAmount!),
                     subtitle: item.reason,
                   ),
                 ),
@@ -224,7 +224,7 @@ class _AnomalyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _CardShell(
+    return ExpenseAnalysisCardShell(
       icon: Iconsax.warning_2_copy,
       title: 'Bất thường',
       accentColor: items.isEmpty ? Colors.green : Colors.orange,
@@ -235,9 +235,9 @@ class _AnomalyCard extends StatelessWidget {
             )
           : Column(
               children: items.take(3).map((item) {
-                return _ListRow(
+                return ExpenseAnalysisListRow(
                   title: item.categoryName,
-                  value: _formatAmount(item.amount),
+                  value: AppHelperFunction.formatAmount(item.amount),
                   subtitle: '${_formatDate(item.date)} - ${item.reason}',
                 );
               }).toList(),
@@ -253,10 +253,10 @@ class _BudgetRiskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _CardShell(
+    return ExpenseAnalysisCardShell(
       icon: Iconsax.wallet_3_copy,
       title: 'Rủi ro ngân sách',
-      accentColor: _statusColor(budgetRisk.riskLevel),
+      accentColor: getExpenseAnalysisStatusColor(budgetRisk.riskLevel),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -276,10 +276,10 @@ class _BudgetRiskCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ListRow(
+                    ExpenseAnalysisListRow(
                       title: item.categoryName,
                       value: item.limitAmount > 0
-                          ? '${_formatAmount(item.spentAmount)} / ${_formatAmount(item.limitAmount)}'
+                          ? '${AppHelperFunction.formatAmount(item.spentAmount)} / ${AppHelperFunction.formatAmount(item.limitAmount)}'
                           : item.status,
                       subtitle: '',
                     ),
@@ -291,7 +291,7 @@ class _BudgetRiskCard extends StatelessWidget {
                           minHeight: 6,
                           backgroundColor: Colors.grey.withValues(alpha: 0.16),
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            _statusColor(item.status),
+                            getExpenseAnalysisStatusColor(item.status),
                           ),
                         ),
                       ),
@@ -313,17 +313,17 @@ class _RecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _CardShell(
+    return ExpenseAnalysisCardShell(
       icon: Iconsax.lamp_charge_copy,
       title: 'Gợi ý hành động',
       accentColor: Colors.teal,
       child: Column(
         children: items.take(3).map((item) {
-          return _ListRow(
+          return ExpenseAnalysisListRow(
             title: item.title,
             value: '',
             subtitle: item.description,
-            leadingDotColor: _statusColor(item.severity),
+            leadingDotColor: getExpenseAnalysisStatusColor(item.severity),
           );
         }).toList(),
       ),
@@ -344,241 +344,13 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _CardShell(
+    return ExpenseAnalysisCardShell(
       icon: icon,
       title: title,
       accentColor: Colors.blueGrey,
       child: Text(body, style: const TextStyle(fontSize: 13, height: 1.35)),
     );
   }
-}
-
-class _CardShell extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final Color accentColor;
-  final Widget child;
-
-  const _CardShell({
-    required this.icon,
-    required this.title,
-    required this.accentColor,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.cardBackground,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colors.borderSecondary),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, size: 17, color: accentColor),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-class _MetricBlock extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _MetricBlock({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundSecondary,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 11, color: colors.textSecondary),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ListRow extends StatelessWidget {
-  final String title;
-  final String value;
-  final String subtitle;
-  final Color? leadingDotColor;
-
-  const _ListRow({
-    required this.title,
-    required this.value,
-    required this.subtitle,
-    this.leadingDotColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 7,
-            height: 7,
-            margin: const EdgeInsets.only(top: 7),
-            decoration: BoxDecoration(
-              color: leadingDotColor ?? AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textPrimary,
-                        ),
-                      ),
-                    ),
-                    if (value.isNotEmpty)
-                      Text(
-                        value,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textPrimary,
-                        ),
-                      ),
-                  ],
-                ),
-                if (subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 3),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      height: 1.3,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class _StatusPill extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _StatusPill({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _statusColor(value);
-    String displayValue = value;
-    final normalized = value.toLowerCase();
-    if (normalized == 'high' || normalized == 'danger' || normalized == 'critical') {
-      displayValue = 'Cao';
-    } else if (normalized == 'medium' || normalized == 'warning') {
-      displayValue = 'Trung bình';
-    } else if (normalized == 'low' || normalized == 'good' || normalized == 'success' || normalized == 'normal') {
-      displayValue = 'Thấp';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        '$label: $displayValue',
-        style: TextStyle(
-          fontSize: 11.5,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-String _formatAmount(double amount) {
-  return AppHelperFunction.formatAmount(amount);
 }
 
 String _formatPeriod(String start, String end) {
@@ -591,18 +363,4 @@ String _formatPeriod(String start, String end) {
 String _formatDate(String value) {
   if (value.length >= 10) return value.substring(0, 10);
   return value;
-}
-
-Color _statusColor(String value) {
-  final normalized = value.toLowerCase();
-  if (['danger', 'critical', 'high', 'worsening'].contains(normalized)) {
-    return Colors.redAccent;
-  }
-  if (['warning', 'medium', 'near_limit'].contains(normalized)) {
-    return Colors.orange;
-  }
-  if (['good', 'success', 'low', 'stable', 'normal'].contains(normalized)) {
-    return Colors.green;
-  }
-  return Colors.blueGrey;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
@@ -170,7 +171,8 @@ class TransactionHistoryFilterSheet extends StatelessWidget {
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton.icon(
+                  child: AppOutlineButton(
+                    label: 'common.clearAllFilters'.tr,
                     onPressed: () {
                       Get.back();
                       if (onClearFilters != null) {
@@ -183,18 +185,14 @@ class TransactionHistoryFilterSheet extends StatelessWidget {
                         );
                       }
                     },
-                    icon: const Icon(Icons.restart_alt_rounded),
-                    label: Text('common.clearAllFilters'.tr),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.text2,
-                      side: BorderSide(
-                        color: AppThemeColors.of(context).textMuted,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                    icon: Icons.restart_alt_rounded,
+                    borderColor: AppThemeColors.of(context).textMuted,
+                    borderWidth: 1,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    borderRadius: 16,
+                    textColor: AppColors.text2,
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ],

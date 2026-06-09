@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
@@ -135,7 +136,8 @@ class ExpiredGoalPopup extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: AppOutlineButton(
+                    label: '',
                     onPressed: () {
                       Get.back();
                       controller.deselectGoal();

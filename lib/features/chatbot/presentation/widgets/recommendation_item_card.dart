@@ -5,6 +5,7 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_bubble.dart';
 
@@ -48,8 +49,7 @@ class RecommendationItemCard extends StatelessWidget {
 
     final isStaged = stagedChange != null;
 
-    double currentLimit =
-        (item['currentLimitAmount'] as num?)?.toDouble() ?? 0;
+    double currentLimit = (item['currentLimitAmount'] as num?)?.toDouble() ?? 0;
     if (planCtrl != null) {
       final activePlan = planCtrl.activePlan.value;
       if (activePlan != null && categoryId != null) {
@@ -70,7 +70,8 @@ class RecommendationItemCard extends StatelessWidget {
     }
 
     final isSameLimit = displayLimit == recommendedLimit;
-    final isStagedRemoved = isStaged && stagedChange!.action == StagedAction.removed;
+    final isStagedRemoved =
+        isStaged && stagedChange!.action == StagedAction.removed;
 
     return Obx(() {
       final isSubmitted = statsCtrl.submittedFeedbackIds.contains(uniqueRecId);
@@ -88,8 +89,8 @@ class RecommendationItemCard extends StatelessWidget {
               color: isStagedRemoved
                   ? AppColors.error.withValues(alpha: 0.3)
                   : isStaged
-                      ? AppColors.primary.withValues(alpha: 0.3)
-                      : colors.borderSecondary,
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : colors.borderSecondary,
               width: isStaged ? 1.5 : 1.0,
             ),
           ),
@@ -168,7 +169,10 @@ class RecommendationItemCard extends StatelessWidget {
                       currentLimit > 0
                           ? AppHelperFunction.formatAmount(currentLimit)
                           : 'Chưa đặt',
-                      stagedValue: (isStaged && stagedChange!.action == StagedAction.applied && currentLimit != displayLimit)
+                      stagedValue:
+                          (isStaged &&
+                              stagedChange!.action == StagedAction.applied &&
+                              currentLimit != displayLimit)
                           ? AppHelperFunction.formatAmount(displayLimit)
                           : null,
                       isStrikethrough: isStagedRemoved,
@@ -202,13 +206,17 @@ class RecommendationItemCard extends StatelessWidget {
               ),
               if (isStagedRemoved) ...[
                 // No action buttons when staged for removal
-              ] else if (isStaged && stagedChange!.action == StagedAction.applied) ...[
+              ] else if (isStaged &&
+                  stagedChange!.action == StagedAction.applied) ...[
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    OutlinedButton(
-                      onPressed: isSending ? null : () => onShowModifySheet(context),
+                    AppOutlineButton(
+                      label: '',
+                      onPressed: isSending
+                          ? null
+                          : () => onShowModifySheet(context),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colors.textPrimary,
                         side: BorderSide(color: colors.borderSecondary),
@@ -271,8 +279,11 @@ class RecommendationItemCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    OutlinedButton(
-                      onPressed: isSending ? null : () => onShowModifySheet(context),
+                    AppOutlineButton(
+                      label: '',
+                      onPressed: isSending
+                          ? null
+                          : () => onShowModifySheet(context),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colors.textPrimary,
                         side: BorderSide(color: colors.borderSecondary),
@@ -318,7 +329,9 @@ class RecommendationItemCard extends StatelessWidget {
                     if (isSameLimit)
                       PrimaryButton(
                         label: 'Sửa',
-                        onPressed: isSending ? null : () => onShowModifySheet(context),
+                        onPressed: isSending
+                            ? null
+                            : () => onShowModifySheet(context),
                         icon: const Icon(Icons.edit_rounded, size: 12),
                         height: 28,
                         width: 64,
@@ -330,8 +343,11 @@ class RecommendationItemCard extends StatelessWidget {
                         ),
                       )
                     else
-                      OutlinedButton(
-                        onPressed: isSending ? null : () => onShowModifySheet(context),
+                      AppOutlineButton(
+                        label: '',
+                        onPressed: isSending
+                            ? null
+                            : () => onShowModifySheet(context),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: colors.textPrimary,
                           side: BorderSide(color: colors.borderSecondary),
@@ -452,7 +468,9 @@ class RecommendationItemCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isApplied ? Icons.hourglass_empty_rounded : Icons.remove_circle_outline_rounded,
+            isApplied
+                ? Icons.hourglass_empty_rounded
+                : Icons.remove_circle_outline_rounded,
             color: isApplied ? AppColors.primary : AppColors.error,
             size: 10,
           ),

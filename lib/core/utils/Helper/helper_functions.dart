@@ -277,6 +277,28 @@ class AppHelperFunction {
     return NumberFormat.compact(locale: 'vi').format(number);
   }
 
+  static double roundVndUp(num amount, {int unit = 1000}) {
+    if (amount <= 0) return 0;
+    return (amount / unit).ceilToDouble() * unit;
+  }
+
+  static String formatShortAmount(double amount) {
+    if (amount >= 1000000) {
+      double value = amount / 1000000;
+      if (value == value.toInt()) {
+        return "${value.toInt()}M";
+      }
+      return "${value.toStringAsFixed(1)}M";
+    } else if (amount >= 1000) {
+      double value = amount / 1000;
+      if (value == value.toInt()) {
+        return "${value.toInt()}k";
+      }
+      return "${value.toStringAsFixed(1)}k";
+    }
+    return amount.toInt().toString();
+  }
+
   static int clampZero(int value) => value < 0 ? 0 : value;
 
   static String getGreeting() {

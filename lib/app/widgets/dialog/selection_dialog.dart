@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/choice_chip/choice_chips.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -162,7 +163,8 @@ class _SelectionDialogState extends State<SelectionDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: AppOutlineButton(
+                      label: '',
                       onPressed: () {
                         setState(() => selectedId = null);
                       },

@@ -431,5 +431,5 @@ String _differenceText(GoalAchievementPredictionModel prediction) {
 String _formatIsoDate(String iso) {
   final date = DateTime.tryParse(iso);
   if (date == null) return iso;
-  return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  return AppHelperFunction.getFormattedDate(date);
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
@@ -586,18 +587,15 @@ class _PercentChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
-      child: OutlinedButton(
+      child: AppOutlineButton(
+        label: '$percent%',
         onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          backgroundColor: AppColors.primary.withValues(alpha: 0.08),
-          side: BorderSide(color: AppColors.primary.withValues(alpha: 0.18)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          minimumSize: Size.zero,
-        ),
+        padding: EdgeInsets.zero,
+        backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+        borderColor: AppColors.primary.withValues(alpha: 0.18),
+        borderWidth: 1,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         child: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(

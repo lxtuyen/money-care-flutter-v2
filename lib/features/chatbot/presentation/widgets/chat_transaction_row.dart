@@ -39,7 +39,6 @@ class ChatTransactionRow extends StatelessWidget {
           padding: padding,
           child: Row(
             children: [
-              // Icon Container
               Container(
                 width: iconContainerSize,
                 height: iconContainerSize,

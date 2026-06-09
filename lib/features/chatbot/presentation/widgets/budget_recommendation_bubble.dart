@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -11,6 +12,8 @@ import 'package:money_care/features/spending_plan/domain/entities/spending_plan_
 import 'package:money_care/features/ai_feedback/data/models/ai_feedback_dto.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/recommendation_item_card.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_metrics.dart';
 
 enum StagedAction { applied, removed }
 
@@ -27,10 +30,12 @@ class BudgetRecommendationBubble extends StatefulWidget {
   const BudgetRecommendationBubble({super.key, required this.metadata});
 
   @override
-  State<BudgetRecommendationBubble> createState() => _BudgetRecommendationBubbleState();
+  State<BudgetRecommendationBubble> createState() =>
+      _BudgetRecommendationBubbleState();
 }
 
-class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble> {
+class _BudgetRecommendationBubbleState
+    extends State<BudgetRecommendationBubble> {
   final Map<int, StagedChange> _stagedChanges = {};
   bool _isSaving = false;
 
@@ -38,9 +43,7 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
     final categoryId = item['categoryId'] as int?;
     if (categoryId == null) return;
     setState(() {
-      _stagedChanges[categoryId] = StagedChange(
-        action: StagedAction.applied,
-      );
+      _stagedChanges[categoryId] = StagedChange(action: StagedAction.applied);
     });
   }
 
@@ -48,9 +51,7 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
     final categoryId = item['categoryId'] as int?;
     if (categoryId == null) return;
     setState(() {
-      _stagedChanges[categoryId] = StagedChange(
-        action: StagedAction.removed,
-      );
+      _stagedChanges[categoryId] = StagedChange(action: StagedAction.removed);
     });
   }
 
@@ -76,11 +77,12 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
     final colors = AppThemeColors.of(context);
     final double expectedSavings =
         (widget.metadata['expectedSavingsAmount'] as num?)?.toDouble() ?? 0;
-    final List<dynamic> items = widget.metadata['items'] as List<dynamic>? ?? [];
+    final List<dynamic> items =
+        widget.metadata['items'] as List<dynamic>? ?? [];
     final SpendingPlanController? spendingPlanCtrl =
         Get.isRegistered<SpendingPlanController>()
-            ? Get.find<SpendingPlanController>()
-            : null;
+        ? Get.find<SpendingPlanController>()
+        : null;
     if (spendingPlanCtrl != null) {
       _ensureActivePlanLoaded(spendingPlanCtrl);
     }
@@ -163,12 +165,25 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
                       ),
                     )
                   else
-                    ...items.map(
-                      (item) => _RecommendationItemCard(
-                        item: Map<String, dynamic>.from(item),
-                        parentState: this,
-                      ),
-                    ),
+                    ...items.map((item) {
+                      final Map<String, dynamic> itemMap =
+                          Map<String, dynamic>.from(item);
+                      final categoryId = itemMap['categoryId'] as int?;
+                      return RecommendationItemCard(
+                        item: itemMap,
+                        proposalHashCode: widget.metadata.hashCode,
+                        stagedChange: categoryId != null
+                            ? _stagedChanges[categoryId]
+                            : null,
+                        onUndoStage: () {
+                          if (categoryId != null) undoStage(categoryId);
+                        },
+                        onStageRemove: () => stageRemove(itemMap),
+                        onStageApply: () => stageApply(itemMap),
+                        onShowModifySheet: (context) =>
+                            _showModifySheet(context, itemMap),
+                      );
+                    }),
 
                   // Batch save button at the bottom
                   if (_stagedChanges.isNotEmpty) ...[
@@ -195,79 +210,6 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
     );
   }
 
-  Widget _buildMetricTile(
-    BuildContext context,
-    String label,
-    String savingsValue,
-    String spendValue,
-    Color savingsColor,
-  ) {
-    final colors = AppThemeColors.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 6),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'T.kiệm:',
-              style: TextStyle(fontSize: 9.5, color: colors.textMuted),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                savingsValue,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: savingsColor,
-                ),
-                textAlign: TextAlign.end,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 3),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Tổng chi:',
-              style: TextStyle(fontSize: 9.5, color: colors.textMuted),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                spendValue,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
-                ),
-                textAlign: TextAlign.end,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildSavingsMetrics(
     BuildContext context,
     SpendingPlanController? spendingPlanCtrl,
@@ -276,7 +218,7 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
   ) {
     final double recommendedTotalBudget =
         (widget.metadata['recommended_total_budget'] as num?)?.toDouble() ?? 0;
-    
+
     // Fallback calculation taking staged changes into account
     final Map<int, double> recommendedLimitsMap = {};
     for (var item in items) {
@@ -296,7 +238,8 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
           final recAmount = (item['recommendedLimitAmount'] as num).toDouble();
           if (_stagedChanges.containsKey(cid)) {
             final stage = _stagedChanges[cid]!;
-            if (stage.action == StagedAction.applied && stage.customAmount != null) {
+            if (stage.action == StagedAction.applied &&
+                stage.customAmount != null) {
               fallbackProposedTotal += (stage.customAmount! - recAmount);
             } else if (stage.action == StagedAction.removed) {
               fallbackProposedTotal -= recAmount;
@@ -310,41 +253,20 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
     final double fallbackForecastSpend = items.fold<double>(0.0, (sum, item) {
       if (item is! Map) return sum;
       final cid = item['categoryId'] as int?;
-      if (cid != null && _stagedChanges.containsKey(cid) && _stagedChanges[cid]!.action == StagedAction.removed) {
+      if (cid != null &&
+          _stagedChanges.containsKey(cid) &&
+          _stagedChanges[cid]!.action == StagedAction.removed) {
         return sum;
       }
       return sum + ((item['predictedSpendAmount'] as num?)?.toDouble() ?? 0.0);
     });
 
     if (spendingPlanCtrl == null) {
-      return IntrinsicHeight(
-        child: Row(
-          children: [
-            Expanded(
-              child: _buildMetricTile(
-                context,
-                'Theo đề xuất',
-                AppHelperFunction.formatAmount(fallbackExpectedSavings),
-                fallbackProposedTotal > 0
-                    ? AppHelperFunction.formatAmount(fallbackProposedTotal)
-                    : 'Chưa tính',
-                AppColors.primary,
-              ),
-            ),
-            _buildMetricDivider(context),
-            Expanded(
-              child: _buildMetricTile(
-                context,
-                'Theo dự báo',
-                AppHelperFunction.formatAmount(fallbackExpectedSavings),
-                fallbackForecastSpend > 0
-                    ? AppHelperFunction.formatAmount(fallbackForecastSpend)
-                    : 'Chưa tính',
-                AppColors.info,
-              ),
-            ),
-          ],
-        ),
+      return BudgetRecommendationMetrics(
+        proposedSavings: fallbackExpectedSavings,
+        proposedSpend: fallbackProposedTotal,
+        forecastSavings: fallbackExpectedSavings,
+        forecastSpend: fallbackForecastSpend,
       );
     }
 
@@ -375,41 +297,13 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
         fallback: fallbackExpectedSavings,
       );
 
-      return IntrinsicHeight(
-        child: Row(
-          children: [
-            Expanded(
-              child: _buildMetricTile(
-                context,
-                'Theo đề xuất',
-                AppHelperFunction.formatAmount(proposedSavings),
-                AppHelperFunction.formatAmount(proposedSpend),
-                AppColors.primary,
-              ),
-            ),
-            _buildMetricDivider(context),
-            Expanded(
-              child: _buildMetricTile(
-                context,
-                'Theo dự báo',
-                AppHelperFunction.formatAmount(forecastSavings),
-                AppHelperFunction.formatAmount(forecastSpend),
-                AppColors.info,
-              ),
-            ),
-          ],
-        ),
+      return BudgetRecommendationMetrics(
+        proposedSavings: proposedSavings,
+        proposedSpend: proposedSpend,
+        forecastSavings: forecastSavings,
+        forecastSpend: forecastSpend,
       );
     });
-  }
-
-  Widget _buildMetricDivider(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return VerticalDivider(
-      width: 16,
-      thickness: 0.8,
-      color: colors.textMuted.withValues(alpha: 0.2),
-    );
   }
 
   double _proposedSpendAmount({
@@ -439,7 +333,10 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
       if (stagedChanges.containsKey(categoryId)) {
         final stage = stagedChanges[categoryId]!;
         if (stage.action == StagedAction.applied) {
-          total += stage.customAmount ?? recommendedLimits[categoryId] ?? currentLimit;
+          total +=
+              stage.customAmount ??
+              recommendedLimits[categoryId] ??
+              currentLimit;
         } else if (stage.action == StagedAction.removed) {
           total += 0;
         }
@@ -452,7 +349,6 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
       }
     }
 
-    // For new recommended items staged as applied
     for (var item in items) {
       if (item is Map && item['categoryId'] != null) {
         final categoryId = item['categoryId'] as int;
@@ -460,7 +356,8 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
           if (stagedChanges.containsKey(categoryId)) {
             final stage = stagedChanges[categoryId]!;
             if (stage.action == StagedAction.applied) {
-              total += stage.customAmount ?? recommendedLimits[categoryId] ?? 0.0;
+              total +=
+                  stage.customAmount ?? recommendedLimits[categoryId] ?? 0.0;
             }
           }
         }
@@ -654,7 +551,9 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
         : null;
 
     if (planCtrl == null || statsCtrl == null || appCtrl == null) {
-      AppHelperFunction.showErrorSnackBar('Không tìm thấy controller cần thiết');
+      AppHelperFunction.showErrorSnackBar(
+        'Không tìm thấy controller cần thiết',
+      );
       return;
     }
 
@@ -662,7 +561,8 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
       _isSaving = true;
     });
 
-    final List<dynamic> items = widget.metadata['items'] as List<dynamic>? ?? [];
+    final List<dynamic> items =
+        widget.metadata['items'] as List<dynamic>? ?? [];
     int successCount = 0;
     int failCount = 0;
     final List<int> succeededKeys = [];
@@ -671,7 +571,9 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
       final categoryId = entry.key;
       final stage = entry.value;
 
-      final item = items.firstWhereOrNull((i) => i is Map && i['categoryId'] == categoryId);
+      final item = items.firstWhereOrNull(
+        (i) => i is Map && i['categoryId'] == categoryId,
+      );
       if (item == null) continue;
 
       final planId = item['planId'] as int?;
@@ -688,7 +590,9 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
       bool success = false;
 
       if (stage.action == StagedAction.applied) {
-        final recommendedAmount = stage.customAmount ?? (item['recommendedLimitAmount'] as num).toDouble();
+        final recommendedAmount =
+            stage.customAmount ??
+            (item['recommendedLimitAmount'] as num).toDouble();
         final request = CreateEstimatedExpenseRequest(
           categoryId: categoryId,
           amount: recommendedAmount,
@@ -771,7 +675,7 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
   ) async {
     double initialVal = (item['recommendedLimitAmount'] as num).toDouble();
     final categoryId = item['categoryId'] as int?;
-    
+
     // Check if there is already a staged custom amount
     if (categoryId != null && _stagedChanges.containsKey(categoryId)) {
       final stage = _stagedChanges[categoryId]!;
@@ -834,7 +738,8 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: AppOutlineButton(
+                      label: '',
                       onPressed: () => Get.back<double>(),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colors.textPrimary,
@@ -884,482 +789,5 @@ class _BudgetRecommendationBubbleState extends State<BudgetRecommendationBubble>
     if (customAmount != null) {
       stageModify(item, customAmount);
     }
-  }
-}
-
-class _RecommendationItemCard extends StatelessWidget {
-  final Map<String, dynamic> item;
-  final _BudgetRecommendationBubbleState parentState;
-
-  const _RecommendationItemCard({
-    required this.item,
-    required this.parentState,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    final statsCtrl = Get.find<StatisticsController>();
-    final planCtrl = Get.isRegistered<SpendingPlanController>()
-        ? Get.find<SpendingPlanController>()
-        : null;
-
-    final originalRecId = item['recommendationId']?.toString() ?? '';
-    final uniqueRecId = '${originalRecId}_${parentState.widget.metadata.hashCode}';
-
-    final categoryId = item['categoryId'] as int?;
-    final recommendedLimit =
-        (item['recommendedLimitAmount'] as num?)?.toDouble() ?? 0;
-    final predictedSpend =
-        (item['predictedSpendAmount'] as num?)?.toDouble() ?? 0;
-    final canApply = item['canApply'] as bool? ?? false;
-
-    return Obx(() {
-      final isSubmitted = statsCtrl.submittedFeedbackIds.contains(uniqueRecId);
-      final isSending = statsCtrl.sendingFeedbackIds.contains(uniqueRecId);
-
-      double currentLimit =
-          (item['currentLimitAmount'] as num?)?.toDouble() ?? 0;
-      if (planCtrl != null) {
-        final activePlan = planCtrl.activePlan.value;
-        if (activePlan != null && categoryId != null) {
-          final expense = activePlan.estimatedExpenses.firstWhereOrNull(
-            (e) => e.categoryId == categoryId,
-          );
-          if (expense != null) {
-            currentLimit = expense.monthlyLimit > 0
-                ? expense.monthlyLimit
-                : expense.amount;
-          }
-        }
-      }
-
-      // Check staged status
-      final stagedChange = categoryId != null ? parentState._stagedChanges[categoryId] : null;
-      final isStaged = stagedChange != null;
-
-      double displayLimit = currentLimit;
-      if (isStaged && stagedChange.action == StagedAction.applied) {
-        displayLimit = stagedChange.customAmount ?? recommendedLimit;
-      }
-
-      final isSameLimit = displayLimit == recommendedLimit;
-      final isStagedRemoved = isStaged && stagedChange.action == StagedAction.removed;
-
-      return Opacity(
-        opacity: isStagedRemoved ? 0.55 : 1.0,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: colors.surfaceBackground,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isStagedRemoved
-                  ? AppColors.error.withValues(alpha: 0.3)
-                  : isStaged
-                      ? AppColors.primary.withValues(alpha: 0.3)
-                      : colors.borderSecondary,
-              width: isStaged ? 1.5 : 1.0,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Row 1: Title (Category Name), Risk/Staged Badge, and X/Undo Button
-              Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            item['categoryName'] ?? '',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: colors.textPrimary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (isStaged) ...[
-                          const SizedBox(width: 8),
-                          _buildStagedBadge(context, stagedChange.action),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Close/X button / Undo button
-                  if (isStaged)
-                    InkWell(
-                      onTap: () {
-                        if (categoryId != null) {
-                          parentState.undoStage(categoryId);
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: AppColors.info.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.undo_rounded,
-                          size: 14,
-                          color: AppColors.info,
-                        ),
-                      ),
-                    )
-                  else
-                    InkWell(
-                      onTap: isSending
-                          ? null
-                          : () {
-                              parentState.stageRemove(item);
-                            },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: colors.textMuted.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close_rounded,
-                          size: 14,
-                          color: AppColors.error,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Row 2: Comparison metrics
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildCompactVal(
-                      context,
-                      'Hiện tại',
-                      currentLimit > 0
-                          ? AppHelperFunction.formatAmount(currentLimit)
-                          : 'Chưa đặt',
-                      stagedValue: (isStaged && stagedChange.action == StagedAction.applied && currentLimit != displayLimit)
-                          ? AppHelperFunction.formatAmount(displayLimit)
-                          : null,
-                      isStrikethrough: isStagedRemoved,
-                      color: isStagedRemoved ? colors.textMuted : null,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildCompactVal(
-                      context,
-                      'Dự báo',
-                      AppHelperFunction.formatAmount(predictedSpend),
-                      color: AppColors.expense,
-                    ),
-                  ),
-                  if (!isSameLimit)
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildCompactVal(
-                            context,
-                            'Đề xuất',
-                            AppHelperFunction.formatAmount(recommendedLimit),
-                            color: AppColors.primary,
-                            isBold: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-
-              // Row 3: Action Buttons / Warnings / Status
-              if (isStagedRemoved) ...[
-                // No action buttons when staged for removal
-              ] else if (isStaged && stagedChange.action == StagedAction.applied) ...[
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OutlinedButton(
-                      onPressed: isSending
-                          ? null
-                          : () => parentState._showModifySheet(context, item),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: colors.textPrimary,
-                        side: BorderSide(color: colors.borderSecondary),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        minimumSize: const Size(64, 28),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.edit_rounded, size: 12),
-                          SizedBox(width: 4),
-                          Text(
-                            'Sửa',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ] else if (isSubmitted) ...[
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.check_circle_outline_rounded,
-                            color: AppColors.primary,
-                            size: 12,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Đã áp dụng',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    OutlinedButton(
-                      onPressed: isSending
-                          ? null
-                          : () => parentState._showModifySheet(context, item),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: colors.textPrimary,
-                        side: BorderSide(color: colors.borderSecondary),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        minimumSize: const Size(64, 28),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.edit_rounded, size: 12),
-                          SizedBox(width: 4),
-                          Text(
-                            'Sửa',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ] else if (!canApply) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Vui lòng tạo kế hoạch chi tiêu trước',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontStyle: FontStyle.italic,
-                    color: colors.textMuted,
-                  ),
-                ),
-              ] else ...[
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (isSameLimit)
-                      PrimaryButton(
-                        label: 'Sửa',
-                        onPressed: isSending
-                            ? null
-                            : () => parentState._showModifySheet(context, item),
-                        icon: const Icon(Icons.edit_rounded, size: 12),
-                        height: 28,
-                        width: 64,
-                        fontSize: 11,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                      )
-                    else
-                      OutlinedButton(
-                        onPressed: isSending
-                            ? null
-                            : () => parentState._showModifySheet(context, item),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: colors.textPrimary,
-                          side: BorderSide(color: colors.borderSecondary),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          minimumSize: const Size(64, 28),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.edit_rounded, size: 12),
-                            SizedBox(width: 4),
-                            Text(
-                              'Sửa',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    if (!isSameLimit) ...[
-                      const SizedBox(width: 8),
-                      PrimaryButton(
-                        label: 'Áp dụng',
-                        onPressed: isSending
-                            ? null
-                            : () => parentState.stageApply(item),
-                        icon: const Icon(Icons.check_rounded, size: 12),
-                        height: 28,
-                        width: 64,
-                        fontSize: 11,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildCompactVal(
-    BuildContext context,
-    String label,
-    String value, {
-    Color? color,
-    bool isBold = false,
-    bool isStrikethrough = false,
-    String? stagedValue,
-  }) {
-    final colors = AppThemeColors.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 9.5, color: colors.textSecondary),
-        ),
-        const SizedBox(height: 2),
-        if (stagedValue != null) ...[
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: colors.textMuted,
-              decoration: TextDecoration.lineThrough,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 1),
-          Text(
-            stagedValue,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ] else
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-              color: color ?? colors.textPrimary,
-              decoration: isStrikethrough ? TextDecoration.lineThrough : null,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-      ],
-    );
-  }
-
-  Widget _buildStagedBadge(BuildContext context, StagedAction action) {
-    final isApplied = action == StagedAction.applied;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: isApplied
-            ? AppColors.primary.withValues(alpha: 0.15)
-            : AppColors.error.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isApplied ? Icons.hourglass_empty_rounded : Icons.remove_circle_outline_rounded,
-            color: isApplied ? AppColors.primary : AppColors.error,
-            size: 10,
-          ),
-          const SizedBox(width: 2),
-          Text(
-            isApplied ? 'Chờ áp dụng' : 'Sẽ bị xóa',
-            style: TextStyle(
-              fontSize: 9,
-              color: isApplied ? AppColors.primary : AppColors.error,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

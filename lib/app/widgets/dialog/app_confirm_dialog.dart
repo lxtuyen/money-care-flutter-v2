@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
@@ -129,7 +130,8 @@ class AppConfirmDialog extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: AppOutlineButton(
+                    label: '',
                     onPressed: () {
                       Get.back();
                       onCancel?.call();

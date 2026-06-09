@@ -6,6 +6,7 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/controllers/chat_controller.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/features/chatbot/domain/entities/entities.dart';
+import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 
 class SavingGoalInitialFundAskBubble extends StatefulWidget {
@@ -17,7 +18,6 @@ class SavingGoalInitialFundAskBubble extends StatefulWidget {
   State<SavingGoalInitialFundAskBubble> createState() =>
       _SavingGoalInitialFundAskBubbleState();
 }
-
 
 class _SavingGoalInitialFundAskBubbleState
     extends State<SavingGoalInitialFundAskBubble> {
@@ -34,7 +34,9 @@ class _SavingGoalInitialFundAskBubbleState
     super.initState();
     model = ChatSavingGoalInitialFundAskEntity.fromMap(widget.metadata);
 
-    final idx = model.wallets.indexWhere((w) => w.id == model.suggestedWalletId);
+    final idx = model.wallets.indexWhere(
+      (w) => w.id == model.suggestedWalletId,
+    );
     activeWalletIndex = idx != -1 ? idx : 0;
   }
 
@@ -45,8 +47,9 @@ class _SavingGoalInitialFundAskBubbleState
     super.dispose();
   }
 
-  double get selectedWalletBalance =>
-      activeWalletIndex < model.wallets.length ? model.wallets[activeWalletIndex].balance : 0;
+  double get selectedWalletBalance => activeWalletIndex < model.wallets.length
+      ? model.wallets[activeWalletIndex].balance
+      : 0;
 
   double get initFundValue {
     if (selectedPercent == 'custom') return customAmount;
@@ -310,36 +313,12 @@ class _SavingGoalInitialFundAskBubbleState
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: OutlinedButton(
+                  child: AppOutlineButton(
+                    label: opt,
+                    isSelected: isSelected,
                     onPressed: model.isFinalized
                         ? null
                         : () => _onPercentSelected(val),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      backgroundColor: isSelected
-                          ? AppColors.primary
-                          : colors.cardBackground,
-                      foregroundColor: isSelected
-                          ? Colors.white
-                          : colors.textPrimary,
-                      side: BorderSide(
-                        color: isSelected
-                            ? AppColors.primary
-                            : colors.borderSecondary,
-                        width: 1.2,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      opt,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.white : colors.textSecondary,
-                      ),
-                    ),
                   ),
                 ),
               );

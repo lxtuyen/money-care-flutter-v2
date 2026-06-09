@@ -181,23 +181,14 @@ class _TransactionFormState extends State<TransactionForm> {
                                           ),
                                           builder: (context) {
                                             return Obx(() {
-                                              final fundCategories = controller
-                                                  .savingGoalController
-                                                  .currentGoal
-                                                  .value
-                                                  ?.categories;
-
                                               final userCategoryController =
                                                   Get.find<
                                                     UserCategoryController
                                                   >();
 
                                               final categories =
-                                                  (fundCategories != null &&
-                                                      fundCategories.isNotEmpty)
-                                                  ? fundCategories
-                                                  : userCategoryController
-                                                        .categories;
+                                                  userCategoryController
+                                                      .categories;
 
                                               if (controller
                                                   .savingGoalController

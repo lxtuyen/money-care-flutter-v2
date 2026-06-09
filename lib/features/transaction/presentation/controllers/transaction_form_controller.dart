@@ -80,9 +80,15 @@ class TransactionFormController extends GetxController {
       walletNameController.text = item.walletName ?? '';
     } else {
       selectedDate.value = DateTime.now();
-      if (walletController.selectedWallet.value != null) {
-        selectedWalletId.value = walletController.selectedWallet.value!.id;
-        walletNameController.text = walletController.selectedWallet.value!.name;
+      // Ưu tiên chọn ví thường (không phải saving wallet) làm default
+      final nonSavingWallet = walletController.wallets.firstWhereOrNull(
+        (w) => w.savingGoals.isEmpty,
+      );
+      final defaultWallet =
+          nonSavingWallet ?? walletController.selectedWallet.value;
+      if (defaultWallet != null) {
+        selectedWalletId.value = defaultWallet.id;
+        walletNameController.text = defaultWallet.name;
       }
     }
   }

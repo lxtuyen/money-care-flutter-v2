@@ -305,9 +305,11 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
     }
 
     final statusColor = _predictionRiskColor(prediction.riskLevel);
-    final completionText = prediction.predictedCompletionDate != null
-        ? _formatIsoDate(prediction.predictedCompletionDate!)
-        : 'Chưa đủ dữ liệu';
+    final completionText = prediction.currentMonthlySavingRate <= 0
+        ? 'Không thể hoàn thành'
+        : prediction.predictedCompletionDate != null
+            ? _formatIsoDate(prediction.predictedCompletionDate!)
+            : 'Chưa đủ dữ liệu';
     final differenceText = _predictionDifferenceText(prediction);
 
     return Container(
@@ -383,6 +385,9 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               prediction.currentMonthlySavingRate,
             ),
             colors: colors,
+            valueColor: prediction.currentMonthlySavingRate < 0
+                ? AppColors.error
+                : null,
           ),
           if (prediction.recommendedActions.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -522,17 +527,20 @@ String _riskText(String riskLevel) {
 
 String _predictionVelocityLabel(String? source) {
   return switch (source) {
-    'forecasted_monthly_savings' => 'Tiết kiệm dự kiến tháng này',
-    'spending_plan_capacity' => 'Tiết kiệm theo kế hoạch',
-    'profile_average_savings' => 'Tiết kiệm TB hàng tháng',
-    'net_balance_fallback' => 'Tiết kiệm ước tính',
-    _ => 'Tiết kiệm dự kiến tháng này',
+    'forecasted_monthly_savings' => 'TK dự kiến tháng này',
+    'spending_plan_capacity' => 'TK theo kế hoạch',
+    'profile_average_savings' => 'TK TB hàng tháng',
+    'net_balance_fallback' => 'TK ước tính',
+    _ => 'TK dự kiến tháng này',
   };
 }
 
 String _predictionDifferenceText(GoalAchievementPredictionModel prediction) {
   final days = prediction.daysDifference;
   if (prediction.status == 'completed') return 'Đã hoàn thành';
+  if (prediction.currentMonthlySavingRate <= 0) {
+    return 'Chi vượt thu';
+  }
   if (prediction.status == 'unlikely') return 'Chưa thể dự báo';
   if (days == null) return 'Không có hạn';
   if (days < 0) return 'Sớm ${days.abs()} ngày';

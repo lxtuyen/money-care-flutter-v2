@@ -126,42 +126,7 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
 
           const SizedBox(height: 14),
 
-          // AI message
-          if (proposal.hasAnalyticsInsight) ...[
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                if (proposal.analyticsSource == 'analytics-service')
-                  _analyticsChip(
-                    colors,
-                    'Phân tích AI',
-                    AppColors.primary,
-                  ),
-                if (proposal.confidence > 0)
-                  _analyticsChip(
-                    colors,
-                    'Tin cậy ${(proposal.confidence * 100).toStringAsFixed(0)}%',
-                    AppColors.info,
-                  ),
-                if (proposal.projectedMonthlySavings > 0)
-                  _analyticsChip(
-                    colors,
-                    'Dự kiến ${AppHelperFunction.formatAmount(proposal.projectedMonthlySavings)}/tháng',
-                    AppColors.success,
-                  ),
-                if (proposal.goalReadinessStatus.isNotEmpty)
-                  _analyticsChip(
-                    colors,
-                    _goalReadinessLabel(proposal.goalReadinessStatus),
-                    proposal.goalReadinessFeasible
-                        ? AppColors.success
-                        : AppColors.warning,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-          ],
+
 
           if (proposal.aiMessage.isNotEmpty)
             Container(
@@ -398,38 +363,6 @@ class _SavingGoalProposalBubbleState extends State<SavingGoalProposalBubble> {
     });
   }
 
-  Widget _analyticsChip(
-    AppThemeColors colors,
-    String label,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  String _goalReadinessLabel(String status) {
-    return switch (status) {
-      'on_track' => 'Khả thi',
-      'slightly_at_risk' => 'Hơi căng',
-      'at_risk' => 'Có rủi ro',
-      'unlikely' => 'Khó khả thi',
-      _ => 'Đang đánh giá',
-    };
-  }
 }
 
 class _DurationOptions extends StatelessWidget {

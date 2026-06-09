@@ -194,133 +194,15 @@ class SavingGoalSummaryCard extends StatelessWidget {
               prediction: _matchingPrediction!,
               goalId: fund.id,
               goalEndDate: fund.endDate ?? r.endDate,
+              milestones: r.milestones,
             ),
           ],
           const SizedBox(height: 16),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          if (r.walletName != null) ...[
+         /* const Divider(height: 1),
+          const SizedBox(height: 12),*/
+          // TODO: tạm ẩn card thông tin ví
+          if (false) ...[
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.08),
-                    AppColors.primary.withValues(alpha: 0.02),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.15),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.account_balance_wallet_rounded,
-                          size: 22,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  r.walletName!,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  const Divider(height: 1, thickness: 0.5),
-                  const SizedBox(height: 14),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Số dư hiện khả dụng',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppThemeColors.of(context).textSecondary,
-                        ),
-                      ),
-                      Text(
-                        AppHelperFunction.formatAmount(
-                          r.walletBalance,
-                          currency: 'VND',
-                        ),
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  IntrinsicHeight(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _SmallStat(
-                            label: 'Giao dịch',
-                            value: '${r.totalTransactions}',
-                            context: context,
-                          ),
-                        ),
-                        VerticalDivider(
-                          width: 1,
-                          thickness: 0.5,
-                          color: AppThemeColors.of(
-                            context,
-                          ).textMuted.withValues(alpha: 0.2),
-                        ),
-                        Expanded(
-                          child: _SmallStat(
-                            label: 'TB Chi tiêu',
-                            value: AppHelperFunction.formatAmount(
-                              r.dailyAverageSpending,
-                              currency: 'VND',
-                            ),
-                            context: context,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ] else ...[
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -457,17 +339,48 @@ class _GoalAchievementPredictionBlock extends StatelessWidget {
   final GoalAchievementPredictionModel prediction;
   final int goalId;
   final DateTime? goalEndDate;
+  final List<MilestoneModel> milestones;
 
   const _GoalAchievementPredictionBlock({
     required this.prediction,
     required this.goalId,
     this.goalEndDate,
+    this.milestones = const [],
   });
+
+  /// Còn thiếu của giai đoạn hiện tại (milestone đang chạy).
+  /// Nếu không có milestone active thì fallback về remainingAmount tổng.
+  double get _currentMilestoneRemaining {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final active = milestones.where(
+      (m) => !m.startDate.isAfter(now) && !m.endDate.isBefore(today),
+    );
+    if (active.isNotEmpty) {
+      final m = active.first;
+      return (m.target - m.actual).clamp(0, double.infinity);
+    }
+    return prediction.remainingAmount;
+  }
+
+  /// Ngày kết thúc của milestone hiện tại
+  DateTime? get _currentMilestoneEndDate {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final active = milestones.where(
+      (m) => !m.startDate.isAfter(now) && !m.endDate.isBefore(today),
+    );
+    if (active.isNotEmpty) {
+      return active.first.endDate;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final color = _predictionRiskColor(prediction.riskLevel);
     final themeColors = AppThemeColors.of(context);
+    final milestoneEndDate = _currentMilestoneEndDate;
 
     return Container(
       width: double.infinity,
@@ -486,7 +399,7 @@ class _GoalAchievementPredictionBlock extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Dự báo mục tiêu',
+                  'Dự báo giai đoạn tháng hiện tại',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: themeColors.textPrimary,
                     fontWeight: FontWeight.w800,
@@ -505,23 +418,34 @@ class _GoalAchievementPredictionBlock extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _PredictionInfoRow(
-            label: 'Dự kiến hoàn thành',
-            value: prediction.predictedCompletionDate != null
-                ? _formatPredictionDate(prediction.predictedCompletionDate!)
-                : 'Chưa đủ dữ liệu',
-            valueColor: color,
-          ),
-          _PredictionInfoRow(
-            label: 'Còn thiếu',
+            label: 'Đã tiết kiệm',
             value: AppHelperFunction.formatAmount(
-              prediction.remainingAmount,
+              prediction.savedAmount,
               currency: 'VND',
             ),
+            valueColor: AppColors.income,
+          ),
+          if (milestoneEndDate != null)
+            _PredictionInfoRow(
+              label: 'Hạn giai đoạn',
+              value: _formatPredictionDate(milestoneEndDate.toIso8601String()),
+              valueColor: themeColors.textSecondary,
+            ),
+          _PredictionInfoRow(
+            label: 'Dự kiến hoàn thành',
+            value: prediction.currentMonthlySavingRate <= 0
+                ? 'Không thể hoàn thành'
+                : prediction.predictedCompletionDate != null
+                    ? _formatPredictionDate(prediction.predictedCompletionDate!)
+                    : 'Chưa đủ dữ liệu',
+            valueColor: prediction.currentMonthlySavingRate <= 0
+                ? AppColors.expense
+                : color,
           ),
           _PredictionInfoRow(
-            label: 'Cần mỗi tháng',
+            label: 'Còn thiếu giai đoạn này',
             value: AppHelperFunction.formatAmount(
-              prediction.requiredMonthlySavingRate,
+              _currentMilestoneRemaining,
               currency: 'VND',
             ),
           ),
@@ -533,6 +457,9 @@ class _GoalAchievementPredictionBlock extends StatelessWidget {
               prediction.currentMonthlySavingRate,
               currency: 'VND',
             ),
+            valueColor: prediction.currentMonthlySavingRate < 0
+                ? AppColors.expense
+                : null,
           ),
           _PredictionInfoRow(
             label: 'Lệch hạn',
@@ -908,6 +835,9 @@ String _predictionStatusText(String status) {
 String _predictionDifferenceText(GoalAchievementPredictionModel prediction) {
   final days = prediction.daysDifference;
   if (prediction.status == 'completed') return 'Đã hoàn thành';
+  if (prediction.currentMonthlySavingRate <= 0) {
+    return 'Chi vượt thu';
+  }
   if (prediction.status == 'unlikely') return 'Chưa thể dự báo';
   if (days == null) return 'Không có hạn';
   if (days < 0) return 'Sớm ${days.abs()} ngày';
@@ -917,11 +847,11 @@ String _predictionDifferenceText(GoalAchievementPredictionModel prediction) {
 
 String _predictionVelocityLabel(String? source) {
   return switch (source) {
-    'forecasted_monthly_savings' => 'Tiết kiệm dự kiến tháng này',
-    'spending_plan_capacity' => 'Tiết kiệm theo kế hoạch',
-    'profile_average_savings' => 'Tiết kiệm TB hàng tháng',
-    'net_balance_fallback' => 'Tiết kiệm ước tính',
-    _ => 'Tiết kiệm dự kiến tháng này',
+    'forecasted_monthly_savings' => 'TK dự kiến tháng này',
+    'spending_plan_capacity' => 'TK theo kế hoạch',
+    'profile_average_savings' => 'TK TB hàng tháng',
+    'net_balance_fallback' => 'TK ước tính',
+    _ => 'TK dự kiến tháng này',
   };
 }
 

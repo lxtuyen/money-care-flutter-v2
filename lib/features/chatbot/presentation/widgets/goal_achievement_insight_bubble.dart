@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_bubble.dart';
 import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
+import 'package:money_care/core/constants/route_path.dart';
 
 class GoalAchievementInsightBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -41,9 +43,27 @@ class GoalAchievementInsightBubble extends StatelessWidget {
     }
 
     final statusColor = _riskColor(prediction.riskLevel);
-    final completionText = prediction.predictedCompletionDate != null
-        ? _formatIsoDate(prediction.predictedCompletionDate!)
-        : 'Chưa đủ dữ liệu';
+    final completionText = prediction.currentMonthlySavingRate <= 0
+        ? 'Không thể hoàn thành'
+        : prediction.predictedCompletionDate != null
+            ? _formatIsoDate(prediction.predictedCompletionDate!)
+            : 'Chưa đủ dữ liệu';
+
+    // Tách action chuyển tiền từ ví ra riêng để render nổi bật
+    final transferAction = prediction.recommendedActions
+        .where((a) => a.actionType == 'transfer_from_wallet')
+        .firstOrNull;
+    final otherActions = prediction.recommendedActions
+        .where((a) => a.actionType != 'transfer_from_wallet')
+        .take(2)
+        .toList();
+
+    // goalWalletId dùng làm toWalletId khi chuyển tiền
+    final int? goalWalletId = () {
+      final v = prediction.supportingData['goalWalletId'];
+      if (v is num) return v.toInt();
+      return int.tryParse(v?.toString() ?? '');
+    }();
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -55,6 +75,7 @@ class GoalAchievementInsightBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Main prediction card ──────────────────────────────────────
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -65,6 +86,7 @@ class GoalAchievementInsightBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header: tên mục tiêu + badge rủi ro
                   Row(
                     children: [
                       Icon(
@@ -131,9 +153,9 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                     colors: colors,
                   ),
                   _metric(
-                    label: 'Cần tiết kiệm mỗi ngày',
+                    label: 'Còn thiếu',
                     value: AppHelperFunction.formatAmount(
-                      prediction.requiredDailySavingRate,
+                      prediction.remainingAmount,
                     ),
                     colors: colors,
                   ),
@@ -147,7 +169,9 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                     ),
                     colors: colors,
                   ),
-                  if (prediction.recommendedActions.isNotEmpty) ...[
+
+                  // ── Gợi ý hành động thông thường (không phải transfer) ──
+                  if (otherActions.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Text(
                       'Gợi ý hành động',
@@ -158,7 +182,7 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    ...prediction.recommendedActions.take(3).map(
+                    ...otherActions.map(
                       (action) => Padding(
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Row(
@@ -180,9 +204,24 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                       ),
                     ),
                   ],
+
+                  // ── Transfer hint card ─────────────────────────────────
+                  // Tạm ẩn khi mục tiêu trễ hạn
+                  if (transferAction != null &&
+                      !(prediction.daysDifference != null &&
+                          prediction.daysDifference! > 0)) ...[
+                    const SizedBox(height: 12),
+                    _WalletTransferHint(
+                      action: transferAction,
+                      goalWalletId: goalWalletId,
+                      colors: colors,
+                    ),
+                  ],
                 ],
               ),
             ),
+
+            // ── Budget recommendation bubble ───────────────────────────
             if (budgetRecommendations.isNotEmpty) ...[
               const SizedBox(height: 8),
               BudgetRecommendationBubble(
@@ -240,13 +279,128 @@ class GoalAchievementInsightBubble extends StatelessWidget {
   }
 }
 
+// ── Wallet Transfer Hint widget ─────────────────────────────────────────────
+
+class _WalletTransferHint extends StatelessWidget {
+  final GoalRecommendedActionModel action;
+  final int? goalWalletId;
+  final AppThemeColors colors;
+
+  const _WalletTransferHint({
+    required this.action,
+    required this.goalWalletId,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final walletName = action.walletName ?? 'ví';
+    final amount = action.amount ?? 0;
+    final fromWalletId = action.walletId;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.account_balance_wallet_rounded,
+                color: AppColors.primary,
+                size: 16,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Ví có thể bù vào',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            action.message,
+            style: TextStyle(
+              fontSize: 12.5,
+              height: 1.4,
+              color: colors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _openTransfer(
+                fromWalletId: fromWalletId,
+                toWalletId: goalWalletId,
+                amount: amount,
+              ),
+              icon: const Icon(Icons.swap_horiz_rounded, size: 16),
+              label: Text(
+                'Chuyển ${AppHelperFunction.formatAmount(amount)} vào ví tiết kiệm',
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openTransfer({
+    required int? fromWalletId,
+    required int? toWalletId,
+    required double amount,
+  }) {
+    Get.toNamed(
+      RoutePath.walletTransfer,
+      arguments: {
+        if (fromWalletId != null) 'fromWalletId': fromWalletId,
+        if (toWalletId != null) 'toWalletId': toWalletId,
+        if (amount > 0) 'amount': amount,
+      },
+    );
+  }
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
 String _velocityLabel(String? source) {
   return switch (source) {
-    'forecasted_monthly_savings' => 'Tiết kiệm dự kiến tháng này',
-    'spending_plan_capacity' => 'Tiết kiệm theo kế hoạch',
-    'profile_average_savings' => 'Tiết kiệm TB hàng tháng',
-    'net_balance_fallback' => 'Tiết kiệm ước tính',
-    _ => 'Tiết kiệm dự kiến tháng này',
+    'forecasted_monthly_savings' => 'TK dự kiến tháng này',
+    'spending_plan_capacity' => 'TK theo kế hoạch',
+    'profile_average_savings' => 'TK TB hàng tháng',
+    'net_balance_fallback' => 'TK ước tính',
+    _ => 'TK dự kiến tháng này',
   };
 }
 
@@ -277,6 +431,9 @@ String _riskText(String riskLevel) {
 String _differenceText(GoalAchievementPredictionModel prediction) {
   final days = prediction.daysDifference;
   if (prediction.status == 'completed') return 'Đã hoàn thành';
+  if (prediction.currentMonthlySavingRate <= 0) {
+    return 'Chi vượt thu';
+  }
   if (prediction.status == 'unlikely') return 'Chưa thể dự báo';
   if (days == null) return 'Không có hạn';
   if (days < 0) return 'Sớm ${days.abs()} ngày';

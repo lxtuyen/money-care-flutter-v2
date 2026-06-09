@@ -27,20 +27,42 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
   @override
   void initState() {
     super.initState();
-    if (controller.wallets.isNotEmpty) {
-      // Find first wallet with positive balance for source
-      final positiveWallets = controller.wallets
-          .where((w) => w.balance > 0)
-          .toList();
-      if (positiveWallets.isNotEmpty) {
-        fromWalletId = positiveWallets.first.id;
 
-        // Pick a different wallet for target if possible
-        if (controller.wallets.length > 1) {
-          toWalletId = controller.wallets
-              .firstWhere((w) => w.id != fromWalletId)
-              .id;
+    // Support pre-filling from route arguments (e.g. from goal achievement hint)
+    final args = Get.arguments;
+    final int? argFrom =
+        args is Map ? (args['fromWalletId'] as num?)?.toInt() : null;
+    final int? argTo =
+        args is Map ? (args['toWalletId'] as num?)?.toInt() : null;
+    final double? argAmount =
+        args is Map ? (args['amount'] as num?)?.toDouble() : null;
+
+    if (argAmount != null && argAmount > 0) {
+      amountController.text = argAmount.toStringAsFixed(0);
+    }
+
+    if (controller.wallets.isNotEmpty) {
+      if (argFrom != null &&
+          controller.wallets.any((w) => w.id == argFrom)) {
+        fromWalletId = argFrom;
+      }
+      if (argTo != null &&
+          controller.wallets.any((w) => w.id == argTo)) {
+        toWalletId = argTo;
+      }
+
+      // Fallback: auto-select if not provided via args
+      if (fromWalletId == null) {
+        final positiveWallets =
+            controller.wallets.where((w) => w.balance > 0).toList();
+        if (positiveWallets.isNotEmpty) {
+          fromWalletId = positiveWallets.first.id;
         }
+      }
+      if (toWalletId == null && controller.wallets.length > 1) {
+        toWalletId = controller.wallets
+            .firstWhere((w) => w.id != fromWalletId)
+            .id;
       }
     }
   }

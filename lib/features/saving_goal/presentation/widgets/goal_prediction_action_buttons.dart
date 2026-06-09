@@ -142,19 +142,28 @@ class GoalPredictionActionButtons extends StatelessWidget {
           Row(
             children: [
               Expanded(
+                flex: 2,
                 child: OutlinedButton.icon(
                   onPressed: () => _extendGoalDeadline(context),
-                  icon: const Icon(Icons.event_outlined, size: 16),
+                  icon: const Icon(Icons.event_outlined, size: 15),
                   label: const Text(
                     'Gia hạn',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: BorderSide(
                       color: AppColors.primary.withValues(alpha: 0.35),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 11,
+                      horizontal: 8,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -163,17 +172,26 @@ class GoalPredictionActionButtons extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
+                flex: 3,
                 child: ElevatedButton.icon(
                   onPressed: _openChatbotForBudgetAdjust,
-                  icon: const Icon(Icons.tune_rounded, size: 16),
+                  icon: const Icon(Icons.tune_rounded, size: 15),
                   label: const Text(
                     'Điều chỉnh ngân sách',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 11,
+                      horizontal: 8,
+                    ),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

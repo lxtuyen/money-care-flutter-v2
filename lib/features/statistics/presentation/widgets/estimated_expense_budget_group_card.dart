@@ -562,13 +562,9 @@ class _BudgetExceedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final probabilityPct = (prediction.exceedProbability * 100).round();
     final alreadyExceeded = prediction.actualRatio >= 1.0;
     final forecastWillExceed = !alreadyExceeded && prediction.willExceed;
-    final moderateRisk =
-        !alreadyExceeded && !prediction.willExceed && probabilityPct >= 40;
-
-    if (!alreadyExceeded && !forecastWillExceed && !moderateRisk) {
+    if (!alreadyExceeded && !forecastWillExceed) {
       return const SizedBox.shrink();
     }
 
@@ -590,9 +586,7 @@ class _BudgetExceedBadge extends StatelessWidget {
           'Dự kiến vượt ${AppHelperFunction.formatAmount(prediction.exceedAmount)} '
           'vào cuối tháng';
     } else {
-      badgeColor = const Color(0xFF6366F1);
-      icon = '📊';
-      label = 'Có nguy cơ vượt ngân sách (~$probabilityPct%)';
+      return const SizedBox.shrink();
     }
 
     return Container(

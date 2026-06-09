@@ -102,6 +102,13 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     return true;
   }
 
+  String _formatDateOnly(DateTime date) {
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+
   @override
   Future<SavingGoalModel> extendSavingGoal(
     int id,
@@ -109,9 +116,9 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     DateTime? newStartDate,
   }) async {
     final body = <String, dynamic>{
-      'new_end_date': newEndDate.toIso8601String(),
+      'new_end_date': _formatDateOnly(newEndDate),
       if (newStartDate != null)
-        'new_start_date': newStartDate.toIso8601String(),
+        'new_start_date': _formatDateOnly(newStartDate),
     };
     final res = await api.patch<SavingGoalModel>(
       '${ApiRoutes.savingGoal}/$id/extend',

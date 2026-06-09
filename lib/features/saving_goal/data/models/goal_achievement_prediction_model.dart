@@ -5,6 +5,9 @@ class GoalRecommendedActionModel {
   final String? suggestedDeadline;
   final String message;
   final int? impactDays;
+  /// For transfer_from_wallet action
+  final int? walletId;
+  final String? walletName;
 
   const GoalRecommendedActionModel({
     required this.actionType,
@@ -13,6 +16,8 @@ class GoalRecommendedActionModel {
     this.suggestedDeadline,
     required this.message,
     this.impactDays,
+    this.walletId,
+    this.walletName,
   });
 
   factory GoalRecommendedActionModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +28,8 @@ class GoalRecommendedActionModel {
       suggestedDeadline: json['suggestedDeadline']?.toString(),
       message: json['message']?.toString() ?? '',
       impactDays: _parseIntNullable(json['impactDays']),
+      walletId: _parseIntNullable(json['walletId']),
+      walletName: json['walletName']?.toString(),
     );
   }
 }

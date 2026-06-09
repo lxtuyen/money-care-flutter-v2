@@ -108,6 +108,12 @@ class ScenarioSimulationBubble extends StatelessWidget {
     final double? usagePct = category['usagePctAfter'] != null
         ? (category['usagePctAfter'] as num).toDouble()
         : null;
+    final double? spentSoFar = category['spentSoFar'] != null
+        ? (category['spentSoFar'] as num).toDouble()
+        : null;
+    final double? spentPctNow = category['spentPctNow'] != null
+        ? (category['spentPctNow'] as num).toDouble()
+        : null;
 
     final hasLimit = limit != null && limit > 0 && after != null;
     final hasAverage = average != null && average > 0;
@@ -131,15 +137,75 @@ class ScenarioSimulationBubble extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         if (hasLimit) ...[
+          // Row: Hiện tại (chi tiêu thực tế giai đoạn này)
+          if (spentSoFar != null && spentSoFar > 0) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Hiện tại:',
+                  style: TextStyle(fontSize: 11.5, color: colors.textSecondary),
+                ),
+                Text(
+                  '${AppHelperFunction.formatAmount(spentSoFar)} / ${AppHelperFunction.formatAmount(limit!)}',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: ((spentPctNow ?? 0.0) / 100).clamp(0.0, 1.0),
+                backgroundColor: Colors.grey.shade100,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  (spentPctNow ?? 0) >= 100
+                      ? AppColors.error
+                      : (spentPctNow ?? 0) >= 80
+                      ? const Color(0xFFF59E0B)
+                      : AppColors.primary,
+                ),
+                minHeight: 6,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tỷ lệ hiện tại:',
+                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                ),
+                Text(
+                  '${(spentPctNow ?? 0.0).toStringAsFixed(1)}%',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: (spentPctNow ?? 0) >= 100
+                        ? AppColors.error
+                        : (spentPctNow ?? 0) >= 80
+                        ? const Color(0xFFF59E0B)
+                        : AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 14, thickness: 0.6),
+          ],
+          // Row: Dự kiến cuối tháng (sau kịch bản)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Dự kiến tháng này:',
+                'Dự kiến cuối tháng:',
                 style: TextStyle(fontSize: 11.5, color: colors.textSecondary),
               ),
               Text(
-                '${AppHelperFunction.formatAmount(after)} / ${AppHelperFunction.formatAmount(limit)}',
+                '${AppHelperFunction.formatAmount(after!)} / ${AppHelperFunction.formatAmount(limit!)}',
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.bold,
@@ -149,20 +215,22 @@ class ScenarioSimulationBubble extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: ((usagePct ?? 0.0) / 100).clamp(0.0, 1.0),
-              backgroundColor: Colors.grey.shade100,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                remainingAfter != null && remainingAfter >= 0
-                    ? AppColors.primary
-                    : AppColors.error,
+          if (spentSoFar == null || spentSoFar <= 0) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: ((usagePct ?? 0.0) / 100).clamp(0.0, 1.0),
+                backgroundColor: Colors.grey.shade100,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  remainingAfter != null && remainingAfter >= 0
+                      ? AppColors.primary
+                      : AppColors.error,
+                ),
+                minHeight: 6,
               ),
-              minHeight: 6,
             ),
-          ),
-          const SizedBox(height: 6),
+            const SizedBox(height: 6),
+          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -291,30 +359,31 @@ class ScenarioSimulationBubble extends StatelessWidget {
           statusAfter,
           valueColorAfter: statusColor,
         ),
-        const SizedBox(height: 6),
-        _buildCompareRow(
-          colors,
-          'Dự kiến hoàn thành:',
-          dateBefore,
-          dateAfter,
-          subtitleBefore: diffBefore,
-          subtitleAfter: diffAfter,
-        ),
-        const SizedBox(height: 6),
-        _buildCompareRow(
-          colors,
-          'Tốc độ tích lũy:',
-          '${_formatMoneyShort(rateBefore)}/th',
-          '${_formatMoneyShort(rateAfter)}/th',
-        ),
-        const SizedBox(height: 6),
-        _buildCompareRow(
-          colors,
-          'Tốc độ yêu cầu:',
-          '${_formatMoneyShort(reqBefore)}/th',
-          '${_formatMoneyShort(reqAfter)}/th',
-          valueColorAfter: reqAfter > reqBefore ? AppColors.error : AppColors.success,
-        ),
+        // Tạm ẩn: Dự kiến hoàn thành, Tốc độ tích lũy, Tốc độ yêu cầu
+        // const SizedBox(height: 6),
+        // _buildCompareRow(
+        //   colors,
+        //   'Dự kiến hoàn thành:',
+        //   dateBefore,
+        //   dateAfter,
+        //   subtitleBefore: diffBefore,
+        //   subtitleAfter: diffAfter,
+        // ),
+        // const SizedBox(height: 6),
+        // _buildCompareRow(
+        //   colors,
+        //   'Tốc độ tích lũy:',
+        //   '${_formatMoneyShort(rateBefore)}/th',
+        //   '${_formatMoneyShort(rateAfter)}/th',
+        // ),
+        // const SizedBox(height: 6),
+        // _buildCompareRow(
+        //   colors,
+        //   'Tốc độ yêu cầu:',
+        //   '${_formatMoneyShort(reqBefore)}/th',
+        //   '${_formatMoneyShort(reqAfter)}/th',
+        //   valueColorAfter: reqAfter > reqBefore ? AppColors.error : AppColors.success,
+        // ),
       ],
     );
   }
@@ -437,7 +506,7 @@ class ScenarioSimulationBubble extends StatelessWidget {
   }
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return 'Chưa có';
+    if (dateStr == null || dateStr.isEmpty) return '';
     try {
       final date = DateTime.parse(dateStr);
       return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString().substring(2)}";

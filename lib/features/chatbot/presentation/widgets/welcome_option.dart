@@ -31,7 +31,7 @@ class WelcomeOptions extends StatelessWidget {
               ),
               child: ClipOval(
                 child: Image.asset(
-                  AppImages.splash,
+                  AppImages.logo,
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,

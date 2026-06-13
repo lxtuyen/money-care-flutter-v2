@@ -9,10 +9,8 @@ import 'package:money_care/features/couple/presentation/widgets/not_connected_vi
 import 'package:money_care/features/couple/presentation/widgets/pending_invitation_view.dart';
 import 'package:money_care/features/couple/presentation/widgets/couple_dashboard_view.dart';
 import 'package:money_care/features/couple/presentation/widgets/couple_transactions_view.dart';
-import 'package:money_care/features/couple/presentation/widgets/couple_budgets_view.dart';
 
 import 'package:money_care/features/couple/presentation/widgets/couple_savings_view.dart';
-import 'package:money_care/features/couple/presentation/widgets/couple_reports_view.dart';
 
 class CoupleSpaceScreen extends GetView<CoupleController> {
   const CoupleSpaceScreen({super.key});
@@ -90,16 +88,8 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
                     label: 'Giao dịch',
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.pie_chart_rounded),
-                    label: 'Ngân sách',
-                  ),
-                  BottomNavigationBarItem(
                     icon: Icon(Icons.savings_rounded),
                     label: 'Tiết kiệm',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.analytics_rounded),
-                    label: 'Báo cáo',
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.settings_rounded),
@@ -120,12 +110,8 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
       case 1:
         return 'Giao Dịch Chung';
       case 2:
-        return 'Ngân Sách Chung';
-      case 3:
         return 'Quỹ Tiết Kiệm Chung';
-      case 4:
-        return 'Báo Cáo & Cảnh Báo';
-      case 5:
+      case 3:
         return 'Cài Đặt Cặp Đôi';
       default:
         return 'Không Gian Cặp Đôi';
@@ -151,12 +137,8 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
         case 1:
           return CoupleTransactionsView(controller: controller);
         case 2:
-          return CoupleBudgetsView(controller: controller);
-        case 3:
           return CoupleSavingsView(controller: controller);
-        case 4:
-          return CoupleReportsView(controller: controller);
-        case 5:
+        case 3:
           return ActiveCoupleView(
             couple: coupleData,
             controller: controller,

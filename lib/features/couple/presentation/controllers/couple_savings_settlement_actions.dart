@@ -45,11 +45,13 @@ extension CoupleSavingsSettlementActions on CoupleController {
   Future<void> addSavingContribution({
     required int goalId,
     required double amount,
+    int? sourceWalletId,
   }) async {
     isLoading.value = true;
     final result = await contributeToCoupleSavingGoalUseCase(
       goalId: goalId,
       amount: amount,
+      sourceWalletId: sourceWalletId,
     );
     await result.fold(
       (failure) async {
@@ -57,6 +59,10 @@ extension CoupleSavingsSettlementActions on CoupleController {
       },
       (_) async {
         await fetchSavingGoals();
+        if (Get.isRegistered<WalletController>()) {
+          await Get.find<WalletController>().refreshWallets();
+        }
+        await fetchSharedWallets();
         AppHelperFunction.showSuccessSnackBar('Đóng góp vào quỹ thành công!');
       },
     );
@@ -73,6 +79,39 @@ extension CoupleSavingsSettlementActions on CoupleController {
       (_) async {
         await fetchSavingGoals();
         AppHelperFunction.showSuccessSnackBar('Xóa quỹ tiết kiệm thành công!');
+      },
+    );
+    isLoading.value = false;
+  }
+
+  Future<void> updateSharedSavingGoal({
+    required int id,
+    String? name,
+    double? target,
+    DateTime? endDate,
+  }) async {
+    isLoading.value = true;
+    final result = await updateCoupleSavingGoalUseCase(
+      id: id,
+      name: name,
+      target: target,
+      endDate: endDate,
+    );
+    await result.fold(
+      (failure) async {
+        AppHelperFunction.showErrorSnackBar(
+          'Lỗi cập nhật quỹ tiết kiệm: ${failure.message}',
+        );
+      },
+      (_) async {
+        await fetchSavingGoals();
+        if (Get.isRegistered<WalletController>()) {
+          await Get.find<WalletController>().refreshWallets();
+        }
+        await fetchSharedWallets();
+        AppHelperFunction.showSuccessSnackBar(
+          'Cập nhật quỹ tiết kiệm chung thành công!',
+        );
       },
     );
     isLoading.value = false;

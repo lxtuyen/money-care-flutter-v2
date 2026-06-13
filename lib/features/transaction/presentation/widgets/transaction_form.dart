@@ -117,7 +117,7 @@ class _TransactionFormState extends State<TransactionForm> {
                                           onChanged: controller.isSharedEditable.value
                                               ? (val) => controller.toggleShared(val)
                                               : null, // disabled when editing
-                                          activeColor: Theme.of(context).primaryColor,
+                                          activeThumbColor: Theme.of(context).primaryColor,
                                           contentPadding: EdgeInsets.zero,
                                         ),
                                         const SizedBox(height: 10),

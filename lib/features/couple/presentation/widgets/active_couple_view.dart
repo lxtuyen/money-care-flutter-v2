@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/app/widgets/button/app_outline_button.dart';
+import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
+// import 'package:money_care/app/widgets/texts/section_heading.dart';
 
 class ActiveCoupleView extends StatelessWidget {
   final CoupleEntity couple;
@@ -117,88 +119,77 @@ class ActiveCoupleView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Privacy Settings Title
-          Text(
-            'THIẾT LẬP QUYỀN RIÊNG TƯ CỦA BẠN',
-            style: theme.textTheme.bodySmall?.copyWith(
-              letterSpacing: 1.5,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[500],
-            ),
+          /*
+          const AppSectionHeading(
+            title: 'Thiết Lập Quyền Riêng Tư Của Bạn',
+            showActionButton: false,
           ),
           const SizedBox(height: 12),
 
-          // Privacy Card
-          Card(
-            elevation: 0,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Colors.grey[200]!),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  SwitchListTile(
-                    value: me.sharePersonalTransactions,
-                    onChanged: (val) => controller.toggleShareTransactions(val),
-                    title: const Text(
-                      'Chia sẻ giao dịch cá nhân',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Cho phép đối phương xem lịch sử giao dịch cá nhân của bạn.',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                    ),
-                    activeColor: primaryColor,
-                  ),
-                  Divider(color: Colors.grey[100]),
-                  SwitchListTile(
-                    value: me.allowAiShare,
-                    onChanged: (val) => controller.toggleAllowAiShare(val),
-                    title: const Text(
-                      'Cấp quyền cho AI',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Cho phép chatbot sử dụng dữ liệu giao dịch của bạn để trả lời các câu hỏi từ partner.',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                    ),
-                    activeColor: primaryColor,
-                  ),
-                ],
+          Obx(() {
+            final isUpdating = controller.isUpdatingSettings.value;
+            return Card(
+              elevation: 0,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Colors.grey[200]!),
               ),
-            ),
-          ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      value: me.sharePersonalTransactions,
+                      onChanged: isUpdating
+                          ? null
+                          : (val) => controller.toggleShareTransactions(val),
+                      title: const Text(
+                        'Chia sẻ giao dịch cá nhân',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Cho phép đối phương xem lịch sử giao dịch cá nhân của bạn.',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                      activeThumbColor: primaryColor,
+                      activeColor: primaryColor,
+                    ),
+                    Divider(color: Colors.grey[100]),
+                    SwitchListTile(
+                      value: me.allowAiShare,
+                      onChanged: isUpdating
+                          ? null
+                          : (val) => controller.toggleAllowAiShare(val),
+                      title: const Text(
+                        'Cấp quyền cho AI',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Cho phép chatbot sử dụng dữ liệu giao dịch của bạn để trả lời các câu hỏi từ partner.',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                      activeThumbColor: primaryColor,
+                      activeColor: primaryColor,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
           const SizedBox(height: 48),
+          */
 
           // Disconnect Button
           AppOutlineButton(
             onPressed: () {
-              Get.dialog(
-                AlertDialog(
-                  title: const Text('Ngắt kết nối cặp đôi?'),
-                  content: const Text(
-                    'Bạn có chắc chắn muốn ngắt kết nối với đối phương không? Mọi lịch sử và không gian chung sẽ tạm thời bị ngắt liên kết.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Get.back(),
-                      child: const Text('Hủy'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Get.back();
-                        controller.leaveCoupleSpace();
-                      },
-                      child: const Text(
-                        'Xác nhận rời',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                  ],
-                ),
+              AppConfirmDialog.show(
+                title: 'Ngắt kết nối cặp đôi?',
+                message: 'Bạn có chắc chắn muốn ngắt kết nối với đối phương không? Mọi lịch sử và không gian chung sẽ tạm thời bị ngắt liên kết.',
+                confirmText: 'Xác nhận rời',
+                cancelText: 'Hủy',
+                onConfirm: controller.leaveCoupleSpace,
+                type: ConfirmDialogType.danger,
               );
             },
             icon: Icons.exit_to_app_rounded,

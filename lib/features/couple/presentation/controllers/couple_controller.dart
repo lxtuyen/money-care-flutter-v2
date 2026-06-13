@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/couple/domain/entities/couple_budget_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/domain/usecases/couple_usecases.dart';
 import 'package:money_care/features/transaction/data/models/transaction_create_dto.dart';
@@ -29,13 +28,11 @@ class CoupleController extends GetxController {
   final CancelCoupleInviteUseCase cancelCoupleInviteUseCase;
   final LeaveCoupleUseCase leaveCoupleUseCase;
   final UpdateCoupleSettingsUseCase updateCoupleSettingsUseCase;
-  final GetCoupleBudgetsUseCase getCoupleBudgetsUseCase;
-  final SetCoupleBudgetUseCase setCoupleBudgetUseCase;
-  final DeleteCoupleBudgetUseCase deleteCoupleBudgetUseCase;
   final GetCoupleSavingGoalsUseCase getCoupleSavingGoalsUseCase;
   final CreateCoupleSavingGoalUseCase createCoupleSavingGoalUseCase;
   final ContributeToCoupleSavingGoalUseCase contributeToCoupleSavingGoalUseCase;
   final DeleteCoupleSavingGoalUseCase deleteCoupleSavingGoalUseCase;
+  final UpdateCoupleSavingGoalUseCase updateCoupleSavingGoalUseCase;
   final GetCoupleSettlementSummaryUseCase getCoupleSettlementSummaryUseCase;
   final SettleUpCoupleUseCase settleUpCoupleUseCase;
   final SettleUpSingleCoupleUseCase settleUpSingleCoupleUseCase;
@@ -50,13 +47,11 @@ class CoupleController extends GetxController {
     required this.cancelCoupleInviteUseCase,
     required this.leaveCoupleUseCase,
     required this.updateCoupleSettingsUseCase,
-    required this.getCoupleBudgetsUseCase,
-    required this.setCoupleBudgetUseCase,
-    required this.deleteCoupleBudgetUseCase,
     required this.getCoupleSavingGoalsUseCase,
     required this.createCoupleSavingGoalUseCase,
     required this.contributeToCoupleSavingGoalUseCase,
     required this.deleteCoupleSavingGoalUseCase,
+    required this.updateCoupleSavingGoalUseCase,
     required this.getCoupleSettlementSummaryUseCase,
     required this.settleUpCoupleUseCase,
     required this.settleUpSingleCoupleUseCase,
@@ -74,7 +69,6 @@ class CoupleController extends GetxController {
   final RxList<WalletEntity> sharedWallets = <WalletEntity>[].obs;
   final RxList<TransactionEntity> sharedTransactions =
       <TransactionEntity>[].obs;
-  final RxList<CoupleBudgetEntity> sharedBudgets = <CoupleBudgetEntity>[].obs;
 
   // Phase 3 State
   final RxList<CoupleSavingGoalEntity> savingGoals =
@@ -86,6 +80,7 @@ class CoupleController extends GetxController {
   final Rxn<CoupleReportEntity> coupleReport = Rxn<CoupleReportEntity>();
   final RxBool isReportLoading = false.obs;
   final RxString alertFilter = 'all'.obs;
+  final RxBool isUpdatingSettings = false.obs;
 
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpense = 0.0.obs;
@@ -214,7 +209,6 @@ class CoupleController extends GetxController {
         isLoading.value = false;
         sharedWallets.clear();
         sharedTransactions.clear();
-        sharedBudgets.clear();
         AppHelperFunction.showSuccessSnackBar(
           'Đã ngắt kết nối không gian cặp đôi',
         );
@@ -223,20 +217,20 @@ class CoupleController extends GetxController {
   }
 
   Future<void> toggleShareTransactions(bool val) async {
-    isLoading.value = true;
+    isUpdatingSettings.value = true;
     final result = await updateCoupleSettingsUseCase(
       sharePersonalTransactions: val,
     );
     result.fold(
       (failure) {
-        isLoading.value = false;
+        isUpdatingSettings.value = false;
         AppHelperFunction.showErrorSnackBar(
           'Cập nhật thất bại: ${failure.message}',
         );
       },
       (data) {
         couple.value = data;
-        isLoading.value = false;
+        isUpdatingSettings.value = false;
         AppHelperFunction.showSuccessSnackBar(
           'Đã cập nhật quyền chia sẻ giao dịch',
         );
@@ -245,18 +239,18 @@ class CoupleController extends GetxController {
   }
 
   Future<void> toggleAllowAiShare(bool val) async {
-    isLoading.value = true;
+    isUpdatingSettings.value = true;
     final result = await updateCoupleSettingsUseCase(allowAiShare: val);
     result.fold(
       (failure) {
-        isLoading.value = false;
+        isUpdatingSettings.value = false;
         AppHelperFunction.showErrorSnackBar(
           'Cập nhật thất bại: ${failure.message}',
         );
       },
       (data) {
         couple.value = data;
-        isLoading.value = false;
+        isUpdatingSettings.value = false;
         AppHelperFunction.showSuccessSnackBar('Đã cập nhật quyền phân tích AI');
       },
     );

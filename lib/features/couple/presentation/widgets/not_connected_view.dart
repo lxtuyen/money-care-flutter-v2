@@ -22,7 +22,7 @@ class NotConnectedView extends StatelessWidget {
             height: 120,
             width: 120,
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.favorite_rounded, size: 64, color: primaryColor),

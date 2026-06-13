@@ -1,7 +1,6 @@
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/features/couple/data/models/couple_model.dart';
-import 'package:money_care/features/couple/data/models/couple_budget_model.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
@@ -16,14 +15,6 @@ abstract class CoupleRemoteDatasource {
     bool? sharePersonalTransactions,
     bool? allowAiShare,
   });
-  Future<List<CoupleBudgetModel>> getBudgets(int coupleId, String month);
-  Future<CoupleBudgetModel> setBudget({
-    required int coupleId,
-    required int categoryId,
-    required double amount,
-    required String month,
-  });
-  Future<void> deleteBudget(int id);
 
   Future<List<CoupleSavingGoalEntity>> getSavingGoals(int coupleId);
   Future<CoupleSavingGoalEntity> createSavingGoal({
@@ -35,8 +26,15 @@ abstract class CoupleRemoteDatasource {
   Future<void> contributeToSavingGoal({
     required int goalId,
     required double amount,
+    int? sourceWalletId,
   });
   Future<void> deleteSavingGoal(int id);
+  Future<CoupleSavingGoalEntity> updateSavingGoal({
+    required int id,
+    String? name,
+    double? target,
+    DateTime? endDate,
+  });
   Future<CoupleSettlementSummaryEntity> getSettlementSummary(int coupleId);
   Future<void> settleUp(int coupleId);
   Future<void> settleUpSingle({
@@ -129,43 +127,6 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
     return res.unwrap();
   }
 
-  @override
-  Future<List<CoupleBudgetModel>> getBudgets(int coupleId, String month) async {
-    final res = await api.get<List<CoupleBudgetModel>>(
-      '${ApiRoutes.couples}/budgets?coupleId=$coupleId&month=$month',
-      fromJsonT: (json) {
-        final list = json as List<dynamic>;
-        return list.map((e) => CoupleBudgetModel.fromJson(e)).toList();
-      },
-    );
-    return res.unwrap();
-  }
-
-  @override
-  Future<CoupleBudgetModel> setBudget({
-    required int coupleId,
-    required int categoryId,
-    required double amount,
-    required String month,
-  }) async {
-    final res = await api.post<CoupleBudgetModel>(
-      '${ApiRoutes.couples}/budgets',
-      body: {
-        'coupleId': coupleId,
-        'categoryId': categoryId,
-        'amount': amount,
-        'month': month,
-      },
-      fromJsonT: (json) => CoupleBudgetModel.fromJson(json),
-    );
-    return res.unwrap();
-  }
-
-  @override
-  Future<void> deleteBudget(int id) async {
-    final res = await api.delete<void>('${ApiRoutes.couples}/budgets/$id');
-    res.unwrap();
-  }
 
   @override
   Future<List<CoupleSavingGoalEntity>> getSavingGoals(int coupleId) async {
@@ -192,7 +153,7 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
         'coupleId': coupleId,
         'name': name,
         'target': target,
-        if (endDate != null) 'end_date': endDate.toIso8601String(),
+        'end_date': ?endDate?.toIso8601String(),
       },
       fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
     );
@@ -203,10 +164,14 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
   Future<void> contributeToSavingGoal({
     required int goalId,
     required double amount,
+    int? sourceWalletId,
   }) async {
     final res = await api.post<void>(
       '${ApiRoutes.couples}/savings/$goalId/contribute',
-      body: {'amount': amount},
+      body: {
+        'amount': amount,
+        'sourceWalletId': ?sourceWalletId,
+      },
     );
     if (!res.success) {
       throw Exception(
@@ -219,6 +184,25 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
   Future<void> deleteSavingGoal(int id) async {
     final res = await api.delete<void>('${ApiRoutes.couples}/savings/$id');
     res.unwrap();
+  }
+
+  @override
+  Future<CoupleSavingGoalEntity> updateSavingGoal({
+    required int id,
+    String? name,
+    double? target,
+    DateTime? endDate,
+  }) async {
+    final res = await api.patch<CoupleSavingGoalEntity>(
+      '${ApiRoutes.couples}/savings/$id',
+      body: {
+        'name': ?name,
+        'target': ?target,
+        'end_date': ?endDate?.toIso8601String(),
+      },
+      fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
+    );
+    return res.unwrap();
   }
 
   @override
@@ -287,8 +271,8 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
     String? feedback,
   }) async {
     final body = <String, dynamic>{
-      if (status != null) 'status': status,
-      if (feedback != null) 'feedback': feedback,
+      'status': ?status,
+      'feedback': ?feedback,
     };
     final res = await api.patch<CoupleSpendingAlertEntity>(
       '${ApiRoutes.couples}/reports/alerts/$alertId',

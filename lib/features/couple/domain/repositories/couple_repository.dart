@@ -1,7 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
-import 'package:money_care/features/couple/domain/entities/couple_budget_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
@@ -16,17 +15,6 @@ abstract class CoupleRepository {
     bool? sharePersonalTransactions,
     bool? allowAiShare,
   });
-  Future<Either<Failure, List<CoupleBudgetEntity>>> getBudgets(
-    int coupleId,
-    String month,
-  );
-  Future<Either<Failure, CoupleBudgetEntity>> setBudget({
-    required int coupleId,
-    required int categoryId,
-    required double amount,
-    required String month,
-  });
-  Future<Either<Failure, void>> deleteBudget(int id);
 
   Future<Either<Failure, List<CoupleSavingGoalEntity>>> getSavingGoals(
     int coupleId,
@@ -40,8 +28,15 @@ abstract class CoupleRepository {
   Future<Either<Failure, void>> contributeToSavingGoal({
     required int goalId,
     required double amount,
+    int? sourceWalletId,
   });
   Future<Either<Failure, void>> deleteSavingGoal(int id);
+  Future<Either<Failure, CoupleSavingGoalEntity>> updateSavingGoal({
+    required int id,
+    String? name,
+    double? target,
+    DateTime? endDate,
+  });
   Future<Either<Failure, CoupleSettlementSummaryEntity>> getSettlementSummary(
     int coupleId,
   );

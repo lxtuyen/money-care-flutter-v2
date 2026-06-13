@@ -56,6 +56,7 @@ class CoupleSavingGoalEntity {
   final String status;
   final List<CoupleSavingGoalMemberProgress> memberContributions;
   final List<CoupleSavingGoalContribution> contributions;
+  final int? walletId;
 
   CoupleSavingGoalEntity({
     required this.id,
@@ -67,6 +68,7 @@ class CoupleSavingGoalEntity {
     required this.status,
     required this.memberContributions,
     required this.contributions,
+    this.walletId,
   });
 
   factory CoupleSavingGoalEntity.fromJson(Map<String, dynamic> json) {
@@ -93,6 +95,7 @@ class CoupleSavingGoalEntity {
       status: json['status'] ?? 'active',
       memberContributions: memberContribs,
       contributions: contribList,
+      walletId: json['walletId'] as int?,
     );
   }
 }

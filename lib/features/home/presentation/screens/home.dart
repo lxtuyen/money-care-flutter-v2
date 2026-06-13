@@ -283,7 +283,7 @@ class HomeScreen extends GetView<HomeController> {
               controller.statisticsController.globalTotalByType.value;
           final isVisible = controller.appController.isBalanceVisible.value;
 
-          if (controller.statisticsController.isLoading.value) {
+          if (controller.statisticsController.isLoading.value && totals == null) {
             return const SizedBox(
               height: 120,
               child: Center(child: CircularProgressIndicator()),
@@ -358,7 +358,7 @@ class HomeScreen extends GetView<HomeController> {
         Obx(() {
           final totalsData = controller.statisticsController.totalByDate.value;
 
-          if (controller.statisticsController.isLoading.value) {
+          if (controller.statisticsController.isLoading.value && totalsData == null) {
             return const SizedBox(
               height: 120,
               child: Center(child: CircularProgressIndicator()),
@@ -393,16 +393,16 @@ class HomeScreen extends GetView<HomeController> {
 
   Widget _buildMonthlySpending() {
     return Obx(() {
-      if (controller.statisticsController.isLoading.value) {
+      final categories = controller.statisticsController.expenseCategories
+          .where((c) => c.total > 0)
+          .toList();
+
+      if (controller.statisticsController.isLoading.value && categories.isEmpty) {
         return const SizedBox(
           height: 124,
           child: Center(child: CircularProgressIndicator()),
         );
       }
-
-      final categories = controller.statisticsController.expenseCategories
-          .where((c) => c.total > 0)
-          .toList();
 
       if (categories.isEmpty) {
         return const SizedBox.shrink();
@@ -431,16 +431,16 @@ class HomeScreen extends GetView<HomeController> {
 
   Widget _buildMonthlyIncome() {
     return Obx(() {
-      if (controller.statisticsController.isLoading.value) {
+      final categories = controller.statisticsController.incomeCategories
+          .where((c) => c.total > 0)
+          .toList();
+
+      if (controller.statisticsController.isLoading.value && categories.isEmpty) {
         return const SizedBox(
           height: 124,
           child: Center(child: CircularProgressIndicator()),
         );
       }
-
-      final categories = controller.statisticsController.incomeCategories
-          .where((c) => c.total > 0)
-          .toList();
 
       if (categories.isEmpty) {
         return const SizedBox.shrink();

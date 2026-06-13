@@ -6,6 +6,8 @@ import 'package:money_care/features/wallet/presentation/widgets/wallet_card.dart
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_spending_alerts_section.dart';
+import 'package:money_care/core/constants/colors.dart';
 
 class CoupleDashboardView extends StatelessWidget {
   final CoupleController controller;
@@ -54,19 +56,13 @@ class CoupleDashboardView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const AppSectionHeading(
-            title: 'Tổng Quan Chi Tiêu',
-            showActionButton: false,
-          ),
-          const SizedBox(height: 12),
-
           // Total Balance Card
           Card(
             elevation: 0,
             color: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Colors.grey[200]!),
+              side: BorderSide(color: AppColors.primary),
             ),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -223,107 +219,7 @@ class CoupleDashboardView extends StatelessWidget {
             );
           }),
 
-          const SizedBox(height: 24),
-
-          // General Month budget indicator
-          const AppSectionHeading(
-            title: 'Tiến Độ Ngân Sách Tháng',
-            showActionButton: false,
-          ),
-          const SizedBox(height: 12),
-          Obx(() {
-            final double totalBudget = controller.sharedBudgets.fold(
-              0.0,
-              (sum, b) => sum + b.amount,
-            );
-            final double totalSpent = controller.totalExpense.value;
-            final double remaining = totalBudget > totalSpent
-                ? totalBudget - totalSpent
-                : 0.0;
-            final double progress = totalBudget > 0
-                ? (totalSpent / totalBudget).clamp(0.0, 1.0)
-                : 0.0;
-
-            return Card(
-              elevation: 0,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: Colors.grey[200]!),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Tổng ngân sách set:',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                          ),
-                        ),
-                        Text(
-                          AppHelperFunction.formatAmount(totalBudget),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Đã chi tiêu:',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                          ),
-                        ),
-                        Text(
-                          AppHelperFunction.formatAmount(totalSpent),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: totalSpent > totalBudget && totalBudget > 0
-                                ? Colors.red
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 12,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          totalSpent > totalBudget && totalBudget > 0
-                              ? Colors.red
-                              : Colors.green,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      totalBudget > 0
-                          ? 'Đã sử dụng ${(progress * 100).toStringAsFixed(1)}%. Còn lại: ${AppHelperFunction.formatAmount(remaining)}'
-                          : 'Hãy đặt ngân sách ở tab Ngân Sách để theo dõi!',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                        fontStyle: totalBudget == 0 ? FontStyle.italic : null,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+          CoupleSpendingAlertsSection(controller: controller),
         ],
       ),
     );

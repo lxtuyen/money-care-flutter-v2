@@ -18,7 +18,6 @@ extension CoupleFinanceActions on CoupleController {
       await Future.wait([
         fetchSharedWallets(),
         fetchSharedTransactions(),
-        fetchSharedBudgets(),
         fetchSavingGoals(),
         fetchSettlementSummary(),
         fetchCoupleReport(),
@@ -99,17 +98,7 @@ extension CoupleFinanceActions on CoupleController {
     }
   }
 
-  Future<void> fetchSharedBudgets() async {
-    final result = await getCoupleBudgetsUseCase(
-      couple.value!.id,
-      selectedMonthStr,
-    );
-    result.fold(
-      (failure) =>
-          debugPrint('Error fetching shared budgets: ${failure.message}'),
-      (list) => sharedBudgets.assignAll(list),
-    );
-  }
+
 
   Future<void> addSharedTransaction({
     required int amount,
@@ -253,48 +242,5 @@ extension CoupleFinanceActions on CoupleController {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  Future<void> setSharedBudget(int categoryId, double amount) async {
-    isLoading.value = true;
-    final result = await setCoupleBudgetUseCase(
-      coupleId: couple.value!.id,
-      categoryId: categoryId,
-      amount: amount,
-      month: selectedMonthStr,
-    );
-    result.fold(
-      (failure) {
-        isLoading.value = false;
-        AppHelperFunction.showErrorSnackBar(
-          'Lỗi thiết lập ngân sách: ${failure.message}',
-        );
-      },
-      (_) async {
-        await fetchSharedBudgets();
-        isLoading.value = false;
-        AppHelperFunction.showSuccessSnackBar(
-          'Đã thiết lập ngân sách danh mục',
-        );
-      },
-    );
-  }
-
-  Future<void> deleteSharedBudget(int id) async {
-    isLoading.value = true;
-    final result = await deleteCoupleBudgetUseCase(id);
-    result.fold(
-      (failure) {
-        isLoading.value = false;
-        AppHelperFunction.showErrorSnackBar(
-          'Lỗi xóa ngân sách: ${failure.message}',
-        );
-      },
-      (_) async {
-        await fetchSharedBudgets();
-        isLoading.value = false;
-        AppHelperFunction.showSuccessSnackBar('Đã xóa ngân sách');
-      },
-    );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
-import 'package:money_care/features/couple/domain/entities/couple_budget_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
@@ -50,36 +49,7 @@ class UpdateCoupleSettingsUseCase {
   );
 }
 
-class GetCoupleBudgetsUseCase {
-  final CoupleRepository repository;
-  GetCoupleBudgetsUseCase(this.repository);
-  Future<Either<Failure, List<CoupleBudgetEntity>>> call(
-    int coupleId,
-    String month,
-  ) => repository.getBudgets(coupleId, month);
-}
 
-class SetCoupleBudgetUseCase {
-  final CoupleRepository repository;
-  SetCoupleBudgetUseCase(this.repository);
-  Future<Either<Failure, CoupleBudgetEntity>> call({
-    required int coupleId,
-    required int categoryId,
-    required double amount,
-    required String month,
-  }) => repository.setBudget(
-    coupleId: coupleId,
-    categoryId: categoryId,
-    amount: amount,
-    month: month,
-  );
-}
-
-class DeleteCoupleBudgetUseCase {
-  final CoupleRepository repository;
-  DeleteCoupleBudgetUseCase(this.repository);
-  Future<Either<Failure, void>> call(int id) => repository.deleteBudget(id);
-}
 
 class GetCoupleSavingGoalsUseCase {
   final CoupleRepository repository;
@@ -110,13 +80,35 @@ class ContributeToCoupleSavingGoalUseCase {
   Future<Either<Failure, void>> call({
     required int goalId,
     required double amount,
-  }) => repository.contributeToSavingGoal(goalId: goalId, amount: amount);
+    int? sourceWalletId,
+  }) => repository.contributeToSavingGoal(
+        goalId: goalId,
+        amount: amount,
+        sourceWalletId: sourceWalletId,
+      );
 }
 
 class DeleteCoupleSavingGoalUseCase {
   final CoupleRepository repository;
   DeleteCoupleSavingGoalUseCase(this.repository);
   Future<Either<Failure, void>> call(int id) => repository.deleteSavingGoal(id);
+}
+
+class UpdateCoupleSavingGoalUseCase {
+  final CoupleRepository repository;
+  UpdateCoupleSavingGoalUseCase(this.repository);
+  Future<Either<Failure, CoupleSavingGoalEntity>> call({
+    required int id,
+    String? name,
+    double? target,
+    DateTime? endDate,
+  }) =>
+      repository.updateSavingGoal(
+        id: id,
+        name: name,
+        target: target,
+        endDate: endDate,
+      );
 }
 
 class GetCoupleSettlementSummaryUseCase {

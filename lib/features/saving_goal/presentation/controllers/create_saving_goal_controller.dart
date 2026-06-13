@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -8,6 +9,7 @@ import 'package:money_care/features/saving_goal/domain/entities/saving_goal_enti
 import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 
 class CreateSavingGoalController extends GetxController {
   late final SavingGoalController savingGoalController =
@@ -23,6 +25,7 @@ class CreateSavingGoalController extends GetxController {
   Rxn<int> userId = Rxn<int>();
   RxBool isLoading = false.obs;
   RxBool isEditMode = false.obs;
+  RxBool isCoupleMode = false.obs;
   Rxn<int> editingGoalId = Rxn<int>();
 
   final nameController = TextEditingController();
@@ -45,7 +48,22 @@ class CreateSavingGoalController extends GetxController {
     await _initializeUserInfo();
 
     final arg = Get.arguments;
-    if (arg is SavingGoalEntity) {
+    if (arg is Map && arg['isCouple'] == true) {
+      _resetForm();
+      isCoupleMode.value = true;
+      startDate.value = DateTime.now();
+      if (arg['goal'] is CoupleSavingGoalEntity) {
+        final goal = arg['goal'] as CoupleSavingGoalEntity;
+        isEditMode.value = true;
+        editingGoalId.value = goal.id;
+        nameController.text = goal.name;
+        target.value = goal.target;
+        targetController.text = goal.target.toInt().toString();
+        endDate.value = goal.endDate;
+        createNewWallet.value = false;
+      }
+    } else if (arg is SavingGoalEntity) {
+      isCoupleMode.value = false;
       isEditMode.value = true;
       editingGoalId.value = arg.id;
       nameController.text = arg.name;
@@ -98,6 +116,39 @@ class CreateSavingGoalController extends GetxController {
     final rawTarget = AppHelperFunction.unformatCurrency(targetController.text);
     final finalTarget = double.tryParse(rawTarget) ?? 0;
 
+    if (isCoupleMode.value) {
+      if (Get.isRegistered<CoupleController>()) {
+        isLoading.value = true;
+        try {
+          final coupleController = Get.find<CoupleController>();
+          if (isEditMode.value) {
+            await coupleController.updateSharedSavingGoal(
+              id: editingGoalId.value!,
+              name: nameController.text.trim(),
+              target: finalTarget,
+              endDate: endDate.value,
+            );
+          } else {
+            await coupleController.createSharedSavingGoal(
+              name: nameController.text.trim(),
+              target: finalTarget,
+              endDate: endDate.value,
+            );
+          }
+          Get.back();
+          return true;
+        } catch (e) {
+          AppHelperFunction.showErrorSnackBar('Lỗi lưu quỹ chung: $e');
+          return false;
+        } finally {
+          isLoading.value = false;
+        }
+      } else {
+        AppHelperFunction.showErrorSnackBar('Không tìm thấy CoupleController');
+        return false;
+      }
+    }
+
     final dto = SavingGoalDto(
       id: isEditMode.value ? editingGoalId.value : null,
       name: nameController.text.trim(),
@@ -138,5 +189,6 @@ class CreateSavingGoalController extends GetxController {
     endDate.value = null;
     createNewWallet.value = true;
     isEditMode.value = false;
+    isCoupleMode.value = false;
   }
 }

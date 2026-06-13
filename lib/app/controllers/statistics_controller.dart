@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
@@ -458,19 +459,55 @@ class StatisticsController extends GetxController {
     }
   }
 
+  @override
+  void onClose() {
+    _refreshTimer?.cancel();
+    super.onClose();
+  }
+
   int _refreshCounter = 0;
+  Timer? _refreshTimer;
+  Completer<void>? _refreshCompleter;
 
   Future<void> refreshStatisticsData(
     int userId, {
     bool skipMainTotals = false,
   }) async {
-    final int currentRefresh = ++_refreshCounter;
+    _refreshTimer?.cancel();
 
     if (totalByDate.value == null) {
       isLoading.value = true;
     } else {
       isSilentLoading.value = true;
     }
+
+    if (_refreshCompleter == null || _refreshCompleter!.isCompleted) {
+      _refreshCompleter = Completer<void>();
+    }
+
+    final currentCompleter = _refreshCompleter!;
+
+    _refreshTimer = Timer(const Duration(milliseconds: 50), () async {
+      try {
+        await _executeRefreshStatisticsData(userId, skipMainTotals: skipMainTotals);
+        if (!currentCompleter.isCompleted) {
+          currentCompleter.complete();
+        }
+      } catch (e) {
+        if (!currentCompleter.isCompleted) {
+          currentCompleter.completeError(e);
+        }
+      }
+    });
+
+    return currentCompleter.future;
+  }
+
+  Future<void> _executeRefreshStatisticsData(
+    int userId, {
+    bool skipMainTotals = false,
+  }) async {
+    final int currentRefresh = ++_refreshCounter;
 
     try {
       final dtoRange = _createTotalsDto(currentStartDate, currentEndDate);
@@ -514,7 +551,8 @@ class StatisticsController extends GetxController {
           ]);
         }
 
-        futures.add(loadFinancialAnalytics());
+        // Run AI forecasting in background asynchronously to prevent blocking the main UI loading state
+        loadFinancialAnalytics();
 
         await Future.wait(futures);
         if (currentRefresh == _refreshCounter) {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
+import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 
 class PendingInvitationView extends StatelessWidget {
   final CoupleEntity couple;
@@ -120,29 +120,13 @@ class PendingInvitationView extends StatelessWidget {
           // Cancel invite button
           OutlinedButton.icon(
             onPressed: () {
-              Get.dialog(
-                AlertDialog(
-                  title: const Text('Hủy lời mời?'),
-                  content: const Text(
-                    'Bạn có chắc chắn muốn hủy lời mời kết nối này không? Đối phương sẽ không thể tham gia bằng mã này nữa.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Get.back(),
-                      child: const Text('Không'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Get.back();
-                        controller.cancelInvitation();
-                      },
-                      child: const Text(
-                        'Hủy lời mời',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                  ],
-                ),
+              AppConfirmDialog.show(
+                title: 'Hủy lời mời?',
+                message: 'Bạn có chắc chắn muốn hủy lời mời kết nối này không? Đối phương sẽ không thể tham gia bằng mã này nữa.',
+                confirmText: 'Hủy lời mời',
+                cancelText: 'Không',
+                onConfirm: controller.cancelInvitation,
+                type: ConfirmDialogType.danger,
               );
             },
             icon: const Icon(Icons.cancel_rounded, size: 18, color: Colors.red),

@@ -89,54 +89,63 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                             onRawChanged: (value) => _controller.target.value =
                                 double.tryParse(value),
                           ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: AppColors.primary.withValues(alpha: 0.1),
-                              ),
-                            ),
-                            child: Row(
+                          Obx(() {
+                            if (_controller.isCoupleMode.value) {
+                              return const SizedBox.shrink();
+                            }
+                            return Column(
                               children: [
-                                Icon(
-                                  Icons.account_balance_wallet_rounded,
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.8,
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.05),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: AppColors.primary.withValues(alpha: 0.1),
+                                    ),
                                   ),
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 12),
-                                const Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  child: Row(
                                     children: [
-                                      Text(
-                                        'Ví mục tiêu tự động',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: AppColors.text1,
+                                      Icon(
+                                        Icons.account_balance_wallet_rounded,
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.8,
                                         ),
+                                        size: 24,
                                       ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Hệ thống sẽ tự động tạo một ví mới dành riêng cho mục tiêu này để dễ dàng theo dõi.',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.text3,
-                                          height: 1.4,
+                                      const SizedBox(width: 12),
+                                      const Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Ví tiết kiệm tự động',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                                color: AppColors.text1,
+                                              ),
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              'Hệ thống sẽ tự động tạo một ví mới dành riêng cho mục tiêu này để dễ dàng theo dõi.',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: AppColors.text3,
+                                                height: 1.4,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
+                            );
+                          }),
                           const SizedBox(height: 24),
                           const Text(
                             'Thời gian thực hiện',

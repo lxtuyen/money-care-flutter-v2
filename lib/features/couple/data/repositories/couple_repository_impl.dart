@@ -3,7 +3,6 @@ import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/features/couple/data/datasources/couple_remote_datasource.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
-import 'package:money_care/features/couple/domain/entities/couple_budget_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
@@ -104,61 +103,7 @@ class CoupleRepositoryImpl implements CoupleRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, List<CoupleBudgetEntity>>> getBudgets(
-    int coupleId,
-    String month,
-  ) async {
-    try {
-      final list = await remoteDatasource.getBudgets(coupleId, month);
-      final entities = list.map((e) => e.toEntity()).toList();
-      return Right(entities);
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
 
-  @override
-  Future<Either<Failure, CoupleBudgetEntity>> setBudget({
-    required int coupleId,
-    required int categoryId,
-    required double amount,
-    required String month,
-  }) async {
-    try {
-      final model = await remoteDatasource.setBudget(
-        coupleId: coupleId,
-        categoryId: categoryId,
-        amount: amount,
-        month: month,
-      );
-      return Right(model.toEntity());
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> deleteBudget(int id) async {
-    try {
-      await remoteDatasource.deleteBudget(id);
-      return const Right(null);
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
 
   @override
   Future<Either<Failure, List<CoupleSavingGoalEntity>>> getSavingGoals(
@@ -204,11 +149,13 @@ class CoupleRepositoryImpl implements CoupleRepository {
   Future<Either<Failure, void>> contributeToSavingGoal({
     required int goalId,
     required double amount,
+    int? sourceWalletId,
   }) async {
     try {
       await remoteDatasource.contributeToSavingGoal(
         goalId: goalId,
         amount: amount,
+        sourceWalletId: sourceWalletId,
       );
       return const Right(null);
     } on NetworkException catch (e) {
@@ -225,6 +172,30 @@ class CoupleRepositoryImpl implements CoupleRepository {
     try {
       await remoteDatasource.deleteSavingGoal(id);
       return const Right(null);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CoupleSavingGoalEntity>> updateSavingGoal({
+    required int id,
+    String? name,
+    double? target,
+    DateTime? endDate,
+  }) async {
+    try {
+      final goal = await remoteDatasource.updateSavingGoal(
+        id: id,
+        name: name,
+        target: target,
+        endDate: endDate,
+      );
+      return Right(goal);
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
     } on ServerException catch (e) {

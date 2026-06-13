@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
+import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 
 class WalletTransferScreen extends StatefulWidget {
   const WalletTransferScreen({super.key});
@@ -23,6 +25,20 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
 
   int? fromWalletId;
   int? toWalletId;
+  bool lockToWallet = false;
+
+  List<WalletEntity> get availableWallets {
+    final List<WalletEntity> list = [...controller.wallets];
+    if (Get.isRegistered<CoupleController>()) {
+      final coupleController = Get.find<CoupleController>();
+      for (final sw in coupleController.sharedWallets) {
+        if (!list.any((w) => w.id == sw.id)) {
+          list.add(sw);
+        }
+      }
+    }
+    return list;
+  }
 
   @override
   void initState() {
@@ -36,31 +52,38 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
         args is Map ? (args['toWalletId'] as num?)?.toInt() : null;
     final double? argAmount =
         args is Map ? (args['amount'] as num?)?.toDouble() : null;
+    lockToWallet =
+        args is Map ? (args['lockToWallet'] as bool?) == true : false;
 
     if (argAmount != null && argAmount > 0) {
       amountController.text = argAmount.toStringAsFixed(0);
     }
 
-    if (controller.wallets.isNotEmpty) {
-      if (argFrom != null &&
-          controller.wallets.any((w) => w.id == argFrom)) {
-        fromWalletId = argFrom;
-      }
+    final walletsList = availableWallets;
+    if (walletsList.isNotEmpty) {
       if (argTo != null &&
-          controller.wallets.any((w) => w.id == argTo)) {
+          walletsList.any((w) => w.id == argTo)) {
         toWalletId = argTo;
       }
 
-      // Fallback: auto-select if not provided via args
+      if (argFrom != null &&
+          walletsList.any((w) => w.id == argFrom)) {
+        fromWalletId = argFrom;
+      }
+
+      // Fallback: auto-select source wallet if not provided via args
       if (fromWalletId == null) {
-        final positiveWallets =
-            controller.wallets.where((w) => w.balance > 0).toList();
+        final positiveWallets = walletsList
+            .where((w) => w.balance > 0 && w.id != toWalletId)
+            .toList();
         if (positiveWallets.isNotEmpty) {
+          // Pick the wallet with the highest balance
+          positiveWallets.sort((a, b) => b.balance.compareTo(a.balance));
           fromWalletId = positiveWallets.first.id;
         }
       }
-      if (toWalletId == null && controller.wallets.length > 1) {
-        toWalletId = controller.wallets
+      if (toWalletId == null && walletsList.length > 1) {
+        toWalletId = walletsList
             .firstWhere((w) => w.id != fromWalletId)
             .id;
       }
@@ -96,6 +119,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                       toWalletId,
                       (v) => setState(() => toWalletId = v),
                       icon: Icons.download_rounded,
+                      locked: lockToWallet,
                     ),
                     const SizedBox(height: 24),
                     AppCurrencyFormField(
@@ -165,19 +189,24 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
     Function(int?) onChanged, {
     bool isSource = false,
     required IconData icon,
+    bool locked = false,
   }) {
     final colors = AppThemeColors.of(context);
-    final selectedWallet = controller.wallets
+    final selectedWallet = availableWallets
         .where((w) => w.id == selectedId)
         .firstOrNull;
 
     return InkWell(
-      onTap: () => _showWalletPicker(label, selectedId, onChanged, isSource),
+      onTap: locked
+          ? null
+          : () => _showWalletPicker(label, selectedId, onChanged, isSource),
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         decoration: BoxDecoration(
-          color: AppColors.backgroundSecondary,
+          color: locked
+              ? AppColors.backgroundSecondary.withValues(alpha: 0.7)
+              : AppColors.backgroundSecondary,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.borderSecondary, width: 1.2),
         ),
@@ -205,14 +234,21 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                     ),
                     const SizedBox(height: 2),
                     if (selectedWallet != null)
-                      Text(
-                        "💰 ${selectedWallet.name}",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textPrimary,
-                        ),
-                      )
+                      Builder(builder: (_) {
+                        final isShared = Get.isRegistered<CoupleController>() &&
+                            Get.find<CoupleController>()
+                                .sharedWallets
+                                .any((sw) => sw.id == selectedWallet.id);
+                        final prefix = isShared ? "👥 [Chung] " : "💰 ";
+                        return Text(
+                          "$prefix${selectedWallet.name}",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textPrimary,
+                          ),
+                        );
+                      })
                     else
                       Text(
                         "Chọn ví...",
@@ -236,11 +272,22 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                   ),
                 ),
               ),
-            const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: AppColors.text3,
-            ),
-            const SizedBox(width: 12),
+            if (locked)
+              const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: Icon(
+                  Icons.lock_rounded,
+                  color: AppColors.text3,
+                  size: 18,
+                ),
+              )
+            else ...[
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.text3,
+              ),
+              const SizedBox(width: 12),
+            ],
           ],
         ),
       ),
@@ -254,6 +301,11 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
     bool isSource,
   ) {
     final colors = AppThemeColors.of(context);
+    var walletsList = availableWallets;
+    // When destination wallet is locked, exclude it from source picker
+    if (isSource && lockToWallet && toWalletId != null) {
+      walletsList = walletsList.where((w) => w.id != toWalletId).toList();
+    }
 
     Get.bottomSheet(
       Container(
@@ -282,10 +334,10 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
               child: ListView.separated(
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: controller.wallets.length,
+                itemCount: walletsList.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  final wallet = controller.wallets[index];
+                  final wallet = walletsList[index];
                   final bool isDisabled = isSource && wallet.balance <= 0;
                   final bool isSelected = wallet.id == selectedId;
 
@@ -338,7 +390,12 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  wallet.name,
+                                  Get.isRegistered<CoupleController>() &&
+                                          Get.find<CoupleController>()
+                                              .sharedWallets
+                                              .any((sw) => sw.id == wallet.id)
+                                      ? "👥 [Chung] ${wallet.name}"
+                                      : "👤 [Cá nhân] ${wallet.name}",
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -419,7 +476,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
       return;
     }
 
-    final fromWallet = controller.wallets.firstWhere(
+    final fromWallet = availableWallets.firstWhere(
       (w) => w.id == fromWalletId,
     );
     if (fromWallet.balance <= 0) {
@@ -433,6 +490,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
       AppHelperFunction.showErrorSnackBar(
         "Số dư ví không đủ để thực hiện chuyển khoản",
       );
+      return;
     }
 
     try {
@@ -446,6 +504,11 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
         note: noteController.text.trim(),
         categoryId: categoryId,
       );
+      if (Get.isRegistered<CoupleController>()) {
+        final coupleController = Get.find<CoupleController>();
+        await coupleController.fetchSharedWallets();
+        await coupleController.fetchSavingGoals();
+      }
       Get.back();
       AppHelperFunction.showSuccessSnackBar("Chuyển tiền thành công");
     } catch (e) {

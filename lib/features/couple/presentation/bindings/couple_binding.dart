@@ -47,18 +47,7 @@ class CoupleBinding extends Bindings {
       () => UpdateCoupleSettingsUseCase(Get.find<CoupleRepository>()),
       fenix: true,
     );
-    Get.lazyPut(
-      () => GetCoupleBudgetsUseCase(Get.find<CoupleRepository>()),
-      fenix: true,
-    );
-    Get.lazyPut(
-      () => SetCoupleBudgetUseCase(Get.find<CoupleRepository>()),
-      fenix: true,
-    );
-    Get.lazyPut(
-      () => DeleteCoupleBudgetUseCase(Get.find<CoupleRepository>()),
-      fenix: true,
-    );
+
     Get.lazyPut(
       () => GetCoupleSavingGoalsUseCase(Get.find<CoupleRepository>()),
       fenix: true,
@@ -73,6 +62,10 @@ class CoupleBinding extends Bindings {
     );
     Get.lazyPut(
       () => DeleteCoupleSavingGoalUseCase(Get.find<CoupleRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => UpdateCoupleSavingGoalUseCase(Get.find<CoupleRepository>()),
       fenix: true,
     );
     Get.lazyPut(
@@ -108,9 +101,6 @@ class CoupleBinding extends Bindings {
         cancelCoupleInviteUseCase: Get.find<CancelCoupleInviteUseCase>(),
         leaveCoupleUseCase: Get.find<LeaveCoupleUseCase>(),
         updateCoupleSettingsUseCase: Get.find<UpdateCoupleSettingsUseCase>(),
-        getCoupleBudgetsUseCase: Get.find<GetCoupleBudgetsUseCase>(),
-        setCoupleBudgetUseCase: Get.find<SetCoupleBudgetUseCase>(),
-        deleteCoupleBudgetUseCase: Get.find<DeleteCoupleBudgetUseCase>(),
         getCoupleSavingGoalsUseCase: Get.find<GetCoupleSavingGoalsUseCase>(),
         createCoupleSavingGoalUseCase:
             Get.find<CreateCoupleSavingGoalUseCase>(),
@@ -118,6 +108,8 @@ class CoupleBinding extends Bindings {
             Get.find<ContributeToCoupleSavingGoalUseCase>(),
         deleteCoupleSavingGoalUseCase:
             Get.find<DeleteCoupleSavingGoalUseCase>(),
+        updateCoupleSavingGoalUseCase:
+            Get.find<UpdateCoupleSavingGoalUseCase>(),
         getCoupleSettlementSummaryUseCase:
             Get.find<GetCoupleSettlementSummaryUseCase>(),
         settleUpCoupleUseCase: Get.find<SettleUpCoupleUseCase>(),

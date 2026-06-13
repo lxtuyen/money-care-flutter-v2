@@ -17,6 +17,7 @@ class BudgetTrackingSection extends StatelessWidget {
   final List<BudgetExceedPredictionModel> exceedPredictions;
   final int anomalyCount;
   final List<AnomalyModel> anomalies;
+  final bool isLoadingAnalytics;
   final VoidCallback? onViewDetail;
 
   const BudgetTrackingSection({
@@ -26,6 +27,7 @@ class BudgetTrackingSection extends StatelessWidget {
     this.exceedPredictions = const [],
     this.anomalyCount = 0,
     this.anomalies = const [],
+    this.isLoadingAnalytics = false,
     this.onViewDetail,
   });
 
@@ -82,6 +84,40 @@ class BudgetTrackingSection extends StatelessWidget {
               showActionButton: false,
             ),
             const SizedBox(height: 12),
+            if (isLoadingAnalytics) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Đang phân tích chi tiêu bằng AI...',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             if (isCurrentMonth) ...[
               // Card tổng quan
               _BudgetSummaryCard(

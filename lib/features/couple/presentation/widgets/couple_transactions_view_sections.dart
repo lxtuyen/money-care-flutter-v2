@@ -85,7 +85,7 @@ extension _CoupleTransactionsViewSections on _CoupleTransactionsViewState {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w700,
-          color: AppThemeColors.of(context).textPrimary.withOpacity(0.8),
+          color: AppThemeColors.of(context).textPrimary.withValues(alpha: 0.8),
         ),
       ),
     );

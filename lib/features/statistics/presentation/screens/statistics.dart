@@ -343,6 +343,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       exceedPredictions: exceedPredictions,
                       anomalyCount: anomalyCount,
                       anomalies: anomalies,
+                      isLoadingAnalytics: statisticsController.isLoadingAnalytics.value,
                       onViewDetail: stats.estimatedExpenses.length > 5
                           ? () {
                               Get.toNamed(

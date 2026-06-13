@@ -7,6 +7,8 @@ import 'package:money_care/core/storage/local_storage.dart';
 enum AppSnackBarType { success, error, warning, info }
 
 class AppHelperFunction {
+  static DateTime? _lastNetworkErrorTime;
+
   static Color? getColor(String value) {
     switch (value) {
       case 'Green':
@@ -82,7 +84,31 @@ class AppHelperFunction {
   }) {
     if (_shouldSuppressAuthMessage(message)) return;
 
-    final resolvedType = type ?? _inferSnackBarType(message);
+    final lowerMessage = message.toLowerCase();
+    final isNetworkError = lowerMessage.contains('socketexception') ||
+        lowerMessage.contains('clientexception') ||
+        lowerMessage.contains('httpexception') ||
+        lowerMessage.contains('failed host lookup') ||
+        lowerMessage.contains('connection failed') ||
+        lowerMessage.contains('connection timed out') ||
+        lowerMessage.contains('network_error') ||
+        lowerMessage.contains('failed to connect') ||
+        lowerMessage.contains('handshakeexception') ||
+        lowerMessage.contains('eaddrinuse') ||
+        lowerMessage.contains('connection refused');
+
+    String displayMessage = message;
+    if (isNetworkError) {
+      final now = DateTime.now();
+      if (_lastNetworkErrorTime != null &&
+          now.difference(_lastNetworkErrorTime!) < const Duration(seconds: 5)) {
+        return; // Suppress snackbar
+      }
+      _lastNetworkErrorTime = now;
+      displayMessage = 'Không thể kết nối tới máy chủ. Vui lòng kiểm tra lại mạng.';
+    }
+
+    final resolvedType = type ?? _inferSnackBarType(displayMessage);
 
     try {
       Get.closeAllSnackbars();
@@ -98,7 +124,7 @@ class AppHelperFunction {
           snackPosition: SnackPosition.TOP,
           messageText: _SnackBarContent(
             title: title ?? _defaultTitleFor(resolvedType),
-            message: message,
+            message: displayMessage,
             type: resolvedType,
           ),
         ),
@@ -442,6 +468,24 @@ class AppHelperFunction {
       final dayOfWeek = getDayOfWeekText(localDate.weekday);
       return '$dayOfWeek - $formattedDate';
     }
+  }
+
+  /// Groups a list of items by date using [getGroupHeader].
+  ///
+  /// [items] is the list to group.
+  /// [dateExtractor] extracts a [DateTime] from each item.
+  /// If the extractor returns null, [DateTime.now()] is used as fallback.
+  static Map<String, List<T>> groupByDate<T>(
+    List<T> items,
+    DateTime? Function(T) dateExtractor,
+  ) {
+    final grouped = <String, List<T>>{};
+    for (final item in items) {
+      final date = dateExtractor(item) ?? DateTime.now();
+      final header = getGroupHeader(date);
+      grouped.putIfAbsent(header, () => []).add(item);
+    }
+    return grouped;
   }
 }
 

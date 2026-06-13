@@ -6,8 +6,9 @@ import 'package:money_care/features/transaction/data/models/transaction_model.da
 abstract class TransactionRemoteDatasource {
   Future<TransactionByTypeModel> findAllByFilter(
     int userId,
-    TransactionFilterDto dto,
-  );
+    TransactionFilterDto dto, {
+    int? coupleId,
+  });
   Future<TotalByTypeModel> getTotalByType(int userId, TransactionTotalsDto dto);
   Future<List<TotalByCategoryEntityModel>> getTotalByCate(
     int userId,
@@ -17,8 +18,21 @@ abstract class TransactionRemoteDatasource {
     int userId,
     TransactionTotalsDto dto,
   );
-  Future<TransactionModel> createTransaction(TransactionCreateDto dto);
-  Future<TransactionModel> updateTransaction(TransactionCreateDto dto, int id);
+  Future<TransactionModel> createTransaction(
+    TransactionCreateDto dto, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  });
+  Future<TransactionModel> updateTransaction(
+    TransactionCreateDto dto,
+    int id, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  });
   Future<bool> deleteTransaction(int id);
   Future<StatisticsSummaryModel> getStatisticsSummary(int userId);
   Future<bool> exportReport(
@@ -38,11 +52,16 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   @override
   Future<TransactionByTypeModel> findAllByFilter(
     int userId,
-    TransactionFilterDto dto,
-  ) async {
+    TransactionFilterDto dto, {
+    int? coupleId,
+  }) async {
+    final params = Map<String, dynamic>.from(dto.toQueryParams());
+    if (coupleId != null) {
+      params['coupleId'] = coupleId;
+    }
     final res = await api.get<TransactionByTypeModel>(
       '${_userPath(userId)}/filter',
-      queryParameters: dto.toQueryParams(),
+      queryParameters: params,
       fromJsonT: (json) => TransactionByTypeModel.fromJson(json),
     );
     return res.unwrap();
@@ -91,10 +110,29 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   }
 
   @override
-  Future<TransactionModel> createTransaction(TransactionCreateDto dto) async {
+  Future<TransactionModel> createTransaction(
+    TransactionCreateDto dto, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) async {
+    final body = Map<String, dynamic>.from(dto.toJson());
+    if (coupleId != null) {
+      body['coupleId'] = coupleId;
+    }
+    if (payerId != null) {
+      body['payerId'] = payerId;
+    }
+    if (splitMethod != null) {
+      body['splitMethod'] = splitMethod;
+    }
+    if (splits != null) {
+      body['splits'] = splits;
+    }
     final res = await api.post<TransactionModel>(
       ApiRoutes.transaction,
-      body: dto.toJson(),
+      body: body,
       fromJsonT: (json) => TransactionModel.fromJson(json),
     );
     return res.unwrap();
@@ -103,11 +141,28 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
   @override
   Future<TransactionModel> updateTransaction(
     TransactionCreateDto dto,
-    int id,
-  ) async {
+    int id, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) async {
+    final body = Map<String, dynamic>.from(dto.toJson());
+    if (coupleId != null) {
+      body['coupleId'] = coupleId;
+    }
+    if (payerId != null) {
+      body['payerId'] = payerId;
+    }
+    if (splitMethod != null) {
+      body['splitMethod'] = splitMethod;
+    }
+    if (splits != null) {
+      body['splits'] = splits;
+    }
     final res = await api.put<TransactionModel>(
       '${ApiRoutes.transaction}/$id',
-      body: dto.toJson(),
+      body: body,
       fromJsonT: (json) => TransactionModel.fromJson(json),
     );
     return res.unwrap();

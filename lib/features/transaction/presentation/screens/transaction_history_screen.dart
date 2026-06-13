@@ -151,12 +151,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return _buildEmptyView();
       }
 
-      final Map<String, List<TransactionEntity>> grouped = {};
-      for (final t in filtered) {
-        final date = t.transactionDate ?? DateTime.now();
-        final header = AppHelperFunction.getGroupHeader(date);
-        grouped.putIfAbsent(header, () => []).add(t);
-      }
+      final grouped = AppHelperFunction.groupByDate(
+        filtered,
+        (t) => t.transactionDate,
+      );
 
       final List<Widget> listItems = [];
       grouped.forEach((header, txs) {
@@ -221,12 +219,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return _buildEmptyView();
       }
 
-      final Map<String, List<TransactionEntity>> grouped = {};
-      for (final t in filtered) {
-        final date = t.transactionDate ?? DateTime.now();
-        final header = AppHelperFunction.getGroupHeader(date);
-        grouped.putIfAbsent(header, () => []).add(t);
-      }
+      final grouped = AppHelperFunction.groupByDate(
+        filtered,
+        (t) => t.transactionDate,
+      );
 
       final List<Widget> listItems = [];
       grouped.forEach((header, txs) {

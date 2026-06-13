@@ -6,29 +6,33 @@ import 'package:money_care/app/widgets/icon/rounded_icon.dart';
 
 class SearchWithFilter extends StatelessWidget {
   final String? hintText;
-  final VoidCallback onFilterTap;
+  final VoidCallback? onFilterTap;
   final VoidCallback? onClearSearch;
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
   final bool hasActiveFilters;
   final int activeFilterCount;
+  final bool showFilter;
+  final EdgeInsetsGeometry? padding;
 
   const SearchWithFilter({
     super.key,
-    required this.onFilterTap,
+    this.onFilterTap,
     this.hintText,
     this.onClearSearch,
     this.onChanged,
     this.controller,
     this.hasActiveFilters = false,
     this.activeFilterCount = 0,
+    this.showFilter = true,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
     final effectiveHintText = hintText ?? 'transaction.searchHint'.tr;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
           Expanded(
@@ -81,53 +85,55 @@ class SearchWithFilter extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              RoundedIcon(
-                applyIconRadius: true,
-                iconPath: AppIcons.filter,
-                height: 44,
-                width: 44,
-                padding: const EdgeInsets.all(8),
-                backgroundColor: hasActiveFilters
-                    ? AppColors.primary
-                    : AppColors.backgroundPrimary,
-                border: Border.all(
-                  color: hasActiveFilters
+          if (showFilter) ...[
+            const SizedBox(width: 10),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                RoundedIcon(
+                  applyIconRadius: true,
+                  iconPath: AppIcons.filter,
+                  height: 44,
+                  width: 44,
+                  padding: const EdgeInsets.all(8),
+                  backgroundColor: hasActiveFilters
                       ? AppColors.primary
-                      : AppColors.borderSecondary,
+                      : AppColors.backgroundPrimary,
+                  border: Border.all(
+                    color: hasActiveFilters
+                        ? AppColors.primary
+                        : AppColors.borderSecondary,
+                  ),
+                  borderRadius: 14,
+                  color: hasActiveFilters ? Colors.white : AppColors.text2,
+                  onPressed: onFilterTap ?? () {},
                 ),
-                borderRadius: 14,
-                color: hasActiveFilters ? Colors.white : AppColors.text2,
-                onPressed: onFilterTap,
-              ),
-              if (hasActiveFilters)
-                Positioned(
-                  top: -4,
-                  right: -4,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondaryOrange,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '$activeFilterCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
+                if (hasActiveFilters)
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryOrange,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$activeFilterCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );

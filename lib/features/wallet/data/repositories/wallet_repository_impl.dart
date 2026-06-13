@@ -10,8 +10,8 @@ class WalletRepositoryImpl implements WalletRepository {
   WalletRepositoryImpl({required this.remoteDatasource});
 
   @override
-  Future<List<WalletEntity>> findAll() {
-    return remoteDatasource.findAll();
+  Future<List<WalletEntity>> findAll({int? coupleId}) {
+    return remoteDatasource.findAll(coupleId: coupleId);
   }
 
   @override

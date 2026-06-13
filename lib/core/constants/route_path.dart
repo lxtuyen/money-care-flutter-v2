@@ -34,6 +34,7 @@ class RoutePath {
   static const spendingPlanList = '/spending_plan';
   static const createSpendingPlan = '/create_spending_plan';
   static const spendingPlanDetail = '/spending_plan_detail';
+  static const coupleSpace = '/couple_space';
 
   static const createFund = createSavingGoal;
 }

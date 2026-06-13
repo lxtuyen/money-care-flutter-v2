@@ -68,10 +68,22 @@ class TransactionController extends GetxController {
     });
   }
 
-  Future<void> createTransaction(TransactionCreateDto dto) async {
+  Future<void> createTransaction(
+    TransactionCreateDto dto, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) async {
     isLoading.value = true;
     try {
-      await createTransactionUseCase(dto);
+      await createTransactionUseCase(
+        dto,
+        coupleId: coupleId,
+        payerId: payerId,
+        splitMethod: splitMethod,
+        splits: splits,
+      );
       await refreshAllData(dto.userId!);
 
       if (Get.isRegistered<GamificationController>()) {
@@ -89,10 +101,24 @@ class TransactionController extends GetxController {
     }
   }
 
-  Future<void> updateTransaction(TransactionCreateDto dto, int id) async {
+  Future<void> updateTransaction(
+    TransactionCreateDto dto,
+    int id, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) async {
     isLoading.value = true;
     try {
-      await updateTransactionUseCase(dto, id);
+      await updateTransactionUseCase(
+        dto,
+        id,
+        coupleId: coupleId,
+        payerId: payerId,
+        splitMethod: splitMethod,
+        splits: splits,
+      );
       await refreshAllData(dto.userId!);
       errorMessage.value = null;
     } catch (e) {

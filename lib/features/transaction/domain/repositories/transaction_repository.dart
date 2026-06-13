@@ -4,8 +4,9 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 abstract class TransactionRepository {
   Future<TransactionByTypeEntity> findAllByFilter(
     int userId,
-    TransactionFilterDto dto,
-  );
+    TransactionFilterDto dto, {
+    int? coupleId,
+  });
   Future<TotalByTypeEntity> getTotalByType(
     int userId,
     TransactionTotalsDto dto,
@@ -18,8 +19,21 @@ abstract class TransactionRepository {
     int userId,
     TransactionTotalsDto dto,
   );
-  Future<TransactionEntity> createTransaction(TransactionCreateDto dto);
-  Future<TransactionEntity> updateTransaction(TransactionCreateDto dto, int id);
+  Future<TransactionEntity> createTransaction(
+    TransactionCreateDto dto, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  });
+  Future<TransactionEntity> updateTransaction(
+    TransactionCreateDto dto,
+    int id, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  });
   Future<bool> deleteTransaction(int id);
   Future<StatisticsSummaryEntity> getStatisticsSummary(int userId);
   Future<bool> exportReport(

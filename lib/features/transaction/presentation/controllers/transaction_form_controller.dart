@@ -5,6 +5,7 @@ import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/core/utils/helper/date_picker_helper.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/transaction/data/models/transaction_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
@@ -24,6 +25,19 @@ class TransactionFormController extends GetxController {
   final subCategoryController = TextEditingController();
   final walletNameController = TextEditingController();
   final noteController = TextEditingController();
+  final payerNameController = TextEditingController();
+  final splitMethodNameController = TextEditingController();
+
+  // Couple-specific Fields
+  final isShared = false.obs;
+  final isSharedEditable = true.obs;
+  final selectedPayerId = RxnInt();
+  final splitMethod = 'none'.obs;
+
+  final splitPctMeController = TextEditingController();
+  final splitPctPartnerController = TextEditingController();
+  final splitAmtMeController = TextEditingController();
+  final splitAmtPartnerController = TextEditingController();
 
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final RxnInt selectedCategoryId = RxnInt();
@@ -51,6 +65,17 @@ class TransactionFormController extends GetxController {
     selectedSubCategoryId.value = null;
     selectedWalletId.value = null;
     selectedCategory = null;
+    
+    isShared.value = false;
+    isSharedEditable.value = true;
+    selectedPayerId.value = null;
+    splitMethod.value = 'none';
+    splitPctMeController.clear();
+    splitPctPartnerController.clear();
+    splitAmtMeController.clear();
+    splitAmtPartnerController.clear();
+    payerNameController.clear();
+    splitMethodNameController.clear();
   }
 
   void changeTransactionType(String type) {
@@ -60,12 +85,22 @@ class TransactionFormController extends GetxController {
     selectedCategory = null;
     categoryController.clear();
     subCategoryController.clear();
+    
+    if (type == 'income') {
+      splitMethod.value = 'none';
+    }
   }
 
   void init(TransactionEntity? item, [String type = 'expense']) {
     _clearFormState();
     transactionType = type;
     initialItem = item;
+
+    final hasActiveCouple = Get.isRegistered<CoupleController>() &&
+        Get.find<CoupleController>().couple.value?.isActive == true;
+
+    final args = Get.arguments as Map<String, dynamic>?;
+    final isSharedArg = args?['isShared'] == true;
 
     if (item != null) {
       selectedDate.value = item.transactionDate ?? DateTime.now();
@@ -78,9 +113,154 @@ class TransactionFormController extends GetxController {
       selectedCategory = _findLoadedCategory(item);
       selectedWalletId.value = item.walletId;
       walletNameController.text = item.walletName ?? '';
+
+      // Load shared transaction state
+      isShared.value = item.coupleId != null;
+      isSharedEditable.value = false; // Lock Chung/Riêng selection for existing transactions
+
+      if (item.coupleId != null) {
+        selectedPayerId.value = item.payerId;
+        splitMethod.value = item.splitMethod ?? 'none';
+
+        // Set Payer label
+        if (hasActiveCouple) {
+          final coupleController = Get.find<CoupleController>();
+          final coupleData = coupleController.couple.value;
+          if (coupleData != null) {
+            final payer = coupleData.members.firstWhereOrNull((m) => m.userId == item.payerId);
+            if (payer != null) {
+              payerNameController.text = payer.userId == appController.userId.value
+                  ? '${payer.fullName} (Bạn)'
+                  : payer.fullName;
+            }
+          }
+        }
+
+        // Set Split Method label
+        switch (splitMethod.value) {
+          case 'none':
+            splitMethodNameController.text = 'Không chia';
+            break;
+          case 'equal':
+            splitMethodNameController.text = 'Chia đều (50/50)';
+            break;
+          case 'percentage':
+            splitMethodNameController.text = 'Chia theo phần trăm (%)';
+            break;
+          case 'fixed':
+            splitMethodNameController.text = 'Chia theo số tiền cố định';
+            break;
+        }
+
+        final userId = appController.userId.value ?? 0;
+        if (item.splits != null && item.splits!.isNotEmpty) {
+          final splitMe = item.splits!.firstWhereOrNull((s) => s.userId == userId);
+          final splitPartner = item.splits!.firstWhereOrNull((s) => s.userId != userId);
+
+          if (splitMe != null) {
+            if (splitMe.percent != null) {
+              splitPctMeController.text = splitMe.percent!.toStringAsFixed(0);
+            }
+            splitAmtMeController.text = splitMe.amount.toStringAsFixed(0);
+          }
+          if (splitPartner != null) {
+            if (splitPartner.percent != null) {
+              splitPctPartnerController.text = splitPartner.percent!.toStringAsFixed(0);
+            }
+            splitAmtPartnerController.text = splitPartner.amount.toStringAsFixed(0);
+          }
+        }
+      }
     } else {
       selectedDate.value = DateTime.now();
-      // Ưu tiên chọn ví thường (không phải saving wallet) làm default
+      isSharedEditable.value = true;
+
+      if (isSharedArg && hasActiveCouple) {
+        isShared.value = true;
+        // Default to first shared wallet
+        if (Get.isRegistered<CoupleController>()) {
+          final coupleController = Get.find<CoupleController>();
+          if (coupleController.sharedWallets.isNotEmpty) {
+            final defaultSharedWallet = coupleController.sharedWallets.first;
+            selectedWalletId.value = defaultSharedWallet.id;
+            walletNameController.text = defaultSharedWallet.name;
+          }
+
+          // Default payer to me
+          final currentUserId = appController.userId.value;
+          selectedPayerId.value = currentUserId;
+          final coupleData = coupleController.couple.value;
+          if (coupleData != null && currentUserId != null) {
+            final me = coupleData.me(currentUserId);
+            if (me != null) {
+              payerNameController.text = '${me.fullName} (Bạn)';
+            }
+          }
+        }
+        splitMethod.value = 'none';
+        splitMethodNameController.text = 'Không chia';
+      } else {
+        // Default to personal wallet
+        final nonSavingWallet = walletController.wallets.firstWhereOrNull(
+          (w) => w.savingGoals.isEmpty,
+        );
+        final defaultWallet =
+            nonSavingWallet ?? walletController.selectedWallet.value;
+        if (defaultWallet != null) {
+          selectedWalletId.value = defaultWallet.id;
+          walletNameController.text = defaultWallet.name;
+        }
+      }
+
+      // If couple is active, default payer to me
+      if (hasActiveCouple && !isSharedArg) {
+        final currentUserId = appController.userId.value;
+        selectedPayerId.value = currentUserId;
+        final coupleController = Get.find<CoupleController>();
+        final coupleData = coupleController.couple.value;
+        if (coupleData != null && currentUserId != null) {
+          final me = coupleData.me(currentUserId);
+          if (me != null) {
+            payerNameController.text = '${me.fullName} (Bạn)';
+          }
+        }
+      }
+    }
+  }
+
+  void toggleShared(bool val) {
+    if (!isSharedEditable.value) return;
+    isShared.value = val;
+
+    // Reset selected wallet based on shared status
+    selectedWalletId.value = null;
+    walletNameController.clear();
+
+    if (val) {
+      // Switch to first shared wallet
+      if (Get.isRegistered<CoupleController>()) {
+        final coupleController = Get.find<CoupleController>();
+        if (coupleController.sharedWallets.isNotEmpty) {
+          final defaultSharedWallet = coupleController.sharedWallets.first;
+          selectedWalletId.value = defaultSharedWallet.id;
+          walletNameController.text = defaultSharedWallet.name;
+        }
+        
+        // Default payer to me
+        final currentUserId = appController.userId.value;
+        selectedPayerId.value = currentUserId;
+        final coupleData = coupleController.couple.value;
+        if (coupleData != null && currentUserId != null) {
+          final me = coupleData.me(currentUserId);
+          if (me != null) {
+            payerNameController.text = '${me.fullName} (Bạn)';
+          }
+        }
+      }
+      splitMethod.value = 'none';
+      splitMethodNameController.text = 'Không chia';
+    } else {
+      // Switch back to personal wallet
       final nonSavingWallet = walletController.wallets.firstWhereOrNull(
         (w) => w.savingGoals.isEmpty,
       );
@@ -90,6 +270,13 @@ class TransactionFormController extends GetxController {
         selectedWalletId.value = defaultWallet.id;
         walletNameController.text = defaultWallet.name;
       }
+      splitMethod.value = 'none';
+      splitPctMeController.clear();
+      splitPctPartnerController.clear();
+      splitAmtMeController.clear();
+      splitAmtPartnerController.clear();
+      payerNameController.clear();
+      splitMethodNameController.clear();
     }
   }
 
@@ -166,6 +353,55 @@ class TransactionFormController extends GetxController {
     walletNameController.text = name;
   }
 
+  void setPayer(int id, String name) {
+    selectedPayerId.value = id;
+    payerNameController.text = name;
+  }
+
+  void setSplitMethod(String method, String label) {
+    splitMethod.value = method;
+    splitMethodNameController.text = label;
+  }
+
+  List<Map<String, dynamic>>? buildSplitsPayload(int currentUserId, int? partnerUserId) {
+    if (transactionType != 'expense' || splitMethod.value == 'none') {
+      return null;
+    }
+
+    if (partnerUserId == null) return null;
+
+    final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
+    final amount = double.tryParse(rawValue) ?? 0.0;
+
+    if (splitMethod.value == 'equal') {
+      return [
+        {'userId': currentUserId, 'percent': 50},
+        {'userId': partnerUserId, 'percent': 50},
+      ];
+    } else if (splitMethod.value == 'percentage') {
+      final pctMe = double.tryParse(splitPctMeController.text.trim()) ?? 0.0;
+      final pctPartner = double.tryParse(splitPctPartnerController.text.trim()) ?? 0.0;
+      if (pctMe + pctPartner != 100) {
+        throw 'Tổng phần trăm phải bằng 100%';
+      }
+      return [
+        {'userId': currentUserId, 'percent': pctMe},
+        {'userId': partnerUserId, 'percent': pctPartner},
+      ];
+    } else if (splitMethod.value == 'fixed') {
+      final amtMe = double.tryParse(splitAmtMeController.text.trim()) ?? 0.0;
+      final amtPartner = double.tryParse(splitAmtPartnerController.text.trim()) ?? 0.0;
+      if (amtMe + amtPartner != amount) {
+        throw 'Tổng số tiền chia phải bằng số tiền giao dịch (${AppHelperFunction.formatAmount(amount)})';
+      }
+      return [
+        {'userId': currentUserId, 'amount': amtMe},
+        {'userId': partnerUserId, 'amount': amtPartner},
+      ];
+    }
+    return null;
+  }
+
   Future<void> submit() async {
     if (!formKey.currentState!.validate()) return;
     if (initialItem == null) {
@@ -183,7 +419,30 @@ class TransactionFormController extends GetxController {
     }
     try {
       final dto = buildTransactionDto();
-      await transactionController.createTransaction(dto);
+
+      if (isShared.value) {
+        final coupleController = Get.find<CoupleController>();
+        final coupleId = coupleController.couple.value?.id;
+        final partnerUserId = coupleController.couple.value?.partner(userId)?.userId;
+
+        List<Map<String, dynamic>>? splitsPayload;
+        try {
+          splitsPayload = buildSplitsPayload(userId, partnerUserId);
+        } catch (e) {
+          AppHelperFunction.showErrorSnackBar(e.toString());
+          return;
+        }
+
+        await transactionController.createTransaction(
+          dto,
+          coupleId: coupleId,
+          payerId: selectedPayerId.value ?? userId,
+          splitMethod: splitMethod.value,
+          splits: splitsPayload,
+        );
+      } else {
+        await transactionController.createTransaction(dto);
+      }
       Get.back();
       AppHelperFunction.showSuccessSnackBar('Tạo giao dịch thành công');
     } catch (e) {
@@ -199,9 +458,33 @@ class TransactionFormController extends GetxController {
     }
     try {
       final dto = buildTransactionDto();
-      await transactionController.updateTransaction(dto, initialItem!.id!);
+
+      if (isShared.value) {
+        final coupleController = Get.find<CoupleController>();
+        final coupleId = coupleController.couple.value?.id;
+        final partnerUserId = coupleController.couple.value?.partner(userId)?.userId;
+
+        List<Map<String, dynamic>>? splitsPayload;
+        try {
+          splitsPayload = buildSplitsPayload(userId, partnerUserId);
+        } catch (e) {
+          AppHelperFunction.showErrorSnackBar(e.toString());
+          return;
+        }
+
+        await transactionController.updateTransaction(
+          dto,
+          initialItem!.id!,
+          coupleId: coupleId,
+          payerId: selectedPayerId.value ?? userId,
+          splitMethod: splitMethod.value,
+          splits: splitsPayload,
+        );
+      } else {
+        await transactionController.updateTransaction(dto, initialItem!.id!);
+      }
       Get.back();
-      AppHelperFunction.showSuccessSnackBar('Cap nhat giao dich thanh cong');
+      AppHelperFunction.showSuccessSnackBar('Cập nhật giao dịch thành công');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
     }
@@ -214,6 +497,12 @@ class TransactionFormController extends GetxController {
     subCategoryController.dispose();
     walletNameController.dispose();
     noteController.dispose();
+    splitPctMeController.dispose();
+    splitPctPartnerController.dispose();
+    splitAmtMeController.dispose();
+    splitAmtPartnerController.dispose();
+    payerNameController.dispose();
+    splitMethodNameController.dispose();
     super.onClose();
   }
 }

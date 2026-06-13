@@ -1,0 +1,63 @@
+import 'package:fpdart/fpdart.dart';
+import 'package:money_care/core/errors/failure.dart';
+import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_budget_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
+
+abstract class CoupleRepository {
+  Future<Either<Failure, CoupleEntity?>> getCouple();
+  Future<Either<Failure, CoupleEntity>> createCouple();
+  Future<Either<Failure, CoupleEntity>> joinCouple(String inviteCode);
+  Future<Either<Failure, void>> cancelInvite();
+  Future<Either<Failure, void>> leaveCouple();
+  Future<Either<Failure, CoupleEntity>> updateSettings({
+    bool? sharePersonalTransactions,
+    bool? allowAiShare,
+  });
+  Future<Either<Failure, List<CoupleBudgetEntity>>> getBudgets(
+    int coupleId,
+    String month,
+  );
+  Future<Either<Failure, CoupleBudgetEntity>> setBudget({
+    required int coupleId,
+    required int categoryId,
+    required double amount,
+    required String month,
+  });
+  Future<Either<Failure, void>> deleteBudget(int id);
+
+  Future<Either<Failure, List<CoupleSavingGoalEntity>>> getSavingGoals(
+    int coupleId,
+  );
+  Future<Either<Failure, CoupleSavingGoalEntity>> createSavingGoal({
+    required int coupleId,
+    required String name,
+    required double target,
+    DateTime? endDate,
+  });
+  Future<Either<Failure, void>> contributeToSavingGoal({
+    required int goalId,
+    required double amount,
+  });
+  Future<Either<Failure, void>> deleteSavingGoal(int id);
+  Future<Either<Failure, CoupleSettlementSummaryEntity>> getSettlementSummary(
+    int coupleId,
+  );
+  Future<Either<Failure, void>> settleUp(int coupleId);
+  Future<Either<Failure, void>> settleUpSingle({
+    required int coupleId,
+    required int transactionId,
+  });
+  Future<Either<Failure, CoupleReportEntity>> getReport(
+    int coupleId,
+    String month,
+  );
+  Future<Either<Failure, CoupleSpendingAlertEntity>> markAlertRead(int alertId);
+  Future<Either<Failure, CoupleSpendingAlertEntity>> updateAlert({
+    required int alertId,
+    String? status,
+    String? feedback,
+  });
+}

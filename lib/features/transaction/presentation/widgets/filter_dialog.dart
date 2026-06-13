@@ -16,6 +16,8 @@ class FilterDialog extends StatefulWidget {
     this.items,
     this.categories,
     this.wallets,
+    this.genericItems,
+    this.initialSelectedId,
     required this.onApply,
   });
 
@@ -23,6 +25,8 @@ class FilterDialog extends StatefulWidget {
   final List<String>? items;
   final List<CategoryEntity>? categories;
   final List<WalletEntity>? wallets;
+  final List<String>? genericItems;
+  final String? initialSelectedId;
   final ValueChanged<FilterResult> onApply;
 
   @override
@@ -43,13 +47,20 @@ class _FilterDialogState extends State<FilterDialog> {
   void initState() {
     super.initState();
 
-    if (isDateDialog) {
-      selectedId = filterController.dateLabel.value;
-      selectedDateLabel = filterController.dateLabel.value;
-    } else if (widget.wallets != null) {
-      selectedId = filterController.walletId.value?.toString();
+    if (widget.initialSelectedId != null) {
+      selectedId = widget.initialSelectedId;
+      if (isDateDialog) {
+        selectedDateLabel = widget.initialSelectedId;
+      }
     } else {
-      selectedId = filterController.categoryId.value?.toString();
+      if (isDateDialog) {
+        selectedId = filterController.dateLabel.value;
+        selectedDateLabel = filterController.dateLabel.value;
+      } else if (widget.wallets != null) {
+        selectedId = filterController.walletId.value?.toString();
+      } else {
+        selectedId = filterController.categoryId.value?.toString();
+      }
     }
 
     startDate = filterController.startDate.value;
@@ -210,6 +221,24 @@ class _FilterDialogState extends State<FilterDialog> {
   }
 
   List<Widget> _buildChoiceWidgets() {
+    if (widget.genericItems != null) {
+      return widget.genericItems!
+          .map((item) {
+            final isSelected = selectedId == item;
+            return CustomChoiceChip(
+              text: item,
+              isSelected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  selectedId = selected ? item : null;
+                });
+              },
+            );
+          })
+          .toList()
+          .cast<Widget>();
+    }
+
     if (isDateDialog) {
       return widget.items!
           .map((item) {
@@ -321,6 +350,12 @@ class _FilterDialogState extends State<FilterDialog> {
   }
 
   String _buildSummaryText() {
+    if (widget.genericItems != null) {
+      return selectedId != null
+          ? 'Đang chọn: $selectedId'
+          : 'Chưa chọn giá trị nào';
+    }
+
     if (isDateDialog) {
       return selectedDateLabel != null
           ? 'filter.selectingDate'.tr.replaceAll('@label', selectedDateLabel!)
@@ -370,16 +405,18 @@ class _FilterDialogState extends State<FilterDialog> {
       selectedDateLabel = null;
     });
 
-    if (widget.categories != null) {
-      filterController.updateCategory(null);
-    } else if (widget.wallets != null) {
-      filterController.updateWallet(null);
-    } else {
-      filterController.updateDateRange(
-        null,
-        null,
-        label: FilterController.defaultDateLabel,
-      );
+    if (widget.initialSelectedId == null && widget.genericItems == null) {
+      if (widget.categories != null) {
+        filterController.updateCategory(null);
+      } else if (widget.wallets != null) {
+        filterController.updateWallet(null);
+      } else {
+        filterController.updateDateRange(
+          null,
+          null,
+          label: FilterController.defaultDateLabel,
+        );
+      }
     }
 
     widget.onApply(
@@ -389,24 +426,26 @@ class _FilterDialogState extends State<FilterDialog> {
   }
 
   void _applySelection() {
-    if (widget.categories != null) {
-      filterController.updateCategory(
-        selectedId != null ? int.tryParse(selectedId!) : null,
-      );
-    } else if (widget.wallets != null) {
-      filterController.updateWallet(
-        selectedId != null ? int.tryParse(selectedId!) : null,
-      );
-    } else {
-      if (selectedId == null || startDate == null || endDate == null) {
-        return;
-      }
+    if (widget.initialSelectedId == null && widget.genericItems == null) {
+      if (widget.categories != null) {
+        filterController.updateCategory(
+          selectedId != null ? int.tryParse(selectedId!) : null,
+        );
+      } else if (widget.wallets != null) {
+        filterController.updateWallet(
+          selectedId != null ? int.tryParse(selectedId!) : null,
+        );
+      } else {
+        if (selectedId == null || startDate == null || endDate == null) {
+          return;
+        }
 
-      filterController.updateDateRange(
-        startDate,
-        endDate,
-        label: selectedDateLabel ?? selectedId,
-      );
+        filterController.updateDateRange(
+          startDate,
+          endDate,
+          label: selectedDateLabel ?? selectedId,
+        );
+      }
     }
 
     Get.back();

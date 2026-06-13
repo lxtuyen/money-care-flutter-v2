@@ -144,6 +144,15 @@ class TransactionDetail extends StatelessWidget {
                         label: 'transaction.walletLabel'.tr,
                         value: item.walletName ?? 'Chưa xác định',
                       ),
+                      if (item.coupleId != null && item.payerName != null) ...[
+                        const Divider(height: 24),
+                        _buildDetailRow(
+                          context,
+                          icon: Icons.person_outline,
+                          label: 'transaction.payerLabel'.tr,
+                          value: item.payerId == userId ? 'Bạn' : item.payerName!,
+                        ),
+                      ],
                       const Divider(height: 24),
                       _buildDetailRow(
                         context,

@@ -7,10 +7,12 @@ import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
+import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/transaction_form_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/transaction/presentation/widgets/category_sheet.dart';
+import 'package:money_care/features/transaction/presentation/widgets/transaction_couple_fields.dart';
 import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -89,6 +91,41 @@ class _TransactionFormState extends State<TransactionForm> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                if (Get.isRegistered<CoupleController>())
+                                  Obx(() {
+                                    final hasActiveCouple = Get.find<CoupleController>().couple.value?.isActive == true;
+                                    if (!hasActiveCouple) return const SizedBox.shrink();
+
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SwitchListTile(
+                                          title: const Text(
+                                            'Giao dịch chung',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            controller.isShared.value
+                                                ? 'Giao dịch này sẽ ghi vào ví chung và chia sẻ với đối phương'
+                                                : 'Giao dịch cá nhân của riêng bạn',
+                                            style: const TextStyle(fontSize: 12),
+                                          ),
+                                          value: controller.isShared.value,
+                                          onChanged: controller.isSharedEditable.value
+                                              ? (val) => controller.toggleShared(val)
+                                              : null, // disabled when editing
+                                          activeColor: Theme.of(context).primaryColor,
+                                          contentPadding: EdgeInsets.zero,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Divider(),
+                                        const SizedBox(height: 10),
+                                      ],
+                                    );
+                                  }),
                                 DatePickerField(
                                   selectedDate: controller.selectedDate,
                                   label: 'transaction.dateLabel'.tr,
@@ -119,8 +156,9 @@ class _TransactionFormState extends State<TransactionForm> {
                                       ? 'transaction.walletRequired'.tr
                                       : null,
                                   onTap: () {
-                                    final wallets =
-                                        controller.walletController.wallets;
+                                    final wallets = controller.isShared.value
+                                        ? Get.find<CoupleController>().sharedWallets
+                                        : controller.walletController.wallets;
                                     showDialog(
                                       context: context,
                                       builder: (context) => SelectionDialog(
@@ -242,6 +280,14 @@ class _TransactionFormState extends State<TransactionForm> {
                                   },
                                   readOnly: true,
                                 ),
+                                Obx(() {
+                                  if (controller.isShared.value) {
+                                    return TransactionCoupleFields(
+                                      controller: controller,
+                                    );
+                                  }
+                                  return const SizedBox.shrink();
+                                }),
                                 const SizedBox(height: 20),
                                 AppTextFormField(
                                   controller: controller.noteController,

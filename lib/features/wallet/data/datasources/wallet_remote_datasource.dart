@@ -5,7 +5,7 @@ import 'package:money_care/features/wallet/data/models/update_wallet_dto.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 
 abstract class WalletRemoteDatasource {
-  Future<List<WalletEntity>> findAll();
+  Future<List<WalletEntity>> findAll({int? coupleId});
   Future<WalletEntity> findOne(int id);
   Future<WalletEntity> create(Map<String, dynamic> data);
   Future<WalletEntity> update(int id, UpdateWalletDto dto);
@@ -20,9 +20,12 @@ class WalletRemoteDatasourceImpl implements WalletRemoteDatasource {
   WalletRemoteDatasourceImpl({required this.api});
 
   @override
-  Future<List<WalletEntity>> findAll() async {
+  Future<List<WalletEntity>> findAll({int? coupleId}) async {
+    final path = coupleId != null
+        ? '${ApiRoutes.wallets}?coupleId=$coupleId'
+        : ApiRoutes.wallets;
     final res = await api.get<List<WalletEntity>>(
-      ApiRoutes.wallets,
+      path,
       fromJsonT: (json) {
         final list = json as List<dynamic>;
         return list.map((e) => WalletEntity.fromJson(e)).toList();

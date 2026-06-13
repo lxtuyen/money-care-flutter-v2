@@ -26,6 +26,11 @@ abstract class TransactionModel with _$TransactionModel {
     CategoryModel? category,
     SubCategoryModel? subCategory,
     WalletModel? wallet,
+    @JsonKey(name: 'payer_id') int? payerId,
+    @JsonKey(name: 'couple_id') int? coupleId,
+    int? creatorId,
+    String? creatorName,
+    Map<String, dynamic>? payer,
   }) = _TransactionModel;
 
   const TransactionModel._();
@@ -46,5 +51,10 @@ abstract class TransactionModel with _$TransactionModel {
     subCategory: subCategory?.toEntity(),
     walletId: wallet?.id,
     walletName: wallet?.name,
+    payerId: payerId ?? payer?['id'] as int?,
+    payerName: payer?['fullName']?.toString(),
+    coupleId: coupleId,
+    creatorId: creatorId,
+    creatorName: creatorName,
   );
 }

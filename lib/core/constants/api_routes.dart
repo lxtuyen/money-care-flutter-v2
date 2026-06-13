@@ -43,4 +43,5 @@ class ApiRoutes {
 
   static const splitSession = 'split-session';
   static const gamification = 'gamification';
+  static const couples = 'couples';
 }

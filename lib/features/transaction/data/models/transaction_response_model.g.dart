@@ -33,6 +33,11 @@ _TransactionModel _$TransactionModelFromJson(Map<String, dynamic> json) =>
       wallet: json['wallet'] == null
           ? null
           : WalletModel.fromJson(json['wallet'] as Map<String, dynamic>),
+      payerId: (json['payer_id'] as num?)?.toInt(),
+      coupleId: (json['couple_id'] as num?)?.toInt(),
+      creatorId: (json['creatorId'] as num?)?.toInt(),
+      creatorName: json['creatorName'] as String?,
+      payer: json['payer'] as Map<String, dynamic>?,
     );
 
 Map<String, dynamic> _$TransactionModelToJson(_TransactionModel instance) =>
@@ -48,4 +53,9 @@ Map<String, dynamic> _$TransactionModelToJson(_TransactionModel instance) =>
       'category': instance.category,
       'subCategory': instance.subCategory,
       'wallet': instance.wallet,
+      'payer_id': instance.payerId,
+      'couple_id': instance.coupleId,
+      'creatorId': instance.creatorId,
+      'creatorName': instance.creatorName,
+      'payer': instance.payer,
     };

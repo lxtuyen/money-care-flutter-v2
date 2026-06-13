@@ -12,9 +12,10 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<TransactionByTypeEntity> findAllByFilter(
     int userId,
-    TransactionFilterDto dto,
-  ) async {
-    final model = await remoteDatasource.findAllByFilter(userId, dto);
+    TransactionFilterDto dto, {
+    int? coupleId,
+  }) async {
+    final model = await remoteDatasource.findAllByFilter(userId, dto, coupleId: coupleId);
     return model.toEntity();
   }
 
@@ -46,17 +47,40 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<TransactionEntity> createTransaction(TransactionCreateDto dto) async {
-    final model = await remoteDatasource.createTransaction(dto);
+  Future<TransactionEntity> createTransaction(
+    TransactionCreateDto dto, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) async {
+    final model = await remoteDatasource.createTransaction(
+      dto,
+      coupleId: coupleId,
+      payerId: payerId,
+      splitMethod: splitMethod,
+      splits: splits,
+    );
     return model.toEntity();
   }
 
   @override
   Future<TransactionEntity> updateTransaction(
     TransactionCreateDto dto,
-    int id,
-  ) async {
-    final model = await remoteDatasource.updateTransaction(dto, id);
+    int id, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) async {
+    final model = await remoteDatasource.updateTransaction(
+      dto,
+      id,
+      coupleId: coupleId,
+      payerId: payerId,
+      splitMethod: splitMethod,
+      splits: splits,
+    );
     return model.toEntity();
   }
 

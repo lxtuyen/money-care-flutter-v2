@@ -37,6 +37,8 @@ import 'package:money_care/features/saving_goal/presentation/bindings/saving_goa
 import 'package:money_care/features/user/presentation/bindings/user_binding.dart';
 import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.dart';
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
+import 'package:money_care/features/couple/presentation/screens/couple_space_screen.dart';
+import 'package:money_care/features/couple/presentation/bindings/couple_binding.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -198,5 +200,10 @@ final List<GetPage> appPages = [
     binding: SpendingPlanBinding(),
     transition: Transition.rightToLeft,
   ),
-
+  GetPage(
+    name: RoutePath.coupleSpace,
+    page: () => const CoupleSpaceScreen(),
+    binding: CoupleBinding(),
+    transition: Transition.rightToLeft,
+  ),
 ];

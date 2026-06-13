@@ -7,7 +7,21 @@ class UpdateTransactionUseCase {
 
   UpdateTransactionUseCase(this.repository);
 
-  Future<TransactionEntity> call(TransactionCreateDto dto, int id) {
-    return repository.updateTransaction(dto, id);
+  Future<TransactionEntity> call(
+    TransactionCreateDto dto,
+    int id, {
+    int? coupleId,
+    int? payerId,
+    String? splitMethod,
+    List<Map<String, dynamic>>? splits,
+  }) {
+    return repository.updateTransaction(
+      dto,
+      id,
+      coupleId: coupleId,
+      payerId: payerId,
+      splitMethod: splitMethod,
+      splits: splits,
+    );
   }
 }

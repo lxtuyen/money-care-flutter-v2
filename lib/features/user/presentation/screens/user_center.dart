@@ -63,6 +63,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       title: 'Ví của tôi',
                       onTap: () => Get.toNamed(RoutePath.wallets),
                     ),
+                    UserMenuItem(
+                      icon: Icons.favorite_border,
+                      title: 'profile.coupleSpace'.tr,
+                      onTap: () => Get.toNamed(RoutePath.coupleSpace),
+                    ),
 
                     UserMenuItem(
                       icon: Icons.exit_to_app,

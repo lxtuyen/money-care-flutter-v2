@@ -20,6 +20,7 @@ class TransactionItem extends StatelessWidget {
     this.trailingAction,
     this.trailingInlineAction,
     this.showAmountSign = true,
+    this.currentUserId,
   });
 
   final TransactionEntity item;
@@ -34,6 +35,7 @@ class TransactionItem extends StatelessWidget {
   final Widget? trailingAction;
   final Widget? trailingInlineAction;
   final bool showAmountSign;
+  final int? currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +99,46 @@ class TransactionItem extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    if (item.walletName != null || (item.coupleId != null && item.payerName != null)) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          if (item.walletName != null) ...[
+                            Icon(
+                              Icons.wallet,
+                              size: 10,
+                              color: AppThemeColors.of(context).textSecondary.withValues(alpha: 0.6),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              item.walletName!,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: AppThemeColors.of(context).textSecondary,
+                              ),
+                            ),
+                          ],
+                          if (item.walletName != null && (item.coupleId != null && item.payerName != null))
+                            const SizedBox(width: 8),
+                          if (item.coupleId != null && item.payerName != null) ...[
+                            Icon(
+                              Icons.person,
+                              size: 10,
+                              color: AppThemeColors.of(context).textSecondary.withValues(alpha: 0.6),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              item.payerId == currentUserId ? 'Bạn trả' : item.payerName!,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: AppThemeColors.of(context).textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
                     if (detail != null) ...[const SizedBox(height: 4), detail!],
                   ],
                 ),

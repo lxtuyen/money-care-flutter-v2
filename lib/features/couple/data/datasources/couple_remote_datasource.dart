@@ -34,6 +34,8 @@ abstract class CoupleRemoteDatasource {
     String? name,
     double? target,
     DateTime? endDate,
+    String? status,
+    bool? completionNotified,
   });
   Future<CoupleSettlementSummaryEntity> getSettlementSummary(int coupleId);
   Future<void> settleUp(int coupleId);
@@ -192,6 +194,8 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
     String? name,
     double? target,
     DateTime? endDate,
+    String? status,
+    bool? completionNotified,
   }) async {
     final res = await api.patch<CoupleSavingGoalEntity>(
       '${ApiRoutes.couples}/savings/$id',
@@ -199,6 +203,8 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
         'name': ?name,
         'target': ?target,
         'end_date': ?endDate?.toIso8601String(),
+        'status': ?status,
+        'completion_notified': ?completionNotified,
       },
       fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
     );

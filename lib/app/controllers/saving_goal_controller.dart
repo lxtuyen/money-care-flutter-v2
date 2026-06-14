@@ -519,7 +519,7 @@ class SavingGoalController extends GetxController {
 
       await completeGoalEarly(goalId);
 
-      await walletController.deleteWallet(sourceWalletId);
+      await walletController.deleteWallet(sourceWalletId, showSuccessMessage: false);
 
       AppHelperFunction.showSuccessSnackBar(
         'Đã chuyển tiền và đóng ví mục tiêu thành công',

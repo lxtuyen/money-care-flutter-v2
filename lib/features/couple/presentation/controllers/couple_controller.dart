@@ -17,6 +17,8 @@ import 'package:money_care/features/couple/domain/entities/couple_saving_goal_en
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
 
+import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+
 part 'couple_finance_actions.dart';
 part 'couple_savings_settlement_actions.dart';
 part 'couple_report_actions.dart';
@@ -77,6 +79,7 @@ class CoupleController extends GetxController {
       Rxn<CoupleSettlementSummaryEntity>();
   final RxBool isSavingsLoading = false.obs;
   final RxBool isSettlementLoading = false.obs;
+  final RxBool isSettlingSharedGoal = false.obs;
   final Rxn<CoupleReportEntity> coupleReport = Rxn<CoupleReportEntity>();
   final RxBool isReportLoading = false.obs;
   final RxString alertFilter = 'all'.obs;

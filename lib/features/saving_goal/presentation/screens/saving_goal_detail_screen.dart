@@ -123,15 +123,17 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
               children: [
-                Expanded(
-                  child: AppActionButton(
-                    onTap: _showEditDialog,
-                    icon: Icons.edit_outlined,
-                    label: "Chỉnh sửa",
-                    color: AppColors.primary,
+                if (!goal.isCompleted) ...[
+                  Expanded(
+                    child: AppActionButton(
+                      onTap: _showEditDialog,
+                      icon: Icons.edit_outlined,
+                      label: "Chỉnh sửa",
+                      color: AppColors.primary,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
+                ],
                 Expanded(
                   child: AppActionButton(
                     onTap: _confirmDelete,

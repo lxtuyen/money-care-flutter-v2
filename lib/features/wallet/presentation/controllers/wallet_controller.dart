@@ -92,7 +92,7 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<bool> deleteWallet(int id) async {
+  Future<bool> deleteWallet(int id, {bool showSuccessMessage = true}) async {
     final wallet = wallets.firstWhereOrNull((item) => item.id == id);
     if (wallet != null && wallet.balance != 0) {
       AppHelperFunction.showWarningSnackBar('Không thể xóa ví đang có số dư');
@@ -103,7 +103,9 @@ class WalletController extends GetxController {
     try {
       await repository.delete(id);
       await refreshWallets();
-      AppHelperFunction.showSuccessSnackBar('Đã xóa ví thành công');
+      if (showSuccessMessage) {
+        AppHelperFunction.showSuccessSnackBar('Đã xóa ví thành công');
+      }
       return true;
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Xóa ví thất bại: $e');
@@ -131,16 +133,19 @@ class WalletController extends GetxController {
           categoryId: categoryId,
         ),
       );
-      await refreshWallets();
-
       final appController = Get.find<AppController>();
       final userId = appController.userId.value;
-      if (userId != null) {
-        if (Get.isRegistered<SavingGoalController>()) {
-          final savingGoalController = Get.find<SavingGoalController>();
-          await savingGoalController.loadGoals(userId);
-          if (savingGoalController.goalId.value > 0) {
-            await savingGoalController.loadGoalById();
+      if (userId != null && Get.isRegistered<TransactionController>()) {
+        await Get.find<TransactionController>().refreshAllData(userId);
+      } else {
+        await refreshWallets();
+        if (userId != null) {
+          if (Get.isRegistered<SavingGoalController>()) {
+            final savingGoalController = Get.find<SavingGoalController>();
+            await savingGoalController.loadGoals(userId);
+            if (savingGoalController.goalId.value > 0) {
+              await savingGoalController.loadGoalById();
+            }
           }
         }
       }

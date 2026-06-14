@@ -54,6 +54,7 @@ class CoupleSavingGoalEntity {
   final double savedAmount;
   final DateTime? endDate;
   final String status;
+  final bool completionNotified;
   final List<CoupleSavingGoalMemberProgress> memberContributions;
   final List<CoupleSavingGoalContribution> contributions;
   final int? walletId;
@@ -66,6 +67,7 @@ class CoupleSavingGoalEntity {
     required this.savedAmount,
     this.endDate,
     required this.status,
+    required this.completionNotified,
     required this.memberContributions,
     required this.contributions,
     this.walletId,
@@ -93,6 +95,7 @@ class CoupleSavingGoalEntity {
           ? DateTime.parse(json['end_date'])
           : null,
       status: json['status'] ?? 'active',
+      completionNotified: json['completion_notified'] as bool? ?? false,
       memberContributions: memberContribs,
       contributions: contribList,
       walletId: json['walletId'] as int?,

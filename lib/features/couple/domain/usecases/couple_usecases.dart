@@ -102,12 +102,16 @@ class UpdateCoupleSavingGoalUseCase {
     String? name,
     double? target,
     DateTime? endDate,
+    String? status,
+    bool? completionNotified,
   }) =>
       repository.updateSavingGoal(
         id: id,
         name: name,
         target: target,
         endDate: endDate,
+        status: status,
+        completionNotified: completionNotified,
       );
 }
 

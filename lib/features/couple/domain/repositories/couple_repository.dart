@@ -36,6 +36,8 @@ abstract class CoupleRepository {
     String? name,
     double? target,
     DateTime? endDate,
+    String? status,
+    bool? completionNotified,
   });
   Future<Either<Failure, CoupleSettlementSummaryEntity>> getSettlementSummary(
     int coupleId,

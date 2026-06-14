@@ -159,10 +159,11 @@ class SavingGoalItemCard extends StatelessWidget {
                     if (value == 'delete') onDelete();
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'edit',
-                      child: Text('Chỉnh sửa'),
-                    ),
+                    if (!fund.isCompleted)
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Text('Chỉnh sửa'),
+                      ),
                     const PopupMenuItem(
                       value: 'delete',
                       child: Text('Xóa', style: TextStyle(color: Colors.red)),

@@ -5,6 +5,9 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_saving_plan_section.dart';
+import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 
 class CoupleSavingGoalCard extends StatefulWidget {
   final CoupleSavingGoalEntity goal;
@@ -60,6 +63,12 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
             // Progress Text
             _buildProgress(primaryColor, progress, isCompleted),
 
+            // Monthly Plan Section (only for active goals)
+            if (!isCompleted) ...[
+              const SizedBox(height: 16),
+              CoupleSavingPlanSection(goal: goal),
+            ],
+
             const SizedBox(height: 16),
 
             // Member Breakdown with accordion
@@ -91,7 +100,7 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
                 goal.name.toUpperCase(),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isCompleted ? Colors.green : Colors.black87,
+                  color: Colors.black87,
                 ),
               ),
               if (goal.endDate != null) ...[
@@ -157,16 +166,17 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
                 }
               },
               itemBuilder: (BuildContext context) => [
-                const PopupMenuItem<String>(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit_outlined, size: 20),
-                      SizedBox(width: 8),
-                      Text('Chỉnh sửa'),
-                    ],
+                if (!isCompleted)
+                  const PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_outlined, size: 20),
+                        SizedBox(width: 8),
+                        Text('Chỉnh sửa'),
+                      ],
+                    ),
                   ),
-                ),
                 const PopupMenuItem<String>(
                   value: 'delete',
                   child: Row(
@@ -211,9 +221,7 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
             value: progress,
             minHeight: 8,
             backgroundColor: Colors.grey[100],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              isCompleted ? Colors.green : primaryColor,
-            ),
+            valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
           ),
         ),
         const SizedBox(height: 6),
@@ -407,7 +415,125 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
     );
   }
 
+  void _showSettlementPicker(BuildContext context) {
+    // Filter out the goal's own wallet from shared wallets
+    final wallets = controller.sharedWallets
+        .where((w) => w.id != goal.walletId)
+        .toList();
+
+    if (wallets.isEmpty) {
+      AppHelperFunction.showErrorSnackBar('Không tìm thấy ví chung nào khác để nhận quyết toán.');
+      return;
+    }
+
+    // Default to the first wallet or the one named "Ví chung"
+    int? selectedWalletId = wallets.firstWhereOrNull((w) => w.name == 'Ví chung')?.id ?? wallets.first.id;
+
+    Get.bottomSheet(
+      StatefulBuilder(
+        builder: (ctx, setStateSheet) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Quyết toán Quỹ Tiết Kiệm Chung',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Toàn bộ số dư tích lũy được (${AppHelperFunction.formatAmount(goal.savedAmount)}) sẽ được chuyển về ví nhận và ví tiết kiệm chung này sẽ được đóng.',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.4),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Chọn ví chung nhận tiền:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<int>(
+                  initialValue: selectedWalletId,
+                  dropdownColor: Colors.white,
+                  style: const TextStyle(color: Colors.black87, fontSize: 14),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  items: wallets.map((w) {
+                    return DropdownMenuItem<int>(
+                      value: w.id,
+                      child: Text('${w.name} (${AppHelperFunction.formatAmount(w.balance)})'),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setStateSheet(() {
+                      selectedWalletId = val;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
+                PrimaryButton(
+                  label: 'Xác nhận Quyết toán',
+                  onPressed: () async {
+                    if (selectedWalletId == null) return;
+                    Get.back();
+                    await controller.completeSharedSavingGoalWithTransfer(
+                      goalId: goal.id,
+                      sourceWalletId: goal.walletId!,
+                      destinationWalletId: selectedWalletId!,
+                      amount: goal.savedAmount,
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      ),
+      isScrollControlled: true,
+    );
+  }
+
   Widget _buildContributeButton(Color primaryColor) {
+    if (goal.walletId == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(
+          child: Text(
+            'Đã hoàn thành',
+            style: TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final isCompleted = goal.status == 'completed' || goal.savedAmount >= goal.target;
+    if (isCompleted) {
+      return PrimaryButton(
+        label: 'Quyết toán & Đóng Quỹ',
+        onPressed: () => _showSettlementPicker(context),
+        elevation: 0,
+        borderRadius: 12,
+        height: 40,
+        fontSize: 13,
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -437,29 +563,13 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
   }
 
   void _confirmDeleteGoal(BuildContext context, CoupleSavingGoalEntity goal) {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Xóa Quỹ Tiết Kiệm Chung'),
-          content: Text(
-            'Bạn có chắc chắn muốn xóa quỹ "${goal.name}"? Dữ liệu đóng góp và ví tiết kiệm sẽ bị xóa vĩnh viễn.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Hủy'),
-            ),
-            TextButton(
-              onPressed: () {
-                controller.deleteSharedSavingGoal(goal.id);
-                Navigator.of(ctx).pop();
-              },
-              child: const Text('Xóa', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
+    AppConfirmDialog.show(
+      title: 'Xóa Quỹ Tiết Kiệm Chung',
+      message:
+          'Bạn có chắc chắn muốn xóa quỹ "${goal.name}"? Dữ liệu đóng góp và ví tiết kiệm sẽ bị xóa vĩnh viễn.',
+      confirmText: 'Xóa',
+      cancelText: 'Hủy',
+      onConfirm: () => controller.deleteSharedSavingGoal(goal.id),
     );
   }
 }

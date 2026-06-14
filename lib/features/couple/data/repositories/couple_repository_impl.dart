@@ -187,6 +187,8 @@ class CoupleRepositoryImpl implements CoupleRepository {
     String? name,
     double? target,
     DateTime? endDate,
+    String? status,
+    bool? completionNotified,
   }) async {
     try {
       final goal = await remoteDatasource.updateSavingGoal(
@@ -194,6 +196,8 @@ class CoupleRepositoryImpl implements CoupleRepository {
         name: name,
         target: target,
         endDate: endDate,
+        status: status,
+        completionNotified: completionNotified,
       );
       return Right(goal);
     } on NetworkException catch (e) {

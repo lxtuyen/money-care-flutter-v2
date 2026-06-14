@@ -7,6 +7,7 @@ import 'package:money_care/features/couple/domain/entities/couple_message_entity
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_screen.dart';
 
 class CoupleChatView extends StatelessWidget {
   final CoupleController controller;
@@ -196,6 +197,8 @@ class CoupleChatView extends StatelessWidget {
                     (message.metadata!['__type'] == 'saving_contribution_completed' ||
                      message.metadata!['__type'] == 'saving_goal_completed'))
                   _buildSavingContributionCompletedCard(context, message, colors)
+                else if (message.metadata != null && message.metadata!['__type'] == 'couple_photo_transaction')
+                  _buildCouplePhotoTransactionCard(context, message, isMe, colors)
                 else
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -633,6 +636,166 @@ class CoupleChatView extends StatelessWidget {
     );
   }
 
+  Widget _buildCouplePhotoTransactionCard(
+    BuildContext context,
+    CoupleMessageEntity message,
+    bool isMe,
+    AppThemeColors colors,
+  ) {
+    final meta = message.metadata!;
+    final amount = (meta['amount'] as num?)?.toDouble() ?? 0.0;
+    final categoryName = meta['categoryName'] as String? ?? 'Chi tiêu';
+    final categoryIcon = meta['categoryIcon'] as String? ?? '💸';
+    final note = meta['note'] as String? ?? '';
+    final pictureUrl = meta['pictureURL'] as String? ?? '';
+    final payerName = meta['payerName'] as String? ?? 'Thành viên';
+
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return Container(
+      width: 260,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.cardBackground,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(16),
+          topRight: const Radius.circular(16),
+          bottomLeft: Radius.circular(isMe ? 16 : 4),
+          bottomRight: Radius.circular(isMe ? 4 : 16),
+        ),
+        border: Border.all(color: colors.borderSecondary),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (pictureUrl.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                pictureUrl,
+                width: double.infinity,
+                height: 150,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 150,
+                    color: colors.surfaceBackground,
+                    child: const Icon(Icons.broken_image_outlined, size: 40),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+          Row(
+            children: [
+              Text(
+                categoryIcon,
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      categoryName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                    if (note.isNotEmpty)
+                      Text(
+                        note,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Divider(color: colors.borderSecondary, height: 1),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Số tiền:',
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+              ),
+              Text(
+                AppHelperFunction.formatAmount(amount),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: primaryColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Trả bởi:',
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+              ),
+              Text(
+                payerName,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Chia sẻ:',
+                style: TextStyle(fontSize: 11, color: colors.textMuted),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  'Chia đôi 50/50',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildAvatar(String? avatarUrl, String? name) {
     if (avatarUrl != null && avatarUrl.isNotEmpty) {
       return CircleAvatar(
@@ -682,6 +845,18 @@ class CoupleChatView extends StatelessWidget {
       ),
       child: Row(
         children: [
+          IconButton(
+            icon: Icon(
+              Icons.add_photo_alternate_outlined,
+              color: primaryColor,
+            ),
+            onPressed: () => Get.to(() => CouplePhotoTransactionScreen(
+              coupleController: controller,
+            )),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: textController,

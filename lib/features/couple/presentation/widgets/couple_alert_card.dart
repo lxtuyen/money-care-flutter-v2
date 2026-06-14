@@ -15,11 +15,6 @@ class CoupleAlertCard extends StatelessWidget {
       return _buildStructuredAlertCard(context);
     }
 
-    final color = alert.severity == 'high'
-        ? Colors.red
-        : alert.severity == 'medium'
-        ? Colors.orange
-        : Colors.blueGrey;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),

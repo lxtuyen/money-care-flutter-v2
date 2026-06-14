@@ -111,6 +111,7 @@ extension CoupleFinanceActions on CoupleController {
     DateTime? date,
     String? splitMethod,
     List<Map<String, dynamic>>? splits,
+    String? pictureUrl,
   }) async {
     await _saveSharedTransaction(
       amount: amount,
@@ -123,6 +124,7 @@ extension CoupleFinanceActions on CoupleController {
       date: date,
       splitMethod: splitMethod,
       splits: splits,
+      pictureUrl: pictureUrl,
     );
   }
 
@@ -138,6 +140,7 @@ extension CoupleFinanceActions on CoupleController {
     DateTime? date,
     String? splitMethod,
     List<Map<String, dynamic>>? splits,
+    String? pictureUrl,
   }) async {
     await _saveSharedTransaction(
       id: id,
@@ -151,6 +154,7 @@ extension CoupleFinanceActions on CoupleController {
       date: date,
       splitMethod: splitMethod,
       splits: splits,
+      pictureUrl: pictureUrl,
     );
   }
 
@@ -166,9 +170,16 @@ extension CoupleFinanceActions on CoupleController {
     DateTime? date,
     String? splitMethod,
     List<Map<String, dynamic>>? splits,
+    String? pictureUrl,
   }) async {
     isLoading.value = true;
     try {
+      final appController = Get.find<AppController>();
+      final currentUserId = appController.userId.value;
+      if (currentUserId == null) {
+        throw Exception('Không tìm thấy thông tin tài khoản người dùng.');
+      }
+
       final transactionRepo = Get.find<TransactionRepository>();
       final dto = TransactionCreateDto(
         amount: amount,
@@ -178,6 +189,8 @@ extension CoupleFinanceActions on CoupleController {
         subCategoryId: subCategoryId,
         walletId: walletId,
         transactionDate: date ?? DateTime.now(),
+        pictureUrl: pictureUrl,
+        userId: currentUserId,
       );
 
       if (id == null) {
@@ -199,7 +212,7 @@ extension CoupleFinanceActions on CoupleController {
         );
       }
 
-      await fetchCoupleData();
+      fetchCoupleData();
       AppHelperFunction.showSuccessSnackBar(
         id == null
             ? 'Ghi nhận giao dịch chung thành công'

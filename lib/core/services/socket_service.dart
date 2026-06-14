@@ -85,7 +85,7 @@ class SocketService extends GetxService {
     if (_socket != null && _socket!.connected) {
       _socket!.emit('sendMessage', {
         'content': content,
-        'metadata': ?metadata,
+        'metadata': metadata,
       });
     } else {
       dev.log("SocketService: Cannot send message, socket is disconnected");

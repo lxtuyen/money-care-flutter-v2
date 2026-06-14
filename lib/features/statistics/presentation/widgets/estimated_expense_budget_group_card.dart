@@ -59,14 +59,16 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
         : null;
 
     // Show the today pace marker only for frequent categories.
-    final double? expectedTodayRatio =
-        exceedPrediction != null && exceedPrediction!.isFrequent
-        ? exceedPrediction?.expectedTodayRatio
-        : null;
-    final double? expectedTodayAmount =
-        exceedPrediction != null && exceedPrediction!.isFrequent
-        ? exceedPrediction?.expectedTodayAmount
-        : null;
+    // final double? expectedTodayRatio =
+    //     exceedPrediction != null && exceedPrediction!.isFrequent
+    //     ? exceedPrediction?.expectedTodayRatio
+    //     : null;
+    // final double? expectedTodayAmount =
+    //     exceedPrediction != null && exceedPrediction!.isFrequent
+    //     ? exceedPrediction?.expectedTodayAmount
+    //     : null;
+    final double? expectedTodayRatio = null;
+    final double? expectedTodayAmount = null;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),

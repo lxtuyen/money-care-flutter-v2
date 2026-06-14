@@ -54,6 +54,10 @@ extension CoupleSavingsSettlementActions on CoupleController {
         );
       }
 
+      // Find goal name before deleting
+      final goal = savingGoals.firstWhereOrNull((g) => g.id == goalId);
+      final goalName = goal?.name ?? 'Quỹ tiết kiệm';
+
       // Update goal status to completed
       await updateCoupleSavingGoalUseCase(
         id: goalId,
@@ -66,6 +70,23 @@ extension CoupleSavingsSettlementActions on CoupleController {
       // Refresh data
       await fetchSavingGoals();
       await fetchSharedWallets();
+
+      // Send chat notification
+      if (Get.isRegistered<SocketService>()) {
+        final authController = Get.find<AuthController>();
+        final senderName = authController.user.value?.profile.firstName ?? 'Thành viên';
+        final content = 'Tiết kiệm: $senderName đã quyết toán hoàn thành và đóng quỹ "$goalName" trị giá ${AppHelperFunction.formatAmount(amount)}! 🎉';
+
+        Get.find<SocketService>().sendMessage(
+          content,
+          metadata: {
+            '__type': 'saving_goal_completed',
+            'goalId': goalId,
+            'goalName': goalName,
+            'amount': amount,
+          },
+        );
+      }
 
       AppHelperFunction.showSuccessSnackBar(
         'Quyết toán và đóng quỹ tiết kiệm chung thành công!',
@@ -127,6 +148,28 @@ extension CoupleSavingsSettlementActions on CoupleController {
           await Get.find<WalletController>().refreshWallets();
         }
         await fetchSharedWallets();
+
+        // Send chat notification
+        final goal = savingGoals.firstWhereOrNull((g) => g.id == goalId);
+        if (Get.isRegistered<SocketService>()) {
+          final authController = Get.find<AuthController>();
+          final senderName = authController.user.value?.profile.firstName ?? 'Thành viên';
+          final goalName = goal?.name ?? 'Quỹ tiết kiệm';
+          final content = 'Tiết kiệm: $senderName đã đóng góp ${AppHelperFunction.formatAmount(amount)} vào quỹ "$goalName"! 💰';
+
+          Get.find<SocketService>().sendMessage(
+            content,
+            metadata: {
+              '__type': 'saving_contribution_completed',
+              'goalId': goalId,
+              'goalName': goalName,
+              'amount': amount,
+              'savedAmount': goal?.savedAmount ?? 0.0,
+              'target': goal?.target ?? 0.0,
+            },
+          );
+        }
+
         AppHelperFunction.showSuccessSnackBar('Đóng góp vào quỹ thành công!');
       },
     );
@@ -199,6 +242,11 @@ extension CoupleSavingsSettlementActions on CoupleController {
   Future<void> settleUpAll() async {
     if (couple.value == null) return;
     isLoading.value = true;
+    
+    // Capture the outstanding debt before resetting it
+    final summaryBefore = settlementSummary.value;
+    final whoOwes = summaryBefore?.whoOwesWhom;
+
     final result = await settleUpCoupleUseCase(couple.value!.id);
     await result.fold(
       (failure) async {
@@ -207,6 +255,23 @@ extension CoupleSavingsSettlementActions on CoupleController {
         );
       },
       (_) async {
+        if (whoOwes != null && whoOwes.amount > 0) {
+          final authController = Get.find<AuthController>();
+          final senderName = authController.user.value?.profile.firstName ?? 'Thành viên';
+          final content = 'Quyết toán: $senderName đã xác nhận thanh toán xong toàn bộ số dư nợ chung trị giá ${AppHelperFunction.formatAmount(whoOwes.amount)}! 🎉';
+          
+          if (Get.isRegistered<SocketService>()) {
+            Get.find<SocketService>().sendMessage(
+              content,
+              metadata: {
+                '__type': 'settlement_completed',
+                'amount': whoOwes.amount,
+                'debtorName': whoOwes.debtorName,
+                'creditorName': whoOwes.creditorName,
+              },
+            );
+          }
+        }
         await fetchSettlementSummary();
         await fetchSharedTransactions();
         AppHelperFunction.showSuccessSnackBar(
@@ -220,6 +285,10 @@ extension CoupleSavingsSettlementActions on CoupleController {
   Future<void> settleUpSingle(int transactionId) async {
     if (couple.value == null) return;
     isLoading.value = true;
+
+    final summaryBefore = settlementSummary.value;
+    final tx = summaryBefore?.unsettledTransactions.firstWhereOrNull((t) => t.id == transactionId);
+
     final result = await settleUpSingleCoupleUseCase(
       coupleId: couple.value!.id,
       transactionId: transactionId,
@@ -231,6 +300,24 @@ extension CoupleSavingsSettlementActions on CoupleController {
         );
       },
       (_) async {
+        if (tx != null) {
+          final authController = Get.find<AuthController>();
+          final senderName = authController.user.value?.profile.firstName ?? 'Thành viên';
+          final txName = tx.note != null && tx.note!.isNotEmpty ? tx.note! : (tx.category?.name ?? 'Giao dịch chung');
+          final content = 'Quyết toán: $senderName đã quyết toán xong khoản chi "$txName" trị giá ${AppHelperFunction.formatAmount(tx.amount.toDouble())}! ✅';
+          
+          if (Get.isRegistered<SocketService>()) {
+            Get.find<SocketService>().sendMessage(
+              content,
+              metadata: {
+                '__type': 'single_settlement_completed',
+                'amount': tx.amount,
+                'transactionId': transactionId,
+                'note': txName,
+              },
+            );
+          }
+        }
         await fetchSettlementSummary();
         await fetchSharedTransactions();
         AppHelperFunction.showSuccessSnackBar(

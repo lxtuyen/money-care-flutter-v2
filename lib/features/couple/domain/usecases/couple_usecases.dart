@@ -4,7 +4,15 @@ import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_message_entity.dart';
 import 'package:money_care/features/couple/domain/repositories/couple_repository.dart';
+
+class GetCoupleChatHistoryUseCase {
+  final CoupleRepository repository;
+  GetCoupleChatHistoryUseCase(this.repository);
+  Future<Either<Failure, List<CoupleMessageEntity>>> call(int coupleId) =>
+      repository.getChatHistory(coupleId);
+}
 
 class GetCoupleInfoUseCase {
   final CoupleRepository repository;

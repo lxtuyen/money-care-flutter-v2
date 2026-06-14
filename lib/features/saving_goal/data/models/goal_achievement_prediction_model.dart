@@ -60,6 +60,7 @@ class GoalAchievementPredictionModel {
   final List<String> reasonCodes;
   final List<GoalRecommendedActionModel> recommendedActions;
   final Map<String, dynamic> supportingData;
+  final GoalAchievementNextMonthPredictionModel? nextMonthPrediction;
 
   const GoalAchievementPredictionModel({
     required this.goalId,
@@ -87,6 +88,7 @@ class GoalAchievementPredictionModel {
     required this.reasonCodes,
     required this.recommendedActions,
     required this.supportingData,
+    this.nextMonthPrediction,
   });
 
   factory GoalAchievementPredictionModel.fromJson(Map<String, dynamic> json) {
@@ -138,6 +140,51 @@ class GoalAchievementPredictionModel {
       supportingData: json['supportingData'] is Map<String, dynamic>
           ? json['supportingData'] as Map<String, dynamic>
           : <String, dynamic>{},
+      nextMonthPrediction: json['nextMonthPrediction'] != null
+          ? GoalAchievementNextMonthPredictionModel.fromJson(
+              json['nextMonthPrediction'] as Map<String, dynamic>,
+            )
+          : null,
+    );
+  }
+}
+
+class GoalAchievementNextMonthPredictionModel {
+  final double targetAmount;
+  final double savedAmount;
+  final double remainingAmount;
+  final String startDate;
+  final String deadline;
+  final String? predictedCompletionDate;
+  final String status;
+  final String riskLevel;
+  final int? daysDifference;
+
+  const GoalAchievementNextMonthPredictionModel({
+    required this.targetAmount,
+    required this.savedAmount,
+    required this.remainingAmount,
+    required this.startDate,
+    required this.deadline,
+    this.predictedCompletionDate,
+    required this.status,
+    required this.riskLevel,
+    this.daysDifference,
+  });
+
+  factory GoalAchievementNextMonthPredictionModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return GoalAchievementNextMonthPredictionModel(
+      targetAmount: _parseDouble(json['targetAmount']),
+      savedAmount: _parseDouble(json['savedAmount']),
+      remainingAmount: _parseDouble(json['remainingAmount']),
+      startDate: json['startDate']?.toString() ?? '',
+      deadline: json['deadline']?.toString() ?? '',
+      predictedCompletionDate: json['predictedCompletionDate']?.toString(),
+      status: json['status']?.toString() ?? 'tracking',
+      riskLevel: json['riskLevel']?.toString() ?? 'low',
+      daysDifference: _parseIntNullable(json['daysDifference']),
     );
   }
 }

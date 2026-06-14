@@ -302,7 +302,7 @@ const Map<String, String> viVN = {
   // ============ Chatbot ============
   'chatbot.title': 'Trợ lý tài chính',
   'chatbot.desc': 'Nhờ trợ lý AI giúp bạn quản lý tài chính',
-  'chatbot.hintText': 'Hỏi AI bất cứ điều gì...',
+  'chatbot.hintText': 'Bạn muốn hỏi gì?',
   'chatbot.analysisTitle': '📊 Phân tích chi tiêu',
   'chatbot.analysisDesc':
       'Nhận nhận xét và lời khuyên tiết kiệm dựa trên chi tiêu thực tế.',

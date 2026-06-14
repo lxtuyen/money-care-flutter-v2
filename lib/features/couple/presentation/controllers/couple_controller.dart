@@ -5,6 +5,9 @@ import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/domain/usecases/couple_usecases.dart';
+import 'package:money_care/core/services/socket_service.dart';
+import 'package:money_care/features/couple/domain/entities/couple_message_entity.dart';
+import 'package:money_care/features/couple/data/models/couple_message_model.dart';
 import 'package:money_care/features/transaction/data/models/transaction_create_dto.dart';
 import 'package:money_care/features/transaction/data/models/transaction_filter_dto.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
@@ -12,6 +15,7 @@ import 'package:money_care/features/transaction/domain/repositories/transaction_
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
@@ -22,6 +26,7 @@ import 'package:money_care/features/transaction/presentation/controllers/user_ca
 part 'couple_finance_actions.dart';
 part 'couple_savings_settlement_actions.dart';
 part 'couple_report_actions.dart';
+part 'couple_chat_actions.dart';
 
 class CoupleController extends GetxController {
   final GetCoupleInfoUseCase getCoupleInfoUseCase;
@@ -41,6 +46,7 @@ class CoupleController extends GetxController {
   final GetCoupleReportUseCase getCoupleReportUseCase;
   final MarkCoupleAlertReadUseCase markCoupleAlertReadUseCase;
   final UpdateCoupleAlertUseCase updateCoupleAlertUseCase;
+  final GetCoupleChatHistoryUseCase getCoupleChatHistoryUseCase;
 
   CoupleController({
     required this.getCoupleInfoUseCase,
@@ -60,6 +66,7 @@ class CoupleController extends GetxController {
     required this.getCoupleReportUseCase,
     required this.markCoupleAlertReadUseCase,
     required this.updateCoupleAlertUseCase,
+    required this.getCoupleChatHistoryUseCase,
   });
 
   final RxBool isLoading = false.obs;
@@ -67,6 +74,7 @@ class CoupleController extends GetxController {
   final TextEditingController inviteCodeController = TextEditingController();
 
   final RxInt selectedTabIndex = 0.obs;
+  final RxInt selectedSubTabIndex = 0.obs;
   final Rx<DateTime> selectedMonth = DateTime.now().obs;
   final RxList<WalletEntity> sharedWallets = <WalletEntity>[].obs;
   final RxList<TransactionEntity> sharedTransactions =
@@ -85,6 +93,12 @@ class CoupleController extends GetxController {
   final RxString alertFilter = 'all'.obs;
   final RxBool isUpdatingSettings = false.obs;
 
+  // Chat State
+  final RxList<CoupleMessageEntity> chatMessages = <CoupleMessageEntity>[].obs;
+  final TextEditingController messageInputController = TextEditingController();
+  final ScrollController chatScrollController = ScrollController();
+  final RxBool isChatLoading = false.obs;
+
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpense = 0.0.obs;
   final RxDouble totalBalance = 0.0.obs;
@@ -95,6 +109,7 @@ class CoupleController extends GetxController {
     loadCoupleInfo().then((_) {
       if (couple.value?.isActive == true) {
         fetchCoupleData();
+        initSocketConnection();
       }
     });
 
@@ -105,11 +120,20 @@ class CoupleController extends GetxController {
         }
       });
     }
+
+    ever(selectedTabIndex, (index) {
+      if (index == 3 && couple.value?.isActive == true) {
+        fetchChatHistory();
+      }
+    });
   }
 
   @override
   void onClose() {
     inviteCodeController.dispose();
+    messageInputController.dispose();
+    chatScrollController.dispose();
+    disconnectSocket();
     super.onClose();
   }
 

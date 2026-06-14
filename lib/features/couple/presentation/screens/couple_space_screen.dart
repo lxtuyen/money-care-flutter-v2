@@ -11,6 +11,7 @@ import 'package:money_care/features/couple/presentation/widgets/couple_dashboard
 import 'package:money_care/features/couple/presentation/widgets/couple_transactions_view.dart';
 
 import 'package:money_care/features/couple/presentation/widgets/couple_savings_view.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_chat_view.dart';
 
 class CoupleSpaceScreen extends GetView<CoupleController> {
   const CoupleSpaceScreen({super.key});
@@ -62,14 +63,24 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
       );
 
       if (isTransactionsTab) {
-        mainContent = DefaultTabController(length: 2, child: mainContent);
+        mainContent = DefaultTabController(
+          key: ValueKey('transaction_tab_${controller.selectedSubTabIndex.value}'),
+          length: 2,
+          initialIndex: controller.selectedSubTabIndex.value,
+          child: mainContent,
+        );
       }
 
       return Scaffold(
         bottomNavigationBar: showBottomBar
             ? BottomNavigationBar(
                 currentIndex: controller.selectedTabIndex.value,
-                onTap: (index) => controller.selectedTabIndex.value = index,
+                onTap: (index) {
+                  controller.selectedTabIndex.value = index;
+                  if (index == 1) {
+                    controller.selectedSubTabIndex.value = 0;
+                  }
+                },
                 type: BottomNavigationBarType.fixed,
                 selectedItemColor: Theme.of(context).primaryColor,
                 unselectedItemColor: Colors.grey,
@@ -92,6 +103,10 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
                     label: 'Tiết kiệm',
                   ),
                   BottomNavigationBarItem(
+                    icon: Icon(Icons.chat_bubble_rounded),
+                    label: 'Trò chuyện',
+                  ),
+                  BottomNavigationBarItem(
                     icon: Icon(Icons.settings_rounded),
                     label: 'Cài đặt',
                   ),
@@ -112,6 +127,8 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
       case 2:
         return 'Quỹ Tiết Kiệm Chung';
       case 3:
+        return 'Trò Chuyện Cặp Đôi';
+      case 4:
         return 'Cài Đặt Cặp Đôi';
       default:
         return 'Không Gian Cặp Đôi';
@@ -139,6 +156,8 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
         case 2:
           return CoupleSavingsView(controller: controller);
         case 3:
+          return CoupleChatView(controller: controller);
+        case 4:
           return ActiveCoupleView(
             couple: coupleData,
             controller: controller,

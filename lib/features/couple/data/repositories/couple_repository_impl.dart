@@ -6,6 +6,7 @@ import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_message_entity.dart';
 import 'package:money_care/features/couple/domain/repositories/couple_repository.dart';
 
 class CoupleRepositoryImpl implements CoupleRepository {
@@ -305,6 +306,22 @@ class CoupleRepositoryImpl implements CoupleRepository {
         feedback: feedback,
       );
       return Right(alert);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CoupleMessageEntity>>> getChatHistory(
+    int coupleId,
+  ) async {
+    try {
+      final list = await remoteDatasource.getChatHistory(coupleId);
+      return Right(list);
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
     } on ServerException catch (e) {

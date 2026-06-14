@@ -4,6 +4,7 @@ import 'package:money_care/features/couple/data/models/couple_model.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
+import 'package:money_care/features/couple/data/models/couple_message_model.dart';
 
 abstract class CoupleRemoteDatasource {
   Future<CoupleModel?> getCouple();
@@ -50,6 +51,8 @@ abstract class CoupleRemoteDatasource {
     String? status,
     String? feedback,
   });
+
+  Future<List<CoupleMessageModel>> getChatHistory(int coupleId);
 }
 
 class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
@@ -286,6 +289,18 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
       fromJsonT: (json) => CoupleSpendingAlertEntity.fromJson(
         Map<String, dynamic>.from(json as Map),
       ),
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<List<CoupleMessageModel>> getChatHistory(int coupleId) async {
+    final res = await api.get<List<CoupleMessageModel>>(
+      '${ApiRoutes.couples}/chat/history?coupleId=$coupleId',
+      fromJsonT: (json) {
+        final list = json as List<dynamic>;
+        return list.map((e) => CoupleMessageModel.fromJson(e)).toList();
+      },
     );
     return res.unwrap();
   }

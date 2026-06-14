@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 
@@ -57,9 +58,9 @@ class _CoupleSavingRoadmapSectionState extends State<CoupleSavingRoadmapSection>
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.teal.withValues(alpha: 0.03),
+        color: AppColors.primary.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.teal.withValues(alpha: 0.1)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,15 +96,15 @@ class _CoupleSavingRoadmapSectionState extends State<CoupleSavingRoadmapSection>
               IconData statusIcon;
 
               if (isFuture) {
-                statusColor = Colors.grey[400]!;
+                statusColor = AppColors.disabled;
                 statusText = 'Chờ tích lũy';
                 statusIcon = Icons.hourglass_empty_rounded;
               } else if (isMet) {
-                statusColor = Colors.teal[600]!;
+                statusColor = AppColors.income;
                 statusText = 'Đạt chỉ tiêu';
                 statusIcon = Icons.check_circle_rounded;
               } else {
-                statusColor = Colors.orange[600]!;
+                statusColor = isCurrent ? AppColors.info : AppColors.secondaryOrange;
                 statusText = isCurrent ? 'Đang tích lũy' : 'Chưa đạt';
                 statusIcon = isCurrent ? Icons.trending_flat_rounded : Icons.warning_amber_rounded;
               }
@@ -234,7 +235,7 @@ class _CoupleSavingRoadmapSectionState extends State<CoupleSavingRoadmapSection>
               alignment: Alignment.center,
               child: TextButton.icon(
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.teal[700],
+                  foregroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -266,13 +267,13 @@ class _CoupleSavingRoadmapSectionState extends State<CoupleSavingRoadmapSection>
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: Colors.teal.withValues(alpha: 0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(
             Icons.alt_route_rounded,
             size: 16,
-            color: Colors.teal,
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(width: 8),

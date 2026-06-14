@@ -129,27 +129,57 @@ class CoupleSettlementView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: amIDebtor
-                                ? Colors.red
-                                : Colors.green,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: amIDebtor
+                                      ? Colors.red
+                                      : Colors.green,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                icon: const Icon(Icons.handshake_rounded),
+                                label: const Text(
+                                  'Quyết Toán Tất Cả',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                onPressed: () => _confirmSettleUp(context),
+                              ),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                          ),
-                          icon: const Icon(Icons.handshake_rounded),
-                          label: const Text(
-                            'Quyết Toán Tất Cả',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () => _confirmSettleUp(context),
+                            if (!amIDebtor) ...[
+                              const SizedBox(width: 8),
+                              IconButton(
+                                style: IconButton.styleFrom(
+                                  backgroundColor: primaryColor.withValues(alpha: 0.1),
+                                  foregroundColor: primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                ),
+                                icon: const Icon(Icons.notifications_active_outlined),
+                                tooltip: 'Nhắc quyết toán',
+                                onPressed: () {
+                                  controller.sendSettlementReminder(
+                                    amount: whoOwes.amount,
+                                    debtorName: whoOwes.debtorName,
+                                    creditorName: whoOwes.creditorName,
+                                    debtorId: whoOwes.debtorId,
+                                    creditorId: whoOwes.creditorId,
+                                  );
+                                },
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ],

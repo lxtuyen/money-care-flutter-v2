@@ -92,6 +92,10 @@ class CoupleBinding extends Bindings {
       () => UpdateCoupleAlertUseCase(Get.find<CoupleRepository>()),
       fenix: true,
     );
+    Get.lazyPut(
+      () => GetCoupleChatHistoryUseCase(Get.find<CoupleRepository>()),
+      fenix: true,
+    );
 
     Get.lazyPut(
       () => CoupleController(
@@ -117,6 +121,7 @@ class CoupleBinding extends Bindings {
         getCoupleReportUseCase: Get.find<GetCoupleReportUseCase>(),
         markCoupleAlertReadUseCase: Get.find<MarkCoupleAlertReadUseCase>(),
         updateCoupleAlertUseCase: Get.find<UpdateCoupleAlertUseCase>(),
+        getCoupleChatHistoryUseCase: Get.find<GetCoupleChatHistoryUseCase>(),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_settlement_entity.dart';
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
+import 'package:money_care/features/couple/domain/entities/couple_message_entity.dart';
 
 abstract class CoupleRepository {
   Future<Either<Failure, CoupleEntity?>> getCouple();
@@ -57,4 +58,5 @@ abstract class CoupleRepository {
     String? status,
     String? feedback,
   });
+  Future<Either<Failure, List<CoupleMessageEntity>>> getChatHistory(int coupleId);
 }

@@ -533,31 +533,127 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
         fontSize: 13,
       );
     }
-
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor.withValues(alpha: 0.1),
-          foregroundColor: primaryColor,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+ 
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor.withValues(alpha: 0.1),
+              foregroundColor: primaryColor,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+            icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
+            label: const Text(
+              'Đóng Góp Quỹ',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+            onPressed: () => Get.toNamed(
+              RoutePath.walletTransfer,
+              arguments: {
+                'toWalletId': goal.walletId,
+                'lockToWallet': true,
+              },
+            ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10),
         ),
-        icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
-        label: const Text(
-          'Đóng Góp Quỹ',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        const SizedBox(width: 8),
+        IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: primaryColor.withValues(alpha: 0.1),
+            foregroundColor: primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(10),
+          ),
+          icon: const Icon(Icons.notifications_active_outlined, size: 18),
+          tooltip: 'Nhắc đóng quỹ',
+          onPressed: () => _showRemindDialog(context),
         ),
-        onPressed: () => Get.toNamed(
-          RoutePath.walletTransfer,
-          arguments: {
-            'toWalletId': goal.walletId,
-            'lockToWallet': true,
-          },
+      ],
+    );
+  }
+
+  void _showRemindDialog(BuildContext context) {
+    final amountController = TextEditingController();
+
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.notifications_active_rounded, color: Colors.amber),
+            SizedBox(width: 8),
+            Text(
+              'Nhắc Nhở Đóng Quỹ',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ],
         ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Gửi thẻ nhắc đóng góp cho quỹ "${goal.name}" vào cuộc trò chuyện.',
+              style: const TextStyle(fontSize: 13, height: 1.4, color: Colors.black54),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Số tiền đóng góp gợi ý (tùy chọn):',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Nhập số tiền (ví dụ: 100000)',
+                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () {
+              final val = amountController.text.trim();
+              double? remindAmount;
+              if (val.isNotEmpty) {
+                remindAmount = double.tryParse(val);
+              }
+              Get.back();
+
+              controller.sendSavingGoalReminder(
+                goalId: goal.id,
+                goalName: goal.name,
+                target: goal.target,
+                savedAmount: goal.savedAmount,
+                walletId: goal.walletId,
+                remindAmount: remindAmount,
+              );
+            },
+            child: const Text('Gửi lời nhắc', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }

@@ -6,7 +6,7 @@ import 'package:money_care/features/couple/presentation/controllers/couple_contr
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
-import 'package:money_care/features/couple/presentation/widgets/couple_saving_plan_section.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_saving_roadmap_section.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 
 class CoupleSavingGoalCard extends StatefulWidget {
@@ -66,7 +66,7 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
             // Monthly Plan Section (only for active goals)
             if (!isCompleted) ...[
               const SizedBox(height: 16),
-              CoupleSavingPlanSection(goal: goal),
+              CoupleSavingRoadmapSection(goal: goal),
             ],
 
             const SizedBox(height: 16),

@@ -15,6 +15,7 @@ class PersonalizationController extends GetxController {
   final Rxn<PersonalFinanceProfileModel> profile = Rxn<PersonalFinanceProfileModel>();
   final RxBool isLoading = false.obs;
   final RxBool isRebuilding = false.obs;
+  final RxBool isTrainingModel = false.obs;
   final RxString errorMessage = ''.obs;
 
   @override
@@ -65,6 +66,20 @@ class PersonalizationController extends GetxController {
       AppHelperFunction.showErrorSnackBar('Cập nhật hồ sơ thất bại: $e');
     } finally {
       isRebuilding.value = false;
+    }
+  }
+
+  Future<void> retrainModel() async {
+    isTrainingModel.value = true;
+    errorMessage.value = '';
+    try {
+      await useCase.retrainModel();
+      AppHelperFunction.showSuccessSnackBar('Huấn luyện lại mô hình AI thành công!');
+    } catch (e) {
+      debugPrint('Error retraining AI model: $e');
+      AppHelperFunction.showErrorSnackBar('Huấn luyện mô hình thất bại: $e');
+    } finally {
+      isTrainingModel.value = false;
     }
   }
 

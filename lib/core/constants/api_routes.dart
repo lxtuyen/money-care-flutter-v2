@@ -34,6 +34,7 @@ class ApiRoutes {
   static const initialFinancialPlanSuggest =
       'ai/initial-financial-plan/suggest';
   static const financialAnalytics = 'analytics/financial-summary';
+  static const trainForecastingModel = 'analytics/model-training/forecasting';
   static const aiFeedback = 'ai-feedback';
   static const aiFeedbackSummary = 'ai-feedback/summary';
   static const personalizationProfile = 'personalization/profile';

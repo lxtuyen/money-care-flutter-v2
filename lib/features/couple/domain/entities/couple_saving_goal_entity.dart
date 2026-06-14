@@ -58,6 +58,7 @@ class CoupleSavingGoalEntity {
   final List<CoupleSavingGoalMemberProgress> memberContributions;
   final List<CoupleSavingGoalContribution> contributions;
   final int? walletId;
+  final DateTime? createdAt;
 
   CoupleSavingGoalEntity({
     required this.id,
@@ -71,6 +72,7 @@ class CoupleSavingGoalEntity {
     required this.memberContributions,
     required this.contributions,
     this.walletId,
+    this.createdAt,
   });
 
   factory CoupleSavingGoalEntity.fromJson(Map<String, dynamic> json) {
@@ -99,6 +101,9 @@ class CoupleSavingGoalEntity {
       memberContributions: memberContribs,
       contributions: contribList,
       walletId: json['walletId'] as int?,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
     );
   }
 }

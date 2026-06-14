@@ -87,6 +87,20 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                       isEnabled: !userController.isLoading.value,
                     );
                   }),
+                  Obx(() {
+                    final isTraining = personalizationController.isTrainingModel.value;
+                    return Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        PrimaryButton(
+                          label: 'Huấn luyện lại mô hình AI',
+                          onPressed: () => personalizationController.retrainModel(),
+                          isLoading: isTraining,
+                          isEnabled: !isTraining,
+                        ),
+                      ],
+                    );
+                  }),
                   /*Obx(() {
                     final isRebuilding = personalizationController.isRebuilding.value;
                     final p = personalizationController.profile.value;

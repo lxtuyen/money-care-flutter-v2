@@ -13,4 +13,8 @@ class GetPersonalFinanceProfileUseCase {
   Future<PersonalFinanceProfileModel> rebuild() {
     return repository.rebuildProfile();
   }
+
+  Future<void> retrainModel() {
+    return repository.retrainForecastingModel();
+  }
 }

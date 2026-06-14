@@ -26,4 +26,14 @@ class PersonalizationRepositoryImpl implements PersonalizationRepository {
     );
     return res.unwrap();
   }
+
+  @override
+  Future<void> retrainForecastingModel() async {
+    final res = await api.post<void>(
+      ApiRoutes.trainForecastingModel,
+      body: {},
+      fromJsonT: (_) {},
+    );
+    res.unwrap();
+  }
 }

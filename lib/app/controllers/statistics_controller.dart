@@ -159,21 +159,26 @@ class StatisticsController extends GetxController {
   Future<void> loadFinancialAnalytics() async {
     isLoadingAnalytics.value = true;
     analyticsError.value = '';
-    final targetDate = currentStartDate;
-    final result = await getFinancialAnalyticsUseCase(
-      targetMonth: targetDate.month,
-      targetYear: targetDate.year,
-    );
-    result.fold(
-      (failure) {
-        analyticsData.value = null;
-        analyticsError.value = failure.message;
-      },
-      (data) {
-        analyticsData.value = data;
-      },
-    );
-    isLoadingAnalytics.value = false;
+    try {
+      final targetDate = currentStartDate;
+      final result = await getFinancialAnalyticsUseCase(
+        targetMonth: targetDate.month,
+        targetYear: targetDate.year,
+      );
+      result.fold(
+        (failure) {
+          analyticsData.value = null;
+          analyticsError.value = failure.message;
+        },
+        (data) {
+          analyticsData.value = data;
+        },
+      );
+    } catch (e) {
+      analyticsError.value = e.toString();
+    } finally {
+      isLoadingAnalytics.value = false;
+    }
   }
 
   Future<void> sendBudgetRecommendationFeedback(

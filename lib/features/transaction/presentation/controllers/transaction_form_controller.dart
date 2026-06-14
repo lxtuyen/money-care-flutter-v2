@@ -351,6 +351,16 @@ class TransactionFormController extends GetxController {
   void setWallet(int id, String name) {
     selectedWalletId.value = id;
     walletNameController.text = name;
+
+    // Auto set splitMethod to 'none' if selecting a shared wallet
+    if (Get.isRegistered<CoupleController>()) {
+      final coupleController = Get.find<CoupleController>();
+      final isSharedWallet = coupleController.sharedWallets.any((w) => w.id == id);
+      if (isSharedWallet) {
+        splitMethod.value = 'none';
+        splitMethodNameController.text = 'Không chia';
+      }
+    }
   }
 
   void setPayer(int id, String name) {

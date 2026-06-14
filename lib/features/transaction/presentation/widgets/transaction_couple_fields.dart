@@ -29,6 +29,8 @@ class TransactionCoupleFields extends StatelessWidget {
       final me = coupleData.me(currentUserId);
       final partner = coupleData.partner(currentUserId);
       final isExpense = controller.transactionType == 'expense';
+      final isSharedWallet = controller.selectedWalletId.value != null &&
+          coupleController.sharedWallets.any((w) => w.id == controller.selectedWalletId.value);
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,13 +87,21 @@ class TransactionCoupleFields extends StatelessWidget {
               controller: controller.splitMethodNameController,
               label: 'Phương thức chia tiền',
               icon: Icons.call_split_rounded,
-              suffixIcon: const Icon(
-                Icons.keyboard_arrow_down_rounded,
+              suffixIcon: Icon(
+                isSharedWallet ? Icons.lock_outline_rounded : Icons.keyboard_arrow_down_rounded,
                 color: AppColors.text3,
               ),
               hintText: 'Chọn phương thức chia',
               readOnly: true,
               onTap: () {
+                if (isSharedWallet) {
+                  Get.rawSnackbar(
+                    message: 'Giao dịch từ ví chung không cần chia tiền.',
+                    duration: const Duration(seconds: 2),
+                    backgroundColor: Colors.amber.shade900,
+                  );
+                  return;
+                }
                 final List<SelectionOption> options = [
                   SelectionOption(id: 'none', label: 'Không chia'),
                   SelectionOption(id: 'equal', label: 'Chia đều'),

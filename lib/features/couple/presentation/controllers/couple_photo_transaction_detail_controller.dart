@@ -1,29 +1,30 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:camera/camera.dart';
-import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/core/network/api_client.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
+import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
-import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
-class CouplePhotoTransactionController extends GetxController {
+class CouplePhotoTransactionDetailController extends GetxController {
+  final List<TransactionEntity> photoTransactions;
   final CoupleController coupleController;
-  final XFile? initialImage;
+  final RxInt currentIndex = 0.obs;
+  
+  PageController? pageController;
 
-  CouplePhotoTransactionController({
+  CouplePhotoTransactionDetailController({
+    required this.photoTransactions,
+    required int initialIndex,
     required this.coupleController,
-    this.initialImage,
-  });
+  }) {
+    currentIndex.value = initialIndex;
+  }
+
+  TransactionEntity get currentTransaction => photoTransactions[currentIndex.value];
 
   // State Variables
   final RxDouble amount = 0.0.obs;
@@ -34,179 +35,174 @@ class CouplePhotoTransactionController extends GetxController {
   final RxnInt selectedPayerId = RxnInt();
   final RxBool isLoading = false.obs;
 
-  // Camera States
-  final Rxn<XFile> selectedImage = Rxn<XFile>();
-  CameraController? cameraController;
-  List<CameraDescription> _cameras = [];
-  final RxBool isCameraInitialized = false.obs;
-  final Rx<FlashMode> flashMode = FlashMode.off.obs;
-  final RxBool isPermissionDenied = false.obs;
-  final int _selectedCameraIndex = 0;
-
   @override
   void onInit() {
     super.onInit();
-    _initializeDefaults();
-    if (initialImage != null) {
-      selectedImage.value = initialImage;
+    _loadInitialValues();
+  }
+
+  void setCurrentIndex(int index) {
+    currentIndex.value = index;
+    _loadInitialValues();
+  }
+
+  void resetChanges() {
+    _loadInitialValues();
+  }
+
+  void _loadInitialValues() {
+    final transaction = currentTransaction;
+    amount.value = transaction.amount.toDouble();
+    note.value = transaction.note ?? '';
+    selectedDate.value = transaction.transactionDate ?? DateTime.now();
+    selectedCategory.value = transaction.category;
+    selectedPayerId.value = transaction.payerId;
+
+    // Resolve initial wallet
+    if (transaction.walletId != null) {
+      selectedWallet.value = coupleController.sharedWallets
+          .firstWhereOrNull((w) => w.id == transaction.walletId);
     } else {
-      initCamera();
+      selectedWallet.value = null;
     }
-  }
 
-  @override
-  void onClose() {
-    cameraController?.dispose();
-    super.onClose();
-  }
-
-  void _initializeDefaults() {
+    // Load categories if they are empty
     final categoryController = Get.find<UserCategoryController>();
     final authController = Get.find<AuthController>();
     final currentUserId = authController.user.value?.id;
 
-    // Load categories if they are empty and userId is available
     if (categoryController.categories.isEmpty && currentUserId != null) {
       categoryController.loadCategories(currentUserId);
     }
+  }
 
-    // Listen to changes to set the default selectedCategory once categories load
-    ever(categoryController.categories, (cats) {
-      if (selectedCategory.value == null && cats.isNotEmpty) {
-        final expenseCats = cats.where((c) => c.type == 'expense').toList();
-        if (expenseCats.isNotEmpty) {
-          selectedCategory.value = expenseCats.first;
-        }
+  bool get hasChanges {
+    final transaction = currentTransaction;
+    final originalAmount = transaction.amount.toDouble();
+    final originalNote = transaction.note ?? '';
+    final originalDate = transaction.transactionDate ?? DateTime.now();
+    final originalCategoryId = transaction.category?.id;
+    final originalWalletId = transaction.walletId;
+    final originalPayerId = transaction.payerId;
+
+    return amount.value != originalAmount ||
+        note.value != originalNote ||
+        selectedDate.value.year != originalDate.year ||
+        selectedDate.value.month != originalDate.month ||
+        selectedDate.value.day != originalDate.day ||
+        selectedDate.value.hour != originalDate.hour ||
+        selectedDate.value.minute != originalDate.minute ||
+        selectedCategory.value?.id != originalCategoryId ||
+        selectedWallet.value?.id != originalWalletId ||
+        selectedPayerId.value != originalPayerId;
+  }
+
+  Future<bool> saveChanges({bool closeScreen = true}) async {
+    if (amount.value <= 0) {
+      AppHelperFunction.showErrorSnackBar('Số tiền phải lớn hơn 0');
+      return false;
+    }
+    if (selectedCategory.value == null) {
+      AppHelperFunction.showErrorSnackBar('Vui lòng chọn danh mục');
+      return false;
+    }
+    if (selectedWallet.value == null) {
+      AppHelperFunction.showErrorSnackBar('Vui lòng chọn ví liên kết');
+      return false;
+    }
+    if (selectedPayerId.value == null) {
+      AppHelperFunction.showErrorSnackBar('Vui lòng chọn người thanh toán');
+      return false;
+    }
+
+    isLoading.value = true;
+    try {
+      final transaction = currentTransaction;
+      
+      // Determine splitMethod dynamically (if paid from a shared wallet, it should not be split)
+      final isSharedWallet = coupleController.sharedWallets
+          .any((w) => w.id == selectedWallet.value?.id);
+      final splitMethod = isSharedWallet ? 'none' : 'equal';
+
+      // Re-map splits if present (only for personal wallet transactions)
+      List<Map<String, dynamic>>? splits;
+      if (!isSharedWallet && transaction.splits != null && transaction.splits!.isNotEmpty) {
+        splits = transaction.splits!
+            .map((s) => {
+                  'userId': s.userId,
+                  'amount': s.amount,
+                  'percent': s.percent,
+                })
+            .toList();
       }
-    });
 
-    final expenseCats = categoryController.categories
-        .where((c) => c.type == 'expense')
-        .toList();
-    if (expenseCats.isNotEmpty) {
-      selectedCategory.value = expenseCats.first;
-    }
+      await coupleController.editSharedTransaction(
+        id: transaction.id!,
+        amount: amount.value.toInt(),
+        type: transaction.type,
+        note: note.value,
+        walletId: selectedWallet.value!.id,
+        categoryId: selectedCategory.value!.id!,
+        payerId: selectedPayerId.value!,
+        date: selectedDate.value,
+        splitMethod: splitMethod,
+        splits: splits,
+        pictureUrl: transaction.pictureUrl,
+      );
 
-    final savingWalletIds = coupleController.savingGoals
-        .map((g) => g.walletId)
-        .whereType<int>()
-        .toSet();
-    final nonSavingWallets = coupleController.sharedWallets
-        .where((w) => w.savingGoals.isEmpty && !savingWalletIds.contains(w.id))
-        .toList();
-    if (nonSavingWallets.isNotEmpty) {
-      selectedWallet.value = nonSavingWallets.first;
-    }
+      // Update the local list transaction object so it matches saved state
+      photoTransactions[currentIndex.value] = TransactionEntity(
+        id: transaction.id,
+        amount: amount.value.toInt(),
+        type: transaction.type,
+        note: note.value,
+        walletId: selectedWallet.value?.id,
+        walletName: selectedWallet.value?.name,
+        payerId: selectedPayerId.value,
+        payerName: coupleController.couple.value?.members.firstWhereOrNull((m) => m.userId == selectedPayerId.value)?.fullName,
+        transactionDate: selectedDate.value,
+        pictureUrl: transaction.pictureUrl,
+        category: selectedCategory.value,
+        splits: isSharedWallet ? null : transaction.splits,
+        splitMethod: splitMethod,
+      );
 
-    if (currentUserId != null) {
-      selectedPayerId.value = currentUserId;
-    } else if (coupleController.couple.value?.members.isNotEmpty == true) {
-      selectedPayerId.value = coupleController.couple.value!.members.first.userId;
+      if (closeScreen) {
+        Get.back();
+      }
+      return true;
+    } catch (e) {
+      AppHelperFunction.showErrorSnackBar('Có lỗi xảy ra: $e');
+      return false;
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  Future<void> initCamera() async {
+  Future<void> deleteTransaction() async {
+    isLoading.value = true;
     try {
-      _cameras = await availableCameras();
-      if (_cameras.isNotEmpty) {
-        await _onNewCameraSelected(_cameras[_selectedCameraIndex]);
+      final idToDelete = currentTransaction.id!;
+      final prevIndex = currentIndex.value;
+      await coupleController.deleteSharedTransaction(idToDelete);
+      
+      photoTransactions.removeAt(prevIndex);
+      if (photoTransactions.isEmpty) {
+        Get.back(); // Return from details view
       } else {
-        isPermissionDenied.value = true;
+        int nextIndex = prevIndex;
+        if (nextIndex >= photoTransactions.length) {
+          nextIndex = photoTransactions.length - 1;
+        }
+        currentIndex.value = nextIndex;
+        _loadInitialValues();
+        pageController?.jumpToPage(nextIndex);
       }
     } catch (e) {
-      debugPrint('Error initializing camera: $e');
-      isPermissionDenied.value = true;
+      AppHelperFunction.showErrorSnackBar('Có lỗi xảy ra: $e');
+    } finally {
+      isLoading.value = false;
     }
-  }
-
-  Future<void> _onNewCameraSelected(CameraDescription cameraDescription) async {
-    if (cameraController != null) {
-      await cameraController!.dispose();
-    }
-
-    final CameraController controller = CameraController(
-      cameraDescription,
-      ResolutionPreset.medium,
-      enableAudio: false,
-    );
-
-    cameraController = controller;
-
-    try {
-      await controller.initialize();
-      await controller.setFlashMode(flashMode.value);
-      isCameraInitialized.value = true;
-      isPermissionDenied.value = false;
-    } on CameraException catch (e) {
-      debugPrint('Error initializing camera controller: $e');
-      if (e.code == 'CameraAccessDenied') {
-        isPermissionDenied.value = true;
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-    }
-  }
-
-  Future<void> toggleFlash() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
-
-    FlashMode nextFlash;
-    switch (flashMode.value) {
-      case FlashMode.off:
-        nextFlash = FlashMode.always;
-        break;
-      case FlashMode.always:
-        nextFlash = FlashMode.auto;
-        break;
-      case FlashMode.auto:
-        nextFlash = FlashMode.torch;
-        break;
-      case FlashMode.torch:
-        nextFlash = FlashMode.off;
-        break;
-    }
-
-    try {
-      await cameraController!.setFlashMode(nextFlash);
-      flashMode.value = nextFlash;
-    } catch (e) {
-      debugPrint('Error setting flash mode: $e');
-    }
-  }
-
-  Future<void> takePicture() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
-    if (cameraController!.value.isTakingPicture) return;
-
-    try {
-      final XFile rawImage = await cameraController!.takePicture();
-      selectedImage.value = rawImage;
-    } catch (e) {
-      debugPrint('Error taking picture: $e');
-    }
-  }
-
-  Future<void> pickFromGallery() async {
-    final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (pickedFile != null) {
-      selectedImage.value = pickedFile;
-    }
-  }
-
-  void navigateToManualForm() {
-    Get.offAndToNamed(
-      RoutePath.createTransaction,
-      arguments: {
-        'type': 'expense',
-        'isShared': true,
-      },
-    );
-  }
-
-  void clearSelectedImage() {
-    selectedImage.value = null;
-    initCamera();
   }
 
   Future<void> selectDateTime(BuildContext context) async {
@@ -261,93 +257,6 @@ class CouplePhotoTransactionController extends GetxController {
     }
   }
 
-  Future<void> submit() async {
-    final amtValue = amount.value;
-    if (amtValue <= 0) {
-      AppHelperFunction.showErrorSnackBar('Vui lòng chạm vào tâm ảnh để nhập số tiền');
-      return;
-    }
-    if (selectedCategory.value == null) {
-      AppHelperFunction.showErrorSnackBar('Vui lòng chọn danh mục');
-      return;
-    }
-    if (selectedWallet.value == null) {
-      AppHelperFunction.showErrorSnackBar('Vui lòng chọn ví chung');
-      return;
-    }
-    if (selectedPayerId.value == null) {
-      AppHelperFunction.showErrorSnackBar('Vui lòng chọn người thanh toán');
-      return;
-    }
-    if (selectedImage.value == null) {
-      AppHelperFunction.showErrorSnackBar('Vui lòng chọn hoặc chụp ảnh giao dịch');
-      return;
-    }
-
-    isLoading.value = true;
-    XFile? fileToUpload;
-    try {
-      final apiClient = Get.find<ApiClient>();
-
-      fileToUpload = selectedImage.value;
-      if (fileToUpload != null) {
-        try {
-          fileToUpload = await compressImage(fileToUpload);
-        } catch (e) {
-          debugPrint('Image compression failed, uploading original: $e');
-        }
-      }
-
-      // 1. Upload image to Cloudinary via backend couples/upload endpoint
-      final uploadRes = await apiClient.postMultipart<Map<String, dynamic>>(
-        'couples/upload',
-        file: fileToUpload!,
-        fromJsonT: (json) => Map<String, dynamic>.from(json),
-      );
-
-      if (!uploadRes.success || uploadRes.data == null) {
-        throw Exception(uploadRes.message.isNotEmpty
-            ? uploadRes.message
-            : 'Tải ảnh lên thất bại');
-      }
-
-      final pictureUrl = uploadRes.data!['url'] as String;
-
-      // 2. Save Shared Transaction (defaults to 'none' if paid from a shared wallet, 'equal' otherwise)
-      final isSharedWallet = coupleController.sharedWallets
-          .any((w) => w.id == selectedWallet.value?.id);
-      final splitMethod = isSharedWallet ? 'none' : 'equal';
-
-      await coupleController.addSharedTransaction(
-        amount: amtValue.toInt(),
-        type: 'expense',
-        note: note.value,
-        walletId: selectedWallet.value!.id,
-        categoryId: selectedCategory.value!.id!,
-        payerId: selectedPayerId.value!,
-        date: selectedDate.value,
-        splitMethod: splitMethod,
-        pictureUrl: pictureUrl,
-      );
-
-      Get.back();
-    } catch (e) {
-      AppHelperFunction.showErrorSnackBar('Có lỗi xảy ra: $e');
-    } finally {
-      if (fileToUpload != null && fileToUpload.path != selectedImage.value?.path) {
-        try {
-          final tempFile = File(fileToUpload.path);
-          if (await tempFile.exists()) {
-            await tempFile.delete();
-          }
-        } catch (e) {
-          debugPrint('Error deleting temporary compressed file: $e');
-        }
-      }
-      isLoading.value = false;
-    }
-  }
-
   void showAmountSheet() {
     final colors = AppThemeColors.of(Get.context!);
     final controller = TextEditingController(
@@ -368,7 +277,10 @@ class CouplePhotoTransactionController extends GetxController {
           children: [
             Text(
               'Nhập số tiền',
-              style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -376,7 +288,10 @@ class CouplePhotoTransactionController extends GetxController {
               controller: controller,
               keyboardType: TextInputType.number,
               autofocus: true,
-              style: TextStyle(color: colors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -386,15 +301,20 @@ class CouplePhotoTransactionController extends GetxController {
                 hintText: '0đ',
                 hintStyle: TextStyle(color: colors.textHint),
                 suffixText: 'VND',
-                suffixStyle: TextStyle(color: colors.textSecondary, fontSize: 16),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: colors.borderSecondary)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(Get.context!).primaryColor)),
+                suffixStyle:
+                    TextStyle(color: colors.textSecondary, fontSize: 16),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: colors.borderSecondary)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(Get.context!).primaryColor)),
               ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                final raw = AppHelperFunction.unformatCurrency(controller.text.trim());
+                final raw =
+                    AppHelperFunction.unformatCurrency(controller.text.trim());
                 final amt = double.tryParse(raw) ?? 0.0;
                 amount.value = amt;
                 Get.back();
@@ -403,9 +323,11 @@ class CouplePhotoTransactionController extends GetxController {
                 backgroundColor: Theme.of(Get.context!).primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Xác nhận', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('Xác nhận',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -429,7 +351,10 @@ class CouplePhotoTransactionController extends GetxController {
           children: [
             Text(
               'Thêm ghi chú',
-              style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -441,8 +366,11 @@ class CouplePhotoTransactionController extends GetxController {
               decoration: InputDecoration(
                 hintText: 'Nhập nội dung ghi chú...',
                 hintStyle: TextStyle(color: colors.textHint),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: colors.borderSecondary)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(Get.context!).primaryColor)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: colors.borderSecondary)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(Get.context!).primaryColor)),
               ),
             ),
             const SizedBox(height: 24),
@@ -455,9 +383,11 @@ class CouplePhotoTransactionController extends GetxController {
                 backgroundColor: Theme.of(Get.context!).primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Xác nhận', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('Xác nhận',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -483,7 +413,10 @@ class CouplePhotoTransactionController extends GetxController {
           children: [
             Text(
               'Chọn danh mục',
-              style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -501,7 +434,8 @@ class CouplePhotoTransactionController extends GetxController {
                   return Center(
                     child: Text(
                       'Không có danh mục nào',
-                      style: TextStyle(color: colors.textSecondary, fontSize: 14),
+                      style:
+                          TextStyle(color: colors.textSecondary, fontSize: 14),
                     ),
                   );
                 }
@@ -526,7 +460,9 @@ class CouplePhotoTransactionController extends GetxController {
                       child: Container(
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
+                              ? Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.2)
                               : colors.surfaceBackground,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -538,14 +474,16 @@ class CouplePhotoTransactionController extends GetxController {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(cat.icon, style: const TextStyle(fontSize: 24)),
+                            Text(cat.icon,
+                                style: const TextStyle(fontSize: 24)),
                             const SizedBox(height: 8),
                             Text(
                               cat.name,
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: colors.textPrimary, fontSize: 11),
+                              style: TextStyle(
+                                  color: colors.textPrimary, fontSize: 11),
                             ),
                           ],
                         ),
@@ -584,7 +522,10 @@ class CouplePhotoTransactionController extends GetxController {
           children: [
             Text(
               'Chọn ví liên kết',
-              style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -607,11 +548,15 @@ class CouplePhotoTransactionController extends GetxController {
                   },
                   leading: Icon(
                     Icons.account_balance_wallet_outlined,
-                    color: isSelected ? Theme.of(Get.context!).primaryColor : colors.textSecondary,
+                    color: isSelected
+                        ? Theme.of(Get.context!).primaryColor
+                        : colors.textSecondary,
                   ),
-                  title: Text(w.name, style: TextStyle(color: colors.textPrimary)),
+                  title:
+                      Text(w.name, style: TextStyle(color: colors.textPrimary)),
                   trailing: isSelected
-                      ? Icon(Icons.check_circle, color: Theme.of(Get.context!).primaryColor)
+                      ? Icon(Icons.check_circle,
+                          color: Theme.of(Get.context!).primaryColor)
                       : null,
                 );
               }),
@@ -637,7 +582,10 @@ class CouplePhotoTransactionController extends GetxController {
           children: [
             Text(
               'Chọn người thanh toán',
-              style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -662,9 +610,11 @@ class CouplePhotoTransactionController extends GetxController {
                     ),
                   ),
                 ),
-                title: Text(m.fullName, style: TextStyle(color: colors.textPrimary)),
+                title: Text(m.fullName,
+                    style: TextStyle(color: colors.textPrimary)),
                 trailing: isSelected
-                    ? Icon(Icons.check_circle, color: Theme.of(Get.context!).primaryColor)
+                    ? Icon(Icons.check_circle,
+                        color: Theme.of(Get.context!).primaryColor)
                     : null,
               );
             }),
@@ -673,16 +623,6 @@ class CouplePhotoTransactionController extends GetxController {
         ),
       ),
     );
-  }
-
-  Future<XFile> compressImage(XFile original) async {
-    try {
-      final compressedPath = await compute(_compressImageIsolate, original.path);
-      return XFile(compressedPath);
-    } catch (e) {
-      debugPrint('Error compressing image: $e');
-      return original;
-    }
   }
 }
 
@@ -701,33 +641,4 @@ class _AmountInputFormatter extends TextInputFormatter {
       composing: TextRange.empty,
     );
   }
-}
-
-// Helper function to compress image in a separate isolate
-Future<String> _compressImageIsolate(String path) async {
-  final file = File(path);
-  final bytes = await file.readAsBytes();
-
-  final image = img.decodeImage(bytes);
-  if (image == null) return path;
-
-  // Resize if it's too large (e.g. width/height > 1024)
-  img.Image resized = image;
-  const maxDimension = 1024;
-  if (image.width > maxDimension || image.height > maxDimension) {
-    if (image.width > image.height) {
-      resized = img.copyResize(image, width: maxDimension);
-    } else {
-      resized = img.copyResize(image, height: maxDimension);
-    }
-  }
-
-  // Compress to JPEG with quality 75
-  final compressedBytes = img.encodeJpg(resized, quality: 75);
-
-  // Write to temporary file
-  final tempDir = Directory.systemTemp;
-  final tempFile = File('${tempDir.path}/compressed_${DateTime.now().microsecondsSinceEpoch}.jpg');
-  await tempFile.writeAsBytes(compressedBytes);
-  return tempFile.path;
 }

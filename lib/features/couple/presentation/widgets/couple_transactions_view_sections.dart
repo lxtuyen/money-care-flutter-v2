@@ -8,22 +8,43 @@ extension _CoupleTransactionsViewSections on _CoupleTransactionsViewState {
       }
 
       final filtered = _filterTransactions();
-      if (filtered.isEmpty) {
-        return const AppEmptyState(
-          message: 'Không tìm thấy giao dịch chung nào phù hợp.',
+
+      final listItems = <Widget>[
+        const SizedBox(height: 8),
+        CoupleTransactionCalendar(
+          focusedMonth: widget.controller.selectedMonth.value,
+          transactions: filtered,
+          selectedDay: _selectedDay,
+          onDaySelected: (day) => selectDay(day),
+        ),
+        const SizedBox(height: 16),
+        _selectedDayHeader(context, _selectedDay),
+        const SizedBox(height: 8),
+      ];
+
+      final selectedDayTxs = filtered
+          .where((tx) => tx.transactionDate?.day == _selectedDay)
+          .toList()
+        ..sort((a, b) => (b.transactionDate ?? DateTime(0)).compareTo(a.transactionDate ?? DateTime(0)));
+
+      if (selectedDayTxs.isEmpty) {
+        listItems.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+            child: Center(
+              child: Text(
+                'Không có giao dịch nào trong ngày này.',
+                style: TextStyle(
+                  color: AppThemeColors.of(context).textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
         );
-      }
-
-      final grouped = AppHelperFunction.groupByDate(
-        filtered,
-        (transaction) => transaction.transactionDate,
-      );
-
-      final listItems = <Widget>[];
-      grouped.forEach((header, transactions) {
-        listItems.add(_dateHeader(context, header));
-        for (int i = 0; i < transactions.length; i++) {
-          final transaction = transactions[i];
+      } else {
+        for (int i = 0; i < selectedDayTxs.length; i++) {
+          final transaction = selectedDayTxs[i];
           listItems.add(
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -31,14 +52,14 @@ extension _CoupleTransactionsViewSections on _CoupleTransactionsViewState {
                 item: transaction,
                 currentUserId: currentUserId,
                 isShowDate: false,
-                isShowDivider: i < transactions.length - 1,
+                isShowDivider: i < selectedDayTxs.length - 1,
                 onTap: () =>
                     _showTransactionDetail(context, transaction, currentUserId),
               ),
             ),
           );
         }
-      });
+      }
 
       return ListView(
         padding: const EdgeInsets.only(bottom: 80),
@@ -48,45 +69,35 @@ extension _CoupleTransactionsViewSections on _CoupleTransactionsViewState {
   }
 
   List<TransactionEntity> _filterTransactions() {
-    return widget.controller.sharedTransactions.where((transaction) {
-      if (_searchKeyword.isNotEmpty) {
-        final note = transaction.note?.toLowerCase() ?? '';
-        final categoryName = transaction.category?.name.toLowerCase() ?? '';
-        if (!note.contains(_searchKeyword) &&
-            !categoryName.contains(_searchKeyword)) {
-          return false;
-        }
-      }
-      if (_selectedWalletFilter != null &&
-          transaction.walletId != _selectedWalletFilter) {
-        return false;
-      }
-      if (_selectedPayerFilter != null &&
-          transaction.payerId != _selectedPayerFilter) {
-        return false;
-      }
-      if (_selectedCategoryFilter != null &&
-          transaction.category?.id != _selectedCategoryFilter) {
-        return false;
-      }
-      if (_selectedTypeFilter != 'all' &&
-          transaction.type != _selectedTypeFilter) {
-        return false;
-      }
-      return true;
-    }).toList();
+    return widget.controller.sharedTransactions;
   }
 
-  Widget _dateHeader(BuildContext context, String header) {
+  Widget _selectedDayHeader(BuildContext context, int day) {
+    final colors = AppThemeColors.of(context);
+    final focus = widget.controller.selectedMonth.value;
+    final dateStr = 'Ngày $day Tháng ${focus.month}, ${focus.year}';
     return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 8),
-      child: Text(
-        header,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          color: AppThemeColors.of(context).textPrimary.withValues(alpha: 0.8),
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            dateStr,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: colors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -96,10 +107,23 @@ extension _CoupleTransactionsViewSections on _CoupleTransactionsViewState {
     TransactionEntity transaction,
     int currentUserId,
   ) {
-    TransactionDetail.show(
-      context,
-      item: transaction,
-      userId: currentUserId,
-    );
+    if (transaction.pictureUrl != null && transaction.pictureUrl!.isNotEmpty) {
+      final photoTxs = widget.controller.sharedTransactions
+          .where((tx) => tx.pictureUrl != null && tx.pictureUrl!.isNotEmpty)
+          .toList();
+      final initialIndex = photoTxs.indexWhere((tx) => tx.id == transaction.id);
+
+      Get.to(() => CouplePhotoTransactionDetailScreen(
+            photoTransactions: photoTxs,
+            initialIndex: initialIndex >= 0 ? initialIndex : 0,
+            coupleController: widget.controller,
+          ));
+    } else {
+      TransactionDetail.show(
+        context,
+        item: transaction,
+        userId: currentUserId,
+      );
+    }
   }
 }

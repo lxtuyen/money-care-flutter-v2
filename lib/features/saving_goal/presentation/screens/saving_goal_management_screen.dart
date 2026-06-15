@@ -199,7 +199,7 @@ class _SavingGoalManagementScreenState extends State<SavingGoalManagementScreen>
       title: 'Xác nhận xóa',
       message:
           'Bạn có chắc chắn muốn xóa mục tiêu "${goal.name}"?\nDữ liệu tiết kiệm của các danh mục liên kết vẫn sẽ được giữ lại.',
-      confirmText: 'Xóa mục tiêu',
+      confirmText: 'Xóa',
       cancelText: 'Hủy',
       onConfirm: () => controller.deleteGoal(goal.id),
     );

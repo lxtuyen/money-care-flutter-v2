@@ -16,6 +16,7 @@ extension CoupleFinanceActions on CoupleController {
     isLoading.value = true;
     try {
       await Future.wait([
+        loadCoupleInfo(),
         fetchSharedWallets(),
         fetchSharedTransactions(),
         fetchSavingGoals(),

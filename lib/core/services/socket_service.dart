@@ -16,6 +16,9 @@ class SocketService extends GetxService {
   void connectToCoupleChat({
     required int coupleId,
     required Function(Map<String, dynamic>) onMessageReceived,
+    required Function(Map<String, dynamic>) onMessageUpdated,
+    required Function(int) onMessageDeleted,
+    required Function(Map<String, dynamic>) onStreakUpdated,
   }) async {
     if (_socket != null) {
       _socket!.off('receiveMessage');
@@ -23,6 +26,31 @@ class SocketService extends GetxService {
         dev.log("SocketService: Received new message: $data");
         if (data != null) {
           onMessageReceived(Map<String, dynamic>.from(data));
+        }
+      });
+      _socket!.off('messageUpdated');
+      _socket!.on('messageUpdated', (data) {
+        dev.log("SocketService: Message updated: $data");
+        if (data != null) {
+          onMessageUpdated(Map<String, dynamic>.from(data));
+        }
+      });
+      _socket!.off('messageDeleted');
+      _socket!.on('messageDeleted', (data) {
+        dev.log("SocketService: Message deleted: $data");
+        if (data != null && data['id'] != null) {
+          final id = int.tryParse(data['id'].toString()) ?? 
+                     (data['id'] is num ? (data['id'] as num).toInt() : 0);
+          if (id > 0) {
+            onMessageDeleted(id);
+          }
+        }
+      });
+      _socket!.off('streakUpdated');
+      _socket!.on('streakUpdated', (data) {
+        dev.log("SocketService: Streak updated: $data");
+        if (data != null) {
+          onStreakUpdated(Map<String, dynamic>.from(data));
         }
       });
       if (!_socket!.connected) {
@@ -79,6 +107,31 @@ class SocketService extends GetxService {
         onMessageReceived(Map<String, dynamic>.from(data));
       }
     });
+
+    _socket!.on('messageUpdated', (data) {
+      dev.log("SocketService: Message updated: $data");
+      if (data != null) {
+        onMessageUpdated(Map<String, dynamic>.from(data));
+      }
+    });
+
+    _socket!.on('messageDeleted', (data) {
+      dev.log("SocketService: Message deleted: $data");
+      if (data != null && data['id'] != null) {
+        final id = int.tryParse(data['id'].toString()) ?? 
+                   (data['id'] is num ? (data['id'] as num).toInt() : 0);
+        if (id > 0) {
+          onMessageDeleted(id);
+        }
+      }
+    });
+
+    _socket!.on('streakUpdated', (data) {
+      dev.log("SocketService: Streak updated: $data");
+      if (data != null) {
+        onStreakUpdated(Map<String, dynamic>.from(data));
+      }
+    });
   }
 
   void sendMessage(String content, {Map<String, dynamic>? metadata}) {
@@ -89,6 +142,27 @@ class SocketService extends GetxService {
       });
     } else {
       dev.log("SocketService: Cannot send message, socket is disconnected");
+    }
+  }
+
+  void updateMessage(int messageId, String content) {
+    if (_socket != null && _socket!.connected) {
+      _socket!.emit('editMessage', {
+        'id': messageId,
+        'content': content,
+      });
+    } else {
+      dev.log("SocketService: Cannot edit message, socket is disconnected");
+    }
+  }
+
+  void deleteMessage(int messageId) {
+    if (_socket != null && _socket!.connected) {
+      _socket!.emit('deleteMessage', {
+        'id': messageId,
+      });
+    } else {
+      dev.log("SocketService: Cannot delete message, socket is disconnected");
     }
   }
 

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_bubble.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/wallet_transfer_hint.dart';
 import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
-import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/app/widgets/button/primary_button.dart';
+import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
 
 class GoalAchievementInsightBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -43,13 +42,6 @@ class GoalAchievementInsightBubble extends StatelessWidget {
       );
     }
 
-    final statusColor = _riskColor(prediction.riskLevel);
-    final completionText = prediction.currentMonthlySavingRate <= 0
-        ? 'Không thể hoàn thành'
-        : prediction.predictedCompletionDate != null
-            ? _formatIsoDate(prediction.predictedCompletionDate!)
-            : 'Chưa đủ dữ liệu';
-
     // Tách action chuyển tiền từ ví ra riêng để render nổi bật
     final transferAction = prediction.recommendedActions
         .where((a) => a.actionType == 'transfer_from_wallet')
@@ -65,6 +57,29 @@ class GoalAchievementInsightBubble extends StatelessWidget {
       if (v is num) return v.toInt();
       return int.tryParse(v?.toString() ?? '');
     }();
+
+    // Parse milestones và nextMonthPrediction
+    final milestonesList = metadata['milestones'] as List<dynamic>? ?? [];
+    final milestones = milestonesList
+        .map((m) => MilestoneModel.fromJson(m as Map<String, dynamic>))
+        .toList();
+
+    final nextPred = prediction.nextMonthPrediction;
+
+    // Tính toán milestone hiện tại (active)
+    DateTime? currentMilestoneEndDate;
+    double currentMilestoneRemaining = prediction.remainingAmount;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final activeMilestones = milestones.where(
+      (m) => !m.startDate.isAfter(now) && !m.endDate.isBefore(today),
+    );
+    if (activeMilestones.isNotEmpty) {
+      final m = activeMilestones.first;
+      currentMilestoneEndDate = m.endDate;
+      currentMilestoneRemaining = (m.target - m.actual).clamp(0, double.infinity);
+    }
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -91,8 +106,8 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        _statusIcon(prediction.status),
-                        color: statusColor,
+                        _statusIcon(nextPred != null ? nextPred.status : prediction.status),
+                        color: _riskColor(nextPred != null ? nextPred.riskLevel : prediction.riskLevel),
                         size: 22,
                       ),
                       const SizedBox(width: 8),
@@ -112,13 +127,13 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.12),
+                          color: _riskColor(nextPred != null ? nextPred.riskLevel : prediction.riskLevel).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          _riskText(prediction.riskLevel),
+                          _riskText(nextPred != null ? nextPred.riskLevel : prediction.riskLevel),
                           style: TextStyle(
-                            color: statusColor,
+                            color: _riskColor(nextPred != null ? nextPred.riskLevel : prediction.riskLevel),
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                           ),
@@ -138,38 +153,96 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                     ),
                   ],
                   const SizedBox(height: 12),
-                  _metric(
-                    label: 'Tiến độ',
-                    value: '${prediction.progressPct.toStringAsFixed(0)}%',
-                    colors: colors,
-                  ),
-                  _metric(
-                    label: 'Dự kiến hoàn thành',
-                    value: completionText,
-                    colors: colors,
-                  ),
-                  _metric(
-                    label: 'Lệch hạn',
-                    value: _differenceText(prediction),
-                    colors: colors,
-                  ),
-                  _metric(
-                    label: 'Còn thiếu',
-                    value: AppHelperFunction.formatAmount(
-                      prediction.remainingAmount,
+
+                  // Nếu đã hoàn thành milestone tháng hiện tại, hiển thị dự báo giai đoạn tháng sau
+                  if (nextPred != null) ...[
+                    const Text(
+                      'Dự báo giai đoạn tháng sau',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    colors: colors,
-                  ),
-                  _metric(
-                    label: _velocityLabel(
-                      prediction.supportingData['savingVelocitySource']
-                          ?.toString(),
+                    const SizedBox(height: 6),
+                    _metric(
+                      label: 'Tiến độ chung',
+                      value: '${prediction.progressPct.toStringAsFixed(0)}%',
+                      colors: colors,
                     ),
-                    value: AppHelperFunction.formatAmount(
-                      prediction.currentMonthlySavingRate,
+                    _metric(
+                      label: 'Đã tích lũy sẵn',
+                      value: AppHelperFunction.formatAmount(nextPred.savedAmount),
+                      colors: colors,
                     ),
-                    colors: colors,
-                  ),
+                    _metric(
+                      label: 'Hạn giai đoạn',
+                      value: _formatIsoDate(nextPred.deadline),
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: 'Dự kiến hoàn thành',
+                      value: prediction.currentMonthlySavingRate <= 0
+                          ? 'Không thể hoàn thành'
+                          : nextPred.predictedCompletionDate != null
+                              ? _formatIsoDate(nextPred.predictedCompletionDate!)
+                              : 'Chưa đủ dữ liệu',
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: 'Còn thiếu tháng sau',
+                      value: AppHelperFunction.formatAmount(nextPred.remainingAmount),
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: 'Lệch hạn',
+                      value: _nextDifferenceText(nextPred),
+                      colors: colors,
+                    ),
+                  ] else ...[
+                    // Hiển thị dự báo giai đoạn tháng hiện tại
+                    _metric(
+                      label: 'Tiến độ chung',
+                      value: '${prediction.progressPct.toStringAsFixed(0)}%',
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: 'Đã tiết kiệm',
+                      value: AppHelperFunction.formatAmount(prediction.savedAmount),
+                      colors: colors,
+                    ),
+                    if (currentMilestoneEndDate != null)
+                      _metric(
+                        label: 'Hạn giai đoạn',
+                        value: AppHelperFunction.getFormattedDate(currentMilestoneEndDate),
+                        colors: colors,
+                      ),
+                    _metric(
+                      label: 'Dự kiến hoàn thành',
+                      value: prediction.currentMonthlySavingRate <= 0
+                          ? 'Không thể hoàn thành'
+                          : prediction.predictedCompletionDate != null
+                              ? _formatIsoDate(prediction.predictedCompletionDate!)
+                              : 'Chưa đủ dữ liệu',
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: 'Còn thiếu giai đoạn này',
+                      value: AppHelperFunction.formatAmount(currentMilestoneRemaining),
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: _velocityLabel(
+                        prediction.supportingData['savingVelocitySource']?.toString(),
+                      ),
+                      value: AppHelperFunction.formatAmount(prediction.currentMonthlySavingRate),
+                      colors: colors,
+                    ),
+                    _metric(
+                      label: 'Lệch hạn',
+                      value: _differenceText(prediction),
+                      colors: colors,
+                    ),
+                  ],
 
                   // ── Gợi ý hành động thông thường (không phải transfer) ──
                   if (otherActions.isNotEmpty) ...[
@@ -207,12 +280,11 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                   ],
 
                   // ── Transfer hint card ─────────────────────────────────
-                  // Tạm ẩn khi mục tiêu trễ hạn
                   if (transferAction != null &&
                       !(prediction.daysDifference != null &&
                           prediction.daysDifference! > 0)) ...[
                     const SizedBox(height: 12),
-                    _WalletTransferHint(
+                    WalletTransferHint(
                       action: transferAction,
                       goalWalletId: goalWalletId,
                       colors: colors,
@@ -280,105 +352,6 @@ class GoalAchievementInsightBubble extends StatelessWidget {
   }
 }
 
-// ── Wallet Transfer Hint widget ─────────────────────────────────────────────
-
-class _WalletTransferHint extends StatelessWidget {
-  final GoalRecommendedActionModel action;
-  final int? goalWalletId;
-  final AppThemeColors colors;
-
-  const _WalletTransferHint({
-    required this.action,
-    required this.goalWalletId,
-    required this.colors,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final amount = action.amount ?? 0;
-    final fromWalletId = action.walletId;
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.account_balance_wallet_rounded,
-                color: AppColors.primary,
-                size: 16,
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  'Ví có thể bù vào',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            action.message,
-            style: TextStyle(
-              fontSize: 12.5,
-              height: 1.4,
-              color: colors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          PrimaryButton(
-            label: 'Chuyển ${AppHelperFunction.formatAmount(amount)} vào ví tiết kiệm',
-            onPressed: () => _openTransfer(
-              fromWalletId: fromWalletId,
-              toWalletId: goalWalletId,
-              amount: amount,
-            ),
-            icon: const Icon(Icons.swap_horiz_rounded, size: 16),
-            height: 40,
-            fontSize: 12.5,
-            borderRadius: 10,
-            elevation: 0,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _openTransfer({
-    required int? fromWalletId,
-    required int? toWalletId,
-    required double amount,
-  }) {
-    Get.toNamed(
-      RoutePath.walletTransfer,
-      arguments: {
-        'fromWalletId': ?fromWalletId,
-        'toWalletId': ?toWalletId,
-        if (amount > 0) 'amount': amount,
-      },
-    );
-  }
-}
-
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 String _velocityLabel(String? source) {
@@ -422,6 +395,16 @@ String _differenceText(GoalAchievementPredictionModel prediction) {
     return 'Chi vượt thu';
   }
   if (prediction.status == 'unlikely') return 'Chưa thể dự báo';
+  if (days == null) return 'Không có hạn';
+  if (days < 0) return 'Sớm ${days.abs()} ngày';
+  if (days == 0) return 'Đúng hạn';
+  return 'Trễ $days ngày';
+}
+
+String _nextDifferenceText(GoalAchievementNextMonthPredictionModel nextPred) {
+  final days = nextPred.daysDifference;
+  if (nextPred.status == 'completed') return 'Đã hoàn thành';
+  if (nextPred.status == 'unlikely') return 'Chưa thể dự báo';
   if (days == null) return 'Không có hạn';
   if (days < 0) return 'Sớm ${days.abs()} ngày';
   if (days == 0) return 'Đúng hạn';

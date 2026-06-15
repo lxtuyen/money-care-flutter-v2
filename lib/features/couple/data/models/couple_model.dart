@@ -8,6 +8,8 @@ class CoupleModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<CoupleMemberModel> members;
+  final int currentStreak;
+  final String? lastActivityDate;
 
   CoupleModel({
     required this.id,
@@ -16,6 +18,8 @@ class CoupleModel {
     required this.createdAt,
     required this.updatedAt,
     required this.members,
+    this.currentStreak = 0,
+    this.lastActivityDate,
   });
 
   factory CoupleModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +35,8 @@ class CoupleModel {
           ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
       members: memberList.map((m) => CoupleMemberModel.fromJson(m)).toList(),
+      currentStreak: json['currentStreak'] ?? 0,
+      lastActivityDate: json['lastActivityDate'],
     );
   }
 
@@ -42,6 +48,8 @@ class CoupleModel {
       createdAt: createdAt,
       updatedAt: updatedAt,
       members: members.map((m) => m.toEntity()).toList(),
+      currentStreak: currentStreak,
+      lastActivityDate: lastActivityDate,
     );
   }
 }

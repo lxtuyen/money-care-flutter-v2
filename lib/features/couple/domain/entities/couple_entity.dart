@@ -7,6 +7,8 @@ class CoupleEntity {
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<CoupleMemberEntity> members;
+  final int currentStreak;
+  final String? lastActivityDate;
 
   const CoupleEntity({
     required this.id,
@@ -15,6 +17,8 @@ class CoupleEntity {
     required this.createdAt,
     required this.updatedAt,
     required this.members,
+    this.currentStreak = 0,
+    this.lastActivityDate,
   });
 
   bool get isPending => status == 'pending';
@@ -35,5 +39,27 @@ class CoupleEntity {
       }
     }
     return null;
+  }
+
+  CoupleEntity copyWith({
+    int? id,
+    String? inviteCode,
+    String? status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<CoupleMemberEntity>? members,
+    int? currentStreak,
+    String? lastActivityDate,
+  }) {
+    return CoupleEntity(
+      id: id ?? this.id,
+      inviteCode: inviteCode ?? this.inviteCode,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      members: members ?? this.members,
+      currentStreak: currentStreak ?? this.currentStreak,
+      lastActivityDate: lastActivityDate ?? this.lastActivityDate,
+    );
   }
 }

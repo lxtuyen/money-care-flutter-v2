@@ -34,6 +34,22 @@ class CoupleAlertCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
+              IconButton(
+                icon: Icon(
+                  Icons.notifications_active_outlined,
+                  color: Theme.of(context).primaryColor,
+                  size: 20,
+                ),
+                tooltip: 'Nhắc nhở chi tiêu',
+                onPressed: () {
+                  controller.sendSpendingAlertReminder(
+                    alertId: alert.id,
+                    title: alert.title,
+                    message: alert.message,
+                    amount: alert.amount,
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -94,6 +110,22 @@ class CoupleAlertCard extends StatelessWidget {
                   ),
                 ),
               ),
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications_active_outlined,
+                  color: Colors.redAccent,
+                  size: 20,
+                ),
+                tooltip: 'Nhắc nhở chi tiêu',
+                onPressed: () {
+                  controller.sendSpendingAlertReminder(
+                    alertId: alert.id,
+                    title: alert.title,
+                    message: alert.message,
+                    amount: alert.amount,
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -140,8 +172,7 @@ class CoupleAlertCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ],
-          _buildImpactBox(details),
-
+          //_buildImpactBox(details),
         ],
       ),
     );

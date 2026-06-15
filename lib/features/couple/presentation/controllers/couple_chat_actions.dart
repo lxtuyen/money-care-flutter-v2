@@ -9,8 +9,34 @@ extension CoupleChatActions on CoupleController {
       coupleId: couple.value!.id,
       onMessageReceived: (data) {
         final newMsg = CoupleMessageModel.fromJson(data);
-        chatMessages.add(newMsg);
-        _scrollToBottom();
+        if (!chatMessages.any((msg) => msg.id == newMsg.id)) {
+          chatMessages.add(newMsg);
+          _scrollToBottom();
+        }
+      },
+      onMessageUpdated: (data) {
+        final updatedMsg = CoupleMessageModel.fromJson(data);
+        final idx = chatMessages.indexWhere((msg) => msg.id == updatedMsg.id);
+        if (idx != -1) {
+          chatMessages[idx] = updatedMsg;
+          chatMessages.refresh();
+        }
+      },
+      onMessageDeleted: (messageId) {
+        chatMessages.removeWhere((msg) => msg.id == messageId);
+        chatMessages.refresh();
+      },
+      onStreakUpdated: (data) {
+        debugPrint('Streak updated from socket: $data');
+        final streak = data['currentStreak'] as int? ?? 0;
+        final lastActivity = data['lastActivityDate'] as String?;
+        if (couple.value != null) {
+          couple.value = couple.value!.copyWith(
+            currentStreak: streak,
+            lastActivityDate: lastActivity,
+          );
+          couple.refresh();
+        }
       },
     );
   }
@@ -88,6 +114,36 @@ extension CoupleChatActions on CoupleController {
     );
 
     selectedTabIndex.value = 3; // Switch to Trò chuyện tab
+  }
+
+  void sendSpendingAlertReminder({
+    required int alertId,
+    required String title,
+    required String message,
+    required double amount,
+  }) {
+    final content = 'Cảnh báo chi tiêu: $title\n$message ⚠️';
+
+    _socketService.sendMessage(
+      content,
+      metadata: {
+        '__type': 'spending_alert_reminder',
+        'alertId': alertId,
+        'title': title,
+        'message': message,
+        'amount': amount,
+      },
+    );
+
+    selectedTabIndex.value = 3; // Switch to Trò chuyện tab
+  }
+
+  void editMessage(int messageId, String newContent) {
+    _socketService.updateMessage(messageId, newContent);
+  }
+
+  void deleteMessage(int messageId) {
+    _socketService.deleteMessage(messageId);
   }
 
   void disconnectSocket() {

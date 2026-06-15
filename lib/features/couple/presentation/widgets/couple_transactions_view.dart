@@ -5,7 +5,6 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
-import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
@@ -13,6 +12,7 @@ import 'package:money_care/features/transaction/presentation/widgets/transaction
 import 'couple_settlement_view.dart';
 import 'couple_transaction_calendar.dart';
 import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_detail_screen.dart';
+import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_screen.dart';
 
 part 'couple_transactions_view_sections.dart';
 
@@ -88,10 +88,9 @@ class _CoupleTransactionsViewState extends State<CoupleTransactionsView> {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         onPressed: () async {
-          await Get.toNamed(
-            RoutePath.createTransaction,
-            arguments: {'type': 'expense', 'isShared': true},
-          );
+          await Get.to(() => CouplePhotoTransactionScreen(
+                coupleController: widget.controller,
+              ));
           widget.controller.fetchCoupleData();
         },
         child: const Icon(Icons.add),

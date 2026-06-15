@@ -24,9 +24,8 @@ class CoupleSpendingAlertsSection extends StatelessWidget {
           const SizedBox(height: 24),
           AppSectionHeading(
             title: 'Cảnh Báo Chi Tiêu',
-            showActionButton: report.unreadAlertCount > 0,
-            buttonTitle: '${report.unreadAlertCount} chưa đọc',
             onPressed: null,
+            showActionButton: false
           ),
           const SizedBox(height: 8),
           if (alerts.isEmpty)

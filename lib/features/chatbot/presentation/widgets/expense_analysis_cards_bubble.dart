@@ -34,13 +34,9 @@ class ExpenseAnalysisCardsBubble extends StatelessWidget {
               ),
             if (analysis.overview != null)
               _OverviewCard(overview: analysis.overview!),
-            if (analysis.forecast?.currentMonthProjection != null)
-              _ForecastCard(forecast: analysis.forecast!),
             _AnomalyCard(items: analysis.anomalies),
             if (analysis.budgetRisk != null)
               _BudgetRiskCard(budgetRisk: analysis.budgetRisk!),
-            if (analysis.recommendations.isNotEmpty)
-              _RecommendationCard(items: analysis.recommendations),
           ],
         ),
       ),
@@ -140,83 +136,6 @@ class _OverviewCard extends StatelessWidget {
   }
 }
 
-
-class _ForecastCard extends StatelessWidget {
-  final ChatbotForecastModel forecast;
-
-  const _ForecastCard({required this.forecast});
-
-  @override
-  Widget build(BuildContext context) {
-    final projection = forecast.currentMonthProjection!;
-    return ExpenseAnalysisCardShell(
-      icon: Iconsax.activity_copy,
-      title: 'Dự báo',
-      accentColor: getExpenseAnalysisStatusColor(projection.riskLevel),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (projection.totalForecast != null)
-                Expanded(
-                  child: ExpenseAnalysisMetricBlock(
-                    label: 'Cuối tháng',
-                    value: AppHelperFunction.formatAmount(projection.totalForecast!),
-                  ),
-                ),
-              if (projection.totalForecast != null &&
-                  projection.predictedRemainingAmount != null)
-                const SizedBox(width: 8),
-              if (projection.predictedRemainingAmount != null)
-                Expanded(
-                  child: ExpenseAnalysisMetricBlock(
-                    label: 'Còn phát sinh',
-                    value: AppHelperFunction.formatAmount(projection.predictedRemainingAmount!),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              ExpenseAnalysisStatusPill(label: 'Rủi ro', value: projection.riskLevel),
-              const SizedBox(width: 8),
-              ExpenseAnalysisStatusPill(
-                label: 'Tin cậy',
-                value: '${(projection.confidence * 100).round()}%',
-              ),
-            ],
-          ),
-          if (projection.modelNotes.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Text(
-              projection.modelNotes,
-              style: const TextStyle(fontSize: 12.5, height: 1.35),
-            ),
-          ],
-          if (forecast.riskWindows.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            const Divider(height: 1),
-            const SizedBox(height: 8),
-            ...forecast.riskWindows
-                .take(2)
-                .map(
-                  (item) => ExpenseAnalysisListRow(
-                    title: _formatPeriod(item.periodStart, item.periodEnd),
-                    value: item.predictedAmount == null
-                        ? item.riskLevel
-                        : AppHelperFunction.formatAmount(item.predictedAmount!),
-                    subtitle: item.reason,
-                  ),
-                ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 class _AnomalyCard extends StatelessWidget {
   final List<ChatbotAnomalyModel> items;
 
@@ -306,31 +225,6 @@ class _BudgetRiskCard extends StatelessWidget {
   }
 }
 
-class _RecommendationCard extends StatelessWidget {
-  final List<ChatbotRecommendationModel> items;
-
-  const _RecommendationCard({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpenseAnalysisCardShell(
-      icon: Iconsax.lamp_charge_copy,
-      title: 'Gợi ý hành động',
-      accentColor: Colors.teal,
-      child: Column(
-        children: items.take(3).map((item) {
-          return ExpenseAnalysisListRow(
-            title: item.title,
-            value: '',
-            subtitle: item.description,
-            leadingDotColor: getExpenseAnalysisStatusColor(item.severity),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
 class _InfoCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -351,13 +245,6 @@ class _InfoCard extends StatelessWidget {
       child: Text(body, style: const TextStyle(fontSize: 13, height: 1.35)),
     );
   }
-}
-
-String _formatPeriod(String start, String end) {
-  if (start.isEmpty && end.isEmpty) return 'Khoảng rủi ro';
-  if (start.isEmpty) return end;
-  if (end.isEmpty) return start;
-  return '$start - $end';
 }
 
 String _formatDate(String value) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
@@ -185,48 +186,17 @@ class CoupleChatView extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (message.metadata != null && message.metadata!['__type'] == 'saving_goal_reminder')
-                  _buildSavingGoalReminderCard(context, message, isMe, colors)
-                else if (message.metadata != null && message.metadata!['__type'] == 'settlement_reminder')
-                  _buildSettlementReminderCard(context, message, isMe, colors)
-                else if (message.metadata != null &&
-                    (message.metadata!['__type'] == 'settlement_completed' ||
-                     message.metadata!['__type'] == 'single_settlement_completed'))
-                  _buildSettlementCompletedCard(context, message, colors)
-                else if (message.metadata != null &&
-                    (message.metadata!['__type'] == 'saving_contribution_completed' ||
-                     message.metadata!['__type'] == 'saving_goal_completed'))
-                  _buildSavingContributionCompletedCard(context, message, colors)
-                else if (message.metadata != null && message.metadata!['__type'] == 'couple_photo_transaction')
-                  _buildCouplePhotoTransactionCard(context, message, isMe, colors)
-                else
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: messageBgColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
-                        bottomLeft: Radius.circular(isMe ? 16 : 4),
-                        bottomRight: Radius.circular(isMe ? 4 : 16),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      message.content,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: textColor,
-                        height: 1.3,
-                      ),
-                    ),
+                GestureDetector(
+                  onLongPress: () => _showMessageActions(context, message, isMe),
+                  child: _buildBubbleContent(
+                    context,
+                    message,
+                    isMe,
+                    colors,
+                    messageBgColor,
+                    textColor,
                   ),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
                   child: Text(
@@ -406,6 +376,97 @@ class CoupleChatView extends StatelessWidget {
                   'Đóng góp ngay',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpendingAlertReminderCard(
+    BuildContext context,
+    CoupleMessageEntity message,
+    bool isMe,
+    AppThemeColors colors,
+  ) {
+    final meta = message.metadata!;
+    final title = meta['title'] as String? ?? 'Cảnh báo chi tiêu';
+    final alertMessage = meta['message'] as String? ?? '';
+    final amount = (meta['amount'] as num?)?.toDouble() ?? 0.0;
+
+    return Container(
+      width: 260,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.cardBackground,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(16),
+          topRight: const Radius.circular(16),
+          bottomLeft: Radius.circular(isMe ? 16 : 4),
+          bottomRight: Radius.circular(isMe ? 4 : 16),
+        ),
+        border: Border.all(
+          color: Colors.orange.withValues(alpha: 0.3),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.orangeAccent,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'CẢNH BÁO CHI TIÊU',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange[700],
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            alertMessage,
+            style: TextStyle(
+              fontSize: 12,
+              color: colors.textSecondary,
+              height: 1.3,
+            ),
+          ),
+          if (amount > 0) ...[
+            const SizedBox(height: 8),
+            Text(
+              AppHelperFunction.formatAmount(amount),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.red[700],
               ),
             ),
           ],
@@ -901,6 +962,199 @@ class CoupleChatView extends StatelessWidget {
           }),
         ],
       ),
+    );
+  }
+
+  Widget _buildBubbleContent(
+    BuildContext context,
+    CoupleMessageEntity message,
+    bool isMe,
+    AppThemeColors colors,
+    Color messageBgColor,
+    Color textColor,
+  ) {
+    if (message.metadata != null && message.metadata!['__type'] == 'saving_goal_reminder') {
+      return _buildSavingGoalReminderCard(context, message, isMe, colors);
+    } else if (message.metadata != null && message.metadata!['__type'] == 'settlement_reminder') {
+      return _buildSettlementReminderCard(context, message, isMe, colors);
+    } else if (message.metadata != null && message.metadata!['__type'] == 'spending_alert_reminder') {
+      return _buildSpendingAlertReminderCard(context, message, isMe, colors);
+    } else if (message.metadata != null &&
+        (message.metadata!['__type'] == 'settlement_completed' ||
+         message.metadata!['__type'] == 'single_settlement_completed')) {
+      return _buildSettlementCompletedCard(context, message, colors);
+    } else if (message.metadata != null &&
+        (message.metadata!['__type'] == 'saving_contribution_completed' ||
+         message.metadata!['__type'] == 'saving_goal_completed')) {
+      return _buildSavingContributionCompletedCard(context, message, colors);
+    } else if (message.metadata != null && message.metadata!['__type'] == 'couple_photo_transaction') {
+      return _buildCouplePhotoTransactionCard(context, message, isMe, colors);
+    } else {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: messageBgColor,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: Radius.circular(isMe ? 16 : 4),
+            bottomRight: Radius.circular(isMe ? 4 : 16),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Text(
+          message.content,
+          style: TextStyle(
+            fontSize: 14,
+            color: textColor,
+            height: 1.3,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _showMessageActions(BuildContext context, CoupleMessageEntity message, bool isMe) {
+    final colors = AppThemeColors.of(context);
+    final isTextMessage = message.metadata == null;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colors.cardBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colors.borderSecondary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.copy_rounded, color: colors.textPrimary),
+                title: Text('Sao chép tin nhắn', style: TextStyle(color: colors.textPrimary)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Clipboard.setData(ClipboardData(text: message.content));
+                  AppHelperFunction.showSuccessSnackBar('Đã sao chép tin nhắn');
+                },
+              ),
+              if (isMe && isTextMessage)
+                ListTile(
+                  leading: Icon(Icons.edit_rounded, color: colors.textPrimary),
+                  title: Text('Chỉnh sửa', style: TextStyle(color: colors.textPrimary)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showEditDialog(context, message);
+                  },
+                ),
+              if (isMe)
+                ListTile(
+                  leading: const Icon(Icons.delete_rounded, color: Colors.red),
+                  title: const Text('Xóa tin nhắn', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showDeleteConfirmDialog(context, message);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditDialog(BuildContext context, CoupleMessageEntity message) {
+    final colors = AppThemeColors.of(context);
+    final textController = TextEditingController(text: message.content);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: colors.cardBackground,
+          title: Text(
+            'Chỉnh sửa tin nhắn',
+            style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          content: TextField(
+            controller: textController,
+            maxLines: null,
+            style: TextStyle(color: colors.textPrimary),
+            decoration: InputDecoration(
+              hintText: 'Nhập tin nhắn mới...',
+              hintStyle: TextStyle(color: colors.textMuted),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Hủy', style: TextStyle(color: colors.textSecondary)),
+            ),
+            TextButton(
+              onPressed: () {
+                final newContent = textController.text.trim();
+                if (newContent.isNotEmpty && newContent != message.content) {
+                  controller.editMessage(message.id, newContent);
+                }
+                Navigator.pop(context);
+              },
+              child: Text('Lưu', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmDialog(BuildContext context, CoupleMessageEntity message) {
+    final colors = AppThemeColors.of(context);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: colors.cardBackground,
+          title: Text(
+            'Xóa tin nhắn?',
+            style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          content: Text(
+            'Bạn có chắc chắn muốn xóa tin nhắn này không? Hành động này không thể hoàn tác.',
+            style: TextStyle(color: colors.textSecondary, fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Hủy', style: TextStyle(color: colors.textSecondary)),
+            ),
+            TextButton(
+              onPressed: () {
+                controller.deleteMessage(message.id);
+                Navigator.pop(context);
+              },
+              child: const Text('Xóa', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
     );
   }
 }

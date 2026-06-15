@@ -52,6 +52,11 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
                 : 'Không Gian Cặp Đôi',
             showBackButton: true,
             height: 180,
+            actions: showBottomBar
+                ? [
+                    _buildStreakBadge(context),
+                  ]
+                : null,
             child: headerChild,
           ),
           Expanded(
@@ -170,5 +175,43 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
 
     // Fallback to not connected if status is cancelled or left
     return NotConnectedView(controller: controller);
+  }
+
+  Widget _buildStreakBadge(BuildContext context) {
+    return Obx(() {
+      final couple = controller.couple.value;
+      if (couple == null || !couple.isActive) return const SizedBox.shrink();
+      final streak = couple.currentStreak;
+
+      return Container(
+        margin: const EdgeInsets.only(right: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              '🔥',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '$streak',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

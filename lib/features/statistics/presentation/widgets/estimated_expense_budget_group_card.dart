@@ -564,7 +564,7 @@ class _BudgetExceedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final alreadyExceeded = prediction.actualRatio >= 1.0;
+    final alreadyExceeded = prediction.actualAmount > prediction.limitAmount;
     final forecastWillExceed = !alreadyExceeded && prediction.willExceed;
     if (!alreadyExceeded && !forecastWillExceed) {
       return const SizedBox.shrink();

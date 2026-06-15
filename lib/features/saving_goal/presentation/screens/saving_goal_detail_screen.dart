@@ -138,7 +138,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
                   child: AppActionButton(
                     onTap: _confirmDelete,
                     icon: Icons.delete_outline_rounded,
-                    label: "Xóa mục tiêu",
+                    label: "Xóa",
                     color: Colors.redAccent,
                   ),
                 ),

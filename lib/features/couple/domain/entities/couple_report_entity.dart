@@ -186,64 +186,6 @@ class CoupleInsightEntity {
   }
 }
 
-class CoupleSpendingAlertAnomaly {
-  final int id;
-  final String categoryName;
-  final double amount;
-  final String date;
-  final String note;
-
-  const CoupleSpendingAlertAnomaly({
-    required this.id,
-    required this.categoryName,
-    required this.amount,
-    required this.date,
-    required this.note,
-  });
-
-  factory CoupleSpendingAlertAnomaly.fromJson(Map<String, dynamic> json) {
-    return CoupleSpendingAlertAnomaly(
-      id: json['id'] ?? 0,
-      categoryName: json['categoryName']?.toString() ?? '',
-      amount: double.parse(json['amount']?.toString() ?? '0'),
-      date: json['date']?.toString() ?? '',
-      note: json['note']?.toString() ?? '',
-    );
-  }
-}
-
-class CoupleSpendingAlertDetails {
-  final List<String> exceededCategories;
-  final List<String> atRiskCategories;
-  final List<CoupleSpendingAlertAnomaly> anomalies;
-  final double projectedSaving;
-  final List<String> savingGoalImpacts;
-  final bool impactsGoals;
-
-  const CoupleSpendingAlertDetails({
-    required this.exceededCategories,
-    required this.atRiskCategories,
-    required this.anomalies,
-    required this.projectedSaving,
-    required this.savingGoalImpacts,
-    required this.impactsGoals,
-  });
-
-  factory CoupleSpendingAlertDetails.fromJson(Map<String, dynamic> json) {
-    return CoupleSpendingAlertDetails(
-      exceededCategories: List<String>.from(json['exceededCategories'] ?? []),
-      atRiskCategories: List<String>.from(json['atRiskCategories'] ?? []),
-      anomalies: (json['anomalies'] as List<dynamic>?)
-              ?.map((item) => CoupleSpendingAlertAnomaly.fromJson(Map<String, dynamic>.from(item as Map)))
-              .toList() ??
-          [],
-      projectedSaving: double.parse(json['projectedSaving']?.toString() ?? '0'),
-      savingGoalImpacts: List<String>.from(json['savingGoalImpacts'] ?? []),
-      impactsGoals: json['impactsGoals'] == true,
-    );
-  }
-}
-
 class CoupleSpendingAlertEntity {
   final int id;
   final String type;
@@ -259,7 +201,6 @@ class CoupleSpendingAlertEntity {
   final String status;
   final String? feedback;
   final DateTime? createdAt;
-  final CoupleSpendingAlertDetails? details;
 
   const CoupleSpendingAlertEntity({
     required this.id,
@@ -276,7 +217,6 @@ class CoupleSpendingAlertEntity {
     required this.status,
     this.feedback,
     this.createdAt,
-    this.details,
   });
 
   factory CoupleSpendingAlertEntity.fromJson(Map<String, dynamic> json) {
@@ -300,9 +240,6 @@ class CoupleSpendingAlertEntity {
       feedback: json['feedback']?.toString(),
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString())
-          : null,
-      details: json['details'] != null
-          ? CoupleSpendingAlertDetails.fromJson(Map<String, dynamic>.from(json['details'] as Map))
           : null,
     );
   }

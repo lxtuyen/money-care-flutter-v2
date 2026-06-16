@@ -72,4 +72,17 @@ extension CoupleReportActions on CoupleController {
       },
     );
   }
+
+  Future<void> deleteAlert(int alertId) async {
+    final result = await deleteCoupleAlertUseCase(alertId);
+    result.fold(
+      (failure) => AppHelperFunction.showErrorSnackBar(
+        'Lỗi xóa cảnh báo: ${failure.message}',
+      ),
+      (_) async {
+        await fetchCoupleReport();
+        AppHelperFunction.showSuccessSnackBar('Đã xóa cảnh báo chi tiêu');
+      },
+    );
+  }
 }

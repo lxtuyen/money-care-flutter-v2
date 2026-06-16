@@ -415,90 +415,7 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
     );
   }
 
-  void _showSettlementPicker(BuildContext context) {
-    // Filter out the goal's own wallet from shared wallets
-    final wallets = controller.sharedWallets
-        .where((w) => w.id != goal.walletId)
-        .toList();
 
-    if (wallets.isEmpty) {
-      AppHelperFunction.showErrorSnackBar('Không tìm thấy ví chung nào khác để nhận quyết toán.');
-      return;
-    }
-
-    // Default to the first wallet or the one named "Ví chung"
-    int? selectedWalletId = wallets.firstWhereOrNull((w) => w.name == 'Ví chung')?.id ?? wallets.first.id;
-
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (ctx, setStateSheet) {
-          return Container(
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Quyết toán Quỹ Tiết Kiệm Chung',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Toàn bộ số dư tích lũy được (${AppHelperFunction.formatAmount(goal.savedAmount)}) sẽ được chuyển về ví nhận và ví tiết kiệm chung này sẽ được đóng.',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.4),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Chọn ví chung nhận tiền:',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
-                ),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<int>(
-                  initialValue: selectedWalletId,
-                  dropdownColor: Colors.white,
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  items: wallets.map((w) {
-                    return DropdownMenuItem<int>(
-                      value: w.id,
-                      child: Text('${w.name} (${AppHelperFunction.formatAmount(w.balance)})'),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    setStateSheet(() {
-                      selectedWalletId = val;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-                PrimaryButton(
-                  label: 'Xác nhận Quyết toán',
-                  onPressed: () async {
-                    if (selectedWalletId == null) return;
-                    Get.back();
-                    await controller.completeSharedSavingGoalWithTransfer(
-                      goalId: goal.id,
-                      sourceWalletId: goal.walletId!,
-                      destinationWalletId: selectedWalletId!,
-                      amount: goal.savedAmount,
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        }
-      ),
-      isScrollControlled: true,
-    );
-  }
 
   Widget _buildContributeButton(Color primaryColor) {
     if (goal.walletId == null) {
@@ -525,8 +442,25 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
     final isCompleted = goal.status == 'completed' || goal.savedAmount >= goal.target;
     if (isCompleted) {
       return PrimaryButton(
-        label: 'Quyết toán & Đóng Quỹ',
-        onPressed: () => _showSettlementPicker(context),
+        label: 'Hoàn Thành',
+        onPressed: () {
+          if (goal.walletId == null) {
+            AppHelperFunction.showErrorSnackBar('Mục tiêu không liên kết với ví nào.');
+            return;
+          }
+          Get.toNamed(
+            RoutePath.createTransaction,
+            arguments: {
+              'type': 'expense',
+              'amount': goal.savedAmount.toInt(),
+              'walletId': goal.walletId!,
+              'note': 'Chi tiêu cho: ${goal.name}',
+              'completeGoalId': goal.id,
+              'isWalletEditable': false,
+              'isShared': true,
+            },
+          );
+        },
         elevation: 0,
         borderRadius: 12,
         height: 40,

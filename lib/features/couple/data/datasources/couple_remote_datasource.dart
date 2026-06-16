@@ -51,6 +51,7 @@ abstract class CoupleRemoteDatasource {
     String? status,
     String? feedback,
   });
+  Future<void> deleteAlert(int alertId);
 
   Future<List<CoupleMessageModel>> getChatHistory(int coupleId);
 }
@@ -291,6 +292,12 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
       ),
     );
     return res.unwrap();
+  }
+
+  @override
+  Future<void> deleteAlert(int alertId) async {
+    final res = await api.delete<void>('${ApiRoutes.couples}/reports/alerts/$alertId');
+    res.unwrap();
   }
 
   @override

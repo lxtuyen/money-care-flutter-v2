@@ -178,3 +178,10 @@ class UpdateCoupleAlertUseCase {
     feedback: feedback,
   );
 }
+
+class DeleteCoupleAlertUseCase {
+  final CoupleRepository repository;
+  DeleteCoupleAlertUseCase(this.repository);
+  Future<Either<Failure, void>> call(int alertId) =>
+      repository.deleteAlert(alertId);
+}

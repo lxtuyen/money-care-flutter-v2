@@ -65,7 +65,7 @@ extension CoupleSavingsSettlementActions on CoupleController {
       );
 
       // Delete the goal wallet
-      await walletController.deleteWallet(sourceWalletId, showSuccessMessage: false);
+      await walletController.deleteWallet(sourceWalletId, showSuccessMessage: false, ignoreBalanceCheck: true);
 
       // Refresh data
       await fetchSavingGoals();
@@ -91,6 +91,34 @@ extension CoupleSavingsSettlementActions on CoupleController {
       AppHelperFunction.showSuccessSnackBar(
         'Quyết toán và đóng quỹ tiết kiệm chung thành công!',
       );
+    } catch (e) {
+      AppHelperFunction.showErrorSnackBar('Lỗi khi quyết toán mục tiêu chung: $e');
+    } finally {
+      isSettlingSharedGoal.value = false;
+    }
+  }
+
+  Future<void> completeSharedSavingGoalOnly({
+    required int goalId,
+    required int sourceWalletId,
+    required double totalAmount,
+  }) async {
+    isSettlingSharedGoal.value = true;
+    try {
+      final walletController = Get.find<WalletController>();
+
+      // Update goal status to completed
+      await updateCoupleSavingGoalUseCase(
+        id: goalId,
+        status: 'completed',
+      );
+
+      // Delete the goal wallet
+      await walletController.deleteWallet(sourceWalletId, showSuccessMessage: false, ignoreBalanceCheck: true);
+
+      // Refresh data
+      await fetchSavingGoals();
+      await fetchSharedWallets();
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Lỗi khi quyết toán mục tiêu chung: $e');
     } finally {

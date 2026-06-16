@@ -92,9 +92,13 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<bool> deleteWallet(int id, {bool showSuccessMessage = true}) async {
+  Future<bool> deleteWallet(
+    int id, {
+    bool showSuccessMessage = true,
+    bool ignoreBalanceCheck = false,
+  }) async {
     final wallet = wallets.firstWhereOrNull((item) => item.id == id);
-    if (wallet != null && wallet.balance != 0) {
+    if (!ignoreBalanceCheck && wallet != null && wallet.balance != 0) {
       AppHelperFunction.showWarningSnackBar('Không thể xóa ví đang có số dư');
       return false;
     }

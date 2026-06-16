@@ -4,7 +4,6 @@ import 'package:money_care/features/auth/presentation/controllers/auth_controlle
 import 'package:money_care/features/couple/domain/entities/couple_report_entity.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/couple/presentation/widgets/couple_alert_simple_card.dart';
-import 'package:money_care/features/couple/presentation/widgets/couple_alert_structured_card.dart';
 
 /// Dispatcher — chọn đúng widget con dựa vào [alert.type].
 class CoupleAlertCard extends StatelessWidget {
@@ -27,18 +26,6 @@ class CoupleAlertCard extends StatelessWidget {
     final isPartnerAlert =
         partnerName != null && alert.message.contains(partnerName);
 
-    // personal_budget_risk có details → card có cấu trúc riêng
-    if (alert.type == 'personal_budget_risk' && alert.details != null) {
-      return CoupleAlertStructuredCard(
-        controller: controller,
-        alert: alert,
-        partnerName: partnerName,
-        isPartnerAlert: isPartnerAlert,
-      );
-    }
-
-    // Tất cả loại còn lại (large_transaction, repeated_small_transactions,
-    // budget_exceeded, low_wallet_balance, shared_overspend, …)
     return CoupleAlertSimpleCard(
       controller: controller,
       alert: alert,

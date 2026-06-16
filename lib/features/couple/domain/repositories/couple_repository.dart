@@ -58,5 +58,6 @@ abstract class CoupleRepository {
     String? status,
     String? feedback,
   });
+  Future<Either<Failure, void>> deleteAlert(int alertId);
   Future<Either<Failure, List<CoupleMessageEntity>>> getChatHistory(int coupleId);
 }

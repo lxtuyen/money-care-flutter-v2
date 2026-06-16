@@ -70,7 +70,9 @@ class _TransactionFormState extends State<TransactionForm> {
                       child: Obx(
                         () => TransactionTypeToggle(
                           selected: controller.transactionType,
-                          onSelected: controller.changeTransactionType,
+                          onSelected: controller.isTypeEditable.value
+                              ? controller.changeTransactionType
+                              : (type) {},
                           showAmount: false,
                           spendLabel: 'Tiền Chi',
                           incomeLabel: 'Tiền Thu',

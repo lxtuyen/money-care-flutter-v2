@@ -46,6 +46,7 @@ class CoupleController extends GetxController {
   final GetCoupleReportUseCase getCoupleReportUseCase;
   final MarkCoupleAlertReadUseCase markCoupleAlertReadUseCase;
   final UpdateCoupleAlertUseCase updateCoupleAlertUseCase;
+  final DeleteCoupleAlertUseCase deleteCoupleAlertUseCase;
   final GetCoupleChatHistoryUseCase getCoupleChatHistoryUseCase;
 
   CoupleController({
@@ -66,6 +67,7 @@ class CoupleController extends GetxController {
     required this.getCoupleReportUseCase,
     required this.markCoupleAlertReadUseCase,
     required this.updateCoupleAlertUseCase,
+    required this.deleteCoupleAlertUseCase,
     required this.getCoupleChatHistoryUseCase,
   });
 

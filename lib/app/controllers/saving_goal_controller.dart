@@ -391,14 +391,6 @@ class SavingGoalController extends GetxController {
               return null;
             },
             (report) {
-              goalReport.value = report;
-              if ((report.isCompleted || report.isTargetAchieved) &&
-                  !report.completionNotified &&
-                  !_notifiedGoalIds.contains(id) &&
-                  !(Get.isDialogOpen ?? false)) {
-                _notifiedGoalIds.add(id);
-                GoalCompletionDialog.show(report);
-              }
               return report;
             },
           );

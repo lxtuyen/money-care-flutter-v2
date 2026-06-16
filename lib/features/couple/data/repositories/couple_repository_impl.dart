@@ -316,6 +316,20 @@ class CoupleRepositoryImpl implements CoupleRepository {
   }
 
   @override
+  Future<Either<Failure, void>> deleteAlert(int alertId) async {
+    try {
+      await remoteDatasource.deleteAlert(alertId);
+      return const Right(null);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<CoupleMessageEntity>>> getChatHistory(
     int coupleId,
   ) async {

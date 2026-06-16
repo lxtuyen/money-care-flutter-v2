@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:money_care/app/services/notification_service.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/features/auth/domain/entities/user_entity.dart';
@@ -52,6 +53,8 @@ class AuthController extends GetxController {
       if (currentUser != null) {
         try {
           Get.find<AppController>().setUserId(currentUser.id);
+          // Register FCM token with backend whenever a user session is established
+          Get.find<NotificationService>().registerFcmTokenToBackend();
         } catch (e) {
           debugPrint(
             'Error setting userId or syncing token on user change: $e',

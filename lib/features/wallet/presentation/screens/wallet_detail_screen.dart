@@ -141,7 +141,8 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
       onConfirm: () async {
         final deleted = await walletController.deleteWallet(wallet.id);
         if (deleted) {
-          Get.back();
+          Get.back(); // Pop confirm dialog
+          Get.back(); // Pop WalletDetailScreen
         }
       },
     );

@@ -30,4 +30,5 @@ abstract class SavingGoalRepository {
   );
   Future<Either<Failure, GoalAchievementPredictionSummaryModel>>
   getGoalPredictions();
+
 }

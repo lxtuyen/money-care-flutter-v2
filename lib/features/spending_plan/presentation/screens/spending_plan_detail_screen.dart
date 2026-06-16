@@ -220,7 +220,8 @@ class _PlanActions extends StatelessWidget {
       onConfirm: () async {
         final success = await controller.deletePlan(plan.id);
         if (success) {
-          Get.back();
+          Get.back(); // Pop confirm dialog
+          Get.back(); // Pop SpendingPlanDetailScreen
         }
       },
     );

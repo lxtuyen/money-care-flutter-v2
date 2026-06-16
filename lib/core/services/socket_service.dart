@@ -72,6 +72,9 @@ class SocketService extends GetxService {
     } else if (serverUrl.endsWith('/api/')) {
       serverUrl = serverUrl.substring(0, serverUrl.length - 5);
     }
+    if (serverUrl.endsWith('/')) {
+      serverUrl = serverUrl.substring(0, serverUrl.length - 1);
+    }
 
     dev.log("SocketService: Connecting to server: $serverUrl/couple-chat");
 

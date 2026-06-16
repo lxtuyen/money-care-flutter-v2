@@ -44,6 +44,13 @@ class CreateSavingGoalController extends GetxController {
     super.onClose();
   }
 
+  /// Gọi đồng bộ trước khi build screen để reset state cũ,
+  /// tránh hiển thị dữ liệu từ lần navigate trước.
+  void resetBeforeBuild() {
+    isCoupleMode.value = false;
+    isEditMode.value = false;
+  }
+
   Future<void> initializeForm() async {
     await _initializeUserInfo();
 

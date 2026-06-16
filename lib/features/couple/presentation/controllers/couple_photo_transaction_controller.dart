@@ -14,6 +14,7 @@ import 'package:money_care/features/auth/presentation/controllers/auth_controlle
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
 
 class CouplePhotoTransactionController extends GetxController {
@@ -34,6 +35,18 @@ class CouplePhotoTransactionController extends GetxController {
   final RxnInt selectedPayerId = RxnInt();
   final RxBool isLoading = false.obs;
 
+  bool get isSelectedWalletPersonal {
+    if (selectedWallet.value == null) return false;
+    return !coupleController.sharedWallets
+        .any((w) => w.id == selectedWallet.value!.id);
+  }
+
+  // Background Upload States
+  final RxnString uploadedPictureUrl = RxnString();
+  final RxBool isUploadingBackground = false.obs;
+  final RxnString uploadError = RxnString();
+  Future<String?>? _preUploadFuture;
+
   // Camera States
   final Rxn<XFile> selectedImage = Rxn<XFile>();
   CameraController? cameraController;
@@ -47,6 +60,22 @@ class CouplePhotoTransactionController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeDefaults();
+
+    // Listen to image changes to trigger pre-upload
+    ever(selectedImage, (image) {
+      if (image == null) {
+        uploadedPictureUrl.value = null;
+        isUploadingBackground.value = false;
+        uploadError.value = null;
+        _preUploadFuture = null;
+      } else {
+        uploadedPictureUrl.value = null;
+        uploadError.value = null;
+        isUploadingBackground.value = true;
+        _preUploadFuture = _performBackgroundUpload(image);
+      }
+    });
+
     if (initialImage != null) {
       selectedImage.value = initialImage;
     } else {
@@ -96,6 +125,16 @@ class CouplePhotoTransactionController extends GetxController {
         .toList();
     if (nonSavingWallets.isNotEmpty) {
       selectedWallet.value = nonSavingWallets.first;
+    } else {
+      if (Get.isRegistered<WalletController>()) {
+        final walletController = Get.find<WalletController>();
+        final nonSavingPersonal = walletController.wallets
+            .where((w) => w.savingGoals.isEmpty)
+            .toList();
+        if (nonSavingPersonal.isNotEmpty) {
+          selectedWallet.value = nonSavingPersonal.first;
+        }
+      }
     }
 
     if (currentUserId != null) {
@@ -261,6 +300,61 @@ class CouplePhotoTransactionController extends GetxController {
     }
   }
 
+  Future<String?> _performBackgroundUpload(XFile image) async {
+    try {
+      if (selectedImage.value != image) return null;
+
+      XFile fileToUpload = image;
+      try {
+        fileToUpload = await compressImage(fileToUpload);
+      } catch (e) {
+        debugPrint('Image compression failed, using original: $e');
+      }
+
+      if (selectedImage.value != image) return null;
+
+      final apiClient = Get.find<ApiClient>();
+      final uploadRes = await apiClient.postMultipart<Map<String, dynamic>>(
+        'couples/upload',
+        file: fileToUpload,
+        fromJsonT: (json) => Map<String, dynamic>.from(json),
+      );
+
+      // Clean up the temporary compressed file if it was created
+      if (fileToUpload.path != image.path) {
+        try {
+          final tempFile = File(fileToUpload.path);
+          if (await tempFile.exists()) {
+            await tempFile.delete();
+          }
+        } catch (e) {
+          debugPrint('Error deleting temporary compressed file: $e');
+        }
+      }
+
+      if (selectedImage.value != image) return null;
+
+      if (!uploadRes.success || uploadRes.data == null) {
+        final errorMsg = uploadRes.message.isNotEmpty ? uploadRes.message : 'Tải ảnh lên thất bại';
+        uploadError.value = errorMsg;
+        isUploadingBackground.value = false;
+        return null;
+      }
+
+      final pictureUrl = uploadRes.data!['url'] as String;
+      uploadedPictureUrl.value = pictureUrl;
+      isUploadingBackground.value = false;
+      return pictureUrl;
+    } catch (e) {
+      debugPrint('Background upload failed: $e');
+      if (selectedImage.value == image) {
+        uploadError.value = e.toString();
+        isUploadingBackground.value = false;
+      }
+      return null;
+    }
+  }
+
   Future<void> submit() async {
     final amtValue = amount.value;
     if (amtValue <= 0) {
@@ -285,33 +379,26 @@ class CouplePhotoTransactionController extends GetxController {
     }
 
     isLoading.value = true;
-    XFile? fileToUpload;
     try {
-      final apiClient = Get.find<ApiClient>();
+      String? pictureUrl = uploadedPictureUrl.value;
 
-      fileToUpload = selectedImage.value;
-      if (fileToUpload != null) {
-        try {
-          fileToUpload = await compressImage(fileToUpload);
-        } catch (e) {
-          debugPrint('Image compression failed, uploading original: $e');
+      if (pictureUrl == null) {
+        if (uploadError.value != null) {
+          AppHelperFunction.showSuccessSnackBar('Đang tải lại ảnh lên...');
+          final image = selectedImage.value;
+          if (image != null) {
+            _preUploadFuture = _performBackgroundUpload(image);
+          }
+        }
+
+        if (_preUploadFuture != null) {
+          pictureUrl = await _preUploadFuture;
         }
       }
 
-      // 1. Upload image to Cloudinary via backend couples/upload endpoint
-      final uploadRes = await apiClient.postMultipart<Map<String, dynamic>>(
-        'couples/upload',
-        file: fileToUpload!,
-        fromJsonT: (json) => Map<String, dynamic>.from(json),
-      );
-
-      if (!uploadRes.success || uploadRes.data == null) {
-        throw Exception(uploadRes.message.isNotEmpty
-            ? uploadRes.message
-            : 'Tải ảnh lên thất bại');
+      if (pictureUrl == null) {
+        throw Exception(uploadError.value ?? 'Tải ảnh lên thất bại. Vui lòng thử lại.');
       }
-
-      final pictureUrl = uploadRes.data!['url'] as String;
 
       // 2. Save Shared Transaction (defaults to 'none' if paid from a shared wallet, 'equal' otherwise)
       final isSharedWallet = coupleController.sharedWallets
@@ -334,16 +421,6 @@ class CouplePhotoTransactionController extends GetxController {
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Có lỗi xảy ra: $e');
     } finally {
-      if (fileToUpload != null && fileToUpload.path != selectedImage.value?.path) {
-        try {
-          final tempFile = File(fileToUpload.path);
-          if (await tempFile.exists()) {
-            await tempFile.delete();
-          }
-        } catch (e) {
-          debugPrint('Error deleting temporary compressed file: $e');
-        }
-      }
       isLoading.value = false;
     }
   }
@@ -567,12 +644,20 @@ class CouplePhotoTransactionController extends GetxController {
         .map((g) => g.walletId)
         .whereType<int>()
         .toSet();
-    final nonSavingWallets = coupleController.sharedWallets
+    final nonSavingSharedWallets = coupleController.sharedWallets
         .where((w) => w.savingGoals.isEmpty && !savingWalletIds.contains(w.id))
         .toList();
 
+    List<WalletEntity> nonSavingPersonalWallets = [];
+    if (Get.isRegistered<WalletController>()) {
+      nonSavingPersonalWallets = Get.find<WalletController>().wallets
+          .where((w) => w.savingGoals.isEmpty)
+          .toList();
+    }
+
     Get.bottomSheet(
       Container(
+        constraints: BoxConstraints(maxHeight: Get.height * 0.65),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: colors.dialogBackground,
@@ -588,34 +673,111 @@ class CouplePhotoTransactionController extends GetxController {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            if (nonSavingWallets.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  'Không có ví chi tiêu chung hợp lệ',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              )
-            else
-              ...nonSavingWallets.map((w) {
-                final isSelected = selectedWallet.value?.id == w.id;
-                return ListTile(
-                  onTap: () {
-                    selectedWallet.value = w;
-                    Get.back();
-                  },
-                  leading: Icon(
-                    Icons.account_balance_wallet_outlined,
-                    color: isSelected ? Theme.of(Get.context!).primaryColor : colors.textSecondary,
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  // --- Ví chung section ---
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      'VÍ CHUNG CHIA SẺ',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
                   ),
-                  title: Text(w.name, style: TextStyle(color: colors.textPrimary)),
-                  trailing: isSelected
-                      ? Icon(Icons.check_circle, color: Theme.of(Get.context!).primaryColor)
-                      : null,
-                );
-              }),
-            const SizedBox(height: 12),
+                  if (nonSavingSharedWallets.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'Không có ví chi tiêu chung hợp lệ',
+                        style: TextStyle(color: colors.textHint, fontSize: 13),
+                      ),
+                    )
+                  else
+                    ...nonSavingSharedWallets.map((w) {
+                      final isSelected = selectedWallet.value?.id == w.id && !isSelectedWalletPersonal;
+                      return ListTile(
+                        onTap: () {
+                          selectedWallet.value = w;
+                          Get.back();
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Icons.group_outlined,
+                          color: isSelected ? Theme.of(Get.context!).primaryColor : colors.textSecondary,
+                        ),
+                        title: Text(w.name, style: TextStyle(color: colors.textPrimary)),
+                        subtitle: Text(
+                          AppHelperFunction.formatAmount(w.balance),
+                          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                        ),
+                        trailing: isSelected
+                            ? Icon(Icons.check_circle, color: Theme.of(Get.context!).primaryColor)
+                            : null,
+                      );
+                    }),
+                  
+                  const Divider(height: 24),
+
+                  // --- Ví cá nhân section ---
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      'VÍ CÁ NHÂN CỦA BẠN',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+                  if (nonSavingPersonalWallets.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'Không có ví cá nhân hợp lệ',
+                        style: TextStyle(color: colors.textHint, fontSize: 13),
+                      ),
+                    )
+                  else
+                    ...nonSavingPersonalWallets.map((w) {
+                      final isSelected = selectedWallet.value?.id == w.id && isSelectedWalletPersonal;
+                      return ListTile(
+                        onTap: () {
+                          selectedWallet.value = w;
+                          // Auto set payer to current user when selecting personal wallet
+                          final authController = Get.find<AuthController>();
+                          final currentUserId = authController.user.value?.id;
+                          if (currentUserId != null) {
+                            selectedPayerId.value = currentUserId;
+                          }
+                          Get.back();
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Icons.person_outline,
+                          color: isSelected ? Theme.of(Get.context!).primaryColor : colors.textSecondary,
+                        ),
+                        title: Text(w.name, style: TextStyle(color: colors.textPrimary)),
+                        subtitle: Text(
+                          AppHelperFunction.formatAmount(w.balance),
+                          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                        ),
+                        trailing: isSelected
+                            ? Icon(Icons.check_circle, color: Theme.of(Get.context!).primaryColor)
+                            : null,
+                      );
+                    }),
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -623,6 +785,11 @@ class CouplePhotoTransactionController extends GetxController {
   }
 
   void showPayerSelector() {
+    if (isSelectedWalletPersonal) {
+      AppHelperFunction.showWarningSnackBar('Giao dịch dùng ví cá nhân nên bạn là người thanh toán.');
+      return;
+    }
+
     final colors = AppThemeColors.of(Get.context!);
     Get.bottomSheet(
       Container(

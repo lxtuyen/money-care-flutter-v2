@@ -21,6 +21,7 @@ class SavingGoalBinding extends Bindings {
       () => UpdateSavingGoalUseCase(repository),
     );
 
+
     Get.lazyPut<CreateSavingGoalController>(
       () => CreateSavingGoalController(),
       fenix: true,

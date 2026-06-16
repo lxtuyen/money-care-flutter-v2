@@ -21,6 +21,7 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
     required IconData icon,
     required String text,
     required VoidCallback onTap,
+    bool isLocked = false,
   }) {
     return Material(
       color: Colors.transparent,
@@ -30,23 +31,39 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.55),
+            color: isLocked 
+                ? Colors.black.withValues(alpha: 0.3) 
+                : Colors.black.withValues(alpha: 0.55),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white12),
+            border: Border.all(
+              color: isLocked ? Colors.white10 : Colors.white12,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: Colors.white, size: 14),
+              Icon(
+                icon, 
+                color: isLocked ? Colors.white38 : Colors.white, 
+                size: 14,
+              ),
               const SizedBox(width: 6),
               Text(
                 text,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: isLocked ? Colors.white38 : Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              if (isLocked) ...[
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.lock_outline_rounded,
+                  color: Colors.white38,
+                  size: 12,
+                ),
+              ],
             ],
           ),
         ),
@@ -400,6 +417,7 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                             icon: Icons.person_outline,
                             text: 'Trả: $payerName',
                             onTap: controller.showPayerSelector,
+                            isLocked: controller.isSelectedWalletPersonal,
                           ),
                           const SizedBox(height: 8),
 
@@ -545,6 +563,9 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
+            final loadingText = controller.isUploadingBackground.value
+                ? 'Đang hoàn tất tải ảnh lên...'
+                : 'Đang lưu giao dịch...';
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -552,7 +573,7 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                   const CircularProgressIndicator(color: Colors.white),
                   const SizedBox(height: 20),
                   Text(
-                    'Đang tải ảnh và lưu giao dịch...',
+                    loadingText,
                     style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14),
                   ),
                 ],

@@ -10,3 +10,4 @@ export 'extend_saving_goal_usecase.dart';
 export 'get_saving_goal_report_usecase.dart';
 export 'get_goal_prediction_usecase.dart';
 export 'get_goal_predictions_usecase.dart';
+

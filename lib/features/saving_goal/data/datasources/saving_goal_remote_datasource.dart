@@ -19,6 +19,7 @@ abstract class SavingGoalRemoteDatasource {
   Future<SavingGoalReportModel> getSavingGoalReport(int id);
   Future<GoalAchievementPredictionModel> getGoalPrediction(int id);
   Future<GoalAchievementPredictionSummaryModel> getGoalPredictions();
+
 }
 
 class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
@@ -156,4 +157,6 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     );
     return res.unwrap();
   }
+
+
 }

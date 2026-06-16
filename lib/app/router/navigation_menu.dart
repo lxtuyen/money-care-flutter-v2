@@ -3,13 +3,10 @@ import 'package:get/get.dart';
 import 'package:money_care/app/widgets/button/app_outline_button.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
-import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/widgets/icon/app_svg_icon.dart';
 import 'package:money_care/app/router/nav_controller.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/features/home/presentation/screens/home.dart';
-import 'package:money_care/app/controllers/saving_goal_controller.dart';
-import 'package:money_care/features/saving_goal/presentation/widgets/expired_goal_popup.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
 import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/user_center.dart';
@@ -27,25 +24,6 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _checkExpiredSavingGoal(),
-    );
-  }
-
-  Future<void> _checkExpiredSavingGoal() async {
-    try {
-      final savingGoalController = Get.find<SavingGoalController>();
-      final appController = Get.find<AppController>();
-      final userId = appController.userId.value;
-      if (userId == null) return;
-
-      await savingGoalController.checkExpiredSavingGoal(userId);
-
-      if (savingGoalController.hasExpiredGoal.value &&
-          savingGoalController.expiredGoal.value != null) {
-        ExpiredGoalPopup.show(savingGoalController.expiredGoal.value!);
-      }
-    } catch (_) {}
   }
 
   static const _screens = [

@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/network/api_client.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
@@ -117,5 +119,37 @@ class NotificationService extends GetxService {
       body: body,
       notificationDetails: details,
     );
+  }
+
+  /// Upload FCM token to backend so server-side push notifications can reach this device.
+  /// Call this once after login (or whenever [FirebaseMessaging.onTokenRefresh] fires).
+  Future<void> registerFcmTokenToBackend() async {
+    final token = fcmToken ?? await _firebaseMessaging.getToken();
+    if (token == null) return;
+    fcmToken = token;
+
+    try {
+      final api = Get.find<ApiClient>();
+      await api.patch<void>(
+        ApiRoutes.fcmToken,
+        body: {'token': token},
+      );
+    } catch (e) {
+      debugPrint('Failed to register FCM token: $e');
+    }
+
+    // Keep token fresh — re-register on token refresh
+    _firebaseMessaging.onTokenRefresh.listen((newToken) async {
+      fcmToken = newToken;
+      try {
+        final api = Get.find<ApiClient>();
+        await api.patch<void>(
+          ApiRoutes.fcmToken,
+          body: {'token': newToken},
+        );
+      } catch (e) {
+        debugPrint('Failed to refresh FCM token: $e');
+      }
+    });
   }
 }

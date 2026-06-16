@@ -14,8 +14,6 @@ import 'package:money_care/features/saving_goal/domain/entities/saving_goal_enti
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/goal_achievement_prediction_block.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
-import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
-import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
 class SavingGoalSummaryCard extends StatelessWidget {
   final SavingGoalEntity fund;
@@ -264,51 +262,60 @@ class SavingGoalSummaryCard extends StatelessWidget {
                 child: PrimaryButton(
                   label: 'Hoàn thành mục tiêu',
                   onPressed: () {
-                    final walletController = Get.find<WalletController>();
-                    final options = walletController.wallets
-                        .where((w) => w.id != fund.wallet?.id)
-                        .map(
-                          (w) => SelectionOption(
-                            id: w.id.toString(),
-                            label: w.name,
-                          ),
-                        )
-                        .toList();
-
-                    if (options.isEmpty || fund.wallet == null) {
+                    if (fund.wallet == null) {
                       final controller = Get.find<SavingGoalController>();
                       controller.completeGoalEarly(r.id);
                       return;
                     }
 
-                    showDialog(
-                      context: context,
-                      builder: (context) => SelectionDialog(
-                        title: 'Chọn ví nhận tiền',
-                        description:
-                            'Bạn đã hoàn thành mục tiêu! Chọn một ví chính để chuyển ${AppHelperFunction.formatAmount(r.walletBalance, currency: 'VND')} về nhé.',
-                        clearButtonText: 'common.delete',
-                        options: options,
-                        onSelect: (id, label) {
-                          if (id != null) {
-                            final destId = int.parse(id);
-                            final controller = Get.find<SavingGoalController>();
-                            controller.completeGoalWithTransfer(
-                              goalId: r.id,
-                              sourceWalletId: fund.wallet!.id,
-                              destinationWalletId: destId,
-                              amount: r.walletBalance,
-                            );
-                          }
-                        },
-                      ),
+                    Get.toNamed(
+                      RoutePath.createTransaction,
+                      arguments: {
+                        'type': 'expense',
+                        'amount': r.walletBalance.toInt(),
+                        'walletId': fund.wallet!.id,
+                        'note': 'Chi tiêu cho: ${r.name}',
+                        'completeGoalId': r.id,
+                        'isWalletEditable': false,
+                      },
                     );
                   },
-                  icon: const Icon(
-                    Icons.check_circle_outline_rounded,
-                    size: 20,
-                  ),
                   backgroundColor: AppColors.income,
+                  height: 48,
+                  borderRadius: 12,
+                  fontSize: 13,
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
+
+          if (!r.isCompleted && !r.isTargetAchieved) ...[
+            const SizedBox(height: 20),
+            Center(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: PrimaryButton(
+                  label: 'Góp quỹ',
+                  onPressed: () {
+                    Get.toNamed(
+                      RoutePath.walletTransfer,
+                      arguments: {
+                        'toWalletId': fund.wallet?.id,
+                        'lockToWallet': true,
+                      },
+                    );
+                  },
+                  backgroundColor: AppColors.primary,
                   height: 48,
                   borderRadius: 12,
                   fontSize: 13,

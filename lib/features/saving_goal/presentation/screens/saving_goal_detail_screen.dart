@@ -29,6 +29,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
   final transactionController = Get.find<TransactionController>();
 
   late SavingGoalEntity goal;
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +50,8 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
       onConfirm: () async {
         final success = await savingGoalController.deleteGoal(goal.id);
         if (success) {
-          Get.back();
+          Get.back(); // Pop confirm dialog
+          Get.back(); // Pop SavingGoalDetailScreen
         }
       },
     );
@@ -145,6 +147,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
               ],
             ),
           ),
+
           Obx(() => _buildPredictionCard(colors)),
           Expanded(
             child: Obx(() {
@@ -264,6 +267,7 @@ class _SavingGoalDetailScreenState extends State<SavingGoalDetailScreen> {
             Colors.blue,
             colors,
           ),
+
         ],
       ),
     );
@@ -551,3 +555,5 @@ String _formatIsoDate(String value) {
   if (parsed == null) return value;
   return DateFormat('dd/MM/yyyy').format(parsed);
 }
+
+

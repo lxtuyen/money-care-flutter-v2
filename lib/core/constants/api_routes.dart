@@ -26,6 +26,7 @@ class ApiRoutes {
   static const userCategories = 'categories/user';
 
   static const notification = 'notifications';
+  static const fcmToken = 'notifications/fcm-token';
 
   static const scanReceipt = 'ai/receipt/scan';
 

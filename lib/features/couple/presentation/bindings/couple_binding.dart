@@ -123,6 +123,7 @@ class CoupleBinding extends Bindings {
         updateCoupleAlertUseCase: Get.find<UpdateCoupleAlertUseCase>(),
         getCoupleChatHistoryUseCase: Get.find<GetCoupleChatHistoryUseCase>(),
       ),
+      fenix: true,
     );
   }
 }

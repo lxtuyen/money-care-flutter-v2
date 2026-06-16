@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/controllers/app_controller.dart';
@@ -10,6 +11,7 @@ import 'package:money_care/features/transaction/data/models/transaction_model.da
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:money_care/app/widgets/dialog/selection_dialog.dart';
 
 class TransactionFormController extends GetxController {
   final TransactionController transactionController =
@@ -43,6 +45,7 @@ class TransactionFormController extends GetxController {
   final RxnInt selectedCategoryId = RxnInt();
   final RxnInt selectedSubCategoryId = RxnInt();
   final RxnInt selectedWalletId = RxnInt();
+  final isWalletEditable = true.obs;
   final Rxn<CategoryEntity> _selectedCategory = Rxn<CategoryEntity>();
   CategoryEntity? get selectedCategory => _selectedCategory.value;
   set selectedCategory(CategoryEntity? value) =>
@@ -101,6 +104,8 @@ class TransactionFormController extends GetxController {
 
     final args = Get.arguments as Map<String, dynamic>?;
     final isSharedArg = args?['isShared'] == true;
+    final isWalletEditableArg = args?['isWalletEditable'] != false;
+    isWalletEditable.value = isWalletEditableArg;
 
     if (item != null) {
       selectedDate.value = item.transactionDate ?? DateTime.now();
@@ -222,6 +227,24 @@ class TransactionFormController extends GetxController {
           final me = coupleData.me(currentUserId);
           if (me != null) {
             payerNameController.text = '${me.fullName} (Bạn)';
+          }
+        }
+      }
+
+      if (args != null) {
+        if (args['amount'] != null) {
+          amountController.text = args['amount'].toString();
+        }
+        if (args['note'] != null) {
+          noteController.text = args['note'];
+        }
+        if (args['walletId'] != null) {
+          final wallet = walletController.wallets.firstWhereOrNull(
+            (w) => w.id == args['walletId'],
+          );
+          if (wallet != null) {
+            selectedWalletId.value = wallet.id;
+            walletNameController.text = wallet.name;
           }
         }
       }
@@ -430,6 +453,82 @@ class TransactionFormController extends GetxController {
     try {
       final dto = buildTransactionDto();
 
+      final args = Get.arguments as Map<String, dynamic>?;
+      final int? completeGoalId = args?['completeGoalId'];
+
+      if (completeGoalId != null && dto.walletId != null) {
+        final goalWallet = walletController.wallets.firstWhereOrNull((w) => w.id == dto.walletId);
+        final goalBalance = goalWallet?.balance ?? 0.0;
+        final rawValue = AppHelperFunction.unformatCurrency(amountController.text);
+        final inputAmount = double.tryParse(rawValue) ?? 0.0;
+        final difference = goalBalance - inputAmount;
+
+        if (difference != 0) {
+          final wallets = walletController.wallets.where((w) => w.id != dto.walletId).toList();
+          final options = wallets.map((w) => SelectionOption(id: w.id.toString(), label: w.name)).toList();
+          
+          if (options.isEmpty) {
+            AppHelperFunction.showErrorSnackBar('Không tìm thấy ví nào khác để thực hiện điều chỉnh số dư.');
+            return;
+          }
+
+          final completer = Completer<int?>();
+          showDialog(
+            context: Get.context!,
+            builder: (context) => SelectionDialog(
+              title: difference > 0 ? 'Chọn ví nhận tiền dư' : 'Chọn ví bù tiền thiếu',
+              description: difference > 0
+                  ? 'Bạn chi ít hơn số dư của ví tiết kiệm. Vui lòng chọn ví nhận số tiền dư thừa ${AppHelperFunction.formatAmount(difference)}:'
+                  : 'Bạn chi nhiều hơn số dư của ví tiết kiệm. Vui lòng chọn ví trích bù số tiền thiếu ${AppHelperFunction.formatAmount(-difference)}:',
+              clearButtonText: 'Hủy',
+              options: options,
+              onSelect: (id, label) {
+                if (id != null) {
+                  completer.complete(int.parse(id));
+                } else {
+                  completer.complete(null);
+                }
+              },
+            ),
+          );
+
+          final selectedOtherWalletId = await completer.future;
+          if (selectedOtherWalletId == null) {
+            // User cancelled
+            return;
+          }
+
+          final userCategoryController = Get.find<UserCategoryController>();
+          final transferCategoryId = await userCategoryController.getOrCreateTransferCategory();
+
+          if (difference > 0) {
+            // Transfer surplus to other wallet
+            await walletController.transfer(
+              dto.walletId!,
+              selectedOtherWalletId,
+              difference,
+              note: 'Chuyển tiền dư từ mục tiêu tiết kiệm',
+              categoryId: transferCategoryId,
+            );
+          } else {
+            // Spent more, transfer deficit from other wallet to goal wallet
+            final deficit = -difference;
+            final otherWallet = walletController.wallets.firstWhereOrNull((w) => w.id == selectedOtherWalletId);
+            if (otherWallet != null && otherWallet.balance < deficit) {
+              AppHelperFunction.showErrorSnackBar('Số dư ví bù không đủ để thực hiện chuyển khoản.');
+              return;
+            }
+            await walletController.transfer(
+              selectedOtherWalletId,
+              dto.walletId!,
+              deficit,
+              note: 'Bù tiền chi tiêu quá hạn mức mục tiêu tiết kiệm',
+              categoryId: transferCategoryId,
+            );
+          }
+        }
+      }
+
       if (isShared.value) {
         final coupleController = Get.find<CoupleController>();
         final coupleId = coupleController.couple.value?.id;
@@ -453,8 +552,23 @@ class TransactionFormController extends GetxController {
       } else {
         await transactionController.createTransaction(dto);
       }
-      Get.back();
-      AppHelperFunction.showSuccessSnackBar('Tạo giao dịch thành công');
+
+      if (completeGoalId != null && dto.walletId != null) {
+        await savingGoalController.completeGoalEarly(completeGoalId);
+        await walletController.deleteWallet(dto.walletId!, showSuccessMessage: false);
+      }
+
+      if (completeGoalId != null) {
+        Get.back(); // Pop TransactionForm
+        Get.back(); // Pop SavingGoalDetailScreen
+      } else {
+        Get.back();
+      }
+      AppHelperFunction.showSuccessSnackBar(
+        completeGoalId != null
+            ? 'Đã hoàn thành mục tiêu và tạo giao dịch chi thành công'
+            : 'Tạo giao dịch thành công'
+      );
     } catch (e) {
       AppHelperFunction.showErrorSnackBar(e.toString());
     }

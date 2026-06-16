@@ -8,6 +8,7 @@ import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/saving_goal/presentation/controllers/create_saving_goal_controller.dart';
 
+
 import 'package:money_care/app/widgets/layout/app_header.dart';
 
 class CreateSavingGoalScreen extends StatefulWidget {
@@ -25,6 +26,8 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
   @override
   void initState() {
     super.initState();
+    // Reset form ngay lập tức để tránh hiển thị state cũ
+    _controller.resetBeforeBuild();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.initializeForm();
     });
@@ -179,7 +182,8 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 40),
+
+                          const SizedBox(height: 24),
                           Obx(() {
                             return PrimaryButton(
                               label: _controller.isEditMode.value

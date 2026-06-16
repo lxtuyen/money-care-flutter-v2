@@ -142,57 +142,63 @@ class _TransactionFormState extends State<TransactionForm> {
                                       AppValidator.validateAmount(v),
                                 ),
                                 const SizedBox(height: 20),
-                                AppTextFormField(
-                                  controller: controller.walletNameController,
-                                  label: 'transaction.walletLabel'.tr,
-                                  icon: Icons.account_balance_wallet,
-                                  suffixIcon: const Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    color: AppColors.text3,
-                                  ),
-                                  hintText: 'transaction.walletHint'.tr,
-                                  readOnly: true,
-                                  validator: (v) => (v == null || v.isEmpty)
-                                      ? 'transaction.walletRequired'.tr
-                                      : null,
-                                  onTap: () {
-                                    final wallets = controller.isShared.value
-                                        ? Get.find<CoupleController>().sharedWallets
-                                        : controller.walletController.wallets;
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => SelectionDialog(
-                                        title:
-                                            'transaction.walletSelectionTitle',
-                                        description:
-                                            'transaction.walletSelectionDesc',
-                                        clearButtonText: 'common.delete',
-                                        options: wallets
-                                            .map(
-                                              (w) => SelectionOption(
-                                                id: w.id.toString(),
-                                                label: w.name,
+                                Obx(
+                                  () => AppTextFormField(
+                                    controller: controller.walletNameController,
+                                    label: 'transaction.walletLabel'.tr,
+                                    icon: Icons.account_balance_wallet,
+                                    suffixIcon: controller.isWalletEditable.value
+                                        ? const Icon(
+                                            Icons.keyboard_arrow_down_rounded,
+                                            color: AppColors.text3,
+                                          )
+                                        : null,
+                                    hintText: 'transaction.walletHint'.tr,
+                                    readOnly: true,
+                                    validator: (v) => (v == null || v.isEmpty)
+                                        ? 'transaction.walletRequired'.tr
+                                        : null,
+                                    onTap: controller.isWalletEditable.value
+                                        ? () {
+                                            final wallets = controller.isShared.value
+                                                ? Get.find<CoupleController>().sharedWallets
+                                                : controller.walletController.wallets;
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => SelectionDialog(
+                                                title:
+                                                    'transaction.walletSelectionTitle',
+                                                description:
+                                                    'transaction.walletSelectionDesc',
+                                                clearButtonText: 'common.delete',
+                                                options: wallets
+                                                    .map(
+                                                      (w) => SelectionOption(
+                                                        id: w.id.toString(),
+                                                        label: w.name,
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                                initialSelectedId: controller
+                                                    .selectedWalletId
+                                                    .value
+                                                    ?.toString(),
+                                                onSelect: (id, label) {
+                                                  if (id != null) {
+                                                    final wallet = wallets.firstWhere(
+                                                      (w) => w.id.toString() == id,
+                                                    );
+                                                    controller.setWallet(
+                                                      wallet.id,
+                                                      wallet.name,
+                                                    );
+                                                  }
+                                                },
                                               ),
-                                            )
-                                            .toList(),
-                                        initialSelectedId: controller
-                                            .selectedWalletId
-                                            .value
-                                            ?.toString(),
-                                        onSelect: (id, label) {
-                                          if (id != null) {
-                                            final wallet = wallets.firstWhere(
-                                              (w) => w.id.toString() == id,
-                                            );
-                                            controller.setWallet(
-                                              wallet.id,
-                                              wallet.name,
                                             );
                                           }
-                                        },
-                                      ),
-                                    );
-                                  },
+                                        : null,
+                                  ),
                                 ),
                                 const SizedBox(height: 20),
                                 AppTextFormField(

@@ -123,7 +123,7 @@ class PendingInvitationView extends StatelessWidget {
               AppConfirmDialog.show(
                 title: 'Hủy lời mời?',
                 message: 'Bạn có chắc chắn muốn hủy lời mời kết nối này không? Đối phương sẽ không thể tham gia bằng mã này nữa.',
-                confirmText: 'Hủy lời mời',
+                confirmText: 'Hủy',
                 cancelText: 'Không',
                 onConfirm: controller.cancelInvitation,
                 type: ConfirmDialogType.danger,

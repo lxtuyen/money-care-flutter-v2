@@ -13,6 +13,7 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
   final List<EstimatedExpenseEntity> expenses;
   final void Function(EstimatedExpenseEntity)? onExpenseTap;
   final BudgetExceedPredictionModel? exceedPrediction;
+  final double? actualSpent;
 
   const EstimatedExpenseBudgetGroupCard({
     super.key,
@@ -21,6 +22,7 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
     required this.expenses,
     this.onExpenseTap,
     this.exceedPrediction,
+    this.actualSpent,
   });
 
   static Map<String, List<EstimatedExpenseEntity>> groupExpenses(
@@ -41,7 +43,7 @@ class EstimatedExpenseBudgetGroupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeColors = AppThemeColors.of(context);
     final monthlyLimit = _totalMonthlyLimit;
-    final spent = _totalSpent;
+    final spent = actualSpent ?? _totalSpent;
     final progress = monthlyLimit <= 0
         ? 0.0
         : (spent / monthlyLimit).clamp(0.0, 1.0);
@@ -275,11 +277,6 @@ class _ForecastProgressBar extends StatelessWidget {
         forecastRatio != null && forecastRatio! > actualRatio + 0.01;
 
     // Có marker "hôm nay" khi expectedTodayRatio có giá trị và nằm trong [0,1]
-    final hasTodayMarker =
-        expectedTodayRatio != null &&
-        expectedTodayRatio! > 0.0 &&
-        expectedTodayRatio! <= 1.0;
-
     // Tổng chiều cao: bar + label forecast phía trên (nếu có)
     final totalHeight = height + (hasForecast ? 14 : 0);
 
@@ -368,61 +365,6 @@ class _ForecastProgressBar extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: const Color(0xFFF59E0B),
                             borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-
-          // Marker "hôm nay" — dot tròn thay cho đường dọc
-          if (hasTodayMarker)
-            Positioned(
-              top: hasForecast ? 14 : 0,
-              left: 0,
-              right: 0,
-              height: height,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final todayX =
-                      expectedTodayRatio!.clamp(0.0, 1.0) *
-                      constraints.maxWidth;
-                  final isBehindPace = actualRatio < expectedTodayRatio! - 0.02;
-                  final isAheadOfPace =
-                      actualRatio > expectedTodayRatio! + 0.02;
-                  final dotColor = isAheadOfPace
-                      ? AppColors.expense
-                      : isBehindPace
-                      ? AppColors.primary
-                      : Colors.white;
-                  final borderColor = isAheadOfPace
-                      ? AppColors.expense
-                      : isBehindPace
-                      ? AppColors.primary
-                      : Colors.grey.shade400;
-                  final dotSize = height + 4.0;
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        left: todayX - dotSize / 2,
-                        top: (height - dotSize) / 2,
-                        width: dotSize,
-                        height: dotSize,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: dotColor,
-                            border: Border.all(color: borderColor, width: 2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: dotColor.withValues(alpha: 0.45),
-                                blurRadius: 5,
-                                spreadRadius: 1,
-                              ),
-                            ],
                           ),
                         ),
                       ),

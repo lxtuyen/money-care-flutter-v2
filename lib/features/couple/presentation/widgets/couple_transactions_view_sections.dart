@@ -113,7 +113,7 @@ extension _CoupleTransactionsViewSections on _CoupleTransactionsViewState {
           .toList();
       final initialIndex = photoTxs.indexWhere((tx) => tx.id == transaction.id);
 
-      Get.to(() => CouplePhotoTransactionDetailScreen(
+      Get.to(() => PhotoTransactionDetailScreen(
             photoTransactions: photoTxs,
             initialIndex: initialIndex >= 0 ? initialIndex : 0,
             coupleController: widget.controller,

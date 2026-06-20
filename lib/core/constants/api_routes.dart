@@ -10,8 +10,11 @@ class ApiRoutes {
   static const savingGoal = 'saving-goals';
   static const getSavingGoals = 'saving-goals/user';
   static const savingGoalPredictions = 'saving-goals/predictions';
+  static const savingGoalBudgetSuggestion = 'saving-goals/budget-suggestion';
   static const selectSavingGoal = 'saving-goals/select';
   static const checkExpiredSavingGoal = 'saving-goals/check-expired';
+  static String activateSavingGoal(int id) => 'saving-goals/$id/activate';
+  static String pauseSavingGoal(int id) => 'saving-goals/$id/pause';
   static const spendingPlans = 'spending-plans';
 
   static const userProfile = 'user-profile/me';

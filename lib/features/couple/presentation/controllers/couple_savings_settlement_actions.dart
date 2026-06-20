@@ -130,6 +130,7 @@ extension CoupleSavingsSettlementActions on CoupleController {
     required String name,
     required double target,
     DateTime? endDate,
+    bool? isBudgetEnabled,
   }) async {
     if (couple.value == null) return;
     isLoading.value = true;
@@ -138,6 +139,7 @@ extension CoupleSavingsSettlementActions on CoupleController {
       name: name,
       target: target,
       endDate: endDate,
+      isBudgetEnabled: isBudgetEnabled,
     );
     await result.fold(
       (failure) async {
@@ -226,6 +228,7 @@ extension CoupleSavingsSettlementActions on CoupleController {
     DateTime? endDate,
     String? status,
     bool? completionNotified,
+    bool? isBudgetEnabled,
   }) async {
     isLoading.value = true;
     final result = await updateCoupleSavingGoalUseCase(
@@ -235,6 +238,7 @@ extension CoupleSavingsSettlementActions on CoupleController {
       endDate: endDate,
       status: status,
       completionNotified: completionNotified,
+      isBudgetEnabled: isBudgetEnabled,
     );
     await result.fold(
       (failure) async {

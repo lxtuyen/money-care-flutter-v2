@@ -129,6 +129,8 @@ class AppBinding extends Bindings {
         getSavingGoalReportUseCase: GetSavingGoalReportUseCase(savingGoalRepo),
         getGoalPredictionUseCase: GetGoalPredictionUseCase(savingGoalRepo),
         getGoalPredictionsUseCase: GetGoalPredictionsUseCase(savingGoalRepo),
+        activateSavingGoalUseCase: ActivateSavingGoalUseCase(savingGoalRepo),
+        pauseSavingGoalUseCase: PauseSavingGoalUseCase(savingGoalRepo),
       ),
       permanent: true,
     );

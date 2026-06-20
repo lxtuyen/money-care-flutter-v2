@@ -19,6 +19,7 @@ _SavingGoalModel _$SavingGoalModelFromJson(Map<String, dynamic> json) =>
           ? 0
           : NumParser.parseDouble(json['saved_amount']),
       isCompleted: json['is_completed'] as bool? ?? false,
+      isBudgetEnabled: json['is_budget_enabled'] as bool? ?? false,
       startDate: json['start_date'] == null
           ? null
           : DateTime.parse(json['start_date'] as String),
@@ -43,6 +44,7 @@ Map<String, dynamic> _$SavingGoalModelToJson(_SavingGoalModel instance) =>
       'target': instance.target,
       'saved_amount': instance.savedAmount,
       'is_completed': instance.isCompleted,
+      'is_budget_enabled': instance.isBudgetEnabled,
       'start_date': instance.startDate?.toIso8601String(),
       'end_date': instance.endDate?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),

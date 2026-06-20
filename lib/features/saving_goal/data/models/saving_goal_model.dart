@@ -20,6 +20,7 @@ abstract class SavingGoalModel with _$SavingGoalModel {
     @Default(0)
     double savedAmount,
     @JsonKey(name: 'is_completed') @Default(false) bool isCompleted,
+    @JsonKey(name: 'is_budget_enabled') @Default(false) bool isBudgetEnabled,
 
     @JsonKey(name: 'start_date') DateTime? startDate,
     @JsonKey(name: 'end_date') DateTime? endDate,
@@ -42,6 +43,7 @@ abstract class SavingGoalModel with _$SavingGoalModel {
       target: target,
       savedAmount: savedAmount,
       isCompleted: isCompleted,
+      isBudgetEnabled: isBudgetEnabled,
 
       startDate: startDate,
       endDate: endDate,

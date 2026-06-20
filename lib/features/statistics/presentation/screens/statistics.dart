@@ -27,8 +27,8 @@ import 'package:money_care/features/transaction/presentation/controllers/user_ca
 
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
-import 'package:money_care/features/statistics/data/models/analytics_model.dart'
-    show BudgetExceedPredictionModel;
+import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
+import 'package:money_care/features/saving_goal/data/models/models.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -64,6 +64,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     await Future.wait([
       statisticsController.refreshStatisticsData(userId),
       spendingPlanController.loadStatsSummary(loadActiveIfMissing: true),
+      savingGoalController.loadMultiGoalData(),
     ]);
   }
 
@@ -319,61 +320,26 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 if (statisticsController.selectedType.value != 'chi') {
                   return const SizedBox.shrink();
                 }
-                final stats = spendingPlanController.statsSummary.value;
-                if (stats == null) return const SizedBox.shrink();
-                final analyticsData = statisticsController.analyticsData.value;
-                final exceedPredictions =
-                    analyticsData?.aiBudgeting?.budgetExceedPredictions ??
-                    const <BudgetExceedPredictionModel>[];
-                final anomalies = analyticsData?.anomalies ?? const [];
-                final anomalyCount = anomalies.length;
-
-                final groupedExpenses =
-                    EstimatedExpenseBudgetGroupCard.groupExpenses(
-                      stats.estimatedExpenses,
-                    );
-
-                return Column(
+                return const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    BudgetTrackingSection(
-                      stats: stats,
-                      groupedExpenses: groupedExpenses,
-                      exceedPredictions: exceedPredictions,
-                      anomalyCount: anomalyCount,
-                      anomalies: anomalies,
-                      isLoadingAnalytics: statisticsController.isLoadingAnalytics.value,
-                      onViewDetail: stats.estimatedExpenses.length > 5
-                          ? () {
-                              Get.toNamed(
-                                RoutePath.spendingPlanDetail,
-                                arguments: stats.planId,
-                              );
-                            }
-                          : null,
-                    ),
-                    const SizedBox(height: 25),
+                    BudgetTrackingSection(),
+                    SizedBox(height: 25),
                   ],
                 );
               }),
 
               Obx(() {
-                final fund = savingGoalController.currentGoal.value;
-                if (fund == null || fund.isCompleted) {
+                final activeGoals = savingGoalController.activeGoals;
+                if (activeGoals.isEmpty) {
                   return const SizedBox.shrink();
                 }
-                final planImpact = _buildGoalPlanImpact(
-                  spendingPlanController.statsSummary.value,
-                  EstimatedExpenseBudgetGroupCard.groupExpenses(
-                    spendingPlanController
-                            .statsSummary
-                            .value
-                            ?.estimatedExpenses ??
-                        const [],
-                  ),
+
+                final stats = spendingPlanController.statsSummary.value;
+                final groupedExpenses = EstimatedExpenseBudgetGroupCard.groupExpenses(
+                  stats?.estimatedExpenses ?? const [],
                 );
-                final prediction = savingGoalController.goalPrediction.value;
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -385,16 +351,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    SavingGoalSummaryCard(
-                      fund: fund,
-                      report: savingGoalController.goalReport.value,
-                      isLoading: savingGoalController.isLoadingReport.value,
-                      planImpact: planImpact,
-                      prediction: prediction?.goalId == fund.id
-                          ? prediction
-                          : null,
-                    ),
-                    const SizedBox(height: 25),
+                    ...activeGoals.map((goal) {
+                      final report = savingGoalController.goalReports[goal.id];
+                      final prediction = savingGoalController.goalPredictions[goal.id];
+                      final planImpact = _buildGoalPlanImpact(
+                        goal,
+                        report,
+                        stats,
+                        groupedExpenses,
+                      );
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: SavingGoalSummaryCard(
+                          fund: goal,
+                          report: report,
+                          isLoading: savingGoalController.isLoadingMultiReports.value ||
+                              (savingGoalController.isLoadingReport.value && report == null),
+                          planImpact: planImpact,
+                          prediction: prediction,
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 9),
                   ],
                 );
               }),
@@ -407,15 +386,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   GoalPlanImpact? _buildGoalPlanImpact(
+    SavingGoalEntity goal,
+    SavingGoalReportModel? report,
     SpendingPlanStatsEntity? stats,
     Map<String, List<EstimatedExpenseEntity>> groupedExpenses,
   ) {
-    final goal = savingGoalController.currentGoal.value;
-    if (goal == null || goal.isCompleted || stats == null) return null;
+    if (goal.isCompleted || stats == null) return null;
     return GoalPlanImpact.build(
       goal: goal,
       stats: stats,
-      report: savingGoalController.goalReport.value,
+      report: report,
       selectedMonth: statisticsController.selectedMonth.value,
       groupedExpenses: groupedExpenses,
     );

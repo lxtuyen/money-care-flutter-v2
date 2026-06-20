@@ -8,18 +8,27 @@ import 'package:money_care/features/couple/presentation/controllers/couple_contr
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
+import 'package:money_care/features/transaction/domain/repositories/transaction_repository.dart';
+import 'package:money_care/features/transaction/data/models/transaction_create_dto.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
+import 'package:money_care/app/controllers/transaction_controller.dart';
+import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 
-class CouplePhotoTransactionDetailController extends GetxController {
+class PhotoTransactionDetailController extends GetxController {
   final List<TransactionEntity> photoTransactions;
-  final CoupleController coupleController;
+  final CoupleController? coupleController;
+  final bool isPersonal;
+  final int? ownerId;
   final RxInt currentIndex = 0.obs;
   
   PageController? pageController;
 
-  CouplePhotoTransactionDetailController({
+  PhotoTransactionDetailController({
     required this.photoTransactions,
     required int initialIndex,
-    required this.coupleController,
+    this.coupleController,
+    this.isPersonal = false,
+    this.ownerId,
   }) {
     currentIndex.value = initialIndex;
   }
@@ -60,8 +69,18 @@ class CouplePhotoTransactionDetailController extends GetxController {
 
     // Resolve initial wallet
     if (transaction.walletId != null) {
-      selectedWallet.value = coupleController.sharedWallets
-          .firstWhereOrNull((w) => w.id == transaction.walletId);
+      if (coupleController != null) {
+        selectedWallet.value = coupleController!.sharedWallets
+            .firstWhereOrNull((w) => w.id == transaction.walletId);
+      } else {
+        if (Get.isRegistered<WalletController>()) {
+          final walletController = Get.find<WalletController>();
+          selectedWallet.value = walletController.wallets
+              .firstWhereOrNull((w) => w.id == transaction.walletId);
+        } else {
+          selectedWallet.value = null;
+        }
+      }
     } else {
       selectedWallet.value = null;
     }
@@ -120,8 +139,9 @@ class CouplePhotoTransactionDetailController extends GetxController {
       final transaction = currentTransaction;
       
       // Determine splitMethod dynamically (if paid from a shared wallet, it should not be split)
-      final isSharedWallet = coupleController.sharedWallets
-          .any((w) => w.id == selectedWallet.value?.id);
+      final isSharedWallet = (coupleController != null)
+          ? coupleController!.sharedWallets.any((w) => w.id == selectedWallet.value?.id)
+          : false;
       final splitMethod = isSharedWallet ? 'none' : 'equal';
 
       // Re-map splits if present (only for personal wallet transactions)
@@ -136,21 +156,52 @@ class CouplePhotoTransactionDetailController extends GetxController {
             .toList();
       }
 
-      await coupleController.editSharedTransaction(
-        id: transaction.id!,
-        amount: amount.value.toInt(),
-        type: transaction.type,
-        note: note.value,
-        walletId: selectedWallet.value!.id,
-        categoryId: selectedCategory.value!.id!,
-        payerId: selectedPayerId.value!,
-        date: selectedDate.value,
-        splitMethod: splitMethod,
-        splits: splits,
-        pictureUrl: transaction.pictureUrl,
-      );
+      if (isPersonal || coupleController == null) {
+        final transactionRepo = Get.find<TransactionRepository>();
+        final dto = TransactionCreateDto(
+          amount: amount.value.toInt(),
+          type: transaction.type,
+          note: note.value,
+          categoryId: selectedCategory.value!.id,
+          walletId: selectedWallet.value!.id,
+          transactionDate: selectedDate.value,
+          pictureUrl: transaction.pictureUrl,
+          userId: ownerId ?? Get.find<AppController>().userId.value,
+        );
+
+        await transactionRepo.updateTransaction(
+          dto,
+          transaction.id!,
+          payerId: selectedPayerId.value!,
+          splitMethod: splitMethod,
+          splits: splits,
+        );
+
+        final currentUserId = ownerId ?? Get.find<AppController>().userId.value;
+        if (currentUserId != null && Get.isRegistered<TransactionController>()) {
+          await Get.find<TransactionController>().refreshAllData(currentUserId);
+        }
+      } else {
+        await coupleController!.editSharedTransaction(
+          id: transaction.id!,
+          amount: amount.value.toInt(),
+          type: transaction.type,
+          note: note.value,
+          walletId: selectedWallet.value!.id,
+          categoryId: selectedCategory.value!.id!,
+          payerId: selectedPayerId.value!,
+          date: selectedDate.value,
+          splitMethod: splitMethod,
+          splits: splits,
+          pictureUrl: transaction.pictureUrl,
+        );
+      }
 
       // Update the local list transaction object so it matches saved state
+      final String? payerName = (coupleController != null)
+          ? coupleController!.couple.value?.members.firstWhereOrNull((m) => m.userId == selectedPayerId.value)?.fullName
+          : Get.find<AuthController>().user.value?.profile.fullName;
+
       photoTransactions[currentIndex.value] = TransactionEntity(
         id: transaction.id,
         amount: amount.value.toInt(),
@@ -159,7 +210,7 @@ class CouplePhotoTransactionDetailController extends GetxController {
         walletId: selectedWallet.value?.id,
         walletName: selectedWallet.value?.name,
         payerId: selectedPayerId.value,
-        payerName: coupleController.couple.value?.members.firstWhereOrNull((m) => m.userId == selectedPayerId.value)?.fullName,
+        payerName: payerName,
         transactionDate: selectedDate.value,
         pictureUrl: transaction.pictureUrl,
         category: selectedCategory.value,
@@ -184,8 +235,18 @@ class CouplePhotoTransactionDetailController extends GetxController {
     try {
       final idToDelete = currentTransaction.id!;
       final prevIndex = currentIndex.value;
-      await coupleController.deleteSharedTransaction(idToDelete);
-      
+      if (isPersonal || coupleController == null) {
+        final transactionRepo = Get.find<TransactionRepository>();
+        await transactionRepo.deleteTransaction(idToDelete);
+
+        final currentUserId = ownerId ?? Get.find<AppController>().userId.value;
+        if (currentUserId != null && Get.isRegistered<TransactionController>()) {
+          await Get.find<TransactionController>().refreshAllData(currentUserId);
+        }
+      } else {
+        await coupleController!.deleteSharedTransaction(idToDelete);
+      }
+
       photoTransactions.removeAt(prevIndex);
       if (photoTransactions.isEmpty) {
         Get.back(); // Return from details view
@@ -501,13 +562,33 @@ class CouplePhotoTransactionDetailController extends GetxController {
 
   void showWalletSelector() {
     final colors = AppThemeColors.of(Get.context!);
-    final savingWalletIds = coupleController.savingGoals
-        .map((g) => g.walletId)
-        .whereType<int>()
-        .toSet();
-    final nonSavingWallets = coupleController.sharedWallets
-        .where((w) => w.savingGoals.isEmpty && !savingWalletIds.contains(w.id))
-        .toList();
+
+    List<WalletEntity> nonSavingWallets;
+    if (isPersonal) {
+      if (Get.isRegistered<WalletController>()) {
+        final walletController = Get.find<WalletController>();
+        nonSavingWallets = walletController.wallets
+            .where((w) => w.savingGoals.isEmpty)
+            .toList();
+      } else {
+        nonSavingWallets = [];
+      }
+    } else if (coupleController != null) {
+      final savingWalletIds = coupleController!.savingGoals
+          .map((g) => g.walletId)
+          .whereType<int>()
+          .toSet();
+      nonSavingWallets = coupleController!.sharedWallets
+          .where((w) => w.savingGoals.isEmpty && !savingWalletIds.contains(w.id))
+          .toList();
+    } else if (Get.isRegistered<WalletController>()) {
+      final walletController = Get.find<WalletController>();
+      nonSavingWallets = walletController.wallets
+          .where((w) => w.savingGoals.isEmpty)
+          .toList();
+    } else {
+      nonSavingWallets = [];
+    }
 
     Get.bottomSheet(
       Container(
@@ -533,7 +614,7 @@ class CouplePhotoTransactionDetailController extends GetxController {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  'Không có ví chi tiêu chung hợp lệ',
+                  coupleController != null ? 'Không có ví chi tiêu chung hợp lệ' : 'Không có ví chi tiêu cá nhân hợp lệ',
                   style: TextStyle(color: colors.textSecondary, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
@@ -569,60 +650,106 @@ class CouplePhotoTransactionDetailController extends GetxController {
 
   void showPayerSelector() {
     final colors = AppThemeColors.of(Get.context!);
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colors.dialogBackground,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+    if (coupleController != null) {
+      Get.bottomSheet(
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: colors.dialogBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Chọn người thanh toán',
+                style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ...(coupleController!.couple.value?.members ?? []).map((m) {
+                final isSelected = selectedPayerId.value == m.userId;
+                return ListTile(
+                  onTap: () {
+                    selectedPayerId.value = m.userId;
+                    Get.back();
+                  },
+                  leading: CircleAvatar(
+                    backgroundColor: isSelected
+                        ? Theme.of(Get.context!).primaryColor
+                        : colors.surfaceBackground,
+                    radius: 18,
+                    child: Text(
+                      m.initials,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : colors.textSecondary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  title: Text(m.fullName,
+                      style: TextStyle(color: colors.textPrimary)),
+                  trailing: isSelected
+                      ? Icon(Icons.check_circle,
+                          color: Theme.of(Get.context!).primaryColor)
+                      : null,
+                );
+              }),
+              const SizedBox(height: 12),
+            ],
+          ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Chọn người thanh toán',
-              style: TextStyle(
-                  color: colors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ...(coupleController.couple.value?.members ?? []).map((m) {
-              final isSelected = selectedPayerId.value == m.userId;
-              return ListTile(
+      );
+    } else {
+      // Personal: only current user
+      final authController = Get.find<AuthController>();
+      final user = authController.user.value;
+      if (user == null) return;
+      final isSelected = selectedPayerId.value == user.id;
+      Get.bottomSheet(
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: colors.dialogBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Chọn người thanh toán',
+                style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ListTile(
                 onTap: () {
-                  selectedPayerId.value = m.userId;
+                  selectedPayerId.value = user.id;
                   Get.back();
                 },
                 leading: CircleAvatar(
-                  backgroundColor: isSelected
-                      ? Theme.of(Get.context!).primaryColor
-                      : colors.surfaceBackground,
+                  backgroundColor: isSelected ? Theme.of(Get.context!).primaryColor : colors.surfaceBackground,
                   radius: 18,
-                  child: Text(
-                    m.initials,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : colors.textSecondary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
+                  child: Text(user.profile.fullName.isNotEmpty ? user.profile.fullName.split(' ').map((w) => w.isNotEmpty ? w[0] : '').join().toUpperCase() : '?', style: TextStyle(color: isSelected ? Colors.white : colors.textSecondary, fontWeight: FontWeight.bold, fontSize: 12)),
                 ),
-                title: Text(m.fullName,
-                    style: TextStyle(color: colors.textPrimary)),
-                trailing: isSelected
-                    ? Icon(Icons.check_circle,
-                        color: Theme.of(Get.context!).primaryColor)
-                    : null,
-              );
-            }),
-            const SizedBox(height: 12),
-          ],
+                title: Text(user.profile.fullName, style: TextStyle(color: colors.textPrimary)),
+                trailing: isSelected ? Icon(Icons.check_circle, color: Theme.of(Get.context!).primaryColor) : null,
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
 

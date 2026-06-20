@@ -128,6 +128,7 @@ class CoupleRepositoryImpl implements CoupleRepository {
     required String name,
     required double target,
     DateTime? endDate,
+    bool? isBudgetEnabled,
   }) async {
     try {
       final goal = await remoteDatasource.createSavingGoal(
@@ -135,6 +136,7 @@ class CoupleRepositoryImpl implements CoupleRepository {
         name: name,
         target: target,
         endDate: endDate,
+        isBudgetEnabled: isBudgetEnabled,
       );
       return Right(goal);
     } on NetworkException catch (e) {
@@ -190,6 +192,7 @@ class CoupleRepositoryImpl implements CoupleRepository {
     DateTime? endDate,
     String? status,
     bool? completionNotified,
+    bool? isBudgetEnabled,
   }) async {
     try {
       final goal = await remoteDatasource.updateSavingGoal(
@@ -199,6 +202,7 @@ class CoupleRepositoryImpl implements CoupleRepository {
         endDate: endDate,
         status: status,
         completionNotified: completionNotified,
+        isBudgetEnabled: isBudgetEnabled,
       );
       return Right(goal);
     } on NetworkException catch (e) {

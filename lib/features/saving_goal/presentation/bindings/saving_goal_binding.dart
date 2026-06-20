@@ -20,6 +20,15 @@ class SavingGoalBinding extends Bindings {
     Get.lazyPut<UpdateSavingGoalUseCase>(
       () => UpdateSavingGoalUseCase(repository),
     );
+    Get.lazyPut<GetBudgetSuggestionUseCase>(
+      () => GetBudgetSuggestionUseCase(repository),
+    );
+    Get.lazyPut<ActivateSavingGoalUseCase>(
+      () => ActivateSavingGoalUseCase(repository),
+    );
+    Get.lazyPut<PauseSavingGoalUseCase>(
+      () => PauseSavingGoalUseCase(repository),
+    );
 
 
     Get.lazyPut<CreateSavingGoalController>(

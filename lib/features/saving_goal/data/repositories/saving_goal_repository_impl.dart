@@ -179,5 +179,48 @@ class SavingGoalRepositoryImpl implements SavingGoalRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, BudgetSuggestionModel>> getBudgetSuggestion({
+    double? target,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      final model = await remoteDatasource.getBudgetSuggestion(
+        target: target,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      return Right(model);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 
+  @override
+  Future<Either<Failure, SavingGoalEntity>> activateGoal(int goalId) async {
+    try {
+      final model = await remoteDatasource.activateGoal(goalId);
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SavingGoalEntity>> pauseGoal(int goalId) async {
+    try {
+      final model = await remoteDatasource.pauseGoal(goalId);
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
+

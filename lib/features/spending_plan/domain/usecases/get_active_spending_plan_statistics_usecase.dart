@@ -11,6 +11,11 @@ class GetActiveSpendingPlanStatisticsUseCase {
   Future<Either<Failure, SpendingPlanStatsEntity?>> call({
     int? month,
     int? year,
+    int? startDay,
   }) =>
-      repository.getActivePlanStatistics(month: month, year: year);
+      repository.getActivePlanStatistics(
+        month: month,
+        year: year,
+        startDay: startDay,
+      );
 }

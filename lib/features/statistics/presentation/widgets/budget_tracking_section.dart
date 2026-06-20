@@ -4,87 +4,57 @@ import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
-import 'package:money_care/features/statistics/data/models/analytics_model.dart';
 import 'package:money_care/features/statistics/presentation/widgets/anomalies_panel.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
 
 class BudgetTrackingSection extends StatelessWidget {
-  final SpendingPlanStatsEntity stats;
-  final Map<String, List<EstimatedExpenseEntity>> groupedExpenses;
-  final List<BudgetExceedPredictionModel> exceedPredictions;
-  final int anomalyCount;
-  final List<AnomalyModel> anomalies;
-  final bool isLoadingAnalytics;
-  final VoidCallback? onViewDetail;
-
-  const BudgetTrackingSection({
-    super.key,
-    required this.stats,
-    required this.groupedExpenses,
-    this.exceedPredictions = const [],
-    this.anomalyCount = 0,
-    this.anomalies = const [],
-    this.isLoadingAnalytics = false,
-    this.onViewDetail,
-  });
+  const BudgetTrackingSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final statisticsController = Get.find<StatisticsController>();
-    final selMonth = statisticsController.selectedMonth.value;
-    final daysInMonth = DateTime(selMonth.year, selMonth.month + 1, 0).day;
-    final now = DateTime.now();
-    final isCurrentMonth = selMonth.year == now.year && selMonth.month == now.month;
+    final controller = Get.find<StatisticsController>();
 
-    final predictionMap = <String, BudgetExceedPredictionModel>{
-      for (final p in exceedPredictions) p.categoryName.toLowerCase(): p,
-    };
-
-    // Tính tổng từ các danh mục
-    double totalLimit = 0;
-    double totalSpent = 0;
-    double totalForecast = 0;
-
-    for (final entry in groupedExpenses.entries) {
-      final expenses = entry.value;
-      for (final e in expenses) {
-        final limit = e.monthlyLimit > 0
-            ? e.monthlyLimit
-            : _monthlyizedAmount(e, daysInMonth);
-        totalLimit += limit;
-        totalSpent += e.spentThisMonth;
+    return Obx(() {
+      final stats = controller.spendingPlanStats;
+      if (stats == null || stats.estimatedExpenses.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: AppEmptyState(
+            message: 'Chưa có khoản theo dõi ngân sách nào.',
+          ),
+        );
       }
-      final pred = predictionMap[entry.key.toLowerCase()];
-      if (pred != null) {
-        totalForecast += pred.totalForecast;
-      }
-    }
 
-    final plannedIncome = stats.totalAmount;
-    final forecastedSaving = totalForecast > 0
-        ? plannedIncome - totalForecast
-        : plannedIncome - totalSpent;
+      final filteredExpenses = controller.filteredExpenses;
+      final isCurrentMonth = controller.isCurrentMonth;
+      final anomalies = controller.anomalies;
+      final predictionMap = controller.predictionMap;
+      final categorySpentMap = controller.categorySpentMap;
+      final daysInMonth = controller.daysInMonth;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (stats.estimatedExpenses.isEmpty)
-            const AppEmptyState(
-              message: 'Chưa có khoản theo dõi ngân sách nào.',
-            )
-          else ...[
-            // Section heading
+      final onViewDetail = stats.estimatedExpenses.length > 5
+          ? () {
+              Get.toNamed(
+                RoutePath.spendingPlanDetail,
+                arguments: stats.planId,
+              );
+            }
+          : null;
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             const AppSectionHeading(
               title: 'Tổng quan ngân sách tháng này',
               showActionButton: false,
             ),
             const SizedBox(height: 12),
-            if (isLoadingAnalytics) ...[
+            if (controller.isLoadingAnalytics.value) ...[
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -119,49 +89,38 @@ class BudgetTrackingSection extends StatelessWidget {
               const SizedBox(height: 12),
             ],
             if (isCurrentMonth) ...[
-              // Card tổng quan
               _BudgetSummaryCard(
-                plannedIncome: plannedIncome,
-                totalLimit: totalLimit,
-                totalSpent: totalSpent,
-                totalForecast: totalForecast > 0 ? totalForecast : null,
-                forecastedSaving: forecastedSaving,
-                anomalyCount: anomalyCount,
+                plannedIncome: stats.totalAmount,
+                totalLimit: controller.totalLimit,
+                totalSpent: (controller.totalByType.value?.expenseTotal ?? 0).toDouble(),
+                totalForecast: controller.totalForecast > 0 ? controller.totalForecast : null,
+                forecastedSaving: controller.forecastedSaving,
+                savingBudget: controller.savingBudget,
+                savingSpent: controller.savingSpent,
+                anomalyCount: controller.anomalyCount,
                 onViewDetail: onViewDetail,
               ),
               const SizedBox(height: 12),
             ],
-            // Anomalies panel (nếu có)
             if (anomalies.isNotEmpty) ...[
               AnomaliesPanel(anomalies: anomalies),
               const SizedBox(height: 12),
             ],
-            // Danh sách các danh mục
-            ...groupedExpenses.entries.map((entry) {
+            ...filteredExpenses.entries.map((entry) {
               final prediction = predictionMap[entry.key.toLowerCase()];
+              final actualSpent = categorySpentMap[entry.key.toLowerCase()] ?? 0.0;
               return EstimatedExpenseBudgetGroupCard(
                 categoryName: entry.key,
                 daysInMonth: daysInMonth,
                 expenses: entry.value,
                 exceedPrediction: prediction,
+                actualSpent: actualSpent,
               );
             }),
           ],
-        ],
-      ),
-    );
-  }
-
-  double _monthlyizedAmount(EstimatedExpenseEntity expense, int daysInMonth) {
-    final v = expense.frequencyValue <= 0 ? 1 : expense.frequencyValue;
-    switch (expense.frequencyType.toLowerCase()) {
-      case 'daily':
-        return expense.amount * v * daysInMonth;
-      case 'weekly':
-        return expense.amount * v * (daysInMonth / 7);
-      default:
-        return expense.amount * v;
-    }
+        ),
+      );
+    });
   }
 }
 
@@ -171,6 +130,8 @@ class _BudgetSummaryCard extends StatelessWidget {
   final double totalSpent;
   final double? totalForecast;
   final double forecastedSaving;
+  final double savingBudget;
+  final double savingSpent;
   final int anomalyCount;
   final VoidCallback? onViewDetail;
 
@@ -180,6 +141,8 @@ class _BudgetSummaryCard extends StatelessWidget {
     required this.totalSpent,
     required this.totalForecast,
     required this.forecastedSaving,
+    required this.savingBudget,
+    required this.savingSpent,
     this.anomalyCount = 0,
     this.onViewDetail,
   });
@@ -209,22 +172,6 @@ class _BudgetSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (onViewDetail != null) ...[
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: onViewDetail,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  minimumSize: const Size(0, 32),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: const Text('Chi tiết'),
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
           _row(
             context,
             themeColors,
@@ -281,6 +228,81 @@ class _BudgetSummaryCard extends StatelessWidget {
               ),
             ],
           ),
+          if (savingBudget > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Đã tiết kiệm',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: themeColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  '${AppHelperFunction.formatAmount(savingSpent)} / ${AppHelperFunction.formatAmount(savingBudget)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: themeColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Còn lại cần cho mục tiêu',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: themeColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  AppHelperFunction.formatAmount((savingBudget - savingSpent).clamp(0.0, double.infinity)),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: themeColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            if (forecastedSaving < (savingBudget - savingSpent)) ...[
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.expense.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.expense.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.warning_amber_rounded,
+                      color: AppColors.expense,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Tiết kiệm dự kiến thấp hơn mức cần sẽ ảnh hưởng đến mục tiêu!',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.expense,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
           if (anomalyCount > 0) ...[
             const SizedBox(height: 8),
             Row(

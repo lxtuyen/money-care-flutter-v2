@@ -26,5 +26,6 @@ abstract class SpendingPlanRemoteDatasource {
   Future<SpendingPlanStatsModel?> getActivePlanStatistics({
     int? month,
     int? year,
+    int? startDay,
   });
 }

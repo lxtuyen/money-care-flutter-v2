@@ -12,6 +12,8 @@ class SavingGoalItemCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onUpdate;
   final VoidCallback? onExtend;
+  final VoidCallback? onActivate;
+  final VoidCallback? onPause;
 
   const SavingGoalItemCard({
     super.key,
@@ -21,6 +23,8 @@ class SavingGoalItemCard extends StatelessWidget {
     required this.onDelete,
     required this.onUpdate,
     this.onExtend,
+    this.onActivate,
+    this.onPause,
   });
 
   @override
@@ -30,11 +34,13 @@ class SavingGoalItemCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: fund.isPaused ? const Color(0xFFFAFAFA) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.borderSecondary,
-            width: isSelected ? 2 : 1,
+            color: fund.isPaused
+                ? AppColors.borderSecondary.withValues(alpha: 0.5)
+                : AppColors.primary,
+            width: 1.5,
           ),
           boxShadow: [
             if (isSelected)
@@ -133,17 +139,17 @@ class SavingGoalItemCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.account_balance_wallet,
                                 size: 12,
-                                color: AppColors.primary,
+                                color: fund.isPaused ? Colors.grey : AppColors.primary,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 fund.wallet!.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.primary,
+                                  color: fund.isPaused ? Colors.grey : AppColors.primary,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -157,8 +163,22 @@ class SavingGoalItemCard extends StatelessWidget {
                   onSelected: (value) {
                     if (value == 'edit') onUpdate();
                     if (value == 'delete') onDelete();
+                    if (value == 'activate') onActivate?.call();
+                    if (value == 'pause') onPause?.call();
                   },
                   itemBuilder: (context) => [
+                    if (!fund.isCompleted && !fund.isExpired) ...[
+                      if (fund.isPaused)
+                        const PopupMenuItem(
+                          value: 'activate',
+                          child: Text('Kích hoạt'),
+                        )
+                      else if (fund.status == 'ACTIVE')
+                        const PopupMenuItem(
+                          value: 'pause',
+                          child: Text('Tạm dừng'),
+                        ),
+                    ],
                     if (!fund.isCompleted)
                       const PopupMenuItem(
                         value: 'edit',
@@ -220,7 +240,9 @@ class SavingGoalItemCard extends StatelessWidget {
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
+        color: fund.isPaused
+            ? Colors.grey.withValues(alpha: 0.1)
+            : AppColors.primary.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Text(emoji, style: const TextStyle(fontSize: 20)),

@@ -59,6 +59,7 @@ class CoupleSavingGoalEntity {
   final List<CoupleSavingGoalContribution> contributions;
   final int? walletId;
   final DateTime? createdAt;
+  final bool isBudgetEnabled;
 
   CoupleSavingGoalEntity({
     required this.id,
@@ -73,6 +74,7 @@ class CoupleSavingGoalEntity {
     required this.contributions,
     this.walletId,
     this.createdAt,
+    this.isBudgetEnabled = false,
   });
 
   factory CoupleSavingGoalEntity.fromJson(Map<String, dynamic> json) {
@@ -104,6 +106,7 @@ class CoupleSavingGoalEntity {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
+      isBudgetEnabled: json['is_budget_enabled'] as bool? ?? false,
     );
   }
 }

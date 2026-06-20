@@ -25,6 +25,7 @@ abstract class CoupleRepository {
     required String name,
     required double target,
     DateTime? endDate,
+    bool? isBudgetEnabled,
   });
   Future<Either<Failure, void>> contributeToSavingGoal({
     required int goalId,
@@ -39,6 +40,7 @@ abstract class CoupleRepository {
     DateTime? endDate,
     String? status,
     bool? completionNotified,
+    bool? isBudgetEnabled,
   });
   Future<Either<Failure, CoupleSettlementSummaryEntity>> getSettlementSummary(
     int coupleId,

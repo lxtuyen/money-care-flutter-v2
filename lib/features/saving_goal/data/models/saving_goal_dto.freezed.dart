@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SavingGoalDto {
 
- String? get name; int? get id; int? get userId; double? get target;@JsonKey(name: 'saved_amount') double? get savedAmount;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(name: 'is_completed') bool? get isCompleted; int? get walletId;@JsonKey(name: 'create_new_wallet') bool? get createNewWallet;@JsonKey(name: 'linked_event_name') String? get linkedEventName;@JsonKey(name: 'event_date') DateTime? get eventDate;@JsonKey(name: 'is_locked') bool? get isLocked;
+ String? get name; int? get id; int? get userId; double? get target;@JsonKey(name: 'saved_amount') double? get savedAmount;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(name: 'is_completed') bool? get isCompleted; int? get walletId;@JsonKey(name: 'create_new_wallet') bool? get createNewWallet;@JsonKey(name: 'is_budget_enabled') bool? get isBudgetEnabled;
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SavingGoalDtoCopyWith<SavingGoalDto> get copyWith => _$SavingGoalDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.createNewWallet, createNewWallet) || other.createNewWallet == createNewWallet)&&(identical(other.linkedEventName, linkedEventName) || other.linkedEventName == linkedEventName)&&(identical(other.eventDate, eventDate) || other.eventDate == eventDate)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.createNewWallet, createNewWallet) || other.createNewWallet == createNewWallet)&&(identical(other.isBudgetEnabled, isBudgetEnabled) || other.isBudgetEnabled == isBudgetEnabled));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,isCompleted,walletId,createNewWallet,linkedEventName,eventDate,isLocked);
+int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,isCompleted,walletId,createNewWallet,isBudgetEnabled);
 
 @override
 String toString() {
-  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, isCompleted: $isCompleted, walletId: $walletId, createNewWallet: $createNewWallet, linkedEventName: $linkedEventName, eventDate: $eventDate, isLocked: $isLocked)';
+  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, isCompleted: $isCompleted, walletId: $walletId, createNewWallet: $createNewWallet, isBudgetEnabled: $isBudgetEnabled)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SavingGoalDtoCopyWith<$Res>  {
   factory $SavingGoalDtoCopyWith(SavingGoalDto value, $Res Function(SavingGoalDto) _then) = _$SavingGoalDtoCopyWithImpl;
 @useResult
 $Res call({
- String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'is_completed') bool? isCompleted, int? walletId,@JsonKey(name: 'create_new_wallet') bool? createNewWallet,@JsonKey(name: 'linked_event_name') String? linkedEventName,@JsonKey(name: 'event_date') DateTime? eventDate,@JsonKey(name: 'is_locked') bool? isLocked
+ String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'is_completed') bool? isCompleted, int? walletId,@JsonKey(name: 'create_new_wallet') bool? createNewWallet,@JsonKey(name: 'is_budget_enabled') bool? isBudgetEnabled
 });
 
 
@@ -62,7 +62,7 @@ class _$SavingGoalDtoCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? isCompleted = freezed,Object? walletId = freezed,Object? createNewWallet = freezed,Object? linkedEventName = freezed,Object? eventDate = freezed,Object? isLocked = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? isCompleted = freezed,Object? walletId = freezed,Object? createNewWallet = freezed,Object? isBudgetEnabled = freezed,}) {
   return _then(_self.copyWith(
 name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
@@ -74,9 +74,7 @@ as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: ca
 as DateTime?,isCompleted: freezed == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
 as bool?,walletId: freezed == walletId ? _self.walletId : walletId // ignore: cast_nullable_to_non_nullable
 as int?,createNewWallet: freezed == createNewWallet ? _self.createNewWallet : createNewWallet // ignore: cast_nullable_to_non_nullable
-as bool?,linkedEventName: freezed == linkedEventName ? _self.linkedEventName : linkedEventName // ignore: cast_nullable_to_non_nullable
-as String?,eventDate: freezed == eventDate ? _self.eventDate : eventDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,isLocked: freezed == isLocked ? _self.isLocked : isLocked // ignore: cast_nullable_to_non_nullable
+as bool?,isBudgetEnabled: freezed == isBudgetEnabled ? _self.isBudgetEnabled : isBudgetEnabled // ignore: cast_nullable_to_non_nullable
 as bool?,
   ));
 }
@@ -162,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'is_completed')  bool? isCompleted,  int? walletId, @JsonKey(name: 'create_new_wallet')  bool? createNewWallet, @JsonKey(name: 'linked_event_name')  String? linkedEventName, @JsonKey(name: 'event_date')  DateTime? eventDate, @JsonKey(name: 'is_locked')  bool? isLocked)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'is_completed')  bool? isCompleted,  int? walletId, @JsonKey(name: 'create_new_wallet')  bool? createNewWallet, @JsonKey(name: 'is_budget_enabled')  bool? isBudgetEnabled)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SavingGoalDto() when $default != null:
-return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.isCompleted,_that.walletId,_that.createNewWallet,_that.linkedEventName,_that.eventDate,_that.isLocked);case _:
+return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.isCompleted,_that.walletId,_that.createNewWallet,_that.isBudgetEnabled);case _:
   return orElse();
 
 }
@@ -183,10 +181,10 @@ return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'is_completed')  bool? isCompleted,  int? walletId, @JsonKey(name: 'create_new_wallet')  bool? createNewWallet, @JsonKey(name: 'linked_event_name')  String? linkedEventName, @JsonKey(name: 'event_date')  DateTime? eventDate, @JsonKey(name: 'is_locked')  bool? isLocked)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'is_completed')  bool? isCompleted,  int? walletId, @JsonKey(name: 'create_new_wallet')  bool? createNewWallet, @JsonKey(name: 'is_budget_enabled')  bool? isBudgetEnabled)  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalDto():
-return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.isCompleted,_that.walletId,_that.createNewWallet,_that.linkedEventName,_that.eventDate,_that.isLocked);case _:
+return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.isCompleted,_that.walletId,_that.createNewWallet,_that.isBudgetEnabled);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +201,10 @@ return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'is_completed')  bool? isCompleted,  int? walletId, @JsonKey(name: 'create_new_wallet')  bool? createNewWallet, @JsonKey(name: 'linked_event_name')  String? linkedEventName, @JsonKey(name: 'event_date')  DateTime? eventDate, @JsonKey(name: 'is_locked')  bool? isLocked)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? name,  int? id,  int? userId,  double? target, @JsonKey(name: 'saved_amount')  double? savedAmount, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'is_completed')  bool? isCompleted,  int? walletId, @JsonKey(name: 'create_new_wallet')  bool? createNewWallet, @JsonKey(name: 'is_budget_enabled')  bool? isBudgetEnabled)?  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalDto() when $default != null:
-return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.isCompleted,_that.walletId,_that.createNewWallet,_that.linkedEventName,_that.eventDate,_that.isLocked);case _:
+return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,_that.startDate,_that.endDate,_that.isCompleted,_that.walletId,_that.createNewWallet,_that.isBudgetEnabled);case _:
   return null;
 
 }
@@ -218,7 +216,7 @@ return $default(_that.name,_that.id,_that.userId,_that.target,_that.savedAmount,
 
 
 class _SavingGoalDto extends SavingGoalDto {
-  const _SavingGoalDto({this.name, this.id, this.userId, this.target, @JsonKey(name: 'saved_amount') this.savedAmount, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'is_completed') this.isCompleted, this.walletId, @JsonKey(name: 'create_new_wallet') this.createNewWallet, @JsonKey(name: 'linked_event_name') this.linkedEventName, @JsonKey(name: 'event_date') this.eventDate, @JsonKey(name: 'is_locked') this.isLocked}): super._();
+  const _SavingGoalDto({this.name, this.id, this.userId, this.target, @JsonKey(name: 'saved_amount') this.savedAmount, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'is_completed') this.isCompleted, this.walletId, @JsonKey(name: 'create_new_wallet') this.createNewWallet, @JsonKey(name: 'is_budget_enabled') this.isBudgetEnabled}): super._();
   
 
 @override final  String? name;
@@ -231,9 +229,7 @@ class _SavingGoalDto extends SavingGoalDto {
 @override@JsonKey(name: 'is_completed') final  bool? isCompleted;
 @override final  int? walletId;
 @override@JsonKey(name: 'create_new_wallet') final  bool? createNewWallet;
-@override@JsonKey(name: 'linked_event_name') final  String? linkedEventName;
-@override@JsonKey(name: 'event_date') final  DateTime? eventDate;
-@override@JsonKey(name: 'is_locked') final  bool? isLocked;
+@override@JsonKey(name: 'is_budget_enabled') final  bool? isBudgetEnabled;
 
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +241,16 @@ _$SavingGoalDtoCopyWith<_SavingGoalDto> get copyWith => __$SavingGoalDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.createNewWallet, createNewWallet) || other.createNewWallet == createNewWallet)&&(identical(other.linkedEventName, linkedEventName) || other.linkedEventName == linkedEventName)&&(identical(other.eventDate, eventDate) || other.eventDate == eventDate)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalDto&&(identical(other.name, name) || other.name == name)&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.createNewWallet, createNewWallet) || other.createNewWallet == createNewWallet)&&(identical(other.isBudgetEnabled, isBudgetEnabled) || other.isBudgetEnabled == isBudgetEnabled));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,isCompleted,walletId,createNewWallet,linkedEventName,eventDate,isLocked);
+int get hashCode => Object.hash(runtimeType,name,id,userId,target,savedAmount,startDate,endDate,isCompleted,walletId,createNewWallet,isBudgetEnabled);
 
 @override
 String toString() {
-  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, isCompleted: $isCompleted, walletId: $walletId, createNewWallet: $createNewWallet, linkedEventName: $linkedEventName, eventDate: $eventDate, isLocked: $isLocked)';
+  return 'SavingGoalDto(name: $name, id: $id, userId: $userId, target: $target, savedAmount: $savedAmount, startDate: $startDate, endDate: $endDate, isCompleted: $isCompleted, walletId: $walletId, createNewWallet: $createNewWallet, isBudgetEnabled: $isBudgetEnabled)';
 }
 
 
@@ -265,7 +261,7 @@ abstract mixin class _$SavingGoalDtoCopyWith<$Res> implements $SavingGoalDtoCopy
   factory _$SavingGoalDtoCopyWith(_SavingGoalDto value, $Res Function(_SavingGoalDto) _then) = __$SavingGoalDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'is_completed') bool? isCompleted, int? walletId,@JsonKey(name: 'create_new_wallet') bool? createNewWallet,@JsonKey(name: 'linked_event_name') String? linkedEventName,@JsonKey(name: 'event_date') DateTime? eventDate,@JsonKey(name: 'is_locked') bool? isLocked
+ String? name, int? id, int? userId, double? target,@JsonKey(name: 'saved_amount') double? savedAmount,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'is_completed') bool? isCompleted, int? walletId,@JsonKey(name: 'create_new_wallet') bool? createNewWallet,@JsonKey(name: 'is_budget_enabled') bool? isBudgetEnabled
 });
 
 
@@ -282,7 +278,7 @@ class __$SavingGoalDtoCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? isCompleted = freezed,Object? walletId = freezed,Object? createNewWallet = freezed,Object? linkedEventName = freezed,Object? eventDate = freezed,Object? isLocked = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = freezed,Object? id = freezed,Object? userId = freezed,Object? target = freezed,Object? savedAmount = freezed,Object? startDate = freezed,Object? endDate = freezed,Object? isCompleted = freezed,Object? walletId = freezed,Object? createNewWallet = freezed,Object? isBudgetEnabled = freezed,}) {
   return _then(_SavingGoalDto(
 name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
@@ -294,9 +290,7 @@ as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: ca
 as DateTime?,isCompleted: freezed == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
 as bool?,walletId: freezed == walletId ? _self.walletId : walletId // ignore: cast_nullable_to_non_nullable
 as int?,createNewWallet: freezed == createNewWallet ? _self.createNewWallet : createNewWallet // ignore: cast_nullable_to_non_nullable
-as bool?,linkedEventName: freezed == linkedEventName ? _self.linkedEventName : linkedEventName // ignore: cast_nullable_to_non_nullable
-as String?,eventDate: freezed == eventDate ? _self.eventDate : eventDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,isLocked: freezed == isLocked ? _self.isLocked : isLocked // ignore: cast_nullable_to_non_nullable
+as bool?,isBudgetEnabled: freezed == isBudgetEnabled ? _self.isBudgetEnabled : isBudgetEnabled // ignore: cast_nullable_to_non_nullable
 as bool?,
   ));
 }

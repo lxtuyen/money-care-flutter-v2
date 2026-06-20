@@ -46,49 +46,42 @@ class _SavingGoalManagementScreenState extends State<SavingGoalManagementScreen>
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          controller.saveSelection();
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              AppHeader(
-                title: 'Mục tiêu tiết kiệm',
-                showBackButton: true,
-                height: 180,
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
-                  indicatorColor: Colors.white,
-                  indicatorWeight: 3,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  tabs: const [
-                    Tab(text: 'Đang theo dõi'),
-                    Tab(text: 'Lịch sử'),
-                  ],
-                ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            AppHeader(
+              title: 'Mục tiêu tiết kiệm',
+              showBackButton: true,
+              height: 180,
+              child: TabBar(
+                controller: _tabController,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+                indicatorSize: TabBarIndicatorSize.label,
+                tabs: const [
+                  Tab(text: 'Đang theo dõi'),
+                  Tab(text: 'Lịch sử'),
+                ],
               ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [_buildActiveGoalsTab(), _buildFinishedGoalsTab()],
-                ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [_buildActiveGoalsTab(), _buildFinishedGoalsTab()],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: controller.goToCreateGoal,
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: controller.goToCreateGoal,
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -118,24 +111,18 @@ class _SavingGoalManagementScreenState extends State<SavingGoalManagementScreen>
               itemCount: activeGoals.length,
               itemBuilder: (context, index) {
                 final goal = activeGoals[index];
-                return Obx(() {
-                  final goalIndex = controller.goals.indexWhere(
-                    (item) => item.id == goal.id,
-                  );
-                  final isSelected =
-                      controller.selectedGoalIndex.value == goalIndex;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: SavingGoalItemCard(
-                      fund: goal,
-                      isSelected: isSelected,
-                      onTap: () =>
-                          controller.updateSelectedGoalIndex(goalIndex),
-                      onDelete: () => _confirmDelete(context, goal),
-                      onUpdate: () => _handleUpdate(goal),
-                    ),
-                  );
-                });
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: SavingGoalItemCard(
+                    fund: goal,
+                    isSelected: false,
+                    onTap: () {},
+                    onDelete: () => _confirmDelete(context, goal),
+                    onUpdate: () => _handleUpdate(goal),
+                    onActivate: () => _handleActivate(context, goal),
+                    onPause: () => controller.pauseGoal(goal.id),
+                  ),
+                );
               },
             );
           }),
@@ -170,8 +157,7 @@ class _SavingGoalManagementScreenState extends State<SavingGoalManagementScreen>
               child: SavingGoalItemCard(
                 fund: goal,
                 isSelected: false,
-                onTap: () =>
-                    Get.toNamed(RoutePath.savingGoalDetail, arguments: goal),
+                onTap: () {},
                 onDelete: () => _confirmDelete(context, goal),
                 onUpdate: () => _handleUpdate(goal),
                 onExtend: () => _extend(context, goal),
@@ -207,5 +193,20 @@ class _SavingGoalManagementScreenState extends State<SavingGoalManagementScreen>
 
   void _handleUpdate(SavingGoalEntity goal) {
     Get.toNamed(RoutePath.createSavingGoal, arguments: goal);
+  }
+
+  Future<void> _handleActivate(BuildContext context, SavingGoalEntity goal) async {
+    if (controller.activeGoalCount >= 2) {
+      AppConfirmDialog.show(
+        title: 'Giới hạn mục tiêu',
+        message: 'Bạn chỉ được chạy song song tối đa 2 mục tiêu cùng lúc. Vui lòng tạm dừng một mục tiêu đang hoạt động trước khi kích hoạt mục tiêu này.',
+        confirmText: 'Đóng',
+        cancelText: 'Hủy',
+        type: ConfirmDialogType.warning,
+        onConfirm: () {},
+      );
+    } else {
+      await controller.activateGoal(goal.id);
+    }
   }
 }

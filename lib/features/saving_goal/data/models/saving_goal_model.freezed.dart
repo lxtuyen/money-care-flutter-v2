@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SavingGoalModel {
 
-@JsonKey(fromJson: NumParser.parseInt) int get id; String get name;@JsonKey(name: 'is_selected') bool? get isSelected; List<CategoryModel>? get categories;@JsonKey(fromJson: NumParser.parseDoubleNullable) double? get target;@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) double get savedAmount;@JsonKey(name: 'is_completed') bool get isCompleted;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(name: 'updated_at') DateTime? get updatedAt; String? get status; WalletModel? get wallet;
+@JsonKey(fromJson: NumParser.parseInt) int get id; String get name;@JsonKey(name: 'is_selected') bool? get isSelected; List<CategoryModel>? get categories;@JsonKey(fromJson: NumParser.parseDoubleNullable) double? get target;@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) double get savedAmount;@JsonKey(name: 'is_completed') bool get isCompleted;@JsonKey(name: 'is_budget_enabled') bool get isBudgetEnabled;@JsonKey(name: 'start_date') DateTime? get startDate;@JsonKey(name: 'end_date') DateTime? get endDate;@JsonKey(name: 'updated_at') DateTime? get updatedAt; String? get status; WalletModel? get wallet;
 /// Create a copy of SavingGoalModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SavingGoalModelCopyWith<SavingGoalModel> get copyWith => _$SavingGoalModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isSelected, isSelected) || other.isSelected == isSelected)&&const DeepCollectionEquality().equals(other.categories, categories)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.wallet, wallet) || other.wallet == wallet));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavingGoalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isSelected, isSelected) || other.isSelected == isSelected)&&const DeepCollectionEquality().equals(other.categories, categories)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.isBudgetEnabled, isBudgetEnabled) || other.isBudgetEnabled == isBudgetEnabled)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.wallet, wallet) || other.wallet == wallet));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,isSelected,const DeepCollectionEquality().hash(categories),target,savedAmount,isCompleted,startDate,endDate,updatedAt,status,wallet);
+int get hashCode => Object.hash(runtimeType,id,name,isSelected,const DeepCollectionEquality().hash(categories),target,savedAmount,isCompleted,isBudgetEnabled,startDate,endDate,updatedAt,status,wallet);
 
 @override
 String toString() {
-  return 'SavingGoalModel(id: $id, name: $name, isSelected: $isSelected, categories: $categories, target: $target, savedAmount: $savedAmount, isCompleted: $isCompleted, startDate: $startDate, endDate: $endDate, updatedAt: $updatedAt, status: $status, wallet: $wallet)';
+  return 'SavingGoalModel(id: $id, name: $name, isSelected: $isSelected, categories: $categories, target: $target, savedAmount: $savedAmount, isCompleted: $isCompleted, isBudgetEnabled: $isBudgetEnabled, startDate: $startDate, endDate: $endDate, updatedAt: $updatedAt, status: $status, wallet: $wallet)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SavingGoalModelCopyWith<$Res>  {
   factory $SavingGoalModelCopyWith(SavingGoalModel value, $Res Function(SavingGoalModel) _then) = _$SavingGoalModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'is_selected') bool? isSelected, List<CategoryModel>? categories,@JsonKey(fromJson: NumParser.parseDoubleNullable) double? target,@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) double savedAmount,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'updated_at') DateTime? updatedAt, String? status, WalletModel? wallet
+@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'is_selected') bool? isSelected, List<CategoryModel>? categories,@JsonKey(fromJson: NumParser.parseDoubleNullable) double? target,@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) double savedAmount,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'is_budget_enabled') bool isBudgetEnabled,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'updated_at') DateTime? updatedAt, String? status, WalletModel? wallet
 });
 
 
@@ -65,7 +65,7 @@ class _$SavingGoalModelCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isSelected = freezed,Object? categories = freezed,Object? target = freezed,Object? savedAmount = null,Object? isCompleted = null,Object? startDate = freezed,Object? endDate = freezed,Object? updatedAt = freezed,Object? status = freezed,Object? wallet = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? isSelected = freezed,Object? categories = freezed,Object? target = freezed,Object? savedAmount = null,Object? isCompleted = null,Object? isBudgetEnabled = null,Object? startDate = freezed,Object? endDate = freezed,Object? updatedAt = freezed,Object? status = freezed,Object? wallet = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -74,6 +74,7 @@ as bool?,categories: freezed == categories ? _self.categories : categories // ig
 as List<CategoryModel>?,target: freezed == target ? _self.target : target // ignore: cast_nullable_to_non_nullable
 as double?,savedAmount: null == savedAmount ? _self.savedAmount : savedAmount // ignore: cast_nullable_to_non_nullable
 as double,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool,isBudgetEnabled: null == isBudgetEnabled ? _self.isBudgetEnabled : isBudgetEnabled // ignore: cast_nullable_to_non_nullable
 as bool,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -176,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'is_selected')  bool? isSelected,  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable)  double? target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble)  double savedAmount, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  String? status,  WalletModel? wallet)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'is_selected')  bool? isSelected,  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable)  double? target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble)  double savedAmount, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'is_budget_enabled')  bool isBudgetEnabled, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  String? status,  WalletModel? wallet)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SavingGoalModel() when $default != null:
-return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.target,_that.savedAmount,_that.isCompleted,_that.startDate,_that.endDate,_that.updatedAt,_that.status,_that.wallet);case _:
+return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.target,_that.savedAmount,_that.isCompleted,_that.isBudgetEnabled,_that.startDate,_that.endDate,_that.updatedAt,_that.status,_that.wallet);case _:
   return orElse();
 
 }
@@ -197,10 +198,10 @@ return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.targ
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'is_selected')  bool? isSelected,  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable)  double? target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble)  double savedAmount, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  String? status,  WalletModel? wallet)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'is_selected')  bool? isSelected,  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable)  double? target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble)  double savedAmount, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'is_budget_enabled')  bool isBudgetEnabled, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  String? status,  WalletModel? wallet)  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalModel():
-return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.target,_that.savedAmount,_that.isCompleted,_that.startDate,_that.endDate,_that.updatedAt,_that.status,_that.wallet);case _:
+return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.target,_that.savedAmount,_that.isCompleted,_that.isBudgetEnabled,_that.startDate,_that.endDate,_that.updatedAt,_that.status,_that.wallet);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +218,10 @@ return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.targ
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'is_selected')  bool? isSelected,  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable)  double? target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble)  double savedAmount, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  String? status,  WalletModel? wallet)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: NumParser.parseInt)  int id,  String name, @JsonKey(name: 'is_selected')  bool? isSelected,  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable)  double? target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble)  double savedAmount, @JsonKey(name: 'is_completed')  bool isCompleted, @JsonKey(name: 'is_budget_enabled')  bool isBudgetEnabled, @JsonKey(name: 'start_date')  DateTime? startDate, @JsonKey(name: 'end_date')  DateTime? endDate, @JsonKey(name: 'updated_at')  DateTime? updatedAt,  String? status,  WalletModel? wallet)?  $default,) {final _that = this;
 switch (_that) {
 case _SavingGoalModel() when $default != null:
-return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.target,_that.savedAmount,_that.isCompleted,_that.startDate,_that.endDate,_that.updatedAt,_that.status,_that.wallet);case _:
+return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.target,_that.savedAmount,_that.isCompleted,_that.isBudgetEnabled,_that.startDate,_that.endDate,_that.updatedAt,_that.status,_that.wallet);case _:
   return null;
 
 }
@@ -232,7 +233,7 @@ return $default(_that.id,_that.name,_that.isSelected,_that.categories,_that.targ
 @JsonSerializable()
 
 class _SavingGoalModel extends SavingGoalModel {
-  const _SavingGoalModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, this.name = '', @JsonKey(name: 'is_selected') this.isSelected, final  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable) this.target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) this.savedAmount = 0, @JsonKey(name: 'is_completed') this.isCompleted = false, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'updated_at') this.updatedAt, this.status, this.wallet}): _categories = categories,super._();
+  const _SavingGoalModel({@JsonKey(fromJson: NumParser.parseInt) required this.id, this.name = '', @JsonKey(name: 'is_selected') this.isSelected, final  List<CategoryModel>? categories, @JsonKey(fromJson: NumParser.parseDoubleNullable) this.target, @JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) this.savedAmount = 0, @JsonKey(name: 'is_completed') this.isCompleted = false, @JsonKey(name: 'is_budget_enabled') this.isBudgetEnabled = false, @JsonKey(name: 'start_date') this.startDate, @JsonKey(name: 'end_date') this.endDate, @JsonKey(name: 'updated_at') this.updatedAt, this.status, this.wallet}): _categories = categories,super._();
   factory _SavingGoalModel.fromJson(Map<String, dynamic> json) => _$SavingGoalModelFromJson(json);
 
 @override@JsonKey(fromJson: NumParser.parseInt) final  int id;
@@ -250,6 +251,7 @@ class _SavingGoalModel extends SavingGoalModel {
 @override@JsonKey(fromJson: NumParser.parseDoubleNullable) final  double? target;
 @override@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) final  double savedAmount;
 @override@JsonKey(name: 'is_completed') final  bool isCompleted;
+@override@JsonKey(name: 'is_budget_enabled') final  bool isBudgetEnabled;
 @override@JsonKey(name: 'start_date') final  DateTime? startDate;
 @override@JsonKey(name: 'end_date') final  DateTime? endDate;
 @override@JsonKey(name: 'updated_at') final  DateTime? updatedAt;
@@ -269,16 +271,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isSelected, isSelected) || other.isSelected == isSelected)&&const DeepCollectionEquality().equals(other._categories, _categories)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.wallet, wallet) || other.wallet == wallet));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavingGoalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isSelected, isSelected) || other.isSelected == isSelected)&&const DeepCollectionEquality().equals(other._categories, _categories)&&(identical(other.target, target) || other.target == target)&&(identical(other.savedAmount, savedAmount) || other.savedAmount == savedAmount)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.isBudgetEnabled, isBudgetEnabled) || other.isBudgetEnabled == isBudgetEnabled)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.wallet, wallet) || other.wallet == wallet));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,isSelected,const DeepCollectionEquality().hash(_categories),target,savedAmount,isCompleted,startDate,endDate,updatedAt,status,wallet);
+int get hashCode => Object.hash(runtimeType,id,name,isSelected,const DeepCollectionEquality().hash(_categories),target,savedAmount,isCompleted,isBudgetEnabled,startDate,endDate,updatedAt,status,wallet);
 
 @override
 String toString() {
-  return 'SavingGoalModel(id: $id, name: $name, isSelected: $isSelected, categories: $categories, target: $target, savedAmount: $savedAmount, isCompleted: $isCompleted, startDate: $startDate, endDate: $endDate, updatedAt: $updatedAt, status: $status, wallet: $wallet)';
+  return 'SavingGoalModel(id: $id, name: $name, isSelected: $isSelected, categories: $categories, target: $target, savedAmount: $savedAmount, isCompleted: $isCompleted, isBudgetEnabled: $isBudgetEnabled, startDate: $startDate, endDate: $endDate, updatedAt: $updatedAt, status: $status, wallet: $wallet)';
 }
 
 
@@ -289,7 +291,7 @@ abstract mixin class _$SavingGoalModelCopyWith<$Res> implements $SavingGoalModel
   factory _$SavingGoalModelCopyWith(_SavingGoalModel value, $Res Function(_SavingGoalModel) _then) = __$SavingGoalModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'is_selected') bool? isSelected, List<CategoryModel>? categories,@JsonKey(fromJson: NumParser.parseDoubleNullable) double? target,@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) double savedAmount,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'updated_at') DateTime? updatedAt, String? status, WalletModel? wallet
+@JsonKey(fromJson: NumParser.parseInt) int id, String name,@JsonKey(name: 'is_selected') bool? isSelected, List<CategoryModel>? categories,@JsonKey(fromJson: NumParser.parseDoubleNullable) double? target,@JsonKey(name: 'saved_amount', fromJson: NumParser.parseDouble) double savedAmount,@JsonKey(name: 'is_completed') bool isCompleted,@JsonKey(name: 'is_budget_enabled') bool isBudgetEnabled,@JsonKey(name: 'start_date') DateTime? startDate,@JsonKey(name: 'end_date') DateTime? endDate,@JsonKey(name: 'updated_at') DateTime? updatedAt, String? status, WalletModel? wallet
 });
 
 
@@ -306,7 +308,7 @@ class __$SavingGoalModelCopyWithImpl<$Res>
 
 /// Create a copy of SavingGoalModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isSelected = freezed,Object? categories = freezed,Object? target = freezed,Object? savedAmount = null,Object? isCompleted = null,Object? startDate = freezed,Object? endDate = freezed,Object? updatedAt = freezed,Object? status = freezed,Object? wallet = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? isSelected = freezed,Object? categories = freezed,Object? target = freezed,Object? savedAmount = null,Object? isCompleted = null,Object? isBudgetEnabled = null,Object? startDate = freezed,Object? endDate = freezed,Object? updatedAt = freezed,Object? status = freezed,Object? wallet = freezed,}) {
   return _then(_SavingGoalModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -315,6 +317,7 @@ as bool?,categories: freezed == categories ? _self._categories : categories // i
 as List<CategoryModel>?,target: freezed == target ? _self.target : target // ignore: cast_nullable_to_non_nullable
 as double?,savedAmount: null == savedAmount ? _self.savedAmount : savedAmount // ignore: cast_nullable_to_non_nullable
 as double,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool,isBudgetEnabled: null == isBudgetEnabled ? _self.isBudgetEnabled : isBudgetEnabled // ignore: cast_nullable_to_non_nullable
 as bool,startDate: freezed == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable

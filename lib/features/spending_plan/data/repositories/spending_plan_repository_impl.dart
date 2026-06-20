@@ -117,11 +117,13 @@ class SpendingPlanRepositoryImpl implements SpendingPlanRepository {
   getActivePlanStatistics({
     int? month,
     int? year,
+    int? startDay,
   }) async {
     try {
       final model = await remoteDatasource.getActivePlanStatistics(
         month: month,
         year: year,
+        startDay: startDay,
       );
       return Right(model?.toEntity());
     } on ServerException catch (e) {

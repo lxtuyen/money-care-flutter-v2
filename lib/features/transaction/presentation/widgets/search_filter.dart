@@ -98,7 +98,7 @@ class SearchWithFilter extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   backgroundColor: hasActiveFilters
                       ? AppColors.primary
-                      : AppColors.backgroundPrimary,
+                      : AppColors.white,
                   border: Border.all(
                     color: hasActiveFilters
                         ? AppColors.primary

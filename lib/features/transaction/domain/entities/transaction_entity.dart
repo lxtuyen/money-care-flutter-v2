@@ -29,6 +29,7 @@ class TransactionEntity {
   final String? splitMethod;
   final String? settlementStatus;
   final List<TransactionSplitEntity>? splits;
+  final bool? isTransfer;
 
   const TransactionEntity({
     this.id,
@@ -51,6 +52,7 @@ class TransactionEntity {
     this.splitMethod,
     this.settlementStatus,
     this.splits,
+    this.isTransfer,
   });
 
   factory TransactionEntity.fromMap(Map<String, dynamic> map) {
@@ -108,6 +110,7 @@ class TransactionEntity {
       splitMethod: map['splitMethod'],
       settlementStatus: map['settlementStatus'],
       splits: parsedSplits,
+      isTransfer: map['isTransfer'] as bool?,
       transactionDate: map['date'] != null
           ? DateTime.tryParse(map['date'].toString())
           : map['transaction_date'] != null

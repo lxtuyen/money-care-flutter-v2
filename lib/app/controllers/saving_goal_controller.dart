@@ -13,7 +13,6 @@ import 'package:money_care/features/saving_goal/data/models/models.dart';
 import 'package:money_care/features/saving_goal/domain/entities/saving_goal_entity.dart';
 import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:money_care/features/saving_goal/presentation/widgets/goal_completion_dialog.dart';
 
 class SavingGoalController extends GetxController {
   final GetSavingGoalsByUserUseCase getSavingGoalsByUserUseCase;
@@ -27,6 +26,8 @@ class SavingGoalController extends GetxController {
   final GetSavingGoalReportUseCase getSavingGoalReportUseCase;
   final GetGoalPredictionUseCase getGoalPredictionUseCase;
   final GetGoalPredictionsUseCase getGoalPredictionsUseCase;
+  final ActivateSavingGoalUseCase activateSavingGoalUseCase;
+  final PauseSavingGoalUseCase pauseSavingGoalUseCase;
   final AppController appController = Get.find<AppController>();
 
   SavingGoalController({
@@ -41,6 +42,8 @@ class SavingGoalController extends GetxController {
     required this.getSavingGoalReportUseCase,
     required this.getGoalPredictionUseCase,
     required this.getGoalPredictionsUseCase,
+    required this.activateSavingGoalUseCase,
+    required this.pauseSavingGoalUseCase,
   });
 
   RxList<SavingGoalEntity> goals = <SavingGoalEntity>[].obs;
@@ -51,21 +54,22 @@ class SavingGoalController extends GetxController {
   RxString? errorMessage = RxString('');
   var goalId = 0.obs;
   RxInt selectedGoalIndex = 0.obs;
-  final Set<int> _notifiedGoalIds = {};
 
   Rxn<ExpiredGoalInfoModel> expiredGoal = Rxn<ExpiredGoalInfoModel>();
   RxBool hasExpiredGoal = false.obs;
   Rxn<SavingGoalReportModel> goalReport = Rxn<SavingGoalReportModel>();
   RxBool isLoadingReport = false.obs;
-  Future<SavingGoalReportModel?>? _activeReportFuture;
-  int? _activeReportId;
+  final Map<int, Future<SavingGoalReportModel?>> _activeReportFutures = {};
   Rxn<GoalAchievementPredictionModel> goalPrediction =
       Rxn<GoalAchievementPredictionModel>();
   Rxn<GoalAchievementPredictionSummaryModel> goalPredictionSummary =
       Rxn<GoalAchievementPredictionSummaryModel>();
   RxBool isLoadingPrediction = false.obs;
-  Future<GoalAchievementPredictionModel?>? _activePredictionFuture;
-  int? _activePredictionId;
+  final Map<int, Future<GoalAchievementPredictionModel?>> _activePredictionFutures = {};
+
+  RxMap<int, SavingGoalReportModel> goalReports = <int, SavingGoalReportModel>{}.obs;
+  RxMap<int, GoalAchievementPredictionModel> goalPredictions = <int, GoalAchievementPredictionModel>{}.obs;
+  RxBool isLoadingMultiReports = false.obs;
 
   @override
   void onInit() {
@@ -120,20 +124,13 @@ class SavingGoalController extends GetxController {
       goals.assignAll(list.where((g) => !g.isCompleted).toList());
       completedGoals.assignAll(list.where((g) => g.isCompleted).toList());
 
-      final activeGoal = goals.firstWhereOrNull((g) => g.isSelected ?? false);
+      // Auto-set currentGoal to the first active goal, or if none, the first paused goal
+      final activeGoal = goals.firstWhereOrNull((g) => g.isActive) ??
+          goals.firstWhereOrNull((g) => g.isPaused);
       if (activeGoal != null) {
         _syncCurrentGoal(activeGoal);
-      } else if (goalId.value > 0) {
-        final matchingGoal = goals.firstWhereOrNull(
-          (g) => g.id == goalId.value,
-        );
-        if (matchingGoal != null) {
-          _syncCurrentGoal(matchingGoal);
-        }
-      }
-
-      if (goalId.value > 0) {
-        selectedGoalIndex.value = goals.indexWhere((f) => f.id == goalId.value);
+      } else {
+        _clearCurrentGoal();
       }
     });
     isLoadingGoals.value = false;
@@ -148,11 +145,7 @@ class SavingGoalController extends GetxController {
   }
 
   void updateSelectedGoalIndex(int index) {
-    if (selectedGoalIndex.value == index) {
-      selectedGoalIndex.value = -1;
-    } else {
-      selectedGoalIndex.value = index;
-    }
+    // Selection disabled
   }
 
   void goToCreateGoal() {
@@ -177,75 +170,19 @@ class SavingGoalController extends GetxController {
   }
 
   Future<bool> selectGoal(int userId, int id) async {
-    isLoadingCurrent.value = true;
-    final result = await selectSavingGoalUseCase(userId, id);
-    final isSuccess = result.fold(
-      (failure) {
-        _handleFailure(failure);
-        return false;
-      },
-      (selected) {
-        currentGoal.value = selected;
-        goalId.value = id;
-
-        final authController = Get.find<AuthController>();
-        if (authController.user.value != null) {
-          authController.user.value = authController.user.value!.copyWith(
-            savingGoal: selected,
-          );
-        }
-
-        loadGoals(userId);
-        return true;
-      },
-    );
-    isLoadingCurrent.value = false;
-    return isSuccess;
+    return true; // Selection disabled
   }
 
   Future<void> saveSelection() async {
-    final currentUserId = appController.userId.value ?? 0;
-    if (currentUserId == 0) return;
-
-    if (selectedGoalIndex.value == -1) {
-      await deselectGoal();
-    } else if (goals.isNotEmpty &&
-        selectedGoalIndex.value >= 0 &&
-        selectedGoalIndex.value < goals.length) {
-      final selectedGoal = goals[selectedGoalIndex.value];
-      if (currentGoal.value?.id != selectedGoal.id) {
-        await selectGoal(currentUserId, selectedGoal.id);
-      }
-    }
+    // Selection disabled
   }
 
   Future<void> confirmSelectedGoal() async {
-    await saveSelection();
-    Get.back();
+    // Selection disabled
   }
 
   Future<void> deselectGoal() async {
-    currentGoal.value = null;
-    goalId.value = 0;
-
-    final authController = Get.find<AuthController>();
-    if (authController.user.value != null) {
-      authController.user.value = authController.user.value!.copyWith(
-        savingGoal: null,
-      );
-    }
-
-    final currentUserId = appController.userId.value;
-    if (currentUserId != null) {
-      await selectSavingGoalUseCase(currentUserId, 0);
-
-      if (Get.isRegistered<StatisticsController>()) {
-        Get.find<StatisticsController>().refreshStatisticsData(currentUserId);
-      }
-      if (Get.isRegistered<TransactionController>()) {
-        Get.find<TransactionController>().refreshAllData(currentUserId);
-      }
-    }
+    _clearCurrentGoal();
   }
 
   Future<bool> updateGoal(SavingGoalDto dto) async {
@@ -373,17 +310,82 @@ class SavingGoalController extends GetxController {
     );
   }
 
+  List<SavingGoalEntity> get activeGoals =>
+      goals.where((g) => g.isActive).toList();
+
+  List<SavingGoalEntity> get pausedGoals =>
+      goals.where((g) => g.isPaused).toList();
+
+  int get activeGoalCount => activeGoals.length;
+
+  Future<bool> activateGoal(int goalId) async {
+    isLoadingGoals.value = true;
+    final result = await activateSavingGoalUseCase(goalId);
+    final isSuccess = await result.fold(
+      (failure) async {
+        _handleFailure(failure);
+        return false;
+      },
+      (updated) async {
+        final index = goals.indexWhere((f) => f.id == goalId);
+        if (index != -1) {
+          goals[index] = updated;
+          goals.refresh();
+        }
+        if (currentGoal.value?.id == goalId) {
+          currentGoal.value = updated;
+        }
+        AppHelperFunction.showSuccessSnackBar('Kích hoạt mục tiêu thành công');
+        final userId = appController.userId.value;
+        if (userId != null) {
+          await loadGoals(userId);
+        }
+        return true;
+      },
+    );
+    isLoadingGoals.value = false;
+    return isSuccess;
+  }
+
+  Future<bool> pauseGoal(int goalId) async {
+    isLoadingGoals.value = true;
+    final result = await pauseSavingGoalUseCase(goalId);
+    final isSuccess = await result.fold(
+      (failure) async {
+        _handleFailure(failure);
+        return false;
+      },
+      (updated) async {
+        final index = goals.indexWhere((f) => f.id == goalId);
+        if (index != -1) {
+          goals[index] = updated;
+          goals.refresh();
+        }
+        if (currentGoal.value?.id == goalId) {
+          currentGoal.value = updated;
+        }
+        AppHelperFunction.showSuccessSnackBar('Tạm dừng mục tiêu thành công');
+        final userId = appController.userId.value;
+        if (userId != null) {
+          await loadGoals(userId);
+        }
+        return true;
+      },
+    );
+    isLoadingGoals.value = false;
+    return isSuccess;
+  }
+
   Future<SavingGoalReportModel?> loadGoalReport(int id) async {
     if (id <= 0) return null;
 
-    if (_activeReportId == id && _activeReportFuture != null) {
-      return _activeReportFuture;
+    if (_activeReportFutures.containsKey(id)) {
+      return _activeReportFutures[id];
     }
 
-    _activeReportId = id;
     isLoadingReport.value = true;
 
-    _activeReportFuture = getSavingGoalReportUseCase(id)
+    final future = getSavingGoalReportUseCase(id)
         .then((result) {
           return result.fold(
             (failure) {
@@ -391,33 +393,36 @@ class SavingGoalController extends GetxController {
               return null;
             },
             (report) {
+              if (id == currentGoal.value?.id) {
+                goalReport.value = report;
+              }
+              goalReports[id] = report;
               return report;
             },
           );
         })
         .whenComplete(() {
           isLoadingReport.value = false;
-          _activeReportFuture = null;
-          _activeReportId = null;
+          _activeReportFutures.remove(id);
         });
 
-    return _activeReportFuture;
+    _activeReportFutures[id] = future;
+    return future;
   }
 
   Future<GoalAchievementPredictionModel?> loadGoalPrediction(int id) async {
     if (id <= 0) return null;
 
-    if (_activePredictionId == id && _activePredictionFuture != null) {
-      return _activePredictionFuture;
+    if (_activePredictionFutures.containsKey(id)) {
+      return _activePredictionFutures[id];
     }
 
-    _activePredictionId = id;
     isLoadingPrediction.value = true;
-    if (goalPrediction.value?.goalId != id) {
+    if (id == currentGoal.value?.id && goalPrediction.value?.goalId != id) {
       goalPrediction.value = null;
     }
 
-    _activePredictionFuture = getGoalPredictionUseCase(id)
+    final future = getGoalPredictionUseCase(id)
         .then((result) {
           return result.fold(
             (failure) {
@@ -425,18 +430,47 @@ class SavingGoalController extends GetxController {
               return null;
             },
             (prediction) {
-              goalPrediction.value = prediction;
+              if (id == currentGoal.value?.id) {
+                goalPrediction.value = prediction;
+              }
+              goalPredictions[id] = prediction;
               return prediction;
             },
           );
         })
         .whenComplete(() {
           isLoadingPrediction.value = false;
-          _activePredictionFuture = null;
-          _activePredictionId = null;
+          _activePredictionFutures.remove(id);
         });
 
-    return _activePredictionFuture;
+    _activePredictionFutures[id] = future;
+    return future;
+  }
+
+  Future<void> loadMultiGoalData() async {
+    isLoadingMultiReports.value = true;
+
+    try {
+      await loadGoals();
+      if (goals.isEmpty) return;
+
+      // 1. Load predictions in batch
+      final summary = await loadGoalPredictions();
+      if (summary != null) {
+        for (final pred in summary.predictions) {
+          goalPredictions[pred.goalId] = pred;
+        }
+      }
+
+      // 2. Load reports in parallel for all active goals
+      await Future.wait(
+        goals.map((goal) => loadGoalReport(goal.id)),
+      );
+    } catch (e) {
+      _showError('Lỗi khi tải dữ liệu thống kê mục tiêu: $e');
+    } finally {
+      isLoadingMultiReports.value = false;
+    }
   }
 
   Future<GoalAchievementPredictionSummaryModel?> loadGoalPredictions() async {

@@ -10,6 +10,7 @@ import 'package:money_care/features/home/presentation/screens/home.dart';
 import 'package:money_care/features/statistics/presentation/screens/statistics.dart';
 import 'package:money_care/features/transaction/presentation/screens/transaction_history_screen.dart';
 import 'package:money_care/features/user/presentation/screens/user_center.dart';
+import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_screen.dart';
 
 class ScaffoldWithNavBar extends StatefulWidget {
   const ScaffoldWithNavBar({super.key});
@@ -370,6 +371,20 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 ),
                 const SizedBox(height: 12),
                 _buildTransactionOptionTile(
+                  icon: Icons.camera_alt_outlined,
+                  iconColor: AppColors.primary,
+                  iconBackground: AppColors.primary.withValues(alpha: 0.12),
+                  title: 'Tạo giao dịch',
+                  subtitle: 'Thêm giao dịch và lưu lại khoảnh khắc chi tiêu',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.to(() => const PhotoTransactionScreen(
+                          isPersonal: true,
+                        ));
+                  },
+                ),
+                /*const SizedBox(height: 12),
+                _buildTransactionOptionTile(
                   icon: Icons.receipt_long_outlined,
                   iconColor: AppColors.primary,
                   iconBackground: AppColors.primary.withValues(alpha: 0.12),
@@ -382,7 +397,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                       arguments: {'type': 'expense'},
                     );
                   },
-                ),
+                ),*/
                 const SizedBox(height: 12),
                 _buildTransactionOptionTile(
                   icon: Icons.smart_toy_outlined,

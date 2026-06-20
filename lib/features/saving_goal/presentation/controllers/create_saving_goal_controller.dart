@@ -10,8 +10,11 @@ import 'package:money_care/features/saving_goal/domain/usecases/usecases.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/features/couple/domain/entities/couple_saving_goal_entity.dart';
+import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 
 class CreateSavingGoalController extends GetxController {
+  late final SpendingPlanController spendingPlanController =
+      Get.find<SpendingPlanController>();
   late final SavingGoalController savingGoalController =
       Get.find<SavingGoalController>();
   late final AppController appController = Get.find<AppController>();
@@ -21,6 +24,8 @@ class CreateSavingGoalController extends GetxController {
       Get.find<CreateSavingGoalUseCase>();
   UpdateSavingGoalUseCase get _updateUseCase =>
       Get.find<UpdateSavingGoalUseCase>();
+  GetBudgetSuggestionUseCase get _getBudgetSuggestionUseCase =>
+      Get.find<GetBudgetSuggestionUseCase>();
 
   Rxn<int> userId = Rxn<int>();
   RxBool isLoading = false.obs;
@@ -36,6 +41,67 @@ class CreateSavingGoalController extends GetxController {
   Rxn<DateTime> startDate = Rxn<DateTime>();
   Rxn<DateTime> endDate = Rxn<DateTime>();
   RxBool createNewWallet = true.obs;
+  
+  RxBool isBudgetEnabled = true.obs;
+  RxString estimatedMonthlySavingsText = ''.obs;
+
+  Rxn<BudgetSuggestionModel> budgetSuggestion = Rxn<BudgetSuggestionModel>();
+  RxBool isLoadingSuggestion = false.obs;
+
+  bool get hasActivePlan => spendingPlanController.activePlan.value != null;
+
+  @override
+  void onInit() {
+    super.onInit();
+    everAll([target, startDate, endDate, isBudgetEnabled], (_) {
+      _updateEstimatedMonthlySavings();
+    });
+
+    // Debounce calls to suggest budget to avoid API overload during typing
+    debounce(target, (_) => _loadBudgetSuggestion(), time: const Duration(milliseconds: 500));
+    ever(startDate, (_) => _loadBudgetSuggestion());
+    ever(endDate, (_) => _loadBudgetSuggestion());
+    ever(userId, (_) => _loadBudgetSuggestion());
+  }
+
+  Future<void> _loadBudgetSuggestion() async {
+    // Only load if user is logged in
+    if (userId.value == null) return;
+    isLoadingSuggestion.value = true;
+    final result = await _getBudgetSuggestionUseCase(
+      target: target.value,
+      startDate: startDate.value,
+      endDate: endDate.value,
+    );
+    result.fold(
+      (failure) {
+        isLoadingSuggestion.value = false;
+        debugPrint('Lỗi tải gợi ý ngân sách: ${failure.message}');
+      },
+      (suggestion) {
+        budgetSuggestion.value = suggestion;
+        isLoadingSuggestion.value = false;
+      },
+    );
+  }
+
+  void _updateEstimatedMonthlySavings() {
+    final t = target.value ?? 0;
+    final start = startDate.value;
+    final end = endDate.value;
+    if (t <= 0 || start == null || end == null || end.isBefore(start) || !isBudgetEnabled.value) {
+      estimatedMonthlySavingsText.value = '';
+      return;
+    }
+    // Calculate months between start and end date
+    int months = (end.year - start.year) * 12 + (end.month - start.month) + 1;
+    if (months <= 0) {
+      months = 1;
+    }
+    final monthlyAmount = t / months;
+    estimatedMonthlySavingsText.value =
+        'Dự kiến góp quỹ: ${AppHelperFunction.formatAmount(monthlyAmount)} / tháng vào Kế hoạch chi tiêu.';
+  }
 
   @override
   void onClose() {
@@ -49,6 +115,10 @@ class CreateSavingGoalController extends GetxController {
   void resetBeforeBuild() {
     isCoupleMode.value = false;
     isEditMode.value = false;
+    isBudgetEnabled.value = true;
+    estimatedMonthlySavingsText.value = '';
+    budgetSuggestion.value = null;
+    isLoadingSuggestion.value = false;
   }
 
   Future<void> initializeForm() async {
@@ -68,6 +138,7 @@ class CreateSavingGoalController extends GetxController {
         targetController.text = goal.target.toInt().toString();
         endDate.value = goal.endDate;
         createNewWallet.value = false;
+        isBudgetEnabled.value = goal.isBudgetEnabled;
       }
     } else if (arg is SavingGoalEntity) {
       isCoupleMode.value = false;
@@ -79,6 +150,7 @@ class CreateSavingGoalController extends GetxController {
       startDate.value = arg.startDate;
       endDate.value = arg.endDate;
       createNewWallet.value = false;
+      isBudgetEnabled.value = arg.isBudgetEnabled;
     } else {
       _resetForm();
       startDate.value = DateTime.now();
@@ -134,12 +206,14 @@ class CreateSavingGoalController extends GetxController {
               name: nameController.text.trim(),
               target: finalTarget,
               endDate: endDate.value,
+              isBudgetEnabled: isBudgetEnabled.value,
             );
           } else {
             await coupleController.createSharedSavingGoal(
               name: nameController.text.trim(),
               target: finalTarget,
               endDate: endDate.value,
+              isBudgetEnabled: isBudgetEnabled.value,
             );
           }
           Get.back();
@@ -165,6 +239,7 @@ class CreateSavingGoalController extends GetxController {
       startDate: startDate.value,
       endDate: endDate.value,
       createNewWallet: isEditMode.value ? false : true,
+      isBudgetEnabled: isBudgetEnabled.value,
     );
 
     isLoading.value = true;
@@ -181,8 +256,11 @@ class CreateSavingGoalController extends GetxController {
       (goal) {
         isLoading.value = false;
         savingGoalController.loadGoals(userId.value!);
+        // Refresh spending plan if it's registered so user sees budget changes
+        if (Get.isRegistered<SpendingPlanController>()) {
+          Get.find<SpendingPlanController>().loadActivePlan();
+        }
         Get.back();
-        AppHelperFunction.showSuccessSnackBar('Đã lưu mục tiêu tiết kiệm');
         return true;
       },
     );
@@ -197,5 +275,9 @@ class CreateSavingGoalController extends GetxController {
     createNewWallet.value = true;
     isEditMode.value = false;
     isCoupleMode.value = false;
+    isBudgetEnabled.value = true;
+    estimatedMonthlySavingsText.value = '';
+    budgetSuggestion.value = null;
+    isLoadingSuggestion.value = false;
   }
 }

@@ -228,6 +228,7 @@ class TransactionController extends GetxController {
       endDate: rawEnd != null
           ? _getEndOfDay(rawEnd).toUtc().toIso8601String()
           : null,
+      includeTransfer: 'true',
     );
 
     await filterTransactions(userId, dto);

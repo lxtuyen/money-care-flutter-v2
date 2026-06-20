@@ -11,8 +11,8 @@ import 'package:money_care/features/transaction/presentation/widgets/transaction
 
 import 'couple_settlement_view.dart';
 import 'couple_transaction_calendar.dart';
-import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_detail_screen.dart';
-import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_screen.dart';
+import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_detail_screen.dart';
+import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_screen.dart';
 
 part 'couple_transactions_view_sections.dart';
 
@@ -88,7 +88,7 @@ class _CoupleTransactionsViewState extends State<CoupleTransactionsView> {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         onPressed: () async {
-          await Get.to(() => CouplePhotoTransactionScreen(
+          await Get.to(() => PhotoTransactionScreen(
                 coupleController: widget.controller,
               ));
           widget.controller.fetchCoupleData();

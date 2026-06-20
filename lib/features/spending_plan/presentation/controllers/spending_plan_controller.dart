@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/errors/failure.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
@@ -151,9 +152,15 @@ class SpendingPlanController extends GetxController {
         targetYear = statsCtrl.currentStartDate.year;
       }
 
+      int? startDay;
+      if (Get.isRegistered<AppController>()) {
+        startDay = Get.find<AppController>().startDayOfMonth.value;
+      }
+
       final result = await getActiveSpendingPlanStatisticsUseCase(
         month: targetMonth,
         year: targetYear,
+        startDay: startDay,
       );
       result.fold(
         (failure) {

@@ -20,6 +20,7 @@ abstract class SpendingPlanRepository {
   Future<Either<Failure, SpendingPlanStatsEntity?>> getActivePlanStatistics({
     int? month,
     int? year,
+    int? startDay,
   });
   Future<Either<Failure, SpendingPlanEntity>> addPlanExpense(
     int planId,

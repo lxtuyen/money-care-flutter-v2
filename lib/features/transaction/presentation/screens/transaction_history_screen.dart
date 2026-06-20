@@ -13,8 +13,10 @@ import 'package:money_care/features/transaction/presentation/widgets/search_filt
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_history_filter_sheet.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
-import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_transaction_calendar.dart';
+import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_detail_screen.dart';
+import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -27,6 +29,10 @@ class TransactionHistoryScreen extends StatefulWidget {
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   final TextEditingController searchController = TextEditingController();
 
+  late DateTime _selectedMonth;
+  late int _selectedDay;
+  Worker? _filterWorker;
+
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
       Get.find<TransactionController>();
@@ -38,13 +44,50 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   void initState() {
     super.initState();
     searchController.text = filterController.keyword.value;
+    _initializeDateTime();
+
+    // Listen to changes in filterController's date range to update local calendar state
+    _filterWorker = ever(filterController.startDate, (DateTime? start) {
+      if (start != null) {
+        setState(() {
+          _selectedMonth = DateTime(start.year, start.month);
+          _selectedDay = start.day;
+        });
+      } else {
+        final now = DateTime.now();
+        setState(() {
+          _selectedMonth = DateTime(now.year, now.month);
+          _selectedDay = now.day;
+        });
+      }
+    });
+
     initData();
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    _filterWorker?.dispose();
     super.dispose();
+  }
+
+  void _initializeDateTime() {
+    final now = DateTime.now();
+    final start = filterController.startDate.value;
+    if (start != null) {
+      _selectedMonth = DateTime(start.year, start.month);
+      _selectedDay = start.day;
+    } else {
+      _selectedMonth = DateTime(now.year, now.month);
+      _selectedDay = now.day;
+    }
+  }
+
+  void selectDay(int day) {
+    setState(() {
+      _selectedDay = day;
+    });
   }
 
   Future<void> initData() async {
@@ -56,6 +99,69 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     if (transactionController.transactionByfilter.value == null) {
       await transactionController.applyFilters(userId);
     }
+  }
+
+  Widget _selectedDayHeader(BuildContext context, int day) {
+    final colors = AppThemeColors.of(context);
+    final dateStr = 'Ngày $day Tháng ${_selectedMonth.month}, ${_selectedMonth.year}';
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            dateStr,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: colors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _changeMonth(DateTime newMonth) {
+    setState(() {
+      _selectedMonth = DateTime(newMonth.year, newMonth.month);
+      final today = DateTime.now();
+      if (newMonth.year == today.year && newMonth.month == today.month) {
+        _selectedDay = today.day;
+      } else {
+        _selectedDay = 1;
+      }
+    });
+
+    final start = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+    final end = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0);
+    
+    filterController.updateDateRange(
+      start,
+      end,
+      label: '${_selectedMonth.year}/${_selectedMonth.month.toString().padLeft(2, '0')}',
+    );
+
+    _applyFilter();
+  }
+
+  List<TransactionEntity> _filterTransactionsByDay(
+    List<TransactionEntity> transactions,
+  ) {
+    return transactions
+        .where((tx) => tx.transactionDate?.day == _selectedDay)
+        .toList()
+      ..sort((a, b) =>
+          (b.transactionDate ?? DateTime(0))
+              .compareTo(a.transactionDate ?? DateTime(0)));
   }
 
   @override
@@ -96,6 +202,28 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 ],
               );
             }),
+          ),
+          const SizedBox(height: 12),
+          StatisticsTimeNavigator(
+            focusedMonth: _selectedMonth,
+            onPrevious: () => _changeMonth(
+              DateTime(_selectedMonth.year, _selectedMonth.month - 1),
+            ),
+            onNext: () => _changeMonth(
+              DateTime(_selectedMonth.year, _selectedMonth.month + 1),
+            ),
+            onTap: () async {
+              final DateTime? picked = await showDatePicker(
+                context: context,
+                initialDate: _selectedMonth,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2030),
+                initialDatePickerMode: DatePickerMode.year,
+              );
+              if (picked != null) {
+                _changeMonth(picked);
+              }
+            },
           ),
           Obx(
             () => SearchWithFilter(
@@ -147,47 +275,56 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return note.contains(keyword);
       }).toList();
 
-      if (filtered.isEmpty) {
-        return _buildEmptyView();
-      }
+      final listItems = <Widget>[
+        const SizedBox(height: 8),
+        CoupleTransactionCalendar(
+          focusedMonth: _selectedMonth,
+          transactions: filtered,
+          selectedDay: _selectedDay,
+          onDaySelected: selectDay,
+        ),
+        const SizedBox(height: 16),
+        _selectedDayHeader(context, _selectedDay),
+        const SizedBox(height: 8),
+      ];
 
-      final grouped = AppHelperFunction.groupByDate(
-        filtered,
-        (t) => t.transactionDate,
-      );
+      final selectedDayTxs = _filterTransactionsByDay(filtered);
 
-      final List<Widget> listItems = [];
-      grouped.forEach((header, txs) {
+      if (selectedDayTxs.isEmpty) {
         listItems.add(
           Padding(
-            padding: const EdgeInsets.only(top: 20, bottom: 8),
-            child: Text(
-              header,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppThemeColors.of(context).textPrimary.withValues(alpha: 0.8),
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+            child: Center(
+              child: Text(
+                'transaction.noTransactions'.tr,
+                style: TextStyle(
+                  color: AppThemeColors.of(context).textSecondary,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
         );
-
-        for (int i = 0; i < txs.length; i++) {
-          final tx = txs[i];
+      } else {
+        for (int i = 0; i < selectedDayTxs.length; i++) {
+          final tx = selectedDayTxs[i];
           listItems.add(
-            TransactionItem(
-              item: tx,
-              isShowDate: false,
-              isShowDivider: i < txs.length - 1,
-              onTap: () => _showTransactionDetail(context, tx),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TransactionItem(
+                item: tx,
+                isShowDate: false,
+                isShowDivider: i < selectedDayTxs.length - 1,
+                onTap: () => _showTransactionDetail(context, tx),
+              ),
             ),
           );
         }
-      });
+      }
 
       return ListView(
         key: const ValueKey('chi'),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(bottom: 80),
         children: listItems,
       );
     });
@@ -215,47 +352,56 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return note.contains(keyword);
       }).toList();
 
-      if (filtered.isEmpty) {
-        return _buildEmptyView();
-      }
+      final listItems = <Widget>[
+        const SizedBox(height: 8),
+        CoupleTransactionCalendar(
+          focusedMonth: _selectedMonth,
+          transactions: filtered,
+          selectedDay: _selectedDay,
+          onDaySelected: selectDay,
+        ),
+        const SizedBox(height: 16),
+        _selectedDayHeader(context, _selectedDay),
+        const SizedBox(height: 8),
+      ];
 
-      final grouped = AppHelperFunction.groupByDate(
-        filtered,
-        (t) => t.transactionDate,
-      );
+      final selectedDayTxs = _filterTransactionsByDay(filtered);
 
-      final List<Widget> listItems = [];
-      grouped.forEach((header, txs) {
+      if (selectedDayTxs.isEmpty) {
         listItems.add(
           Padding(
-            padding: const EdgeInsets.only(top: 20, bottom: 8),
-            child: Text(
-              header,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppThemeColors.of(context).textPrimary.withValues(alpha: 0.8),
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+            child: Center(
+              child: Text(
+                'transaction.noTransactions'.tr,
+                style: TextStyle(
+                  color: AppThemeColors.of(context).textSecondary,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
         );
-
-        for (int i = 0; i < txs.length; i++) {
-          final tx = txs[i];
+      } else {
+        for (int i = 0; i < selectedDayTxs.length; i++) {
+          final tx = selectedDayTxs[i];
           listItems.add(
-            TransactionItem(
-              item: tx,
-              isShowDate: false,
-              isShowDivider: i < txs.length - 1,
-              onTap: () => _showTransactionDetail(context, tx),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TransactionItem(
+                item: tx,
+                isShowDate: false,
+                isShowDivider: i < selectedDayTxs.length - 1,
+                onTap: () => _showTransactionDetail(context, tx),
+              ),
             ),
           );
         }
-      });
+      }
 
       return ListView(
         key: const ValueKey('thu'),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(bottom: 80),
         children: listItems,
       );
     });
@@ -274,16 +420,38 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   void _showTransactionDetail(BuildContext context, TransactionEntity item) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return TransactionDetail(
-          item: item,
-          isExpense: statisticsController.selectedType.value == 'chi',
-          userId: appController.userId.value ?? 0,
-        );
-      },
-    );
+    if (item.pictureUrl != null && item.pictureUrl!.isNotEmpty) {
+      // Collect all photo transactions from the current list (expense or income)
+      final data = transactionController.transactionByfilter.value;
+      if (data == null) return;
+
+      final currentList = statisticsController.selectedType.value == 'chi'
+          ? data.expenseTransactions
+          : data.incomeTransactions;
+
+      final photoTxs = currentList
+          .where((tx) => tx.pictureUrl != null && tx.pictureUrl!.isNotEmpty)
+          .toList();
+      final initialIndex = photoTxs.indexWhere((tx) => tx.id == item.id);
+
+      Get.to(() => PhotoTransactionDetailScreen(
+            photoTransactions: photoTxs,
+            initialIndex: initialIndex >= 0 ? initialIndex : 0,
+            isPersonal: true,
+            ownerId: appController.userId.value,
+          ));
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return TransactionDetail(
+            item: item,
+            isExpense: statisticsController.selectedType.value == 'chi',
+            userId: appController.userId.value ?? 0,
+          );
+        },
+      );
+    }
   }
 
   Future<void> _applyFilter() async {

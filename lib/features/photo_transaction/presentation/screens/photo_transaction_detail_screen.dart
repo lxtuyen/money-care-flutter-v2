@@ -5,24 +5,29 @@ import 'package:intl/intl.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
-import 'package:money_care/features/couple/presentation/controllers/couple_photo_transaction_detail_controller.dart';
+import 'package:money_care/features/photo_transaction/presentation/controllers/photo_transaction_detail_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_gallery_screen.dart';
+import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_gallery_screen.dart';
+import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 
-class CouplePhotoTransactionDetailScreen extends StatelessWidget {
+class PhotoTransactionDetailScreen extends StatelessWidget {
   final List<TransactionEntity> photoTransactions;
   final int initialIndex;
-  final CoupleController coupleController;
+  final CoupleController? coupleController;
+  final bool isPersonal;
+  final int? ownerId;
 
-  const CouplePhotoTransactionDetailScreen({
+  const PhotoTransactionDetailScreen({
     super.key,
     required this.photoTransactions,
     required this.initialIndex,
-    required this.coupleController,
+    this.coupleController,
+    this.isPersonal = false,
+    this.ownerId,
   });
 
   Widget _buildEditorView(
-      BuildContext context, CouplePhotoTransactionDetailController controller, PageController pageController) {
+      BuildContext context, PhotoTransactionDetailController controller, PageController pageController) {
     return Column(
       children: [
         // Header title
@@ -52,34 +57,46 @@ class CouplePhotoTransactionDetailScreen extends StatelessWidget {
                             final success =
                                 await controller.saveChanges(closeScreen: false);
                             if (success) {
-                              Get.to(() => CouplePhotoTransactionGalleryScreen(
-                                    photoTransactions: controller.photoTransactions,
-                                    onSelect: (index) {
-                                      controller.setCurrentIndex(index);
-                                      pageController.jumpToPage(index);
-                                    },
-                                  ));
-                            }
-                          },
-                          onCancel: () {
-                            controller.resetChanges();
-                            Get.to(() => CouplePhotoTransactionGalleryScreen(
+                              Get.to(
+                                () => PhotoTransactionGalleryScreen(
                                   photoTransactions: controller.photoTransactions,
                                   onSelect: (index) {
                                     controller.setCurrentIndex(index);
                                     pageController.jumpToPage(index);
                                   },
-                                ));
+                                ),
+                                transition: Transition.fadeIn,
+                                duration: const Duration(milliseconds: 200),
+                              );
+                            }
+                          },
+                          onCancel: () {
+                            controller.resetChanges();
+                            Get.to(
+                              () => PhotoTransactionGalleryScreen(
+                                photoTransactions: controller.photoTransactions,
+                                onSelect: (index) {
+                                  controller.setCurrentIndex(index);
+                                  pageController.jumpToPage(index);
+                                },
+                              ),
+                              transition: Transition.fadeIn,
+                              duration: const Duration(milliseconds: 200),
+                            );
                           },
                         );
                       } else {
-                        Get.to(() => CouplePhotoTransactionGalleryScreen(
-                              photoTransactions: controller.photoTransactions,
-                              onSelect: (index) {
-                                controller.setCurrentIndex(index);
-                                pageController.jumpToPage(index);
-                              },
-                            ));
+                        Get.to(
+                          () => PhotoTransactionGalleryScreen(
+                            photoTransactions: controller.photoTransactions,
+                            onSelect: (index) {
+                              controller.setCurrentIndex(index);
+                              pageController.jumpToPage(index);
+                            },
+                          ),
+                          transition: Transition.fadeIn,
+                          duration: const Duration(milliseconds: 200),
+                        );
                       }
                     },
                     borderRadius: BorderRadius.circular(16),
@@ -318,10 +335,12 @@ class CouplePhotoTransactionDetailScreen extends StatelessWidget {
     final PageController pageController = PageController(initialPage: initialIndex);
     
     // Instantiate the controller
-    final controller = Get.put(CouplePhotoTransactionDetailController(
+    final controller = Get.put(PhotoTransactionDetailController(
       photoTransactions: photoTransactions,
       initialIndex: initialIndex,
       coupleController: coupleController,
+      isPersonal: isPersonal,
+      ownerId: ownerId,
     ));
     
     controller.pageController = pageController;
@@ -355,10 +374,8 @@ class CouplePhotoTransactionDetailScreen extends StatelessWidget {
   }
 }
 
-// Separate Widgets to reduce CouplePhotoTransactionDetailScreen line counts and maintain Clean Architecture
-
 class AmountStickerOverlay extends StatelessWidget {
-  final CouplePhotoTransactionDetailController controller;
+  final PhotoTransactionDetailController controller;
   const AmountStickerOverlay({super.key, required this.controller});
 
   @override
@@ -423,13 +440,13 @@ class AmountStickerOverlay extends StatelessWidget {
 }
 
 class PillsPanelOverlay extends StatelessWidget {
-  final CouplePhotoTransactionDetailController controller;
-  final CoupleController coupleController;
+  final PhotoTransactionDetailController controller;
+  final CoupleController? coupleController;
 
   const PillsPanelOverlay({
     super.key,
     required this.controller,
-    required this.coupleController,
+    this.coupleController,
   });
 
   Widget _buildGlassPill({
@@ -477,10 +494,10 @@ class PillsPanelOverlay extends StatelessWidget {
       child: Obx(() {
         final cat = controller.selectedCategory.value;
         final wallet = controller.selectedWallet.value;
-        final payerName = coupleController.couple.value?.members
+        final payerName = coupleController?.couple.value?.members
                 .firstWhereOrNull((m) => m.userId == controller.selectedPayerId.value)
                 ?.fullName ??
-            'Chọn...';
+            Get.find<AuthController>().user.value?.profile.fullName ?? 'Chọn...';
         final dateStr = DateFormat('dd/MM HH:mm').format(controller.selectedDate.value);
 
         return Column(
@@ -503,12 +520,14 @@ class PillsPanelOverlay extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Payer
-            _buildGlassPill(
-              icon: Icons.person_outline,
-              text: 'Trả: $payerName',
-              onTap: controller.showPayerSelector,
-            ),
-            const SizedBox(height: 8),
+            if (!controller.isPersonal) ...[
+              _buildGlassPill(
+                icon: Icons.person_outline,
+                text: 'Trả: $payerName',
+                onTap: controller.showPayerSelector,
+              ),
+              const SizedBox(height: 8),
+            ],
 
             // Date & Time
             _buildGlassPill(
@@ -524,7 +543,7 @@ class PillsPanelOverlay extends StatelessWidget {
 }
 
 class NoteStickerOverlay extends StatelessWidget {
-  final CouplePhotoTransactionDetailController controller;
+  final PhotoTransactionDetailController controller;
   const NoteStickerOverlay({super.key, required this.controller});
 
   @override
@@ -578,7 +597,7 @@ class NoteStickerOverlay extends StatelessWidget {
 }
 
 class PhotoIndexIndicatorOverlay extends StatelessWidget {
-  final CouplePhotoTransactionDetailController controller;
+  final PhotoTransactionDetailController controller;
   const PhotoIndexIndicatorOverlay({super.key, required this.controller});
 
   @override

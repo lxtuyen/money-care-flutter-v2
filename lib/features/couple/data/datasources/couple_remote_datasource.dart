@@ -23,6 +23,7 @@ abstract class CoupleRemoteDatasource {
     required String name,
     required double target,
     DateTime? endDate,
+    bool? isBudgetEnabled,
   });
   Future<void> contributeToSavingGoal({
     required int goalId,
@@ -37,6 +38,7 @@ abstract class CoupleRemoteDatasource {
     DateTime? endDate,
     String? status,
     bool? completionNotified,
+    bool? isBudgetEnabled,
   });
   Future<CoupleSettlementSummaryEntity> getSettlementSummary(int coupleId);
   Future<void> settleUp(int coupleId);
@@ -152,6 +154,7 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
     required String name,
     required double target,
     DateTime? endDate,
+    bool? isBudgetEnabled,
   }) async {
     final res = await api.post<CoupleSavingGoalEntity>(
       '${ApiRoutes.couples}/savings',
@@ -160,6 +163,7 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
         'name': name,
         'target': target,
         'end_date': ?endDate?.toIso8601String(),
+        'is_budget_enabled': ?isBudgetEnabled,
       },
       fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
     );
@@ -200,6 +204,7 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
     DateTime? endDate,
     String? status,
     bool? completionNotified,
+    bool? isBudgetEnabled,
   }) async {
     final res = await api.patch<CoupleSavingGoalEntity>(
       '${ApiRoutes.couples}/savings/$id',
@@ -209,6 +214,7 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
         'end_date': ?endDate?.toIso8601String(),
         'status': ?status,
         'completion_notified': ?completionNotified,
+        'is_budget_enabled': ?isBudgetEnabled,
       },
       fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
     );

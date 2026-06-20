@@ -47,9 +47,12 @@ class TransactionItem extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    final bool isTransfer = item.isTransfer == true;
     final bool isIncome = item.type == 'income' || item.type == 'thu';
-    final Color typeColor =
-        color ?? (isIncome ? AppColors.income : AppColors.expense);
+    final Color typeColor = color ??
+        (isTransfer
+            ? AppColors.info
+            : (isIncome ? AppColors.income : AppColors.expense));
 
     final double amountValue = (item.amount).toDouble();
     final String amountText =
@@ -92,7 +95,10 @@ class TransactionItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      subtitle ?? item.category?.name ?? 'Không có danh mục',
+                      subtitle ??
+                          (item.isTransfer == true
+                              ? 'Chuyển khoản'
+                              : (item.category?.name ?? 'Không có danh mục')),
                       style: TextStyle(
                         fontSize: 12,
                         color: AppThemeColors.of(context).textSecondary,

@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
-class CouplePhotoTransactionGalleryScreen extends StatelessWidget {
+class PhotoTransactionGalleryScreen extends StatelessWidget {
   final List<TransactionEntity> photoTransactions;
   final ValueChanged<int> onSelect;
 
-  const CouplePhotoTransactionGalleryScreen({
+  const PhotoTransactionGalleryScreen({
     super.key,
     required this.photoTransactions,
     required this.onSelect,
@@ -44,6 +44,7 @@ class CouplePhotoTransactionGalleryScreen extends StatelessWidget {
             )
           : GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              cacheExtent: 500,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 mainAxisSpacing: 10,
@@ -54,6 +55,19 @@ class CouplePhotoTransactionGalleryScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final tx = photoTransactions[index];
                 final pictureUrl = tx.pictureUrl;
+
+                // Fade-in frameBuilder for smooth image appearance
+                Widget Function(BuildContext, Widget, int?, bool)? frameBuilder;
+                frameBuilder = (context, child, frame, wasSynchronouslyLoaded) {
+                  if (wasSynchronouslyLoaded) return child;
+                  return AnimatedOpacity(
+                    opacity: frame == null ? 0 : 1,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    child: child,
+                  );
+                };
+
                 Widget imageWidget;
                 if (pictureUrl == null || pictureUrl.isEmpty) {
                   imageWidget = Container(
@@ -65,6 +79,8 @@ class CouplePhotoTransactionGalleryScreen extends StatelessWidget {
                   imageWidget = Image.network(
                     pictureUrl,
                     fit: BoxFit.cover,
+                    cacheWidth: 300,
+                    frameBuilder: frameBuilder,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: const Color(0xFF1E1E1E),
                       child: const Icon(Icons.broken_image,
@@ -75,6 +91,8 @@ class CouplePhotoTransactionGalleryScreen extends StatelessWidget {
                   imageWidget = Image.file(
                     File(pictureUrl),
                     fit: BoxFit.cover,
+                    cacheWidth: 300,
+                    frameBuilder: frameBuilder,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: const Color(0xFF1E1E1E),
                       child: const Icon(Icons.broken_image,

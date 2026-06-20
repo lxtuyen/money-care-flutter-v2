@@ -5,20 +5,25 @@ import 'package:intl/intl.dart';
 import 'package:camera/camera.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
-import 'package:money_care/features/couple/presentation/controllers/couple_photo_transaction_controller.dart';
+import 'package:money_care/features/photo_transaction/presentation/controllers/photo_transaction_controller.dart';
+import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 
-class CouplePhotoTransactionScreen extends StatelessWidget {
+class PhotoTransactionScreen extends StatelessWidget {
   final XFile? image;
-  final CoupleController coupleController;
+  final CoupleController? coupleController;
+  final bool isPersonal;
+  final int? ownerId;
 
-  const CouplePhotoTransactionScreen({
+  const PhotoTransactionScreen({
     super.key,
     this.image,
-    required this.coupleController,
+    this.coupleController,
+    this.isPersonal = false,
+    this.ownerId,
   });
 
   Widget _buildGlassPill({
-    required IconData icon,
+    IconData? icon,
     required String text,
     required VoidCallback onTap,
     bool isLocked = false,
@@ -42,12 +47,14 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon, 
-                color: isLocked ? Colors.white38 : Colors.white, 
-                size: 14,
-              ),
-              const SizedBox(width: 6),
+              if (icon != null) ...[
+                Icon(
+                  icon, 
+                  color: isLocked ? Colors.white38 : Colors.white, 
+                  size: 14,
+                ),
+                const SizedBox(width: 6),
+              ],
               Text(
                 text,
                 style: TextStyle(
@@ -71,7 +78,7 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCameraView(BuildContext context, CouplePhotoTransactionController controller) {
+  Widget _buildCameraView(BuildContext context, PhotoTransactionController controller) {
     return Column(
       children: [
         // Camera Header
@@ -125,7 +132,9 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   Obx(() {
-                    if (controller.isCameraInitialized.value && controller.cameraController != null) {
+                    if (controller.isCameraInitialized.value &&
+                        controller.cameraController != null &&
+                        controller.cameraController!.value.isInitialized) {
                       return FittedBox(
                         fit: BoxFit.cover,
                         child: SizedBox(
@@ -270,7 +279,7 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEditorView(BuildContext context, CouplePhotoTransactionController controller) {
+  Widget _buildEditorView(BuildContext context, PhotoTransactionController controller) {
     return Column(
       children: [
         // Header title
@@ -289,14 +298,6 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.help_outline, color: Colors.white54, size: 20),
-                onPressed: () {
-                  AppHelperFunction.showSuccessSnackBar(
-                    'Chạm trực tiếp vào nhãn trên ảnh để thay đổi thông tin.',
-                  );
-                },
               ),
             ],
           ),
@@ -387,10 +388,10 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                     child: Obx(() {
                       final cat = controller.selectedCategory.value;
                       final wallet = controller.selectedWallet.value;
-                      final payerName = coupleController.couple.value?.members
+                      final payerName = coupleController?.couple.value?.members
                               .firstWhereOrNull((m) => m.userId == controller.selectedPayerId.value)
                               ?.fullName ??
-                          'Chọn...';
+                          Get.find<AuthController>().user.value?.profile.fullName ?? 'Chọn...';
                       final dateStr = DateFormat('dd/MM HH:mm').format(controller.selectedDate.value);
 
                       return Column(
@@ -398,7 +399,6 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                         children: [
                           // Category
                           _buildGlassPill(
-                            icon: Icons.category_outlined,
                             text: cat != null ? '${cat.icon} ${cat.name}' : 'Danh mục',
                             onTap: controller.showCategorySelector,
                           ),
@@ -413,13 +413,15 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
                           const SizedBox(height: 8),
 
                           // Payer
-                          _buildGlassPill(
-                            icon: Icons.person_outline,
-                            text: 'Trả: $payerName',
-                            onTap: controller.showPayerSelector,
-                            isLocked: controller.isSelectedWalletPersonal,
-                          ),
-                          const SizedBox(height: 8),
+                          if (!isPersonal) ...[
+                            _buildGlassPill(
+                              icon: Icons.person_outline,
+                              text: 'Trả: $payerName',
+                              onTap: controller.showPayerSelector,
+                              isLocked: controller.isSelectedWalletPersonal,
+                            ),
+                            const SizedBox(height: 8),
+                          ],
 
                           // Date & Time
                           _buildGlassPill(
@@ -553,9 +555,11 @@ class CouplePhotoTransactionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Instantiate/Retrieve the controller
-    final controller = Get.put(CouplePhotoTransactionController(
+    final controller = Get.put(PhotoTransactionController(
       coupleController: coupleController,
       initialImage: image,
+      isPersonal: isPersonal,
+      ownerId: ownerId,
     ));
 
     return Scaffold(

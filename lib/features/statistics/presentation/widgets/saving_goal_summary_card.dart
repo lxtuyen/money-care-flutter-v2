@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
@@ -14,8 +13,9 @@ import 'package:money_care/features/saving_goal/domain/entities/saving_goal_enti
 import 'package:money_care/features/saving_goal/presentation/widgets/milestone_map.dart';
 import 'package:money_care/features/saving_goal/presentation/widgets/goal_achievement_prediction_block.dart';
 import 'package:money_care/features/statistics/presentation/models/goal_plan_impact.dart';
+import 'package:money_care/features/transaction/data/models/transaction_response_model.dart';
 
-class SavingGoalSummaryCard extends StatelessWidget {
+class SavingGoalSummaryCard extends StatefulWidget {
   final SavingGoalEntity fund;
   final SavingGoalReportModel? report;
   final bool isLoading;
@@ -30,6 +30,19 @@ class SavingGoalSummaryCard extends StatelessWidget {
     this.planImpact,
     this.prediction,
   });
+
+  @override
+  State<SavingGoalSummaryCard> createState() => _SavingGoalSummaryCardState();
+}
+
+class _SavingGoalSummaryCardState extends State<SavingGoalSummaryCard> {
+  bool _isExpanded = false;
+
+  GoalAchievementPredictionModel? get _matchingPrediction {
+    final value = widget.prediction;
+    if (value == null || value.goalId != widget.fund.id) return null;
+    return value;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,538 +61,353 @@ class SavingGoalSummaryCard extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: () => Get.toNamed(RoutePath.savingGoalDetail, arguments: fund),
-          borderRadius: BorderRadius.circular(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                decoration: BoxDecoration(
-                  gradient: AppColors.linearGradient,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        fund.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Xem chi tiết',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 10,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              if (isLoading)
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (report == null)
-                _buildFromFundOnly(context)
-              else
-                _buildFromReport(context, report!),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context),
+            if (_isExpanded) _buildExpandedBody(context),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildFromFundOnly(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          if (fund.savedAmount > 0)
-            _BudgetRow(
-              label: 'Đã tiết kiệm',
-              value: AppHelperFunction.formatAmount(
-                fund.savedAmount,
-                currency: 'VND',
-              ),
-              progress: fund.target != null && fund.target! > 0
-                  ? (fund.savedAmount / fund.target!).clamp(0, 1)
-                  : 0,
-              color: AppColors.primary,
-            ),
-          if (fund.target != null && fund.target! > 0) ...[
-            const SizedBox(height: 12),
-            _BudgetRow(
-              label: 'Mục tiêu',
-              value: AppHelperFunction.formatAmount(
-                fund.target!,
-                currency: 'VND',
-              ),
-              progress: 0,
-              color: AppColors.success,
-            ),
-          ],
-          if (planImpact != null) ...[
-            const SizedBox(height: 12),
-            _PlanImpactLine(impact: planImpact!),
-          ],
-          if (_matchingPrediction != null) ...[
-            const SizedBox(height: 12),
-            GoalAchievementPredictionBlock(
-              prediction: _matchingPrediction!,
-              goalId: fund.id,
-              goalEndDate: fund.endDate,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+  Widget _buildHeader(BuildContext context) {
+    final themeColors = AppThemeColors.of(context);
+    final double target = widget.report?.target ?? widget.fund.target ?? 0;
+    final double saved = widget.report?.currentBalance ?? widget.fund.savedAmount;
+    final double progress = target > 0 ? (saved / target).clamp(0.0, 1.0) : 0.0;
+    final int percent = (progress * 100).toInt();
 
-  Widget _buildFromReport(BuildContext context, SavingGoalReportModel r) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _CircleMetric(
-                  label: 'Mục tiêu',
-                  percent: (r.targetCompletionPercentage / 100).clamp(0.0, 1.0),
-                  centerText:
-                      '${r.targetCompletionPercentage > 100 ? 100 : r.targetCompletionPercentage}%',
-                  color: r.isTargetAchieved
-                      ? AppColors.income
-                      : AppColors.secondaryOrange,
-                  subtitle: AppHelperFunction.formatAmount(
-                    r.target,
-                    currency: 'VND',
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          if (_matchingPrediction != null) ...[
-            const SizedBox(height: 12),
-            GoalAchievementPredictionBlock(
-              prediction: _matchingPrediction!,
-              goalId: fund.id,
-              goalEndDate: fund.endDate ?? r.endDate,
-              milestones: r.milestones,
-            ),
-          ],
-          const SizedBox(height: 16),
-         /* const Divider(height: 1),
-          const SizedBox(height: 12),*/
-          // TODO: tạm ẩn card thông tin ví
-          /*if (false) ...[
-            const SizedBox(height: 16),
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               children: [
                 Expanded(
-                  child: _QuickStat(
-                    icon: Icons.receipt_long_rounded,
-                    label: 'Giao dịch',
-                    value: '${r.totalTransactions}',
+                  child: Text(
+                    widget.fund.name,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.text1,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Expanded(
-                  child: _QuickStat(
-                    icon: Icons.today_rounded,
-                    label: 'TB/ngày',
-                    value: AppHelperFunction.formatAmount(
-                      r.dailyAverageSpending,
-                      currency: 'VND',
-                    ),
+                const SizedBox(width: 8),
+                Icon(
+                  _isExpanded
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  color: AppColors.text3,
+                  size: 20,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${AppHelperFunction.formatAmount(saved)} / ${AppHelperFunction.formatAmount(target)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: themeColors.textSecondary,
                   ),
                 ),
-                Expanded(
-                  child: _QuickStat(
-                    icon: Icons.calendar_month_rounded,
-                    label: 'Hiện tại',
-                    value: AppHelperFunction.formatAmount(
-                      r.remainingBudget,
-                      currency: 'VND',
-                    ),
-                    valueColor: r.remainingBudget < 0
-                        ? AppColors.expense
-                        : AppColors.income,
+                Text(
+                  '$percent%',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
                   ),
                 ),
               ],
             ),
-          ],*/
-
-          if (r.milestones.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            const Divider(height: 1),
-            const SizedBox(height: 16),
-            MilestoneMap(milestones: r.milestones),
-          ],
-
-          if (!r.isCompleted && r.isTargetAchieved) ...[
-            const SizedBox(height: 20),
-            Center(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.success.withValues(alpha: 0.2),
-                      blurRadius: 12,
-                    ),
-                  ],
-                ),
-                child: PrimaryButton(
-                  label: 'Hoàn thành mục tiêu',
-                  onPressed: () {
-                    if (fund.wallet == null) {
-                      final controller = Get.find<SavingGoalController>();
-                      controller.completeGoalEarly(r.id);
-                      return;
-                    }
-
-                    Get.toNamed(
-                      RoutePath.createTransaction,
-                      arguments: {
-                        'type': 'expense',
-                        'amount': r.walletBalance.toInt(),
-                        'walletId': fund.wallet!.id,
-                        'note': 'Chi tiêu cho: ${r.name}',
-                        'completeGoalId': r.id,
-                        'isWalletEditable': false,
-                      },
-                    );
-                  },
-                  backgroundColor: AppColors.income,
-                  height: 48,
-                  borderRadius: 12,
-                  fontSize: 13,
-                  elevation: 0,
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                backgroundColor: AppColors.borderSecondary,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  progress >= 1.0 ? AppColors.income : AppColors.primary,
                 ),
               ),
             ),
           ],
-
-          if (!r.isCompleted && !r.isTargetAchieved) ...[
-            const SizedBox(height: 20),
-            Center(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.15),
-                      blurRadius: 12,
-                    ),
-                  ],
-                ),
-                child: PrimaryButton(
-                  label: 'Góp quỹ',
-                  onPressed: () {
-                    Get.toNamed(
-                      RoutePath.walletTransfer,
-                      arguments: {
-                        'toWalletId': fund.wallet?.id,
-                        'lockToWallet': true,
-                      },
-                    );
-                  },
-                  backgroundColor: AppColors.primary,
-                  height: 48,
-                  borderRadius: 12,
-                  fontSize: 13,
-                  elevation: 0,
-                ),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
 
-  GoalAchievementPredictionModel? get _matchingPrediction {
-    final value = prediction;
-    if (value == null || value.goalId != fund.id) return null;
-    return value;
+  Widget _buildExpandedBody(BuildContext context) {
+    if (widget.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (widget.report == null) {
+      return _buildFromFundOnlyExpanded(context);
+    }
+
+    return _buildFromReportExpanded(context, widget.report!);
   }
-}
 
-
-
-class _PlanImpactLine extends StatelessWidget {
-  final GoalPlanImpact impact;
-
-  const _PlanImpactLine({required this.impact});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = switch (impact.status) {
-      GoalPlanImpactStatus.delayed => AppColors.expense,
-      GoalPlanImpactStatus.onTrack => AppColors.primary,
-    };
-    final themeColors = AppThemeColors.of(context);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.16)),
-      ),
-      child: Row(
+  Widget _buildFromFundOnlyExpanded(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.auto_awesome_rounded, size: 18, color: color),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Theo kế hoạch tháng này',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: themeColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: themeColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                    height: 1.35,
-                  ),
-                ),
-              ],
+          const Divider(height: 1),
+          const SizedBox(height: 16),
+          if (_matchingPrediction != null) ...[
+            GoalAchievementPredictionBlock(
+              prediction: _matchingPrediction!,
+              goalId: widget.fund.id,
+              goalEndDate: widget.fund.endDate,
             ),
-          ),
+            const SizedBox(height: 16),
+          ],
+          _buildActionButtons(widget.fund.isCompleted, widget.fund.savedAmount >= (widget.fund.target ?? 0)),
         ],
       ),
     );
   }
 
-  String get _description {
-    if (impact.status == GoalPlanImpactStatus.delayed) {
-      final amount = AppHelperFunction.formatAmount(impact.overAmount);
-      return 'Chậm tiến độ vì chi tiêu đã vượt phần kế hoạch lũy tiến $amount.';
-    }
-    return 'Đúng tiến độ vì chi tiêu vẫn nằm trong phần kế hoạch lũy tiến.';
-  }
-}
-
-class _CircleMetric extends StatelessWidget {
-  final String label;
-  final double percent;
-  final String centerText;
-  final Color color;
-  final String subtitle;
-
-  const _CircleMetric({
-    required this.label,
-    required this.percent,
-    required this.centerText,
-    required this.color,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppThemeColors.of(context).surfaceBackground,
-        borderRadius: BorderRadius.circular(12),
-      ),
+  Widget _buildFromReportExpanded(BuildContext context, SavingGoalReportModel r) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: AppThemeColors.of(context).textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: 72,
-            height: 72,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                PieChart(
-                  PieChartData(
-                    startDegreeOffset: -90,
-                    centerSpaceRadius: 26,
-                    sectionsSpace: 0,
-                    sections: [
-                      PieChartSectionData(
-                        color: color,
-                        value: percent,
-                        title: '',
-                        radius: 10,
-                      ),
-                      PieChartSectionData(
-                        color: color.withValues(alpha: 0.12),
-                        value: 1 - percent,
-                        title: '',
-                        radius: 10,
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  centerText,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppThemeColors.of(context).textPrimary,
-            ),
+          const Divider(height: 1),
+          const SizedBox(height: 16),
 
-            overflow: TextOverflow.ellipsis,
-          ),
+          if (_matchingPrediction != null) ...[
+            GoalAchievementPredictionBlock(
+              prediction: _matchingPrediction!,
+              goalId: widget.fund.id,
+              goalEndDate: widget.fund.endDate ?? r.endDate,
+              milestones: r.milestones,
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          if (r.milestones.isNotEmpty) ...[
+            MilestoneMap(milestones: r.milestones),
+            const SizedBox(height: 16),
+          ],
+
+          _buildTransactionHistory(r.transactions),
+          const SizedBox(height: 20),
+
+          _buildActionButtons(r.isCompleted, r.isTargetAchieved),
         ],
       ),
     );
   }
-}
 
-/*class _QuickStat extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color? valueColor;
-
-  const _QuickStat({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.valueColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, size: 16, color: AppColors.primary),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: valueColor ?? AppThemeColors.of(context).textPrimary,
-          ),
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            color: AppThemeColors.of(context).textSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-}*/
-
-class _BudgetRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final double progress;
-  final Color color;
-
-  const _BudgetRow({
-    required this.label,
-    required this.value,
-    required this.progress,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildTransactionHistory(List<TransactionModel> transactions) {
+    final themeColors = AppThemeColors.of(context);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppThemeColors.of(context).textSecondary,
-              ),
+        if (transactions.isEmpty)
+          const SizedBox.shrink()
+        else
+        const Text(
+          'Lịch sử đóng góp',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: AppColors.text1,
+          ),
+        ),
+        const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: themeColors.surfaceBackground,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.borderSecondary),
             ),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppThemeColors.of(context).textPrimary,
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: transactions.length,
+              separatorBuilder: (context, index) => const Divider(
+                height: 1,
+                indent: 16,
+                endIndent: 16,
               ),
+              itemBuilder: (context, index) {
+                final tx = transactions[index];
+                final dateStr = tx.transactionDate != null
+                    ? AppHelperFunction.getFormattedDate(tx.transactionDate!, format: 'dd/MM/yyyy')
+                    : '';
+                final note = tx.note != null && tx.note!.isNotEmpty
+                    ? tx.note!
+                    : (tx.category?.name ?? 'Góp quỹ');
+                
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.income.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.savings_rounded,
+                          size: 16,
+                          color: AppColors.income,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              note,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.text1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (dateStr.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                dateStr,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.text3,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '+${AppHelperFunction.formatAmount(tx.amount.toDouble())}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.income,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(bool isCompleted, bool isTargetAchieved) {
+    if (isCompleted) {
+      return const SizedBox.shrink();
+    }
+
+    if (isTargetAchieved) {
+      return Center(
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.success.withValues(alpha: 0.2),
+                blurRadius: 12,
+              ),
+            ],
+          ),
+          child: PrimaryButton(
+            label: 'Hoàn thành mục tiêu',
+            onPressed: () {
+              if (widget.fund.wallet == null) {
+                final controller = Get.find<SavingGoalController>();
+                controller.completeGoalEarly(widget.fund.id);
+                return;
+              }
+
+              Get.toNamed(
+                RoutePath.createTransaction,
+                arguments: {
+                  'type': 'expense',
+                  'amount': (widget.report?.walletBalance ?? widget.fund.wallet?.balance ?? 0).toInt(),
+                  'walletId': widget.fund.wallet!.id,
+                  'note': 'Chi tiêu cho: ${widget.fund.name}',
+                  'completeGoalId': widget.fund.id,
+                  'isWalletEditable': false,
+                },
+              );
+            },
+            backgroundColor: AppColors.income,
+            height: 48,
+            borderRadius: 12,
+            fontSize: 13,
+            elevation: 0,
+          ),
+        ),
+      );
+    }
+
+    return Center(
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              blurRadius: 12,
             ),
           ],
         ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 6,
-            backgroundColor: AppColors.borderSecondary,
-            valueColor: AlwaysStoppedAnimation<Color>(color),
-          ),
+        child: PrimaryButton(
+          label: 'Góp quỹ',
+          onPressed: () {
+            Get.toNamed(
+              RoutePath.walletTransfer,
+              arguments: {
+                'toWalletId': widget.fund.wallet?.id,
+                'lockToWallet': true,
+              },
+            );
+          },
+          backgroundColor: AppColors.primary,
+          height: 48,
+          borderRadius: 12,
+          fontSize: 13,
+          elevation: 0,
         ),
-      ],
+      ),
     );
   }
 }

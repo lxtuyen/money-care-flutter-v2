@@ -89,6 +89,34 @@ class ChatController extends GetxController {
     });
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    _handleIncomingArguments();
+  }
+
+  void _handleIncomingArguments() {
+    final args = Get.arguments;
+    if (args is Map<String, dynamic>) {
+      final displayMsg = args['displayMsg'] as String?;
+      final prompt = args['prompt'] as String?;
+      final userId = args['userId'] as int?;
+      final goalId = args['goalId'] as int?;
+      final forecastedSaving = (args['forecastedSaving'] as num?)?.toDouble();
+      if (displayMsg != null && prompt != null && userId != null) {
+        Future.delayed(const Duration(milliseconds: 150), () {
+          sendCustomMessage(
+            displayMsg,
+            prompt,
+            userId,
+            goalId: goalId,
+            forecastedSaving: forecastedSaving,
+          );
+        });
+      }
+    }
+  }
+
   Future<void> initSpeech() async {
     try {
       final available = await _speech.initialize(
@@ -243,8 +271,10 @@ class ChatController extends GetxController {
   Future<void> sendCustomMessage(
     String displayMsg,
     String payloadMsg,
-    int userId,
-  ) async {
+    int userId, {
+    int? goalId,
+    double? forecastedSaving,
+  }) async {
     if (isLoading.value) return;
 
     try {
@@ -255,7 +285,12 @@ class ChatController extends GetxController {
       isLoading.value = true;
       errorMessage.value = null;
 
-      final dto = ChatDto(message: payloadMsg, userId: userId);
+      final dto = ChatDto(
+        message: payloadMsg,
+        userId: userId,
+        goalId: goalId,
+        forecastedSaving: forecastedSaving,
+      );
       final result = await sendToChatbotUseCase(dto);
 
       result.fold((failure) {

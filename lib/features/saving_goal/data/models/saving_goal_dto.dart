@@ -16,6 +16,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
     @JsonKey(name: 'is_completed') bool? isCompleted,
     int? walletId,
     @JsonKey(name: 'create_new_wallet') bool? createNewWallet,
+    @JsonKey(name: 'is_budget_enabled') bool? isBudgetEnabled,
   }) = _SavingGoalDto;
 
   const SavingGoalDto._();
@@ -31,6 +32,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
 
       'walletId': walletId,
       'create_new_wallet': createNewWallet,
+      'is_budget_enabled': isBudgetEnabled,
     };
     map.removeWhere((key, value) => value == null);
     return map;
@@ -46,6 +48,7 @@ abstract class SavingGoalDto with _$SavingGoalDto {
 
       'is_completed': isCompleted,
       'walletId': walletId,
+      'is_budget_enabled': isBudgetEnabled,
     };
     map.removeWhere((key, value) => value == null);
     return map;

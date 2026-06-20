@@ -8,7 +8,7 @@ import 'package:money_care/features/couple/domain/entities/couple_message_entity
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-import 'package:money_care/features/couple/presentation/screens/couple_photo_transaction_screen.dart';
+import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_screen.dart';
 
 class CoupleChatView extends StatelessWidget {
   final CoupleController controller;
@@ -911,7 +911,7 @@ class CoupleChatView extends StatelessWidget {
               Icons.add_photo_alternate_outlined,
               color: primaryColor,
             ),
-            onPressed: () => Get.to(() => CouplePhotoTransactionScreen(
+            onPressed: () => Get.to(() => PhotoTransactionScreen(
               coupleController: controller,
             )),
             padding: EdgeInsets.zero,

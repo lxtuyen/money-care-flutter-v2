@@ -74,11 +74,13 @@ class CreateCoupleSavingGoalUseCase {
     required String name,
     required double target,
     DateTime? endDate,
+    bool? isBudgetEnabled,
   }) => repository.createSavingGoal(
     coupleId: coupleId,
     name: name,
     target: target,
     endDate: endDate,
+    isBudgetEnabled: isBudgetEnabled,
   );
 }
 
@@ -112,6 +114,7 @@ class UpdateCoupleSavingGoalUseCase {
     DateTime? endDate,
     String? status,
     bool? completionNotified,
+    bool? isBudgetEnabled,
   }) =>
       repository.updateSavingGoal(
         id: id,
@@ -120,6 +123,7 @@ class UpdateCoupleSavingGoalUseCase {
         endDate: endDate,
         status: status,
         completionNotified: completionNotified,
+        isBudgetEnabled: isBudgetEnabled,
       );
 }
 

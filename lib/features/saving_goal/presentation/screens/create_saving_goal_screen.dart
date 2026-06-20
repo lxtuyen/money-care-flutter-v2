@@ -7,6 +7,7 @@ import 'package:money_care/app/widgets/text_field/app_text_form_field.dart';
 import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/saving_goal/presentation/controllers/create_saving_goal_controller.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 
 
 import 'package:money_care/app/widgets/layout/app_header.dart';
@@ -182,7 +183,7 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                               ),
                             ],
                           ),
-
+                          BudgetAnalysisSection(controller: _controller),
                           const SizedBox(height: 24),
                           Obx(() {
                             return PrimaryButton(
@@ -207,6 +208,141 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class BudgetAnalysisSection extends StatelessWidget {
+  final CreateSavingGoalController controller;
+
+  const BudgetAnalysisSection({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final suggestion = controller.budgetSuggestion.value;
+      if (controller.isLoadingSuggestion.value) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: Center(
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+            ),
+          ),
+        );
+      }
+
+      if (suggestion == null) {
+        return const SizedBox.shrink();
+      }
+
+      final isSufficient = suggestion.isSufficient;
+      final formattedAvg = AppHelperFunction.formatAmount(suggestion.averageMonthlySavings);
+      final formattedExisting = AppHelperFunction.formatAmount(suggestion.totalExistingBudget);
+      final formattedAvailable = AppHelperFunction.formatAmount(suggestion.availableSavings);
+      final formattedRequired = AppHelperFunction.formatAmount(suggestion.requiredMonthly);
+      final formattedDeficit = AppHelperFunction.formatAmount(suggestion.deficit);
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          const Row(
+            children: [
+              Icon(Icons.analytics_outlined, color: AppColors.primary, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Phân tích ngân sách',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.02),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.08)),
+            ),
+            child: Column(
+              children: [
+                _buildRow('Tích lũy TB hàng tháng', formattedAvg, AppColors.text1),
+                const SizedBox(height: 8),
+                _buildRow('Đã sử dụng cho quỹ khác', '-$formattedExisting', Colors.red[700]!),
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: AppColors.borderSecondary),
+                const SizedBox(height: 8),
+                _buildRow(
+                  'Ngân sách còn dư',
+                  formattedAvailable,
+                  suggestion.availableSavings >= 0 ? Colors.green[700]! : Colors.red[700]!,
+                  isBold: true,
+                ),
+                if (suggestion.requiredMonthly > 0) ...[
+                  const SizedBox(height: 8),
+                  _buildRow('Cần góp mỗi tháng', formattedRequired, AppColors.primary, isBold: true),
+                ],
+                if (!isSufficient && suggestion.requiredMonthly > 0) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Cảnh báo: Ngân sách tích lũy không đủ. Thiếu khoảng $formattedDeficit/tháng. Hãy cân nhắc kéo dài thời hạn hoặc giảm số tiền mục tiêu.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange[900],
+                              height: 1.4,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildRow(String title, String value, Color valueColor, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 13,
+            color: isBold ? AppColors.text1 : AppColors.text2,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            color: valueColor,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

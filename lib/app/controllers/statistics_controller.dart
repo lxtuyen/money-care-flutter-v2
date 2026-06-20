@@ -11,6 +11,7 @@ import 'package:money_care/features/transaction/domain/usecases/usecases.dart';
 import 'package:money_care/core/services/widget_service.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
+import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
 import 'package:money_care/features/statistics/data/models/analytics_model.dart';
 import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
 import 'package:money_care/features/ai_feedback/data/models/ai_feedback_dto.dart';
@@ -51,9 +52,157 @@ class StatisticsController extends GetxController {
   RxList<String> chartLabels = <String>[].obs;
   var isSilentLoading = false.obs;
 
-  double get totalBudget => 0.0;
+  double get totalBudget => totalLimit;
 
-  double get utilizationPercentage => 0.0;
+  double get utilizationPercentage {
+    final total = totalLimit;
+    if (total <= 0) return 0.0;
+    final totalExpense = (totalByType.value?.expenseTotal ?? 0).toDouble();
+    final spent = (totalExpense - savingSpent).clamp(0.0, double.infinity);
+    return (spent / total).clamp(0.0, 1.0);
+  }
+
+  SpendingPlanController get _spendingPlanController => Get.find<SpendingPlanController>();
+
+  bool get hasSpendingPlanStats => _spendingPlanController.statsSummary.value != null;
+  SpendingPlanStatsEntity? get spendingPlanStats => _spendingPlanController.statsSummary.value;
+
+  int get daysInMonth => DateTime(selectedMonth.value.year, selectedMonth.value.month + 1, 0).day;
+
+  bool get isCurrentMonth {
+    final now = DateTime.now();
+    return selectedMonth.value.year == now.year && selectedMonth.value.month == now.month;
+  }
+
+  List<BudgetExceedPredictionModel> get exceedPredictions =>
+      analyticsData.value?.aiBudgeting?.budgetExceedPredictions ?? const [];
+
+  Map<String, BudgetExceedPredictionModel> get predictionMap => {
+        for (final p in exceedPredictions) p.categoryName.toLowerCase(): p,
+      };
+
+  int get anomalyCount => analyticsData.value?.anomalies.length ?? 0;
+  List<AnomalyModel> get anomalies => analyticsData.value?.anomalies ?? const [];
+
+  Map<String, List<EstimatedExpenseEntity>> get groupedExpenses {
+    final stats = spendingPlanStats;
+    if (stats == null) return const {};
+    final groups = <String, List<EstimatedExpenseEntity>>{};
+    for (final expense in stats.estimatedExpenses) {
+      final category = expense.category?.trim();
+      final key = category != null && category.isNotEmpty
+          ? category
+          : expense.displayName;
+      groups.putIfAbsent(key, () => []).add(expense);
+    }
+    return groups;
+  }
+
+  static const _savingCategoryName = 'Tiết kiệm';
+
+  Map<String, List<EstimatedExpenseEntity>> get filteredExpenses {
+    return Map.fromEntries(
+      groupedExpenses.entries.where(
+        (e) => e.key.toLowerCase() != _savingCategoryName.toLowerCase(),
+      ),
+    );
+  }
+
+  Map<String, double> get categorySpentMap => {
+        for (final c in totalByCate) c.categoryName.toLowerCase(): c.total.toDouble(),
+      };
+
+  double get savingBudget {
+    double total = 0;
+    for (final entry in groupedExpenses.entries) {
+      if (entry.key.toLowerCase() == _savingCategoryName.toLowerCase()) {
+        for (final e in entry.value) {
+          final limit = e.monthlyLimit > 0
+              ? e.monthlyLimit
+              : _monthlyizedAmount(e, daysInMonth);
+          total += limit;
+        }
+        break;
+      }
+    }
+    return total;
+  }
+
+  double get savingSpent {
+    double spent = 0;
+    for (final goal in savingGoalController.activeGoals) {
+      final report = savingGoalController.goalReports[goal.id];
+      if (report != null) {
+        final start = currentStartDate;
+        final end = currentEndDate;
+        for (final tx in report.transactions) {
+          final txDate = tx.transactionDate;
+          if (txDate != null &&
+              txDate.isAfter(start.subtract(const Duration(seconds: 1))) &&
+              txDate.isBefore(end.add(const Duration(seconds: 1)))) {
+            if (tx.type == 'income' || tx.type == 'thu') {
+              spent += tx.amount;
+            } else if (tx.type == 'expense' || tx.type == 'chi') {
+              spent -= tx.amount;
+            }
+          }
+        }
+      }
+    }
+    return spent;
+  }
+
+  double get totalLimit {
+    double limit = 0;
+    for (final entry in filteredExpenses.entries) {
+      for (final e in entry.value) {
+        final lim = e.monthlyLimit > 0
+            ? e.monthlyLimit
+            : _monthlyizedAmount(e, daysInMonth);
+        limit += lim;
+      }
+    }
+    return limit;
+  }
+
+  double get totalForecast {
+    double forecast = 0;
+    final pMap = predictionMap;
+    for (final entry in filteredExpenses.entries) {
+      final pred = pMap[entry.key.toLowerCase()];
+      if (pred != null) {
+        forecast += pred.totalForecast;
+      }
+    }
+    return forecast;
+  }
+
+  double get totalSpentExcludingSavings {
+    final totalExpense = (totalByType.value?.expenseTotal ?? 0).toDouble();
+    return (totalExpense - savingSpent).clamp(0.0, double.infinity);
+  }
+
+  double get forecastedSaving {
+    final stats = spendingPlanStats;
+    if (stats == null) return 0.0;
+    final plannedIncome = stats.totalAmount;
+    final forecast = totalForecast;
+    return forecast > 0
+        ? plannedIncome - forecast
+        : plannedIncome - totalSpentExcludingSavings;
+  }
+
+  double _monthlyizedAmount(EstimatedExpenseEntity expense, int daysInMonth) {
+    final v = expense.frequencyValue <= 0 ? 1 : expense.frequencyValue;
+    switch (expense.frequencyType.toLowerCase()) {
+      case 'daily':
+        return expense.amount * v * daysInMonth;
+      case 'weekly':
+        return expense.amount * v * (daysInMonth / 7);
+      default:
+        return expense.amount * v;
+    }
+  }
 
   final RxString selectedType = 'chi'.obs;
 

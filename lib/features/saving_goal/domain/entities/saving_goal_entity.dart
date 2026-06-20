@@ -19,6 +19,8 @@ class SavingGoalEntity {
   final DateTime? updatedAt;
   final String? status;
 
+  final bool isBudgetEnabled;
+
   const SavingGoalEntity({
     required this.id,
     required this.name,
@@ -27,6 +29,7 @@ class SavingGoalEntity {
     this.target,
     this.savedAmount = 0,
     this.isCompleted = false,
+    this.isBudgetEnabled = false,
 
     this.startDate,
     this.endDate,
@@ -49,7 +52,7 @@ class SavingGoalEntity {
     final remaining = (target ?? 0) - savedAmount;
     if (remaining <= 0) return 0;
     final months =
-        (endDate!.year - now.year) * 12 + (endDate!.month - now.month);
+        (endDate!.year - now.year) * 12 + (endDate!.month - now.month) + 1;
     if (months <= 0) return remaining.ceil();
     return (remaining / months).ceil();
   }
@@ -64,6 +67,9 @@ class SavingGoalEntity {
     return DateTime.now().difference(endDate!).inDays;
   }
 
+  bool get isPaused => status == 'PAUSED';
+  bool get isActive => status == 'ACTIVE' && !isCompleted && !isExpired;
+
   factory SavingGoalEntity.fromJson(Map<String, dynamic> json) {
     return SavingGoalEntity(
       id: json['id'],
@@ -72,6 +78,7 @@ class SavingGoalEntity {
       savedAmount:
           double.tryParse(json['saved_amount']?.toString() ?? '0') ?? 0,
       isCompleted: json['is_completed'] ?? false,
+      isBudgetEnabled: json['is_budget_enabled'] ?? false,
       status: json['status'],
       startDate: json['start_date'] != null
           ? DateTime.parse(json['start_date'])
@@ -92,6 +99,7 @@ class SavingGoalEntity {
       'target': target,
       'saved_amount': savedAmount,
       'is_completed': isCompleted,
+      'is_budget_enabled': isBudgetEnabled,
       'status': status,
       'start_date': startDate?.toIso8601String(),
       'end_date': endDate?.toIso8601String(),

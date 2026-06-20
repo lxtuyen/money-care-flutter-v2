@@ -30,5 +30,12 @@ abstract class SavingGoalRepository {
   );
   Future<Either<Failure, GoalAchievementPredictionSummaryModel>>
   getGoalPredictions();
-
+  Future<Either<Failure, BudgetSuggestionModel>> getBudgetSuggestion({
+    double? target,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
+  Future<Either<Failure, SavingGoalEntity>> activateGoal(int goalId);
+  Future<Either<Failure, SavingGoalEntity>> pauseGoal(int goalId);
 }
+

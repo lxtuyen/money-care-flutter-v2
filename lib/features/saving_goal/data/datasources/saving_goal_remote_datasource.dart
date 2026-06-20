@@ -19,7 +19,13 @@ abstract class SavingGoalRemoteDatasource {
   Future<SavingGoalReportModel> getSavingGoalReport(int id);
   Future<GoalAchievementPredictionModel> getGoalPrediction(int id);
   Future<GoalAchievementPredictionSummaryModel> getGoalPredictions();
-
+  Future<BudgetSuggestionModel> getBudgetSuggestion({
+    double? target,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
+  Future<SavingGoalModel> activateGoal(int goalId);
+  Future<SavingGoalModel> pauseGoal(int goalId);
 }
 
 class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
@@ -158,5 +164,46 @@ class SavingGoalRemoteDatasourceImpl implements SavingGoalRemoteDatasource {
     return res.unwrap();
   }
 
+  @override
+  Future<BudgetSuggestionModel> getBudgetSuggestion({
+    double? target,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final queryParams = <String, String>{};
+    if (target != null) {
+      queryParams['target'] = target.toString();
+    }
+    if (startDate != null) {
+      queryParams['startDate'] = _formatDateOnly(startDate);
+    }
+    if (endDate != null) {
+      queryParams['endDate'] = _formatDateOnly(endDate);
+    }
 
+    final res = await api.get<BudgetSuggestionModel>(
+      ApiRoutes.savingGoalBudgetSuggestion,
+      queryParameters: queryParams,
+      fromJsonT: (json) => BudgetSuggestionModel.fromJson(json),
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<SavingGoalModel> activateGoal(int goalId) async {
+    final res = await api.patch<SavingGoalModel>(
+      ApiRoutes.activateSavingGoal(goalId),
+      fromJsonT: (json) => SavingGoalModel.fromJson(json),
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<SavingGoalModel> pauseGoal(int goalId) async {
+    final res = await api.patch<SavingGoalModel>(
+      ApiRoutes.pauseSavingGoal(goalId),
+      fromJsonT: (json) => SavingGoalModel.fromJson(json),
+    );
+    return res.unwrap();
+  }
 }

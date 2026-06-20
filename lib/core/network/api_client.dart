@@ -1,6 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/storage/local_storage.dart';
 import 'package:money_care/core/network/api_response.dart';
 
@@ -142,6 +146,13 @@ class ApiClient {
     http.Response response,
     T Function(dynamic)? fromJsonT,
   ) {
+    // Xử lý 401 tập trung: xóa token và redirect về login
+    // Tránh loop khi đang ở màn hình login (các endpoint auth không cần guard)
+    if (response.statusCode == 401) {
+      _handleUnauthorized();
+      throw const UnauthorizedException();
+    }
+
     final rawBody = utf8.decode(response.bodyBytes).trim();
 
     if (rawBody.isEmpty) {
@@ -167,6 +178,23 @@ class ApiClient {
         success: response.statusCode >= 200 && response.statusCode < 300,
         message: rawBody,
       );
+    }
+  }
+
+  /// Xóa session cục bộ và điều hướng về trang login khi token hết hạn.
+  /// Không gọi API backend vì token đã không còn hợp lệ.
+  void _handleUnauthorized() {
+    try {
+      _storage.logout().then((_) {
+        // Chỉ redirect nếu không đang ở màn hình login
+        final currentRoute = Get.currentRoute;
+        if (currentRoute != RoutePath.loginOption &&
+            currentRoute != RoutePath.login) {
+          Get.offAllNamed(RoutePath.loginOption);
+        }
+      });
+    } catch (e) {
+      debugPrint('Error handling unauthorized: $e');
     }
   }
 }

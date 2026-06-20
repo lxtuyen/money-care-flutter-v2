@@ -61,13 +61,13 @@ class AppConfirmDialog extends StatelessWidget {
     switch (type) {
       case ConfirmDialogType.danger:
         iconData = Icons.error_outline_rounded;
-        iconColor = Colors.redAccent;
-        btnColor = Colors.redAccent;
+        iconColor = AppColors.error;
+        btnColor = AppColors.error;
         break;
       case ConfirmDialogType.warning:
         iconData = Icons.warning_amber_rounded;
-        iconColor = Colors.orangeAccent;
-        btnColor = Colors.orangeAccent;
+        iconColor = AppColors.warning;
+        btnColor = AppColors.warning;
         break;
       case ConfirmDialogType.info:
         iconData = Icons.info_outline_rounded;

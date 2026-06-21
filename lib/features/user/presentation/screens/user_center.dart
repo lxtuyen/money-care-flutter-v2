@@ -64,6 +64,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       onTap: () => Get.toNamed(RoutePath.wallets),
                     ),
                     UserMenuItem(
+                      icon: Icons.workspace_premium_outlined,
+                      title: 'Gói Premium',
+                      onTap: () => Get.toNamed(RoutePath.premium),
+                    ),
+                    UserMenuItem(
                       icon: Icons.favorite_border,
                       title: 'profile.coupleSpace'.tr,
                       onTap: () => Get.toNamed(RoutePath.coupleSpace),

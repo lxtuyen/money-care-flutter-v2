@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/features/payment/presentation/widgets/premium_gate_widget.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/constants/colors.dart';
@@ -144,7 +145,13 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
                 ],
               )
             : null,
-        body: SafeArea(top: false, child: mainContent),
+        body: SafeArea(
+          top: false,
+          child: PremiumGateWidget(
+            featureName: 'Không gian cặp đôi',
+            child: mainContent,
+          ),
+        ),
       );
     });
   }

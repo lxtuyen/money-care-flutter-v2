@@ -39,6 +39,9 @@ import 'package:money_care/features/chatbot/presentation/bindings/chat_binding.d
 import 'package:money_care/features/notification/presentation/bindings/notification_binding.dart';
 import 'package:money_care/features/couple/presentation/screens/couple_space_screen.dart';
 import 'package:money_care/features/couple/presentation/bindings/couple_binding.dart';
+import 'package:money_care/features/payment/presentation/screens/premium_screen.dart';
+import 'package:money_care/features/payment/presentation/screens/payment_history_screen.dart';
+import 'package:money_care/features/payment/presentation/bindings/payment_binding.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -204,6 +207,18 @@ final List<GetPage> appPages = [
     name: RoutePath.coupleSpace,
     page: () => const CoupleSpaceScreen(),
     binding: CoupleBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.premium,
+    page: () => const PremiumScreen(),
+    binding: PaymentBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.paymentHistory,
+    page: () => const PaymentHistoryScreen(),
+    binding: PaymentBinding(),
     transition: Transition.rightToLeft,
   ),
 ];

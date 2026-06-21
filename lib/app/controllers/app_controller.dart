@@ -18,6 +18,11 @@ class AppController extends GetxController {
   var isWidgetBalanceVisible = true.obs;
   var errorMessage = RxnString();
 
+  // Premium state
+  var isPremium = false.obs;
+  var isGracePeriod = false.obs;
+  var premiumExpiresAt = Rxn<DateTime>();
+
   @override
   void onInit() {
     super.onInit();

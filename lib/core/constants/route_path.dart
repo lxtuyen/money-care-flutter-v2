@@ -35,6 +35,8 @@ class RoutePath {
   static const createSpendingPlan = '/create_spending_plan';
   static const spendingPlanDetail = '/spending_plan_detail';
   static const coupleSpace = '/couple_space';
+  static const premium = '/premium';
+  static const paymentHistory = '/payment_history';
 
   static const createFund = createSavingGoal;
 }

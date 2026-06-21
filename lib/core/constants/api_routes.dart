@@ -49,4 +49,11 @@ class ApiRoutes {
   static const splitSession = 'split-session';
   static const gamification = 'gamification';
   static const couples = 'couples';
+
+  // Payments
+  static const paymentsSubscribe = 'payments/subscribe';
+  static const paymentsActivateTrial = 'payments/activate-trial';
+  static const subscriptionStatus = 'payments/subscription-status';
+  static const paymentHistory = 'payments/history';
+  static String paymentVerify(int orderCode) => 'payments/verify/$orderCode';
 }

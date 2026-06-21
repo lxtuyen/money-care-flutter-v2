@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
+import 'package:money_care/core/constants/route_path.dart';
+import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:money_care/features/couple/domain/entities/couple_entity.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
@@ -23,6 +25,8 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
       final showBottomBar = coupleData != null && coupleData.isActive;
       final isTransactionsTab =
           showBottomBar && controller.selectedTabIndex.value == 1;
+      final isSavingsTab =
+          showBottomBar && controller.selectedTabIndex.value == 2;
 
       Widget? headerChild;
       if (isTransactionsTab) {
@@ -42,6 +46,23 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
             Tab(text: 'Quyết toán & Chia tiền'),
           ],
         );
+      } else if (isSavingsTab) {
+        headerChild = TabBar(
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          indicatorSize: TabBarIndicatorSize.label,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+          unselectedLabelStyle: const TextStyle(fontSize: 13),
+          tabs: const [
+            Tab(text: 'Đang hoạt động'),
+            Tab(text: 'Đã hoàn thành'),
+          ],
+        );
       }
 
       Widget mainContent = Column(
@@ -49,12 +70,12 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
           AppHeader(
             title: showBottomBar
                 ? _getTabTitle(controller.selectedTabIndex.value)
-                : 'Không Gian Cặp Đôi',
+                : 'Không Gian Chung',
             showBackButton: true,
             height: 180,
-            actions: showBottomBar
+            actions: showBottomBar && controller.selectedTabIndex.value == 0
                 ? [
-                    _buildStreakBadge(context),
+                    _buildNotificationBadge(context),
                   ]
                 : null,
             child: headerChild,
@@ -72,6 +93,11 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
           key: ValueKey('transaction_tab_${controller.selectedSubTabIndex.value}'),
           length: 2,
           initialIndex: controller.selectedSubTabIndex.value,
+          child: mainContent,
+        );
+      } else if (isSavingsTab) {
+        mainContent = DefaultTabController(
+          length: 2,
           child: mainContent,
         );
       }
@@ -126,17 +152,17 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
   String _getTabTitle(int index) {
     switch (index) {
       case 0:
-        return 'Tổng Quan Cặp Đôi';
+        return 'Tổng Quan';
       case 1:
-        return 'Giao Dịch Chung';
+        return 'Giao Dịch';
       case 2:
-        return 'Quỹ Tiết Kiệm Chung';
+        return 'Quỹ Tiết Kiệm';
       case 3:
-        return 'Trò Chuyện Cặp Đôi';
+        return 'Trò Chuyện';
       case 4:
-        return 'Cài Đặt Cặp Đôi';
+        return 'Cài Đặt';
       default:
-        return 'Không Gian Cặp Đôi';
+        return 'Không Gian Chung';
     }
   }
 
@@ -177,39 +203,73 @@ class CoupleSpaceScreen extends GetView<CoupleController> {
     return NotConnectedView(controller: controller);
   }
 
-  Widget _buildStreakBadge(BuildContext context) {
-    return Obx(() {
-      final couple = controller.couple.value;
-      if (couple == null || !couple.isActive) return const SizedBox.shrink();
-      final streak = couple.currentStreak;
+  Widget _buildNotificationBadge(BuildContext context) {
+    const notificationAlertTypes = {
+      'budget_exceeded',
+      'low_wallet_balance',
+      'shared_overspend',
+      'couple_forecast_overspend',
+      'couple_category_surge',
+    };
 
-      return Container(
-        margin: const EdgeInsets.only(right: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
+    return Obx(() {
+      final report = controller.coupleReport.value;
+      final count = report == null
+          ? 0
+          : report.alerts
+              .where(
+                (a) =>
+                    notificationAlertTypes.contains(a.type) && !a.isRead,
+              )
+              .length;
+
+      return GestureDetector(
+        onTap: () => Get.toNamed(RoutePath.notification),
+        child: Container(
+          margin: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.16),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              '🔥',
-              style: TextStyle(fontSize: 14),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '$streak',
-              style: const TextStyle(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Icon(
+                Icons.notifications_outlined,
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+                size: 22,
               ),
-            ),
-          ],
+              if (count > 0)
+                Positioned(
+                  right: -6,
+                  top: -6,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: AppColors.expense,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      count > 99 ? '99+' : '$count',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       );
     });

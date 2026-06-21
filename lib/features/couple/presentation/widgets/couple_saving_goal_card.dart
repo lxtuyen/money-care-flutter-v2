@@ -7,6 +7,7 @@ import 'package:money_care/features/couple/domain/entities/couple_saving_goal_en
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/features/couple/presentation/widgets/couple_saving_roadmap_section.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_saving_goal_prediction_card.dart';
 import 'package:money_care/app/widgets/dialog/app_confirm_dialog.dart';
 
 class CoupleSavingGoalCard extends StatefulWidget {
@@ -49,9 +50,15 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(
+          color: goal.status == 'paused'
+              ? Colors.grey[300]!
+              : Colors.grey[200]!,
+        ),
       ),
-      child: Padding(
+      child: Opacity(
+        opacity: goal.status == 'paused' ? 0.6 : 1.0,
+        child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,6 +74,22 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
             if (!isCompleted) ...[
               const SizedBox(height: 16),
               CoupleSavingRoadmapSection(goal: goal),
+              // AI Prediction
+              Obx(() {
+                final report = controller.coupleReport.value;
+                if (report == null) return const SizedBox.shrink();
+                final matchList = report.savingProgress
+                    .where((s) => s.id == goal.id)
+                    .toList();
+                if (matchList.isEmpty ||
+                    matchList.first.prediction == null) {
+                  return const SizedBox.shrink();
+                }
+                return CoupleSavingGoalPredictionCard(
+                  prediction: matchList.first.prediction!,
+                  goalName: goal.name,
+                );
+              }),
             ],
 
             const SizedBox(height: 16),
@@ -79,6 +102,7 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
             // Action Button
             _buildContributeButton(primaryColor),
           ],
+        ),
         ),
       ),
     );
@@ -148,6 +172,26 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
                 ),
               ),
               const SizedBox(width: 4),
+            ] else if (goal.status == 'paused') ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'Tạm dừng',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
             ],
             PopupMenuButton<String>(
               icon: Icon(
@@ -163,9 +207,39 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
                   );
                 } else if (value == 'delete') {
                   _confirmDeleteGoal(context, goal);
+                } else if (value == 'activate') {
+                  controller.activateSharedSavingGoal(goal.id);
+                } else if (value == 'pause') {
+                  controller.pauseSharedSavingGoal(goal.id);
                 }
               },
               itemBuilder: (BuildContext context) => [
+                if (!isCompleted && goal.status == 'paused')
+                  const PopupMenuItem<String>(
+                    value: 'activate',
+                    child: Row(
+                      children: [
+                        Icon(Icons.play_arrow_rounded,
+                            color: Colors.green, size: 20),
+                        SizedBox(width: 8),
+                        Text('Kích hoạt',
+                            style: TextStyle(color: Colors.green)),
+                      ],
+                    ),
+                  ),
+                if (!isCompleted && goal.status == 'active')
+                  const PopupMenuItem<String>(
+                    value: 'pause',
+                    child: Row(
+                      children: [
+                        Icon(Icons.pause_circle_outline_rounded,
+                            color: Colors.orange, size: 20),
+                        SizedBox(width: 8),
+                        Text('Tạm dừng',
+                            style: TextStyle(color: Colors.orange)),
+                      ],
+                    ),
+                  ),
                 if (!isCompleted)
                   const PopupMenuItem<String>(
                     value: 'edit',
@@ -181,7 +255,8 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
+                      Icon(Icons.delete_outline_rounded,
+                          color: Colors.red, size: 20),
                       SizedBox(width: 8),
                       Text('Xóa', style: TextStyle(color: Colors.red)),
                     ],
@@ -468,6 +543,30 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
       );
     }
  
+    // Paused: show activate button instead
+    if (goal.status == 'paused') {
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green.withValues(alpha: 0.1),
+            foregroundColor: Colors.green,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+          ),
+          icon: const Icon(Icons.play_arrow_rounded, size: 18),
+          label: const Text(
+            'Kích hoạt mục tiêu',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          onPressed: () => controller.activateSharedSavingGoal(goal.id),
+        ),
+      );
+    }
+
     return Row(
       children: [
         Expanded(

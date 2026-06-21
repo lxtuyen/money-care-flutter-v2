@@ -33,6 +33,9 @@ class AppStateBinding extends Bindings {
         getStatisticsSummaryUseCase: GetStatisticsSummaryUseCase(
           repository: repository,
         ),
+        getFirstTransactionDateUseCase: GetFirstTransactionDateUseCase(
+          repository: repository,
+        ),
         getFinancialAnalyticsUseCase: GetFinancialAnalyticsUseCase(
           analyticsRepo,
         ),

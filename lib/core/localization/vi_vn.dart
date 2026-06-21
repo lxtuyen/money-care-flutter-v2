@@ -99,7 +99,7 @@ const Map<String, String> viVN = {
   'profile.title': 'Tài chính cá nhân',
   'user.centerTitle': 'Cá nhân',
   'profile.info': 'Thông tin cá nhân',
-  'profile.coupleSpace': 'Không gian cặp đôi',
+  'profile.coupleSpace': 'Không gian chung',
   'profile.savingGoals': 'Mục tiêu tiết kiệm',
   'profile.expiredGoals': 'Mục tiêu đã hết hạn',
   'profile.categoryManagement': 'Quản lý danh mục',

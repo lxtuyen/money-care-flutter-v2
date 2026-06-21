@@ -8,6 +8,7 @@ import 'package:money_care/features/gamification/presentation/widgets/streak_cal
 import 'package:money_care/features/gamification/presentation/widgets/streak_calendar_legend.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_day_transaction_list.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/gamification/presentation/widgets/streak_weekday_row.dart';
 
 class StreakCalendarScreen extends StatelessWidget {
@@ -31,11 +32,25 @@ class StreakCalendarScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Obx(
-            () => StatisticsTimeNavigator(
-              focusedMonth: controller.focusedMonth.value,
-              onPrevious: () => controller.prevMonth(),
-              onNext: () => controller.nextMonth(),
-            ),
+            () {
+              final month = controller.focusedMonth.value;
+              final now = DateTime.now();
+              final statisticsController =
+                  Get.find<StatisticsController>();
+              final first =
+                  statisticsController.firstTransactionDate.value;
+
+              return StatisticsTimeNavigator(
+                focusedMonth: month,
+                onPrevious: () => controller.prevMonth(),
+                onNext: () => controller.nextMonth(),
+                canGoNext:
+                    !(month.year == now.year && month.month == now.month),
+                canGoPrevious: first == null ||
+                    !(month.year == first.year &&
+                        month.month == first.month),
+              );
+            },
           ),
           const SizedBox(height: 16),
           const StreakWeekdayRow(),

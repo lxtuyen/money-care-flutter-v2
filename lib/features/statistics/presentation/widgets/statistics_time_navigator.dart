@@ -9,6 +9,8 @@ class StatisticsTimeNavigator extends StatelessWidget {
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
   final VoidCallback? onTap;
+  final bool? canGoNext;
+  final bool? canGoPrevious;
 
   const StatisticsTimeNavigator({
     super.key,
@@ -16,6 +18,8 @@ class StatisticsTimeNavigator extends StatelessWidget {
     this.onPrevious,
     this.onNext,
     this.onTap,
+    this.canGoNext,
+    this.canGoPrevious,
   });
 
   @override
@@ -56,6 +60,9 @@ class StatisticsTimeNavigator extends StatelessWidget {
         ),
       );
 
+      final effectiveCanGoNext = canGoNext ?? true;
+      final effectiveCanGoPrevious = canGoPrevious ?? true;
+
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
@@ -63,6 +70,7 @@ class StatisticsTimeNavigator extends StatelessWidget {
             _buildNavButton(
               icon: Icons.chevron_left_rounded,
               onTap: onPrevious ?? () {},
+              enabled: effectiveCanGoPrevious,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -81,6 +89,7 @@ class StatisticsTimeNavigator extends StatelessWidget {
             _buildNavButton(
               icon: Icons.chevron_right_rounded,
               onTap: onNext ?? () {},
+              enabled: effectiveCanGoNext,
             ),
           ],
         ),
@@ -150,6 +159,7 @@ class StatisticsTimeNavigator extends StatelessWidget {
             _buildNavButton(
               icon: Icons.chevron_left_rounded,
               onTap: () => statisticsController.previousPeriod(),
+              enabled: statisticsController.canGoPreviousMonth,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -168,6 +178,7 @@ class StatisticsTimeNavigator extends StatelessWidget {
             _buildNavButton(
               icon: Icons.chevron_right_rounded,
               onTap: () => statisticsController.nextPeriod(),
+              enabled: statisticsController.canGoNextMonth,
             ),
           ],
         ),
@@ -178,28 +189,32 @@ class StatisticsTimeNavigator extends StatelessWidget {
   Widget _buildNavButton({
     required IconData icon,
     required VoidCallback onTap,
+    bool enabled = true,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.primary, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.3,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.primary, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 28),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 28),
         ),
       ),
     );

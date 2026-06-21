@@ -55,6 +55,9 @@ abstract class CoupleRemoteDatasource {
   });
   Future<void> deleteAlert(int alertId);
 
+  Future<CoupleSavingGoalEntity> activateCoupleSavingGoal(int goalId);
+  Future<CoupleSavingGoalEntity> pauseCoupleSavingGoal(int goalId);
+
   Future<List<CoupleMessageModel>> getChatHistory(int coupleId);
 }
 
@@ -314,6 +317,24 @@ class CoupleRemoteDatasourceImpl implements CoupleRemoteDatasource {
         final list = json as List<dynamic>;
         return list.map((e) => CoupleMessageModel.fromJson(e)).toList();
       },
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<CoupleSavingGoalEntity> activateCoupleSavingGoal(int goalId) async {
+    final res = await api.patch<CoupleSavingGoalEntity>(
+      '${ApiRoutes.couples}/savings/$goalId/activate',
+      fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
+    );
+    return res.unwrap();
+  }
+
+  @override
+  Future<CoupleSavingGoalEntity> pauseCoupleSavingGoal(int goalId) async {
+    final res = await api.patch<CoupleSavingGoalEntity>(
+      '${ApiRoutes.couples}/savings/$goalId/pause',
+      fromJsonT: (json) => CoupleSavingGoalEntity.fromJson(json),
     );
     return res.unwrap();
   }

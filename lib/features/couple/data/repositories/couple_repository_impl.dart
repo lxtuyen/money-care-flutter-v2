@@ -348,4 +348,36 @@ class CoupleRepositoryImpl implements CoupleRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, CoupleSavingGoalEntity>> activateCoupleSavingGoal(
+    int goalId,
+  ) async {
+    try {
+      final goal = await remoteDatasource.activateCoupleSavingGoal(goalId);
+      return Right(goal);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CoupleSavingGoalEntity>> pauseCoupleSavingGoal(
+    int goalId,
+  ) async {
+    try {
+      final goal = await remoteDatasource.pauseCoupleSavingGoal(goalId);
+      return Right(goal);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

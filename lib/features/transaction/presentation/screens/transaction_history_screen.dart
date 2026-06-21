@@ -153,6 +153,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     _applyFilter();
   }
 
+  bool _canGoPreviousMonth() {
+    final first = statisticsController.firstTransactionDate.value;
+    if (first == null) return true;
+    return !(_selectedMonth.year == first.year &&
+        _selectedMonth.month == first.month);
+  }
+
   List<TransactionEntity> _filterTransactionsByDay(
     List<TransactionEntity> transactions,
   ) {
@@ -212,6 +219,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             onNext: () => _changeMonth(
               DateTime(_selectedMonth.year, _selectedMonth.month + 1),
             ),
+            canGoNext: !(_selectedMonth.year == DateTime.now().year &&
+                _selectedMonth.month == DateTime.now().month),
+            canGoPrevious: _canGoPreviousMonth(),
             onTap: () async {
               final DateTime? picked = await showDatePicker(
                 context: context,

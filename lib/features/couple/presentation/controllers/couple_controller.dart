@@ -48,6 +48,8 @@ class CoupleController extends GetxController {
   final UpdateCoupleAlertUseCase updateCoupleAlertUseCase;
   final DeleteCoupleAlertUseCase deleteCoupleAlertUseCase;
   final GetCoupleChatHistoryUseCase getCoupleChatHistoryUseCase;
+  final ActivateCoupleSavingGoalUseCase activateCoupleSavingGoalUseCase;
+  final PauseCoupleSavingGoalUseCase pauseCoupleSavingGoalUseCase;
 
   CoupleController({
     required this.getCoupleInfoUseCase,
@@ -69,6 +71,8 @@ class CoupleController extends GetxController {
     required this.updateCoupleAlertUseCase,
     required this.deleteCoupleAlertUseCase,
     required this.getCoupleChatHistoryUseCase,
+    required this.activateCoupleSavingGoalUseCase,
+    required this.pauseCoupleSavingGoalUseCase,
   });
 
   final RxBool isLoading = false.obs;
@@ -200,7 +204,7 @@ class CoupleController extends GetxController {
         inviteCodeController.clear();
         isLoading.value = false;
         fetchCoupleData();
-        AppHelperFunction.showSuccessSnackBar('Kết nối cặp đôi thành công!');
+        AppHelperFunction.showSuccessSnackBar('Kết nối không gian chung thành công!');
       },
     );
   }
@@ -239,7 +243,7 @@ class CoupleController extends GetxController {
         sharedWallets.clear();
         sharedTransactions.clear();
         AppHelperFunction.showSuccessSnackBar(
-          'Đã ngắt kết nối không gian cặp đôi',
+          'Đã ngắt kết nối không gian chung',
         );
       },
     );

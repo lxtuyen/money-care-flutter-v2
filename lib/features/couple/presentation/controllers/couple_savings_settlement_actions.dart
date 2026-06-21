@@ -359,4 +359,42 @@ extension CoupleSavingsSettlementActions on CoupleController {
     );
     isLoading.value = false;
   }
+
+  Future<void> activateSharedSavingGoal(int goalId) async {
+    isLoading.value = true;
+    final result = await activateCoupleSavingGoalUseCase(goalId);
+    await result.fold(
+      (failure) async {
+        AppHelperFunction.showErrorSnackBar(
+          'Lỗi: ${failure.message}',
+        );
+      },
+      (_) async {
+        await fetchSavingGoals();
+        AppHelperFunction.showSuccessSnackBar(
+          'Đã kích hoạt mục tiêu tiết kiệm!',
+        );
+      },
+    );
+    isLoading.value = false;
+  }
+
+  Future<void> pauseSharedSavingGoal(int goalId) async {
+    isLoading.value = true;
+    final result = await pauseCoupleSavingGoalUseCase(goalId);
+    await result.fold(
+      (failure) async {
+        AppHelperFunction.showErrorSnackBar(
+          'Lỗi: ${failure.message}',
+        );
+      },
+      (_) async {
+        await fetchSavingGoals();
+        AppHelperFunction.showSuccessSnackBar(
+          'Đã tạm dừng mục tiêu tiết kiệm!',
+        );
+      },
+    );
+    isLoading.value = false;
+  }
 }

@@ -62,4 +62,6 @@ abstract class CoupleRepository {
   });
   Future<Either<Failure, void>> deleteAlert(int alertId);
   Future<Either<Failure, List<CoupleMessageEntity>>> getChatHistory(int coupleId);
+  Future<Either<Failure, CoupleSavingGoalEntity>> activateCoupleSavingGoal(int goalId);
+  Future<Either<Failure, CoupleSavingGoalEntity>> pauseCoupleSavingGoal(int goalId);
 }

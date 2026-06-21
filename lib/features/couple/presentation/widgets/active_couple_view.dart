@@ -184,7 +184,7 @@ class ActiveCoupleView extends StatelessWidget {
           AppOutlineButton(
             onPressed: () {
               AppConfirmDialog.show(
-                title: 'Ngắt kết nối cặp đôi?',
+                title: 'Ngắt kết nối không gian chung?',
                 message: 'Bạn có chắc chắn muốn ngắt kết nối với đối phương không? Mọi lịch sử và không gian chung sẽ tạm thời bị ngắt liên kết.',
                 confirmText: 'Xác nhận rời',
                 cancelText: 'Hủy',

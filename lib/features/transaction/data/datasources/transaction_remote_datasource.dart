@@ -40,6 +40,7 @@ abstract class TransactionRemoteDatasource {
     TransactionFilterDto dto,
     String format,
   );
+  Future<DateTime?> getFirstTransactionDate(int userId);
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
@@ -200,5 +201,17 @@ class TransactionRemoteDatasourceImpl implements TransactionRemoteDatasource {
       );
     }
     return true;
+  }
+
+  @override
+  Future<DateTime?> getFirstTransactionDate(int userId) async {
+    final res = await api.get<Map<String, dynamic>>(
+      '${_userPath(userId)}/first-transaction-date',
+      fromJsonT: (json) => json as Map<String, dynamic>,
+    );
+    final data = res.unwrap();
+    final dateStr = data['firstTransactionDate'] as String?;
+    if (dateStr == null) return null;
+    return DateTime.tryParse(dateStr);
   }
 }

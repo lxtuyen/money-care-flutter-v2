@@ -189,3 +189,17 @@ class DeleteCoupleAlertUseCase {
   Future<Either<Failure, void>> call(int alertId) =>
       repository.deleteAlert(alertId);
 }
+
+class ActivateCoupleSavingGoalUseCase {
+  final CoupleRepository repository;
+  ActivateCoupleSavingGoalUseCase(this.repository);
+  Future<Either<Failure, CoupleSavingGoalEntity>> call(int goalId) =>
+      repository.activateCoupleSavingGoal(goalId);
+}
+
+class PauseCoupleSavingGoalUseCase {
+  final CoupleRepository repository;
+  PauseCoupleSavingGoalUseCase(this.repository);
+  Future<Either<Failure, CoupleSavingGoalEntity>> call(int goalId) =>
+      repository.pauseCoupleSavingGoal(goalId);
+}

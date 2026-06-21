@@ -12,6 +12,8 @@ class NotificationController extends GetxController {
   final notifications = <NotificationEntity>[].obs;
   final isLoading = false.obs;
 
+  int get unreadCount => notifications.where((n) => !n.isRead).length;
+
   @override
   void onInit() {
     super.onInit();

@@ -50,7 +50,7 @@ class PendingInvitationView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Chia sẻ mã dưới đây cho đối phương để kết nối vào không gian cặp đôi của bạn.',
+            'Chia sẻ mã dưới đây cho đối phương để kết nối vào không gian chung của bạn.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],
             ),

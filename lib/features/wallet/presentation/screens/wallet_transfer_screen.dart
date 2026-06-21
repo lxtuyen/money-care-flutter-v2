@@ -26,6 +26,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
   int? fromWalletId;
   int? toWalletId;
   bool lockToWallet = false;
+  bool coupleMode = false;
 
   List<WalletEntity> get availableWallets {
     final List<WalletEntity> list = [...controller.wallets];
@@ -38,6 +39,14 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
       }
     }
     return list;
+  }
+
+  List<WalletEntity> get destinationWallets {
+    if (!coupleMode) return availableWallets;
+    if (!Get.isRegistered<CoupleController>()) return availableWallets;
+    final coupleController = Get.find<CoupleController>();
+    final sharedIds = coupleController.sharedWallets.map((w) => w.id).toSet();
+    return availableWallets.where((w) => sharedIds.contains(w.id)).toList();
   }
 
   @override
@@ -54,6 +63,8 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
         args is Map ? (args['amount'] as num?)?.toDouble() : null;
     lockToWallet =
         args is Map ? (args['lockToWallet'] as bool?) == true : false;
+    coupleMode =
+        args is Map ? (args['coupleMode'] as bool?) == true : false;
 
     if (argAmount != null && argAmount > 0) {
       amountController.text = argAmount.toStringAsFixed(0);
@@ -82,10 +93,13 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
           fromWalletId = positiveWallets.first.id;
         }
       }
-      if (toWalletId == null && walletsList.length > 1) {
-        toWalletId = walletsList
-            .firstWhere((w) => w.id != fromWalletId)
-            .id;
+      if (toWalletId == null) {
+        final destWallets = destinationWallets;
+        if (destWallets.isNotEmpty) {
+          final candidate = destWallets
+              .firstWhereOrNull((w) => w.id != fromWalletId);
+          toWalletId = candidate?.id ?? destWallets.first.id;
+        }
       }
     }
   }
@@ -301,7 +315,7 @@ class _WalletTransferScreenState extends State<WalletTransferScreen> {
     bool isSource,
   ) {
     final colors = AppThemeColors.of(context);
-    var walletsList = availableWallets;
+    var walletsList = isSource ? availableWallets : destinationWallets;
     // When destination wallet is locked, exclude it from source picker
     if (isSource && lockToWallet && toWalletId != null) {
       walletsList = walletsList.where((w) => w.id != toWalletId).toList();

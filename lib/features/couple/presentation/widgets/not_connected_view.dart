@@ -29,7 +29,7 @@ class NotConnectedView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Không Gian Cặp Đôi',
+            'Không Gian Chung',
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 24,
@@ -67,7 +67,7 @@ class NotConnectedView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tạo một không gian cặp đôi và nhận mã mời gửi cho đối phương.',
+                    'Tạo một không gian chung và nhận mã mời gửi cho đối phương.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.grey[600],
                     ),

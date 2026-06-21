@@ -6,6 +6,7 @@ import 'package:money_care/features/couple/presentation/controllers/couple_contr
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 
@@ -102,33 +103,45 @@ class _CoupleTransactionsViewState extends State<CoupleTransactionsView> {
             children: [
               const SizedBox(height: 12),
               Obx(
-                () => StatisticsTimeNavigator(
-                  focusedMonth: widget.controller.selectedMonth.value,
-                  onPrevious: () {
-                    final current = widget.controller.selectedMonth.value;
-                    widget.controller.changeMonth(
-                      DateTime(current.year, current.month - 1),
-                    );
-                  },
-                  onNext: () {
-                    final current = widget.controller.selectedMonth.value;
-                    widget.controller.changeMonth(
-                      DateTime(current.year, current.month + 1),
-                    );
-                  },
-                  onTap: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: widget.controller.selectedMonth.value,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2030),
-                      initialDatePickerMode: DatePickerMode.year,
-                    );
-                    if (picked != null) {
-                      widget.controller.changeMonth(picked);
-                    }
-                  },
-                ),
+                () {
+                  final month = widget.controller.selectedMonth.value;
+                  final now = DateTime.now();
+                  final statisticsController =
+                      Get.find<StatisticsController>();
+                  final first =
+                      statisticsController.firstTransactionDate.value;
+
+                  return StatisticsTimeNavigator(
+                    focusedMonth: month,
+                    onPrevious: () {
+                      widget.controller.changeMonth(
+                        DateTime(month.year, month.month - 1),
+                      );
+                    },
+                    onNext: () {
+                      widget.controller.changeMonth(
+                        DateTime(month.year, month.month + 1),
+                      );
+                    },
+                    canGoNext: !(month.year == now.year &&
+                        month.month == now.month),
+                    canGoPrevious: first == null ||
+                        !(month.year == first.year &&
+                            month.month == first.month),
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: month,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2030),
+                        initialDatePickerMode: DatePickerMode.year,
+                      );
+                      if (picked != null) {
+                        widget.controller.changeMonth(picked);
+                      }
+                    },
+                  );
+                },
               ),
               Expanded(child: _buildTransactionsList(context, currentUserId)),
             ],

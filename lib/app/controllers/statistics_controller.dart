@@ -23,6 +23,7 @@ class StatisticsController extends GetxController {
   final GetTotalByCateUseCase getTotalByCateUseCase;
   final GetTotalByDateEntityUseCase getTotalByDateEntityUseCase;
   final GetStatisticsSummaryUseCase getStatisticsSummaryUseCase;
+  final GetFirstTransactionDateUseCase getFirstTransactionDateUseCase;
   final GetFinancialAnalyticsUseCase getFinancialAnalyticsUseCase;
   final SendAiFeedbackUseCase sendAiFeedbackUseCase;
 
@@ -48,6 +49,8 @@ class StatisticsController extends GetxController {
   final submittedFeedbackIds = <String>{}.obs;
   final sendingFeedbackIds = <String>{}.obs;
 
+  final firstTransactionDate = Rxn<DateTime>();
+
   RxList<FlSpot> chartSpots = <FlSpot>[].obs;
   RxList<String> chartLabels = <String>[].obs;
   var isSilentLoading = false.obs;
@@ -72,6 +75,21 @@ class StatisticsController extends GetxController {
   bool get isCurrentMonth {
     final now = DateTime.now();
     return selectedMonth.value.year == now.year && selectedMonth.value.month == now.month;
+  }
+
+  bool get canGoNextMonth {
+    if (periodType.value != 'hàng tháng') return true;
+    final now = DateTime.now();
+    return !(selectedMonth.value.year == now.year &&
+        selectedMonth.value.month == now.month);
+  }
+
+  bool get canGoPreviousMonth {
+    if (periodType.value != 'hàng tháng') return true;
+    final first = firstTransactionDate.value;
+    if (first == null) return true;
+    return !(selectedMonth.value.year == first.year &&
+        selectedMonth.value.month == first.month);
   }
 
   List<BudgetExceedPredictionModel> get exceedPredictions =>
@@ -301,6 +319,7 @@ class StatisticsController extends GetxController {
     required this.getTotalByCateUseCase,
     required this.getTotalByDateEntityUseCase,
     required this.getStatisticsSummaryUseCase,
+    required this.getFirstTransactionDateUseCase,
     required this.getFinancialAnalyticsUseCase,
     required this.sendAiFeedbackUseCase,
   });
@@ -394,6 +413,7 @@ class StatisticsController extends GetxController {
     ever(appController.userId, (int? id) {
       if (id != null) {
         refreshStatisticsData(id);
+        _loadFirstTransactionDate(id);
       } else {
         _clearData();
       }
@@ -402,6 +422,7 @@ class StatisticsController extends GetxController {
     final currentId = appController.userId.value;
     if (currentId != null) {
       refreshStatisticsData(currentId);
+      _loadFirstTransactionDate(currentId);
     }
 
     everAll(
@@ -417,6 +438,15 @@ class StatisticsController extends GetxController {
         if (id != null) refreshStatisticsData(id);
       },
     );
+  }
+
+  Future<void> _loadFirstTransactionDate(int userId) async {
+    try {
+      firstTransactionDate.value =
+          await getFirstTransactionDateUseCase(userId);
+    } catch (e) {
+      debugPrint('Error loading first transaction date: $e');
+    }
   }
 
   void _clearData() {
@@ -836,6 +866,7 @@ class StatisticsController extends GetxController {
 
   void nextPeriod() {
     if (periodType.value == 'hàng tháng') {
+      if (!canGoNextMonth) return;
       selectedMonth.value = DateTime(
         selectedMonth.value.year,
         selectedMonth.value.month + 1,
@@ -848,6 +879,7 @@ class StatisticsController extends GetxController {
 
   void previousPeriod() {
     if (periodType.value == 'hàng tháng') {
+      if (!canGoPreviousMonth) return;
       selectedMonth.value = DateTime(
         selectedMonth.value.year,
         selectedMonth.value.month - 1,

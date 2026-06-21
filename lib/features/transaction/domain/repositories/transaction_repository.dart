@@ -41,4 +41,5 @@ abstract class TransactionRepository {
     TransactionFilterDto dto,
     String format,
   );
+  Future<DateTime?> getFirstTransactionDate(int userId);
 }

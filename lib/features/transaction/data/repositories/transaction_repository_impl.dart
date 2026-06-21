@@ -103,4 +103,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   ) {
     return remoteDatasource.exportReport(userId, dto, format);
   }
+
+  @override
+  Future<DateTime?> getFirstTransactionDate(int userId) {
+    return remoteDatasource.getFirstTransactionDate(userId);
+  }
 }

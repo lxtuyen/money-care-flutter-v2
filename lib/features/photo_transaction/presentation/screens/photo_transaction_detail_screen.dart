@@ -30,12 +30,10 @@ class PhotoTransactionDetailScreen extends StatelessWidget {
       BuildContext context, PhotoTransactionDetailController controller, PageController pageController) {
     return Column(
       children: [
-        // Header title
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
             children: [
-              // Gallery Capsule Button
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.1),
@@ -120,20 +118,10 @@ class PhotoTransactionDetailScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.help_outline,
-                    color: Colors.white54, size: 20),
-                onPressed: () {
-                  AppHelperFunction.showSuccessSnackBar(
-                    'Vuốt trái/phải để chuyển giao dịch. Chạm nhãn trên ảnh để sửa.',
-                  );
-                },
-              ),
             ],
           ),
         ),
 
-        // Immersive Centered Photo PageView with Overlays
         Expanded(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -156,10 +144,7 @@ class PhotoTransactionDetailScreen extends StatelessWidget {
                     onPageChanged: (index) {
                       final prevIndex = controller.currentIndex.value;
                       if (controller.hasChanges) {
-                        // Scroll back to the previous page immediately
                         pageController.jumpToPage(prevIndex);
-
-                        // Confirm save/discard changes
                         AppConfirmDialog.show(
                           title: 'Lưu thay đổi?',
                           message:

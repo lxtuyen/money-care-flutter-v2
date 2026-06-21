@@ -8,7 +8,7 @@ import 'package:money_care/app/widgets/text_field/date_picker_field.dart';
 import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/saving_goal/presentation/controllers/create_saving_goal_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
-
+import 'package:money_care/features/saving_goal/data/models/budget_suggestion_model.dart';
 
 import 'package:money_care/app/widgets/layout/app_header.dart';
 
@@ -212,16 +212,32 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
   }
 }
 
-class BudgetAnalysisSection extends StatelessWidget {
+class BudgetAnalysisSection extends StatefulWidget {
   final CreateSavingGoalController controller;
 
   const BudgetAnalysisSection({super.key, required this.controller});
 
   @override
+  State<BudgetAnalysisSection> createState() => _BudgetAnalysisSectionState();
+}
+
+class _BudgetAnalysisSectionState extends State<BudgetAnalysisSection> {
+  final Map<int, bool> _goalEnabled = {};
+
+  double _computeToggleAdjustedBudget(BudgetSuggestionModel suggestion) {
+    double total = 0;
+    for (final goal in suggestion.existingGoals) {
+      final isEnabled = _goalEnabled[goal.id] ?? true;
+      if (isEnabled) total += goal.monthlyBudget;
+    }
+    return total;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final suggestion = controller.budgetSuggestion.value;
-      if (controller.isLoadingSuggestion.value) {
+      final suggestion = widget.controller.budgetSuggestion.value;
+      if (widget.controller.isLoadingSuggestion.value) {
         return const Padding(
           padding: EdgeInsets.symmetric(vertical: 16),
           child: Center(
@@ -234,16 +250,18 @@ class BudgetAnalysisSection extends StatelessWidget {
         );
       }
 
-      if (suggestion == null) {
-        return const SizedBox.shrink();
-      }
+      if (suggestion == null) return const SizedBox.shrink();
 
-      final isSufficient = suggestion.isSufficient;
+      final adjustedExisting = _computeToggleAdjustedBudget(suggestion);
+      final adjustedAvailable = suggestion.averageMonthlySavings - adjustedExisting;
+      final adjustedSufficient = adjustedAvailable >= suggestion.requiredMonthly;
+      final adjustedDeficit = adjustedSufficient ? 0.0 : suggestion.requiredMonthly - adjustedAvailable;
+
       final formattedAvg = AppHelperFunction.formatAmount(suggestion.averageMonthlySavings);
-      final formattedExisting = AppHelperFunction.formatAmount(suggestion.totalExistingBudget);
-      final formattedAvailable = AppHelperFunction.formatAmount(suggestion.availableSavings);
+      final formattedExisting = AppHelperFunction.formatAmount(adjustedExisting);
+      final formattedAvailable = AppHelperFunction.formatAmount(adjustedAvailable);
       final formattedRequired = AppHelperFunction.formatAmount(suggestion.requiredMonthly);
-      final formattedDeficit = AppHelperFunction.formatAmount(suggestion.deficit);
+      final formattedDeficit = AppHelperFunction.formatAmount(adjustedDeficit);
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,20 +290,25 @@ class BudgetAnalysisSection extends StatelessWidget {
                 _buildRow('Tích lũy TB hàng tháng', formattedAvg, AppColors.text1),
                 const SizedBox(height: 8),
                 _buildRow('Đã sử dụng cho quỹ khác', '-$formattedExisting', Colors.red[700]!),
+                // Existing goals detail list
+                if (suggestion.existingGoals.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  _buildExistingGoalsList(suggestion),
+                ],
                 const SizedBox(height: 8),
                 const Divider(height: 1, color: AppColors.borderSecondary),
                 const SizedBox(height: 8),
                 _buildRow(
                   'Ngân sách còn dư',
                   formattedAvailable,
-                  suggestion.availableSavings >= 0 ? Colors.green[700]! : Colors.red[700]!,
+                  adjustedAvailable >= 0 ? Colors.green[700]! : Colors.red[700]!,
                   isBold: true,
                 ),
                 if (suggestion.requiredMonthly > 0) ...[
                   const SizedBox(height: 8),
                   _buildRow('Cần góp mỗi tháng', formattedRequired, AppColors.primary, isBold: true),
                 ],
-                if (!isSufficient && suggestion.requiredMonthly > 0) ...[
+                if (!adjustedSufficient && suggestion.requiredMonthly > 0) ...[
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -320,6 +343,74 @@ class BudgetAnalysisSection extends StatelessWidget {
         ],
       );
     });
+  }
+
+  Widget _buildExistingGoalsList(BudgetSuggestionModel suggestion) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Chi tiết các quỹ đang hoạt động:',
+            style: TextStyle(fontSize: 11, color: AppColors.text3, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 6),
+          ...suggestion.existingGoals.map((goal) {
+            final isEnabled = _goalEnabled[goal.id] ?? true;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: Checkbox(
+                      value: isEnabled,
+                      onChanged: (val) {
+                        setState(() {
+                          _goalEnabled[goal.id] = val ?? true;
+                        });
+                      },
+                      activeColor: AppColors.primary,
+                      shape: const CircleBorder(),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      goal.name,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isEnabled ? AppColors.text2 : AppColors.text3,
+                        decoration: isEnabled ? null : TextDecoration.lineThrough,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '${AppHelperFunction.formatAmount(goal.monthlyBudget)}/tháng',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isEnabled ? Colors.red[700] : AppColors.text3,
+                      decoration: isEnabled ? null : TextDecoration.lineThrough,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
   }
 
   Widget _buildRow(String title, String value, Color valueColor, {bool isBold = false}) {

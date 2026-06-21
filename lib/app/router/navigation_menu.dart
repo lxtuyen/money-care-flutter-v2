@@ -357,7 +357,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'transaction.create'.tr,
+                  'Chọn hành động',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -366,7 +366,7 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'transaction.selectTypeDesc'.tr,
+                  'Bạn muốn làm gì hôm nay?',
                   style: const TextStyle(fontSize: 13, color: AppColors.text4),
                 ),
                 const SizedBox(height: 12),
@@ -408,6 +408,18 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
                   onTap: () {
                     Navigator.pop(context);
                     Get.toNamed(RoutePath.chatbot);
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildTransactionOptionTile(
+                  icon: Icons.track_changes_outlined,
+                  iconColor: AppColors.primary,
+                  iconBackground: AppColors.primary.withValues(alpha: 0.12),
+                  title: 'Tạo mục tiêu',
+                  subtitle: 'Thiết lập mục tiêu tiết kiệm mới',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Get.toNamed('/create_saving_goal');
                   },
                 ),
                 const SizedBox(height: 16),

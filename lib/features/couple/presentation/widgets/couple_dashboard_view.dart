@@ -4,9 +4,13 @@ import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/features/wallet/presentation/widgets/wallet_card.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/features/couple/presentation/controllers/couple_controller.dart';
 import 'package:money_care/features/statistics/presentation/widgets/statistics_time_navigator.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/features/couple/presentation/widgets/couple_spending_alerts_section.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_profile_insights_card.dart';
+import 'package:money_care/features/couple/presentation/widgets/couple_spending_forecast_section.dart';
 import 'package:money_care/core/constants/colors.dart';
 
 class CoupleDashboardView extends StatelessWidget {
@@ -25,35 +29,73 @@ class CoupleDashboardView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Streak Badge
+          Obx(() {
+            final couple = controller.couple.value;
+            if (couple == null || !couple.isActive) {
+              return const SizedBox.shrink();
+            }
+            final streak = couple.currentStreak;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('🔥', style: TextStyle(fontSize: 18)),
+                  const SizedBox(width: 8),
+                  Text(
+                    '$streak ngày liên tiếp',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.text1,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+
           // Month Selector Header
           Obx(
-            () => StatisticsTimeNavigator(
-              focusedMonth: controller.selectedMonth.value,
-              onPrevious: () {
-                final current = controller.selectedMonth.value;
-                controller.changeMonth(
-                  DateTime(current.year, current.month - 1),
-                );
-              },
-              onNext: () {
-                final current = controller.selectedMonth.value;
-                controller.changeMonth(
-                  DateTime(current.year, current.month + 1),
-                );
-              },
-              onTap: () async {
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: controller.selectedMonth.value,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                  initialDatePickerMode: DatePickerMode.year,
-                );
-                if (picked != null) {
-                  controller.changeMonth(picked);
-                }
-              },
-            ),
+            () {
+              final month = controller.selectedMonth.value;
+              final now = DateTime.now();
+              final statisticsController = Get.find<StatisticsController>();
+              final first = statisticsController.firstTransactionDate.value;
+
+              return StatisticsTimeNavigator(
+                focusedMonth: month,
+                onPrevious: () {
+                  controller.changeMonth(
+                    DateTime(month.year, month.month - 1),
+                  );
+                },
+                onNext: () {
+                  controller.changeMonth(
+                    DateTime(month.year, month.month + 1),
+                  );
+                },
+                canGoNext:
+                    !(month.year == now.year && month.month == now.month),
+                canGoPrevious: first == null ||
+                    !(month.year == first.year && month.month == first.month),
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: month,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                    initialDatePickerMode: DatePickerMode.year,
+                  );
+                  if (picked != null) {
+                    controller.changeMonth(picked);
+                  }
+                },
+              );
+            },
           ),
           const SizedBox(height: 16),
           // Total Balance Card
@@ -196,11 +238,12 @@ class CoupleDashboardView extends StatelessWidget {
           // Shared Wallets Header
           AppSectionHeading(
             title: 'Ví Chung',
-            buttonTitle: 'Thêm mới',
+            buttonTitle: 'Xem thêm',
             onPressed: () {
-              final nextNumber = controller.sharedWallets.length + 1;
-              final walletName = 'Ví chung $nextNumber';
-              controller.addSharedWallet(walletName, 0.0);
+              Get.toNamed(
+                RoutePath.wallets,
+                arguments: {'coupleId': controller.couple.value?.id},
+              );
             },
           ),
           const SizedBox(height: 8),
@@ -216,6 +259,56 @@ class CoupleDashboardView extends StatelessWidget {
               children: controller.sharedWallets.map((wallet) {
                 return WalletCard(wallet: wallet, marginBottom: 12);
               }).toList(),
+            );
+          }),
+
+          // AI Couple Profile Insights
+          Obx(() {
+            final profile = controller.coupleReport.value?.coupleProfile;
+            if (profile == null || profile.activeMonths == 0) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Card(
+                elevation: 0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: Colors.purple.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: CoupleProfileInsightsCard(profile: profile),
+                ),
+              ),
+            );
+          }),
+
+          // AI Couple Spending Forecast
+          Obx(() {
+            final forecast = controller.coupleReport.value?.coupleForecast;
+            if (forecast == null || forecast.confidence == 0) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Card(
+                elevation: 0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: Colors.blue.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: CoupleSpendingForecastSection(forecast: forecast),
+                ),
+              ),
             );
           }),
 

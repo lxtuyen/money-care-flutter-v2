@@ -9,6 +9,9 @@ import 'package:money_care/features/statistics/data/repositories/analytics_repos
 import 'package:money_care/features/statistics/domain/usecases/get_financial_analytics_usecase.dart';
 import 'package:money_care/features/ai_feedback/data/repositories/ai_feedback_repository_impl.dart';
 import 'package:money_care/features/ai_feedback/domain/usecases/send_ai_feedback_usecase.dart';
+import 'package:money_care/features/spending_insights/data/datasources/spending_insights_remote_datasource.dart';
+import 'package:money_care/features/spending_insights/data/repositories/spending_insights_repository_impl.dart';
+import 'package:money_care/features/spending_insights/presentation/controllers/recurring_controller.dart';
 
 class AppStateBinding extends Bindings {
   final ApiClient apiClient;
@@ -41,6 +44,16 @@ class AppStateBinding extends Bindings {
         ),
         sendAiFeedbackUseCase: SendAiFeedbackUseCase(aiFeedbackRepo),
       ),
+      permanent: true,
+    );
+
+    // Spending Insights - RecurringController
+    final insightsDs = SpendingInsightsRemoteDataSourceImpl(api: apiClient);
+    final insightsRepo = SpendingInsightsRepositoryImpl(
+      remoteDataSource: insightsDs,
+    );
+    Get.put<RecurringController>(
+      RecurringController(repository: insightsRepo),
       permanent: true,
     );
   }

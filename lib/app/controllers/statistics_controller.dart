@@ -195,6 +195,23 @@ class StatisticsController extends GetxController {
     return forecast;
   }
 
+  double get totalFixedForecast {
+    final forecasting = analyticsData.value?.currentMonthProjection;
+    if (forecasting == null) return 0.0;
+    double total = 0.0;
+    for (final cf in forecasting.categoryForecasts) {
+      total += cf.fixedAmount ?? 0.0;
+    }
+    return total;
+  }
+
+  double get totalFlexibleForecast {
+    final forecast = totalForecast;
+    final fixed = totalFixedForecast;
+    if (forecast <= 0 || fixed <= 0) return forecast;
+    return (forecast - fixed).clamp(0.0, double.infinity);
+  }
+
   double get totalSpentExcludingSavings {
     final totalExpense = (totalByType.value?.expenseTotal ?? 0).toDouble();
     return (totalExpense - savingSpent).clamp(0.0, double.infinity);
@@ -646,6 +663,7 @@ class StatisticsController extends GetxController {
   @override
   void onClose() {
     _refreshTimer?.cancel();
+    _changeMonthDebounce?.cancel();
     super.onClose();
   }
 
@@ -896,6 +914,40 @@ class StatisticsController extends GetxController {
     } else {
       periodType.value = 'hàng tháng';
     }
+  }
+
+  // ── Month sync cho đồng bộ giữa các màn hình ────────
+
+  Timer? _changeMonthDebounce;
+
+  /// Chuyển tháng có debounce để tránh lag khi user bấm nhanh.
+  /// Dùng bởi các màn hình cần chuyển tháng (Lịch sử GD, etc.).
+  void changeMonth(DateTime newMonth) {
+    _changeMonthDebounce?.cancel();
+    _changeMonthDebounce = Timer(const Duration(milliseconds: 150), () {
+      selectedMonth.value = DateTime(newMonth.year, newMonth.month, 1);
+    });
+  }
+
+  /// Trả về ngày phù hợp khi chuyển tháng:
+  /// - Nếu là tháng hiện tại → ngày hôm nay
+  /// - Nếu là tháng khác → ngày 1
+  int getSelectedDayForMonth(DateTime month) {
+    final today = DateTime.now();
+    return (month.year == today.year && month.month == today.month)
+        ? today.day
+        : 1;
+  }
+
+  /// Trả về date range (start, end) cho 1 tháng + label.
+  ({DateTime start, DateTime end, String label}) getMonthDateRange(
+    DateTime month,
+  ) {
+    return (
+      start: DateTime(month.year, month.month, 1),
+      end: DateTime(month.year, month.month + 1, 0),
+      label: '${month.year}/${month.month.toString().padLeft(2, '0')}',
+    );
   }
 
   Future<void> _loadStatisticsSummary(int userId) async {

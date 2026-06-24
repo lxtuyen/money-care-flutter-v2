@@ -56,4 +56,12 @@ class ApiRoutes {
   static const subscriptionStatus = 'payments/subscription-status';
   static const paymentHistory = 'payments/history';
   static String paymentVerify(int orderCode) => 'payments/verify/$orderCode';
+
+  // Spending Insights
+  static const recurringTransactions = 'spending-insights/recurring';
+  static const recurringConfirmed = 'spending-insights/recurring/confirmed';
+  static const recurringConfirm = 'spending-insights/recurring/confirm';
+  static const recurringDismiss = 'spending-insights/recurring/dismiss';
+  static String recurringConfirmedItem(int id) =>
+      'spending-insights/recurring/confirmed/$id';
 }

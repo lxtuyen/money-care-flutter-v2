@@ -5,7 +5,7 @@ import 'package:money_care/features/transaction/domain/entities/transaction_enti
 import 'package:money_care/features/statistics/presentation/widgets/category_share_chip.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 
-class StatisticsOverviewCard extends StatelessWidget {
+class StatisticsOverviewCard extends StatefulWidget {
   final String startDate;
   final String endDate;
   final String totalAmount;
@@ -22,11 +22,24 @@ class StatisticsOverviewCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final String displayTotal = totalAmount;
-    final String displayIncome = incomeAmount;
+  State<StatisticsOverviewCard> createState() =>
+      _StatisticsOverviewCardState();
+}
 
-    final bool hasData = categories.isNotEmpty;
+class _StatisticsOverviewCardState extends State<StatisticsOverviewCard> {
+  static const int _maxCollapsedItems = 4;
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final String displayTotal = widget.totalAmount;
+    final String displayIncome = widget.incomeAmount;
+
+    final bool hasData = widget.categories.isNotEmpty;
+    final visibleCategories = _isExpanded
+        ? widget.categories
+        : widget.categories.take(_maxCollapsedItems).toList();
+    final hiddenCount = widget.categories.length - _maxCollapsedItems;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -59,7 +72,7 @@ class StatisticsOverviewCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '$startDate - $endDate',
+                    '${widget.startDate} - ${widget.endDate}',
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontSize: 11,
@@ -84,7 +97,7 @@ class StatisticsOverviewCard extends StatelessWidget {
                             startDegreeOffset: -90,
                             centerSpaceRadius: 32,
                             sectionsSpace: 2,
-                            sections: categories
+                            sections: widget.categories
                                 .map(
                                   (e) => PieChartSectionData(
                                     color: e.color,
@@ -151,11 +164,41 @@ class StatisticsOverviewCard extends StatelessWidget {
                   mainAxisSpacing: 8,
                   mainAxisExtent: 38,
                 ),
-                itemCount: categories.length,
+                itemCount: visibleCategories.length,
                 itemBuilder: (context, index) {
-                  return CategoryShareChip(category: categories[index]);
+                  return CategoryShareChip(category: visibleCategories[index]);
                 },
               ),
+              if (widget.categories.length > _maxCollapsedItems)
+                GestureDetector(
+                  onTap: () => setState(() => _isExpanded = !_isExpanded),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _isExpanded
+                              ? 'Thu gọn'
+                              : 'Xem thêm ($hiddenCount)',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up_rounded
+                              : Icons.keyboard_arrow_down_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ],
         ),

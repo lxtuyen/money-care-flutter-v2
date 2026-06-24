@@ -9,9 +9,19 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/statistics/presentation/widgets/anomalies_panel.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
+import 'package:money_care/features/statistics/presentation/widgets/habit_suggestions_panel.dart';
+import 'package:money_care/features/statistics/presentation/widgets/unpaid_recurring_panel.dart';
 
-class BudgetTrackingSection extends StatelessWidget {
+class BudgetTrackingSection extends StatefulWidget {
   const BudgetTrackingSection({super.key});
+
+  @override
+  State<BudgetTrackingSection> createState() => _BudgetTrackingSectionState();
+}
+
+class _BudgetTrackingSectionState extends State<BudgetTrackingSection> {
+  static const int _maxCollapsedItems = 2;
+  bool _isBudgetExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +104,8 @@ class BudgetTrackingSection extends StatelessWidget {
                 totalLimit: controller.totalLimit,
                 totalSpent: (controller.totalByType.value?.expenseTotal ?? 0).toDouble(),
                 totalForecast: controller.totalForecast > 0 ? controller.totalForecast : null,
+                totalFixedForecast: controller.totalFixedForecast,
+                totalFlexibleForecast: controller.totalFlexibleForecast,
                 forecastedSaving: controller.forecastedSaving,
                 savingBudget: controller.savingBudget,
                 savingSpent: controller.savingSpent,
@@ -102,21 +114,74 @@ class BudgetTrackingSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
             ],
+            if ((controller.analyticsData.value?.unpaidRecurring ?? []).isNotEmpty) ...[
+             /* UnpaidRecurringPanel(
+                items: controller.analyticsData.value!.unpaidRecurring,
+              ),
+              const SizedBox(height: 12),*/
+            ],
+            if ((controller.analyticsData.value?.habitSuggestions ?? []).isNotEmpty) ...[
+              HabitSuggestionsPanel(
+                habits: controller.analyticsData.value!.habitSuggestions,
+              ),
+              const SizedBox(height: 12),
+            ],
             if (anomalies.isNotEmpty) ...[
               AnomaliesPanel(anomalies: anomalies),
               const SizedBox(height: 12),
             ],
-            ...filteredExpenses.entries.map((entry) {
-              final prediction = predictionMap[entry.key.toLowerCase()];
-              final actualSpent = categorySpentMap[entry.key.toLowerCase()] ?? 0.0;
-              return EstimatedExpenseBudgetGroupCard(
-                categoryName: entry.key,
-                daysInMonth: daysInMonth,
-                expenses: entry.value,
-                exceedPrediction: prediction,
-                actualSpent: actualSpent,
-              );
-            }),
+            ...() {
+              final entries = filteredExpenses.entries.toList();
+              final visibleEntries = _isBudgetExpanded
+                  ? entries
+                  : entries.take(_maxCollapsedItems).toList();
+              final hiddenCount = entries.length - _maxCollapsedItems;
+
+              return [
+                ...visibleEntries.map((entry) {
+                  final prediction = predictionMap[entry.key.toLowerCase()];
+                  final actualSpent = categorySpentMap[entry.key.toLowerCase()] ?? 0.0;
+                  return EstimatedExpenseBudgetGroupCard(
+                    categoryName: entry.key,
+                    daysInMonth: daysInMonth,
+                    expenses: entry.value,
+                    exceedPrediction: prediction,
+                    actualSpent: actualSpent,
+                  );
+                }),
+                if (entries.length > _maxCollapsedItems)
+                  GestureDetector(
+                    onTap: () => setState(() => _isBudgetExpanded = !_isBudgetExpanded),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _isBudgetExpanded
+                                ? 'Thu g\u1ECDn'
+                                : 'Xem th\u00EAm ($hiddenCount)',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            _isBudgetExpanded
+                                ? Icons.keyboard_arrow_up_rounded
+                                : Icons.keyboard_arrow_down_rounded,
+                            size: 18,
+                            color: AppColors.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ];
+            }(),
           ],
         ),
       );
@@ -129,6 +194,8 @@ class _BudgetSummaryCard extends StatelessWidget {
   final double totalLimit;
   final double totalSpent;
   final double? totalForecast;
+  final double totalFixedForecast;
+  final double totalFlexibleForecast;
   final double forecastedSaving;
   final double savingBudget;
   final double savingSpent;
@@ -140,6 +207,8 @@ class _BudgetSummaryCard extends StatelessWidget {
     required this.totalLimit,
     required this.totalSpent,
     required this.totalForecast,
+    required this.totalFixedForecast,
+    required this.totalFlexibleForecast,
     required this.forecastedSaving,
     required this.savingBudget,
     required this.savingSpent,
@@ -200,34 +269,62 @@ class _BudgetSummaryCard extends StatelessWidget {
             _row(
               context,
               themeColors,
-              '- Dự báo cuối tháng',
+              '- D\u1EF1 b\u00E1o cu\u1ED1i th\u00E1ng',
               totalForecast!,
               const Color(0xFFF59E0B),
             ),
-          ],
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Divider(height: 1),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Tiết kiệm dự kiến',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: savingColor,
-                  fontWeight: FontWeight.w700,
+            if (totalFixedForecast > 0) ...[
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _row(
+                  context,
+                  themeColors,
+                  '\u{1F4CC} C\u1ED1 \u0111\u1ECBnh',
+                  totalFixedForecast,
+                  const Color(0xFF6366F1),
+                  isSubRow: true,
                 ),
               ),
-              Text(
-                AppHelperFunction.formatAmount(forecastedSaving),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: savingColor,
-                  fontWeight: FontWeight.w800,
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _row(
+                  context,
+                  themeColors,
+                  '\u{1F504} Linh ho\u1EA1t',
+                  totalFlexibleForecast,
+                  const Color(0xFF10B981),
+                  isSubRow: true,
                 ),
               ),
             ],
-          ),
+          ],
+          if (totalForecast != null) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Divider(height: 1),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tiết kiệm dự kiến',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: savingColor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  AppHelperFunction.formatAmount(forecastedSaving),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: savingColor,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (savingBudget > 0) ...[
             const SizedBox(height: 8),
             Row(
@@ -345,23 +442,27 @@ class _BudgetSummaryCard extends StatelessWidget {
     AppThemeColors themeColors,
     String label,
     double amount,
-    Color? valueColor,
-  ) {
+    Color? valueColor, {
+    bool isSubRow = false,
+  }) {
+    final textStyle = isSubRow
+        ? Theme.of(context).textTheme.labelSmall
+        : Theme.of(context).textTheme.bodySmall;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: themeColors.textSecondary,
-            fontWeight: FontWeight.w600,
+          style: textStyle?.copyWith(
+            color: isSubRow ? valueColor?.withValues(alpha: 0.7) : themeColors.textSecondary,
+            fontWeight: isSubRow ? FontWeight.w500 : FontWeight.w600,
           ),
         ),
         Text(
           AppHelperFunction.formatAmount(amount),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          style: textStyle?.copyWith(
             color: valueColor ?? themeColors.textPrimary,
-            fontWeight: FontWeight.w700,
+            fontWeight: isSubRow ? FontWeight.w600 : FontWeight.w700,
           ),
         ),
       ],

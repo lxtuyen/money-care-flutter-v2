@@ -24,6 +24,8 @@ import 'package:money_care/features/statistics/presentation/models/goal_plan_imp
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
+import 'package:money_care/features/spending_insights/presentation/controllers/recurring_controller.dart';
+import 'package:money_care/features/spending_insights/presentation/widgets/recurring_summary_card.dart';
 
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
@@ -66,6 +68,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       spendingPlanController.loadStatsSummary(loadActiveIfMissing: true),
       savingGoalController.loadMultiGoalData(),
     ]);
+    // Fetch recurring data (không block init)
+    if (Get.isRegistered<RecurringController>()) {
+      Get.find<RecurringController>().fetchRecurring();
+    }
   }
 
   @override
@@ -324,6 +330,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BudgetTrackingSection(),
+                    SizedBox(height: 12),
+                    RecurringSummaryCard(),
                     SizedBox(height: 25),
                   ],
                 );

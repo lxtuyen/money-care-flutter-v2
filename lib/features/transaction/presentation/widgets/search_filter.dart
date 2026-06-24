@@ -32,7 +32,7 @@ class SearchWithFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveHintText = hintText ?? 'transaction.searchHint'.tr;
     return Padding(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
           Expanded(

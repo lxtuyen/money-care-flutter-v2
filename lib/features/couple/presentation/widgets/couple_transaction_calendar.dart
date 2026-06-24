@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 
 class CoupleTransactionCalendar extends StatelessWidget {
@@ -8,6 +10,7 @@ class CoupleTransactionCalendar extends StatelessWidget {
   final List<TransactionEntity> transactions;
   final int selectedDay;
   final ValueChanged<int> onDaySelected;
+  final bool isExpense;
 
   const CoupleTransactionCalendar({
     super.key,
@@ -15,6 +18,7 @@ class CoupleTransactionCalendar extends StatelessWidget {
     required this.transactions,
     required this.selectedDay,
     required this.onDaySelected,
+    this.isExpense = true,
   });
 
   @override
@@ -67,7 +71,7 @@ class CoupleTransactionCalendar extends StatelessWidget {
               shrinkWrap: true,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
-                childAspectRatio: 0.72,
+                childAspectRatio: 0.62,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 10,
               ),
@@ -81,10 +85,15 @@ class CoupleTransactionCalendar extends StatelessWidget {
                 final dayTxs = txsByDay[dayNum] ?? [];
                 final isSelected = selectedDay == dayNum;
                 final isToday = _checkIsToday(dayNum);
+                final dayTotal = dayTxs.fold<double>(
+                  0.0, (sum, tx) => sum + tx.amount,
+                );
 
                 return CoupleTransactionDayCell(
                   day: dayNum,
                   dayTxs: dayTxs,
+                  dayTotal: dayTotal,
+                  isExpense: isExpense,
                   isSelected: isSelected,
                   isToday: isToday,
                   onTap: () => onDaySelected(dayNum),
@@ -131,6 +140,8 @@ class CoupleTransactionCalendar extends StatelessWidget {
 class CoupleTransactionDayCell extends StatelessWidget {
   final int day;
   final List<TransactionEntity> dayTxs;
+  final double dayTotal;
+  final bool isExpense;
   final bool isSelected;
   final bool isToday;
   final VoidCallback onTap;
@@ -139,6 +150,8 @@ class CoupleTransactionDayCell extends StatelessWidget {
     super.key,
     required this.day,
     required this.dayTxs,
+    required this.dayTotal,
+    this.isExpense = true,
     required this.isSelected,
     required this.isToday,
     required this.onTap,
@@ -297,6 +310,22 @@ class CoupleTransactionDayCell extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          // Daily Total Amount
+          SizedBox(
+            height: 12,
+            child: dayTotal > 0
+                ? Text(
+                    '${isExpense ? "-" : "+"}${AppHelperFunction.formatShortAmount(dayTotal)}',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w600,
+                      color: isExpense ? AppColors.expense : AppColors.income,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.clip,
+                  )
+                : null,
           ),
         ],
       ),

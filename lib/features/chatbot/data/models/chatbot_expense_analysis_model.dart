@@ -247,6 +247,7 @@ class ChatbotBudgetRiskItemModel {
   final double spentAmount;
   final double riskScore;
   final String status;
+  final double? forecastAmount;
 
   const ChatbotBudgetRiskItemModel({
     required this.categoryName,
@@ -254,6 +255,7 @@ class ChatbotBudgetRiskItemModel {
     required this.spentAmount,
     required this.riskScore,
     required this.status,
+    required this.forecastAmount,
   });
 
   factory ChatbotBudgetRiskItemModel.fromJson(Map<String, dynamic> json) {
@@ -263,6 +265,7 @@ class ChatbotBudgetRiskItemModel {
       spentAmount: _asDouble(json['spentAmount']),
       riskScore: _asDouble(json['riskScore']),
       status: json['status']?.toString() ?? '',
+      forecastAmount: _asNullableDouble(json['forecastAmount']),
     );
   }
 }

@@ -467,6 +467,17 @@ class ChatController extends GetxController {
           reply.replaceFirst('__GOAL_ACHIEVEMENT_INSIGHT__', ''),
         );
       }
+    } else if (reply.startsWith('__CATEGORY_BREAKDOWN__')) {
+      final jsonStr = reply.replaceFirst('__CATEGORY_BREAKDOWN__', '');
+      try {
+        final data = Map<String, dynamic>.from(jsonDecode(jsonStr));
+        data['__type'] = 'category_breakdown';
+        replaceLastBotMessageWithMetadata('', data);
+      } catch (e) {
+        replaceLastBotMessage(
+          reply.replaceFirst('__CATEGORY_BREAKDOWN__', ''),
+        );
+      }
     } else {
       replaceLastBotMessage(reply);
     }

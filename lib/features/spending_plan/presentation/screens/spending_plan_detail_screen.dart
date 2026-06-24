@@ -64,40 +64,7 @@ class _SpendingPlanDetailScreenState extends State<SpendingPlanDetailScreen> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     SpendingPlanSummaryCard(plan: plan),
-                    if (Get.isRegistered<StatisticsController>())
-                      Obx(() {
-                        final analytics = Get.find<StatisticsController>().analyticsData.value;
-                        if (analytics == null || analytics.budgetRisk.riskLevel == 'low') {
-                          return const SizedBox.shrink();
-                        }
-                        final isHigh = analytics.budgetRisk.riskLevel == 'high';
-                        final color = isHigh ? AppColors.error : AppColors.warning;
-                        return Container(
-                          margin: const EdgeInsets.only(top: 12, bottom: 4),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: color.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: color.withValues(alpha: 0.2)),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.warning_amber_rounded, color: color, size: 20),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  analytics.budgetRisk.message,
-                                  style: TextStyle(
-                                    color: isHigh ? AppColors.error : const Color(0xFFC07000),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                    if (Get.isRegistered<StatisticsController>())                  
                     const SizedBox(height: 12),
                     _PlanActions(plan: plan, controller: controller),
                     const SizedBox(height: 16),

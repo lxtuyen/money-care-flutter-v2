@@ -391,6 +391,8 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
+  static const int _maxCollapsedItems = 3;
+
   Widget _buildMonthlySpending() {
     return Obx(() {
       final categories = controller.statisticsController.expenseCategories
@@ -408,14 +410,18 @@ class HomeScreen extends GetView<HomeController> {
         return const SizedBox.shrink();
       }
 
-      String sectionTitle = 'home.monthlySpending'.tr;
+      final isExpanded = controller.isCategoryExpanded.value;
+      final visibleItems = isExpanded
+          ? categories
+          : categories.take(_maxCollapsedItems).toList();
+      final hiddenCount = categories.length - _maxCollapsedItems;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppSectionHeading(title: sectionTitle, showActionButton: false),
+          AppSectionHeading(title: 'home.monthlySpending'.tr, showActionButton: false),
           const SizedBox(height: AppSizes.spaceBtwItems),
-          ...categories.map((TotalByCategoryEntity category) {
+          ...visibleItems.map((TotalByCategoryEntity category) {
             return CategoryOverviewCard(
               title: category.categoryName,
               spent: category.total,
@@ -423,6 +429,8 @@ class HomeScreen extends GetView<HomeController> {
               isIncome: false,
             );
           }),
+          if (categories.length > _maxCollapsedItems)
+            _buildExpandToggle(isExpanded, hiddenCount),
           const SizedBox(height: AppSizes.defaultSpace),
         ],
       );
@@ -446,6 +454,12 @@ class HomeScreen extends GetView<HomeController> {
         return const SizedBox.shrink();
       }
 
+      final isExpanded = controller.isCategoryExpanded.value;
+      final visibleItems = isExpanded
+          ? categories
+          : categories.take(_maxCollapsedItems).toList();
+      final hiddenCount = categories.length - _maxCollapsedItems;
+
       return Column(
         children: [
           AppSectionHeading(
@@ -453,7 +467,7 @@ class HomeScreen extends GetView<HomeController> {
             showActionButton: false,
           ),
           const SizedBox(height: AppSizes.spaceBtwItems),
-          ...categories.map((TotalByCategoryEntity category) {
+          ...visibleItems.map((TotalByCategoryEntity category) {
             return CategoryOverviewCard(
               title: category.categoryName,
               spent: category.total,
@@ -461,9 +475,41 @@ class HomeScreen extends GetView<HomeController> {
               isIncome: true,
             );
           }),
+          if (categories.length > _maxCollapsedItems)
+            _buildExpandToggle(isExpanded, hiddenCount),
           const SizedBox(height: AppSizes.defaultSpace),
         ],
       );
     });
+  }
+
+  Widget _buildExpandToggle(bool isExpanded, int hiddenCount) {
+    return GestureDetector(
+      onTap: controller.toggleCategoryExpanded,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              isExpanded ? 'Thu gọn' : 'Xem thêm ($hiddenCount)',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              isExpanded
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: AppColors.primary,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

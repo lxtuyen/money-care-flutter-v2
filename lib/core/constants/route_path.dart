@@ -37,6 +37,7 @@ class RoutePath {
   static const coupleSpace = '/couple_space';
   static const premium = '/premium';
   static const paymentHistory = '/payment_history';
+  static const recurringDetail = '/recurring_detail';
 
   static const createFund = createSavingGoal;
 }

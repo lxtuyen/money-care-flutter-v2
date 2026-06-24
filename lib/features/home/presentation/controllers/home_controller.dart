@@ -18,4 +18,8 @@ class HomeController extends GetxController {
   final SavingGoalController savingGoalController =
       Get.find<SavingGoalController>();
   final WalletController walletController = Get.find<WalletController>();
+
+  final isCategoryExpanded = false.obs;
+
+  void toggleCategoryExpanded() => isCategoryExpanded.toggle();
 }

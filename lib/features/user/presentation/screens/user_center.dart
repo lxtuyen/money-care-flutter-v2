@@ -54,6 +54,12 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     ),
 
                     UserMenuItem(
+                      icon: Icons.repeat_rounded,
+                      title: 'Chi phí cố định',
+                      onTap: () => Get.toNamed(RoutePath.recurringDetail),
+                    ),
+
+                    UserMenuItem(
                       icon: Icons.category_rounded,
                       title: 'profile.categoryManagement'.tr,
                       onTap: () => Get.toNamed(RoutePath.categoryManagement),

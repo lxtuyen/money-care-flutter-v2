@@ -42,6 +42,8 @@ import 'package:money_care/features/couple/presentation/bindings/couple_binding.
 import 'package:money_care/features/payment/presentation/screens/premium_screen.dart';
 import 'package:money_care/features/payment/presentation/screens/payment_history_screen.dart';
 import 'package:money_care/features/payment/presentation/bindings/payment_binding.dart';
+import 'package:money_care/features/spending_insights/presentation/screens/recurring_detail_screen.dart';
+import 'package:money_care/features/spending_insights/presentation/bindings/spending_insights_binding.dart';
 
 final List<GetPage> appPages = [
   GetPage(
@@ -219,6 +221,12 @@ final List<GetPage> appPages = [
     name: RoutePath.paymentHistory,
     page: () => const PaymentHistoryScreen(),
     binding: PaymentBinding(),
+    transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: RoutePath.recurringDetail,
+    page: () => const RecurringDetailScreen(),
+    binding: SpendingInsightsBinding(),
     transition: Transition.rightToLeft,
   ),
 ];

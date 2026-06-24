@@ -6,6 +6,7 @@ import 'package:money_care/app/widgets/states/app_empty_state.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
 import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/app/widgets/button/transaction_type_toggle.dart';
+import 'package:money_care/app/router/nav_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/transaction/presentation/controllers/filter_controller.dart';
 import 'package:money_care/app/controllers/transaction_controller.dart';
@@ -13,6 +14,7 @@ import 'package:money_care/features/transaction/presentation/widgets/search_filt
 import 'package:money_care/features/transaction/presentation/widgets/transaction_detail.dart';
 import 'package:money_care/features/transaction/presentation/widgets/transaction_history_filter_sheet.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/features/couple/presentation/widgets/couple_transaction_calendar.dart';
 import 'package:money_care/features/photo_transaction/presentation/screens/photo_transaction_detail_screen.dart';
@@ -29,9 +31,13 @@ class TransactionHistoryScreen extends StatefulWidget {
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   final TextEditingController searchController = TextEditingController();
 
-  late DateTime _selectedMonth;
+  /// Dùng statisticsController.selectedMonth làm single source of truth
+  /// để đồng bộ tháng giữa màn hình Lịch sử GD và Thống kê.
+  DateTime get _selectedMonth => statisticsController.selectedMonth.value;
+
   late int _selectedDay;
-  Worker? _filterWorker;
+  Worker? _monthWorker;
+  Worker? _navWorker;
 
   final AppController appController = Get.find<AppController>();
   final TransactionController transactionController =
@@ -44,22 +50,19 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   void initState() {
     super.initState();
     searchController.text = filterController.keyword.value;
-    _initializeDateTime();
+    _selectedDay = statisticsController.getSelectedDayForMonth(_selectedMonth);
 
-    // Listen to changes in filterController's date range to update local calendar state
-    _filterWorker = ever(filterController.startDate, (DateTime? start) {
-      if (start != null) {
-        setState(() {
-          _selectedMonth = DateTime(start.year, start.month);
-          _selectedDay = start.day;
-        });
-      } else {
-        final now = DateTime.now();
-        setState(() {
-          _selectedMonth = DateTime(now.year, now.month);
-          _selectedDay = now.day;
-        });
-      }
+    // Khi selectedMonth thay đổi → sync filter + day
+    _monthWorker = ever(statisticsController.selectedMonth, (DateTime month) {
+      if (!mounted) return;
+      _syncFilterAndDay(month);
+    });
+
+    // Khi chuyển tab về Lịch sử GD → force sync (IndexedStack workaround)
+    final navController = Get.find<NavController>();
+    _navWorker = ever(navController.selectedIndex, (int index) {
+      if (!mounted) return;
+      if (index == 1) _syncFilterAndDay(_selectedMonth);
     });
 
     initData();
@@ -68,20 +71,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   @override
   void dispose() {
     searchController.dispose();
-    _filterWorker?.dispose();
+    _monthWorker?.dispose();
+    _navWorker?.dispose();
     super.dispose();
-  }
-
-  void _initializeDateTime() {
-    final now = DateTime.now();
-    final start = filterController.startDate.value;
-    if (start != null) {
-      _selectedMonth = DateTime(start.year, start.month);
-      _selectedDay = start.day;
-    } else {
-      _selectedMonth = DateTime(now.year, now.month);
-      _selectedDay = now.day;
-    }
   }
 
   void selectDay(int day) {
@@ -90,10 +82,23 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     });
   }
 
+  /// Đồng bộ filterController + _selectedDay với tháng hiện tại.
+  void _syncFilterAndDay(DateTime month) {
+    final range = statisticsController.getMonthDateRange(month);
+    filterController.updateDateRange(range.start, range.end, label: range.label);
+
+    setState(() {
+      _selectedDay = statisticsController.getSelectedDayForMonth(month);
+    });
+
+    _applyFilter();
+  }
+
   Future<void> initData() async {
     final userId = await appController.getCurrentUserId();
     if (userId == null) return;
 
+    _syncFilterAndDay(_selectedMonth);
     statisticsController.refreshStatisticsData(userId);
 
     if (transactionController.transactionByfilter.value == null) {
@@ -101,9 +106,15 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     }
   }
 
-  Widget _selectedDayHeader(BuildContext context, int day) {
+  Widget _selectedDayHeader(
+    BuildContext context,
+    int day, {
+    double totalAmount = 0,
+    bool isExpense = true,
+  }) {
     final colors = AppThemeColors.of(context);
-    final dateStr = 'Ngày $day Tháng ${_selectedMonth.month}, ${_selectedMonth.year}';
+    final dateStr =
+        'Ngày $day Tháng ${_selectedMonth.month}, ${_selectedMonth.year}';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -117,47 +128,39 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            dateStr,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: colors.textPrimary,
+          Expanded(
+            child: Text(
+              dateStr,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: colors.textPrimary,
+              ),
             ),
           ),
+          if (totalAmount > 0)
+            Text(
+              '${isExpense ? "-" : "+"}${AppHelperFunction.formatShortAmount(totalAmount)} đ',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isExpense ? AppColors.expense : AppColors.income,
+              ),
+            ),
         ],
       ),
     );
   }
 
   void _changeMonth(DateTime newMonth) {
-    setState(() {
-      _selectedMonth = DateTime(newMonth.year, newMonth.month);
-      final today = DateTime.now();
-      if (newMonth.year == today.year && newMonth.month == today.month) {
-        _selectedDay = today.day;
-      } else {
-        _selectedDay = 1;
-      }
-    });
-
-    final start = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
-    final end = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0);
-    
-    filterController.updateDateRange(
-      start,
-      end,
-      label: '${_selectedMonth.year}/${_selectedMonth.month.toString().padLeft(2, '0')}',
-    );
-
-    _applyFilter();
+    statisticsController.changeMonth(newMonth);
   }
 
   bool _canGoPreviousMonth() {
     final first = statisticsController.firstTransactionDate.value;
     if (first == null) return true;
-    return !(_selectedMonth.year == first.year &&
-        _selectedMonth.month == first.month);
+    final month = _selectedMonth;
+    return !(month.year == first.year && month.month == first.month);
   }
 
   List<TransactionEntity> _filterTransactionsByDay(
@@ -211,7 +214,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             }),
           ),
           const SizedBox(height: 12),
-          StatisticsTimeNavigator(
+          Obx(() => StatisticsTimeNavigator(
             focusedMonth: _selectedMonth,
             onPrevious: () => _changeMonth(
               DateTime(_selectedMonth.year, _selectedMonth.month - 1),
@@ -234,7 +237,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 _changeMonth(picked);
               }
             },
-          ),
+          )),
+
           Obx(
             () => SearchWithFilter(
               controller: searchController,
@@ -265,6 +269,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildExpenseList() {
     return Obx(() {
+      // Explicit subscribe selectedMonth để Obx rebuild khi tháng thay đổi
+      final currentMonth = statisticsController.selectedMonth.value;
+
       if (transactionController.isLoading.value) {
         return const Center(
           child: Padding(
@@ -285,20 +292,24 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return note.contains(keyword);
       }).toList();
 
+      final selectedDayTxs = _filterTransactionsByDay(filtered);
+      final dayTotal = selectedDayTxs.fold<double>(
+        0.0, (sum, tx) => sum + tx.amount,
+      );
+
       final listItems = <Widget>[
         const SizedBox(height: 8),
         CoupleTransactionCalendar(
-          focusedMonth: _selectedMonth,
+          focusedMonth: currentMonth,
           transactions: filtered,
           selectedDay: _selectedDay,
           onDaySelected: selectDay,
+          isExpense: true,
         ),
         const SizedBox(height: 16),
-        _selectedDayHeader(context, _selectedDay),
+        _selectedDayHeader(context, _selectedDay, totalAmount: dayTotal, isExpense: true),
         const SizedBox(height: 8),
       ];
-
-      final selectedDayTxs = _filterTransactionsByDay(filtered);
 
       if (selectedDayTxs.isEmpty) {
         listItems.add(
@@ -342,6 +353,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildIncomeList() {
     return Obx(() {
+      // Explicit subscribe selectedMonth để Obx rebuild khi tháng thay đổi
+      final currentMonth = statisticsController.selectedMonth.value;
+
       if (transactionController.isLoading.value) {
         return const Center(
           child: Padding(
@@ -362,20 +376,24 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return note.contains(keyword);
       }).toList();
 
+      final selectedDayTxs = _filterTransactionsByDay(filtered);
+      final dayTotal = selectedDayTxs.fold<double>(
+        0.0, (sum, tx) => sum + tx.amount,
+      );
+
       final listItems = <Widget>[
         const SizedBox(height: 8),
         CoupleTransactionCalendar(
-          focusedMonth: _selectedMonth,
+          focusedMonth: currentMonth,
           transactions: filtered,
           selectedDay: _selectedDay,
           onDaySelected: selectDay,
+          isExpense: false,
         ),
         const SizedBox(height: 16),
-        _selectedDayHeader(context, _selectedDay),
+        _selectedDayHeader(context, _selectedDay, totalAmount: dayTotal, isExpense: false),
         const SizedBox(height: 8),
       ];
-
-      final selectedDayTxs = _filterTransactionsByDay(filtered);
 
       if (selectedDayTxs.isEmpty) {
         listItems.add(

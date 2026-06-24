@@ -7,8 +7,13 @@ import 'package:money_care/features/chatbot/presentation/widgets/expense_analysi
 
 class ExpenseAnalysisCardsBubble extends StatelessWidget {
   final Map<String, dynamic> metadata;
+  final VoidCallback? onCategoryBreakdownTap;
 
-  const ExpenseAnalysisCardsBubble({super.key, required this.metadata});
+  const ExpenseAnalysisCardsBubble({
+    super.key,
+    required this.metadata,
+    this.onCategoryBreakdownTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +39,14 @@ class ExpenseAnalysisCardsBubble extends StatelessWidget {
               ),
             if (analysis.overview != null)
               _OverviewCard(overview: analysis.overview!),
-            _AnomalyCard(items: analysis.anomalies),
+            if (analysis.anomalies.isNotEmpty)
+              _AnomalyCard(items: analysis.anomalies),
             if (analysis.budgetRisk != null)
               _BudgetRiskCard(budgetRisk: analysis.budgetRisk!),
+            if (onCategoryBreakdownTap != null && analysis.emptyState == null)
+              _CategoryBreakdownButton(
+                onTap: onCategoryBreakdownTap!,
+              ),
           ],
         ),
       ),
@@ -83,24 +93,6 @@ class _OverviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: ExpenseAnalysisMetricBlock(
-                  label: 'Sức khỏe',
-                  value: '${overview.financialHealthScore}/100',
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ExpenseAnalysisMetricBlock(
-                  label: 'Dự báo chi',
-                  value: AppHelperFunction.formatAmount(overview.monthlyForecast),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
           if (overview.expenseTotal != null || overview.incomeTotal != null)
             Row(
               children: [
@@ -186,10 +178,22 @@ class _BudgetRiskCard extends StatelessWidget {
             ),
           if (budgetRisk.items.isNotEmpty) ...[
             const SizedBox(height: 10),
-            ...budgetRisk.items.take(3).map((item) {
+            ...budgetRisk.items
+                .where((item) =>
+                    // Đã vượt ngân sách
+                    item.spentAmount > item.limitAmount ||
+                    // Dự báo sẽ vượt
+                    (item.forecastAmount != null &&
+                        item.forecastAmount! > item.limitAmount))
+                .take(3)
+                .map((item) {
               final progress = item.limitAmount > 0
                   ? (item.spentAmount / item.limitAmount).clamp(0.0, 1.0)
                   : 0.0;
+              final forecastProgress = item.forecastAmount != null &&
+                      item.limitAmount > 0
+                  ? (item.forecastAmount! / item.limitAmount).clamp(0.0, 1.0)
+                  : null;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Column(
@@ -214,6 +218,56 @@ class _BudgetRiskCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                    if (item.spentAmount > item.limitAmount &&
+                        item.limitAmount > 0) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            'Đã vượt: ',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.red.shade400,
+                            ),
+                          ),
+                          Text(
+                            AppHelperFunction.formatAmount(
+                                item.spentAmount - item.limitAmount),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.red.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else if (item.forecastAmount != null &&
+                        item.forecastAmount! > item.limitAmount &&
+                        item.limitAmount > 0) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            'Dự báo cuối tháng: ',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                          Text(
+                            AppHelperFunction.formatAmount(item.forecastAmount!),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: forecastProgress != null &&
+                                      forecastProgress > 1.0
+                                  ? Colors.red.shade400
+                                  : Colors.orange.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               );
@@ -250,4 +304,73 @@ class _InfoCard extends StatelessWidget {
 String _formatDate(String value) {
   if (value.length >= 10) return value.substring(0, 10);
   return value;
+}
+
+class _CategoryBreakdownButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _CategoryBreakdownButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [const Color(0xFF1A2744), const Color(0xFF1E293B)]
+                    : [const Color(0xFFE8F0FE), const Color(0xFFF0F4FF)],
+              ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF3B82F6).withValues(alpha: 0.3)
+                    : const Color(0xFF3B82F6).withValues(alpha: 0.2),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Iconsax.chart_1_copy,
+                  size: 16,
+                  color: isDark
+                      ? const Color(0xFF60A5FA)
+                      : const Color(0xFF2563EB),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Xem chi tiết từng danh mục',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? const Color(0xFF60A5FA)
+                        : const Color(0xFF2563EB),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 12,
+                  color: isDark
+                      ? const Color(0xFF60A5FA).withValues(alpha: 0.6)
+                      : const Color(0xFF2563EB).withValues(alpha: 0.6),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

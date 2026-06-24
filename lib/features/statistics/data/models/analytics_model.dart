@@ -179,7 +179,27 @@ class ForecastPointModel {
   factory ForecastPointModel.fromJson(Map<String, dynamic> json) {
     return ForecastPointModel(
       date: json['date']?.toString() ?? '',
-      predictedAmount: (json['predictedAmount'] as num? ?? 0.0).toDouble(),
+      predictedAmount: (json['predictedAmount'] as num? ?? json['predicted_amount'] as num? ?? 0.0).toDouble(),
+    );
+  }
+}
+
+class RecurringMarkerModel {
+  final String date;
+  final String label;
+  final double amount;
+
+  const RecurringMarkerModel({
+    required this.date,
+    required this.label,
+    required this.amount,
+  });
+
+  factory RecurringMarkerModel.fromJson(Map<String, dynamic> json) {
+    return RecurringMarkerModel(
+      date: json['date']?.toString() ?? '',
+      label: json['label']?.toString() ?? '',
+      amount: (json['amount'] as num? ?? 0.0).toDouble(),
     );
   }
 }
@@ -194,6 +214,8 @@ class CategoryForecastModel {
   final double? remainingForecastAmount;
   final String? riskLevel;
   final List<String> reasonCodes;
+  final double? fixedAmount;
+  final double? flexibleAmount;
 
   const CategoryForecastModel({
     required this.categoryName,
@@ -205,6 +227,8 @@ class CategoryForecastModel {
     this.remainingForecastAmount,
     this.riskLevel,
     required this.reasonCodes,
+    this.fixedAmount,
+    this.flexibleAmount,
   });
 
   factory CategoryForecastModel.fromJson(Map<String, dynamic> json) {
@@ -239,6 +263,16 @@ class CategoryForecastModel {
               ?.map((e) => e.toString())
               .toList() ??
           <String>[],
+      fixedAmount: json['fixedAmount'] != null
+          ? (json['fixedAmount'] as num).toDouble()
+          : (json['fixed_amount'] != null
+                ? (json['fixed_amount'] as num).toDouble()
+                : null),
+      flexibleAmount: json['flexibleAmount'] != null
+          ? (json['flexibleAmount'] as num).toDouble()
+          : (json['flexible_amount'] != null
+                ? (json['flexible_amount'] as num).toDouble()
+                : null),
     );
   }
 }
@@ -348,6 +382,7 @@ class ForecastingModel {
   final List<CategoryForecastModel> categoryForecasts;
   final List<WeeklyForecastModel> weeklyForecasts;
   final List<ForecastRiskWindowModel> riskWindows;
+  final List<RecurringMarkerModel> recurringMarkers;
 
   const ForecastingModel({
     required this.method,
@@ -368,6 +403,7 @@ class ForecastingModel {
     required this.categoryForecasts,
     required this.weeklyForecasts,
     required this.riskWindows,
+    required this.recurringMarkers,
   });
 
   factory ForecastingModel.fromJson(Map<String, dynamic> json) {
@@ -453,6 +489,14 @@ class ForecastingModel {
               )
               .toList() ??
           <ForecastRiskWindowModel>[],
+      recurringMarkers:
+          (json['recurringMarkers'] as List? ?? json['recurring_markers'] as List?)
+              ?.map(
+                (e) =>
+                    RecurringMarkerModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          <RecurringMarkerModel>[],
     );
   }
 }
@@ -666,6 +710,76 @@ class AiBudgetingModel {
   }
 }
 
+class UnpaidRecurringModel {
+  final String categoryName;
+  final String description;
+  final int? expectedDay;
+  final double expectedAmount;
+  final String status;
+
+  const UnpaidRecurringModel({
+    required this.categoryName,
+    required this.description,
+    this.expectedDay,
+    required this.expectedAmount,
+    required this.status,
+  });
+
+  factory UnpaidRecurringModel.fromJson(Map<String, dynamic> json) {
+    return UnpaidRecurringModel(
+      categoryName: json['categoryName']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      expectedDay: json['expectedDay'] as int?,
+      expectedAmount: (json['expectedAmount'] as num? ?? 0.0).toDouble(),
+      status: json['status']?.toString() ?? 'unpaid',
+    );
+  }
+}
+
+class HabitSuggestionModel {
+  final String habitName;
+  final String categoryName;
+  final int currentMonthCount;
+  final double currentMonthTotal;
+  final double avgPerTransaction;
+  final int projectedMonthCount;
+  final double projectedMonthTotal;
+  final int suggestedCount;
+  final double potentialSavings;
+  final String suggestionText;
+  final bool isEarlyEstimate;
+
+  const HabitSuggestionModel({
+    required this.habitName,
+    required this.categoryName,
+    required this.currentMonthCount,
+    required this.currentMonthTotal,
+    required this.avgPerTransaction,
+    required this.projectedMonthCount,
+    required this.projectedMonthTotal,
+    required this.suggestedCount,
+    required this.potentialSavings,
+    required this.suggestionText,
+    this.isEarlyEstimate = false,
+  });
+
+  factory HabitSuggestionModel.fromJson(Map<String, dynamic> json) {
+    return HabitSuggestionModel(
+      habitName: json['habitName']?.toString() ?? '',
+      categoryName: json['categoryName']?.toString() ?? '',
+      currentMonthCount: json['currentMonthCount'] as int? ?? 0,
+      currentMonthTotal: (json['currentMonthTotal'] as num? ?? 0.0).toDouble(),
+      avgPerTransaction: (json['avgPerTransaction'] as num? ?? 0.0).toDouble(),
+      projectedMonthCount: json['projectedMonthCount'] as int? ?? 0,
+      projectedMonthTotal: (json['projectedMonthTotal'] as num? ?? 0.0).toDouble(),
+      suggestedCount: json['suggestedCount'] as int? ?? 0,
+      potentialSavings: (json['potentialSavings'] as num? ?? 0.0).toDouble(),
+      suggestionText: json['suggestionText']?.toString() ?? '',
+      isEarlyEstimate: json['isEarlyEstimate'] as bool? ?? false,
+    );
+  }
+}
+
 class AnalyticsModel {
   final int financialHealthScore;
   final String cashFlowTrend; // 'improving', 'stable', 'worsening'
@@ -679,6 +793,8 @@ class AnalyticsModel {
   final ForecastingModel? currentMonthProjection;
   final ForecastingModel? nextMonthForecast;
   final GoalAchievementPredictionSummaryModel? goalAchievement;
+  final List<UnpaidRecurringModel> unpaidRecurring;
+  final List<HabitSuggestionModel> habitSuggestions;
 
   const AnalyticsModel({
     required this.financialHealthScore,
@@ -693,6 +809,8 @@ class AnalyticsModel {
     this.currentMonthProjection,
     this.nextMonthForecast,
     this.goalAchievement,
+    this.unpaidRecurring = const [],
+    this.habitSuggestions = const [],
   });
 
   factory AnalyticsModel.fromJson(Map<String, dynamic> json) {
@@ -766,6 +884,16 @@ class AnalyticsModel {
       currentMonthProjection: currentMonthProjectionObj,
       nextMonthForecast: nextMonthForecastObj,
       goalAchievement: goalAchievementObj,
+      unpaidRecurring:
+          (json['unpaidRecurring'] as List?)
+              ?.map((e) => UnpaidRecurringModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          <UnpaidRecurringModel>[],
+      habitSuggestions:
+          (json['habitSuggestions'] as List?)
+              ?.map((e) => HabitSuggestionModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          <HabitSuggestionModel>[],
     );
   }
 }

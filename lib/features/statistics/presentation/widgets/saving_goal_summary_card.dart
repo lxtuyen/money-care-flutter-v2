@@ -37,6 +37,7 @@ class SavingGoalSummaryCard extends StatefulWidget {
 
 class _SavingGoalSummaryCardState extends State<SavingGoalSummaryCard> {
   bool _isExpanded = false;
+  bool _showAllTransactions = false;
 
   GoalAchievementPredictionModel? get _matchingPrediction {
     final value = widget.prediction;
@@ -226,13 +227,17 @@ class _SavingGoalSummaryCardState extends State<SavingGoalSummaryCard> {
 
   Widget _buildTransactionHistory(List<TransactionModel> transactions) {
     final themeColors = AppThemeColors.of(context);
+    if (transactions.isEmpty) return const SizedBox.shrink();
+
+    const maxVisible = 3;
+    final showToggle = transactions.length > maxVisible;
+    final visible = _showAllTransactions
+        ? transactions
+        : transactions.take(maxVisible).toList();
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (transactions.isEmpty)
-          const SizedBox.shrink()
-        else
         const Text(
           'Lịch sử đóng góp',
           style: TextStyle(
@@ -242,89 +247,125 @@ class _SavingGoalSummaryCardState extends State<SavingGoalSummaryCard> {
           ),
         ),
         const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: themeColors.surfaceBackground,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderSecondary),
-            ),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: transactions.length,
-              separatorBuilder: (context, index) => const Divider(
-                height: 1,
-                indent: 16,
-                endIndent: 16,
-              ),
-              itemBuilder: (context, index) {
-                final tx = transactions[index];
-                final dateStr = tx.transactionDate != null
-                    ? AppHelperFunction.getFormattedDate(tx.transactionDate!, format: 'dd/MM/yyyy')
-                    : '';
-                final note = tx.note != null && tx.note!.isNotEmpty
-                    ? tx.note!
-                    : (tx.category?.name ?? 'Góp quỹ');
-                
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.income.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.savings_rounded,
-                          size: 16,
-                          color: AppColors.income,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              note,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.text1,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (dateStr.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                dateStr,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.text3,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '+${AppHelperFunction.formatAmount(tx.amount.toDouble())}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.income,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: themeColors.surfaceBackground,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderSecondary),
           ),
+          child: Column(
+            children: [
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: visible.length,
+                separatorBuilder: (context, index) => const Divider(
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
+                itemBuilder: (context, index) {
+                  final tx = visible[index];
+                  final dateStr = tx.transactionDate != null
+                      ? AppHelperFunction.getFormattedDate(tx.transactionDate!, format: 'dd/MM/yyyy')
+                      : '';
+                  final note = tx.note != null && tx.note!.isNotEmpty
+                      ? tx.note!
+                      : (tx.category?.name ?? 'Góp quỹ');
+                  
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.income.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.savings_rounded,
+                            size: 16,
+                            color: AppColors.income,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                note,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.text1,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (dateStr.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  dateStr,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.text3,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '+${AppHelperFunction.formatAmount(tx.amount.toDouble())}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.income,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              if (showToggle) ...[
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                GestureDetector(
+                  onTap: () => setState(() => _showAllTransactions = !_showAllTransactions),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _showAllTransactions
+                              ? 'Thu gọn'
+                              : 'Xem thêm (${transactions.length - maxVisible})',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          _showAllTransactions
+                              ? Icons.keyboard_arrow_up_rounded
+                              : Icons.keyboard_arrow_down_rounded,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }

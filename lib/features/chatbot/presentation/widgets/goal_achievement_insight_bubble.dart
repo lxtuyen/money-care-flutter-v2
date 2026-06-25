@@ -8,14 +8,31 @@ import 'package:money_care/features/saving_goal/data/models/goal_achievement_pre
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
 import 'package:money_care/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:money_care/features/home/presentation/widgets/transaction/transaction_item.dart';
+import 'package:money_care/features/chatbot/data/models/chatbot_expense_analysis_model.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/habit_suggestions_card.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/goal_commitments_section.dart';
 
-class GoalAchievementInsightBubble extends StatelessWidget {
+class GoalAchievementInsightBubble extends StatefulWidget {
   final Map<String, dynamic> metadata;
 
   const GoalAchievementInsightBubble({super.key, required this.metadata});
 
   @override
+  State<GoalAchievementInsightBubble> createState() => _GoalAchievementInsightBubbleState();
+}
+
+class _GoalAchievementInsightBubbleState extends State<GoalAchievementInsightBubble> {
+  bool _showAllHistory = false;
+  double _committedSavings = 0.0;
+  final _commitmentsKey = GlobalKey<GoalCommitmentsSectionState>();
+
+  @override
   Widget build(BuildContext context) {
+    return _buildContent(context);
+  }
+
+  Widget _buildContent(BuildContext context) {
+    final metadata = widget.metadata;
     final colors = AppThemeColors.of(context);
     final summary = metadata['summary']?.toString() ?? '';
     final predictionMap = metadata['prediction'];
@@ -56,17 +73,24 @@ class GoalAchievementInsightBubble extends StatelessWidget {
     );
 
     // Lấy các giá trị truyền từ backend
-    final double expectedSavingsAmount = (metadata['expectedSavingsAmount'] as num?)?.toDouble() ?? 0.0;
+    final double baseExpectedSavings = (metadata['expectedSavingsAmount'] as num?)?.toDouble() ?? 0.0;
+    final double expectedSavingsAmount = baseExpectedSavings + _committedSavings;
     final double currentMilestoneRemaining = (metadata['currentMilestoneRemaining'] as num?)?.toDouble() ?? 
         (activeMilestones.isNotEmpty 
             ? (activeMilestones.first.target - activeMilestones.first.actual).clamp(0.0, double.infinity)
             : prediction.remainingAmount);
-    final double shortfall = (metadata['shortfall'] as num?)?.toDouble() ?? 0.0;
+    final double baseShortfall = (metadata['shortfall'] as num?)?.toDouble() ?? 0.0;
+    final double shortfall = (baseShortfall - _committedSavings).clamp(0.0, double.infinity);
     final int daysDelayed = (metadata['daysDelayed'] as num?)?.toInt() ?? 0;
     final int daysSaved = (metadata['daysSaved'] as num?)?.toInt() ?? 0;
     final double remainingSavingCapacity = (metadata['remainingSavingCapacity'] as num?)?.toDouble() ?? 0.0;
     final double otherGoalsRequiredRate = (metadata['otherGoalsRequiredRate'] as num?)?.toDouble() ?? 0.0;
     final List<dynamic> contributionHistory = metadata['contributionHistory'] as List<dynamic>? ?? [];
+    final habitSuggestions = (metadata['habitSuggestions'] as List<dynamic>? ?? [])
+        .map((item) => ChatbotHabitSuggestionModel.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ))
+        .toList();
 
     final statusColor = _riskColor(prediction.riskLevel);
 
@@ -126,6 +150,9 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                 otherGoalsRequiredRate: otherGoalsRequiredRate,
                 remainingSavingCapacity: remainingSavingCapacity,
                 currentMilestoneRemaining: currentMilestoneRemaining,
+                milestoneTarget: activeMilestones.isNotEmpty ? activeMilestones.first.target : null,
+                milestoneActual: activeMilestones.isNotEmpty ? activeMilestones.first.actual : null,
+                shortfall: shortfall,
                 colors: colors,
               ),
               const SizedBox(height: 12),
@@ -195,17 +222,22 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                         color: AppColors.warning,
                         onTap: () => Get.toNamed(RoutePath.savingGoalManagement),
                       ),
-                    _actionChip(
-                      icon: Icons.calendar_month_outlined,
-                      label: 'Gia hạn mục tiêu',
-                      color: AppColors.info,
-                      onTap: () => Get.toNamed(
-                        RoutePath.createSavingGoal,
-                        arguments: prediction.goalId,
-                      ),
-                    ),
                   ],
                 ),
+                if (habitSuggestions.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  HabitSuggestionsCard(
+                    suggestions: habitSuggestions,
+                    shortfall: shortfall,
+                    goalId: prediction.goalId,
+                    onCommitted: (savings) {
+                      setState(() {
+                        _committedSavings += savings;
+                      });
+                      _commitmentsKey.currentState?.reload();
+                    },
+                  ),
+                ],
                 const SizedBox(height: 16),
               ] else if (daysSaved > 0) ...[
                 Container(
@@ -263,6 +295,18 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
+              // Danh sách cam kết hiện tại (luôn hiển thị)
+              GoalCommitmentsSection(
+                key: _commitmentsKey,
+                goalId: prediction.goalId,
+                onSavingsChanged: (delta) {
+                  setState(() {
+                    _committedSavings += delta;
+                  });
+                },
+              ),
+              const SizedBox(height: 12),
+
               // Tiến độ các giai đoạn
               if (milestones.isNotEmpty) ...[
                 Text(
@@ -297,36 +341,79 @@ class GoalAchievementInsightBubble extends StatelessWidget {
                     fontStyle: FontStyle.italic,
                   ),
                 )
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: contributionHistory.length,
-                  itemBuilder: (context, index) {
-                    final tx = contributionHistory[index];
-                    final isLast = index == contributionHistory.length - 1;
-                    final entity = TransactionEntity(
-                      id: (tx['id'] as num?)?.toInt(),
-                      amount: (tx['amount'] as num?)?.toInt() ?? 0,
-                      type: tx['type']?.toString() ?? 'income',
-                      note: tx['note']?.toString() ?? 'Nạp tiền tiết kiệm',
-                      transactionDate: tx['transactionDate'] != null
-                          ? DateTime.tryParse(tx['transactionDate'].toString())
-                          : null,
-                      category: const CategoryEntity(
-                        name: 'Tiết kiệm',
-                        icon: '🐷',
-                        type: 'income',
+              else ...[
+                () {
+                  const maxVisible = 3;
+                  final showToggle = contributionHistory.length > maxVisible;
+                  final visible = _showAllHistory
+                      ? contributionHistory
+                      : contributionHistory.take(maxVisible).toList();
+
+                  return Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: visible.length,
+                        itemBuilder: (context, index) {
+                          final tx = visible[index];
+                          final isLast = index == visible.length - 1 && !showToggle;
+                          final entity = TransactionEntity(
+                            id: (tx['id'] as num?)?.toInt(),
+                            amount: (tx['amount'] as num?)?.toInt() ?? 0,
+                            type: tx['type']?.toString() ?? 'income',
+                            note: tx['note']?.toString() ?? 'Nạp tiền tiết kiệm',
+                            transactionDate: tx['transactionDate'] != null
+                                ? DateTime.tryParse(tx['transactionDate'].toString())
+                                : null,
+                            category: const CategoryEntity(
+                              name: 'Tiết kiệm',
+                              icon: '🐷',
+                              type: 'income',
+                            ),
+                          );
+                          return TransactionItem(
+                            item: entity,
+                            onTap: () {},
+                            isShowDivider: !isLast,
+                            color: AppColors.income,
+                          );
+                        },
                       ),
-                    );
-                    return TransactionItem(
-                      item: entity,
-                      onTap: () {},
-                      isShowDivider: !isLast,
-                      color: AppColors.income,
-                    );
-                  },
-                ),
+                      if (showToggle)
+                        GestureDetector(
+                          onTap: () => setState(() => _showAllHistory = !_showAllHistory),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4, bottom: 4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  _showAllHistory
+                                      ? 'Thu gọn'
+                                      : 'Xem thêm (${contributionHistory.length - maxVisible})',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                Icon(
+                                  _showAllHistory
+                                      ? Icons.keyboard_arrow_up_rounded
+                                      : Icons.keyboard_arrow_down_rounded,
+                                  size: 16,
+                                  color: AppColors.primary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                }(),
+              ],
             ],
           ),
         ),
@@ -384,6 +471,9 @@ class GoalAchievementInsightBubble extends StatelessWidget {
     required double otherGoalsRequiredRate,
     required double remainingSavingCapacity,
     required double currentMilestoneRemaining,
+    double? milestoneTarget,
+    double? milestoneActual,
+    double shortfall = 0,
     required AppThemeColors colors,
   }) {
     final hasOtherGoals = otherGoalsRequiredRate > 0;
@@ -404,6 +494,26 @@ class GoalAchievementInsightBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Milestone context
+          if (milestoneTarget != null && milestoneTarget > 0) ...[
+            _breakdownRow(
+              label: 'Giai đoạn cần góp',
+              value: '${AppHelperFunction.formatAmount(milestoneTarget, currency: '')} ₫',
+              color: colors.textPrimary,
+              colors: colors,
+            ),
+            const SizedBox(height: 4),
+            _breakdownRow(
+              label: 'Đã góp',
+              value: '${AppHelperFunction.formatAmount(milestoneActual ?? 0, currency: '')} ₫',
+              color: AppColors.income,
+              colors: colors,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Divider(height: 1, color: colors.borderSecondary),
+            ),
+          ],
           _breakdownRow(
             label: 'Tiết kiệm dự kiến tháng này',
             value: '${AppHelperFunction.formatAmount(expectedSavingsAmount, currency: '')} ₫',
@@ -426,6 +536,20 @@ class GoalAchievementInsightBubble extends StatelessWidget {
               label: 'Còn lại cho mục tiêu này',
               value: '${AppHelperFunction.formatAmount(remainingSavingCapacity, currency: '')} ₫',
               color: capacityColor,
+              colors: colors,
+              isBold: true,
+            ),
+          ],
+          // Shortfall row
+          if (shortfall > 0) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Divider(height: 1, color: colors.borderSecondary),
+            ),
+            _breakdownRow(
+              label: 'Còn thiếu',
+              value: '${AppHelperFunction.formatAmount(shortfall, currency: '')} ₫',
+              color: AppColors.expense,
               colors: colors,
               isBold: true,
             ),

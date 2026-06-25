@@ -17,14 +17,12 @@ Color getExpenseAnalysisStatusColor(String value) {
 }
 
 class ExpenseAnalysisCardShell extends StatelessWidget {
-  final IconData icon;
   final String title;
   final Color accentColor;
   final Widget child;
 
   const ExpenseAnalysisCardShell({
     super.key,
-    required this.icon,
     required this.title,
     required this.accentColor,
     required this.child,
@@ -53,16 +51,6 @@ class ExpenseAnalysisCardShell extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, size: 17, color: accentColor),
-              ),
-              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   title,

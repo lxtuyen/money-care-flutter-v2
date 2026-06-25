@@ -195,7 +195,6 @@ const Map<String, String> viVN = {
       'Chụp ảnh, nhập số tiền và lưu giao dịch nhanh',
   'transaction.noRecent': 'Không có giao dịch nào gần đây.',
   'transaction.deleteConfirm': 'Bạn có chắc chắn muốn xóa giao dịch này?',
-  'transaction.deleteSuccess': 'Đã xóa giao dịch thành công',
   'transaction.searchHint': 'Tìm giao dịch',
   'transaction.dateLabel': 'Ngày giao dịch',
   'transaction.dateHint': 'Chọn ngày',

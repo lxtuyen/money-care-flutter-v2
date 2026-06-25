@@ -29,7 +29,8 @@ class GoalAchievementPredictionBlock extends StatelessWidget {
 
     double? forecastedSaving;
     if (Get.isRegistered<StatisticsController>()) {
-      forecastedSaving = Get.find<StatisticsController>().forecastedSaving;
+      final statsCtrl = Get.find<StatisticsController>();
+      forecastedSaving = statsCtrl.forecastedSaving + statsCtrl.totalHabitSavings;
     }
 
     final String displayMsg = 'Phân tích tiến độ mục tiêu ${prediction.name}';

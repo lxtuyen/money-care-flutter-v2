@@ -319,7 +319,6 @@ class TransactionDetail extends StatelessWidget {
       onConfirm: () {
         Get.back();
         controller.deleteTransaction(item.id!, userId);
-        AppHelperFunction.showSuccessSnackBar('transaction.deleteSuccess'.tr);
       },
     );
   }

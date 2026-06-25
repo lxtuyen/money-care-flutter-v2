@@ -9,7 +9,7 @@ import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/statistics/presentation/widgets/anomalies_panel.dart';
 import 'package:money_care/features/statistics/presentation/widgets/estimated_expense_budget_group_card.dart';
-import 'package:money_care/features/statistics/presentation/widgets/habit_suggestions_panel.dart';
+import 'package:money_care/features/habit_commitments/domain/entities/habit_commitment_entity.dart';
 import 'package:money_care/features/statistics/presentation/widgets/unpaid_recurring_panel.dart';
 
 class BudgetTrackingSection extends StatefulWidget {
@@ -110,6 +110,8 @@ class _BudgetTrackingSectionState extends State<BudgetTrackingSection> {
                 savingBudget: controller.savingBudget,
                 savingSpent: controller.savingSpent,
                 anomalyCount: controller.anomalyCount,
+                habitCutSavings: controller.totalHabitSavings,
+                commitments: controller.habitCommitments,
                 onViewDetail: onViewDetail,
               ),
               const SizedBox(height: 12),
@@ -120,16 +122,12 @@ class _BudgetTrackingSectionState extends State<BudgetTrackingSection> {
               ),
               const SizedBox(height: 12),*/
             ],
-            if ((controller.analyticsData.value?.habitSuggestions ?? []).isNotEmpty) ...[
-              HabitSuggestionsPanel(
-                habits: controller.analyticsData.value!.habitSuggestions,
-              ),
-              const SizedBox(height: 12),
-            ],
             if (anomalies.isNotEmpty) ...[
               AnomaliesPanel(anomalies: anomalies),
               const SizedBox(height: 12),
             ],
+
+            const SizedBox(height: 12),
             ...() {
               final entries = filteredExpenses.entries.toList();
               final visibleEntries = _isBudgetExpanded
@@ -189,7 +187,7 @@ class _BudgetTrackingSectionState extends State<BudgetTrackingSection> {
   }
 }
 
-class _BudgetSummaryCard extends StatelessWidget {
+class _BudgetSummaryCard extends StatefulWidget {
   final double plannedIncome;
   final double totalLimit;
   final double totalSpent;
@@ -200,6 +198,8 @@ class _BudgetSummaryCard extends StatelessWidget {
   final double savingBudget;
   final double savingSpent;
   final int anomalyCount;
+  final double habitCutSavings;
+  final List<HabitCommitmentEntity> commitments;
   final VoidCallback? onViewDetail;
 
   const _BudgetSummaryCard({
@@ -213,13 +213,22 @@ class _BudgetSummaryCard extends StatelessWidget {
     required this.savingBudget,
     required this.savingSpent,
     this.anomalyCount = 0,
+    this.habitCutSavings = 0,
+    this.commitments = const [],
     this.onViewDetail,
   });
 
   @override
+  State<_BudgetSummaryCard> createState() => _BudgetSummaryCardState();
+}
+
+class _BudgetSummaryCardState extends State<_BudgetSummaryCard> {
+  bool _commitmentExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final themeColors = AppThemeColors.of(context);
-    final savingColor = forecastedSaving >= 0
+    final savingColor = widget.forecastedSaving >= 0
         ? AppColors.primary
         : AppColors.expense;
 
@@ -245,7 +254,7 @@ class _BudgetSummaryCard extends StatelessWidget {
             context,
             themeColors,
             '- Thu nhập kế hoạch',
-            plannedIncome,
+            widget.plannedIncome,
             themeColors.textSecondary,
           ),
           const SizedBox(height: 8),
@@ -253,7 +262,7 @@ class _BudgetSummaryCard extends StatelessWidget {
             context,
             themeColors,
             '- Tổng ngân sách',
-            totalLimit,
+            widget.totalLimit,
             themeColors.textSecondary,
           ),
           const SizedBox(height: 8),
@@ -261,19 +270,19 @@ class _BudgetSummaryCard extends StatelessWidget {
             context,
             themeColors,
             '- Đã chi',
-            totalSpent,
+            widget.totalSpent,
             themeColors.textSecondary,
           ),
-          if (totalForecast != null) ...[
+          if (widget.totalForecast != null) ...[
             const SizedBox(height: 8),
             _row(
               context,
               themeColors,
               '- D\u1EF1 b\u00E1o cu\u1ED1i th\u00E1ng',
-              totalForecast!,
+              widget.totalForecast!,
               const Color(0xFFF59E0B),
             ),
-            if (totalFixedForecast > 0) ...[
+            if (widget.totalFixedForecast > 0) ...[
               const SizedBox(height: 6),
               Padding(
                 padding: const EdgeInsets.only(left: 12),
@@ -281,7 +290,7 @@ class _BudgetSummaryCard extends StatelessWidget {
                   context,
                   themeColors,
                   '\u{1F4CC} C\u1ED1 \u0111\u1ECBnh',
-                  totalFixedForecast,
+                  widget.totalFixedForecast,
                   const Color(0xFF6366F1),
                   isSubRow: true,
                 ),
@@ -293,18 +302,19 @@ class _BudgetSummaryCard extends StatelessWidget {
                   context,
                   themeColors,
                   '\u{1F504} Linh ho\u1EA1t',
-                  totalFlexibleForecast,
+                  widget.totalFlexibleForecast,
                   const Color(0xFF10B981),
                   isSubRow: true,
                 ),
               ),
             ],
           ],
-          if (totalForecast != null) ...[
+          if (widget.totalForecast != null) ...[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Divider(height: 1),
             ),
+            // Savings row (always primary color)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -316,7 +326,7 @@ class _BudgetSummaryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  AppHelperFunction.formatAmount(forecastedSaving),
+                  AppHelperFunction.formatAmount(widget.forecastedSaving),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: savingColor,
                     fontWeight: FontWeight.w800,
@@ -324,9 +334,38 @@ class _BudgetSummaryCard extends StatelessWidget {
                 ),
               ],
             ),
+            // Inline commitment details
+            if (widget.habitCutSavings > 0 && widget.commitments.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              _buildCommitmentSection(context, themeColors),
+            ],
+            // Breakdown sub-line when commitments exist
+            if (widget.habitCutSavings > 0) ...[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    '+ Cắt giảm ${AppHelperFunction.formatAmount(widget.habitCutSavings)} = ',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '${AppHelperFunction.formatAmount(widget.forecastedSaving + widget.habitCutSavings)}',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
-          if (savingBudget > 0) ...[
-            const SizedBox(height: 8),
+          if (widget.savingBudget > 0) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Divider(height: 1),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -338,7 +377,7 @@ class _BudgetSummaryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${AppHelperFunction.formatAmount(savingSpent)} / ${AppHelperFunction.formatAmount(savingBudget)}',
+                  '${AppHelperFunction.formatAmount(widget.savingSpent)} / ${AppHelperFunction.formatAmount(widget.savingBudget)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: themeColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -358,7 +397,7 @@ class _BudgetSummaryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  AppHelperFunction.formatAmount((savingBudget - savingSpent).clamp(0.0, double.infinity)),
+                  AppHelperFunction.formatAmount((widget.savingBudget - widget.savingSpent).clamp(0.0, double.infinity)),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: themeColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -366,41 +405,8 @@ class _BudgetSummaryCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (forecastedSaving < (savingBudget - savingSpent)) ...[
-              const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.expense.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: AppColors.expense.withValues(alpha: 0.15),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.warning_amber_rounded,
-                      color: AppColors.expense,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Tiết kiệm dự kiến thấp hơn mức cần sẽ ảnh hưởng đến mục tiêu!',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.expense,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ],
-          if (anomalyCount > 0) ...[
+          if (widget.anomalyCount > 0) ...[
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -422,7 +428,7 @@ class _BudgetSummaryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '$anomalyCount giao dịch',
+                    '${widget.anomalyCount} giao dịch',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.expense,
                       fontWeight: FontWeight.w800,
@@ -432,6 +438,179 @@ class _BudgetSummaryCard extends StatelessWidget {
               ],
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommitmentSection(
+    BuildContext context,
+    AppThemeColors themeColors,
+  ) {
+    final commitments = widget.commitments;
+    final showExpand = commitments.length > 1;
+    final visible = _commitmentExpanded
+        ? commitments
+        : commitments.take(1).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppColors.income.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppColors.income.withValues(alpha: 0.15),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...visible.map((c) => _buildCommitmentRow(context, themeColors, c)),
+          if (showExpand)
+            GestureDetector(
+              onTap: () =>
+                  setState(() => _commitmentExpanded = !_commitmentExpanded),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _commitmentExpanded
+                          ? 'Thu gọn'
+                          : 'Xem thêm (${commitments.length - 1})',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.income,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      _commitmentExpanded
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      size: 16,
+                      color: AppColors.income,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommitmentRow(
+    BuildContext context,
+    AppThemeColors themeColors,
+    HabitCommitmentEntity c,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final statusColor = c.isExceeded ? Colors.red : Colors.green;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Row 1: habit name + avg price + projected→committed + progress
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        c.habitName,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (c.avgPerTransaction > 0) ...[
+                      const SizedBox(width: 6),
+                      Text(
+                        '~${AppHelperFunction.formatAmount(c.avgPerTransaction)}/lần',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? Colors.white54 : Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              // ~~projected~~ → committed
+              if (c.projectedCount > 0) ...[
+                Text(
+                  '${c.projectedCount}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white38 : Colors.grey.shade400,
+                    decoration: TextDecoration.lineThrough,
+                    decorationColor:
+                        isDark ? Colors.white38 : Colors.grey.shade400,
+                  ),
+                ),
+                const SizedBox(width: 3),
+                Icon(Icons.arrow_forward_rounded,
+                    size: 10,
+                    color: AppColors.income),
+                const SizedBox(width: 3),
+              ],
+              Text(
+                '${c.committedCount} lần',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.income,
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Current / committed badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 1,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${c.currentCount}/${c.committedCount}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor.shade600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Progress bar
+          const SizedBox(height: 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: LinearProgressIndicator(
+              value: c.progressPercent,
+              minHeight: 3,
+              backgroundColor: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.grey.withValues(alpha: 0.15),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                statusColor.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
         ],
       ),
     );

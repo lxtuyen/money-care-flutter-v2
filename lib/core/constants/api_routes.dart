@@ -45,7 +45,6 @@ class ApiRoutes {
   static const personalizationProfileRebuild =
       'personalization/profile/rebuild';
 
-
   static const splitSession = 'split-session';
   static const gamification = 'gamification';
   static const couples = 'couples';
@@ -64,4 +63,10 @@ class ApiRoutes {
   static const recurringDismiss = 'spending-insights/recurring/dismiss';
   static String recurringConfirmedItem(int id) =>
       'spending-insights/recurring/confirmed/$id';
+
+  // Habit Commitments
+  static const habitCommitments = 'habit-commitments';
+  static const habitCommitmentsProgress = 'habit-commitments/progress';
+  static String habitCommitmentUpdate(int id) => 'habit-commitments/$id';
+  static String habitCommitmentDelete(int id) => 'habit-commitments/$id';
 }

@@ -8,6 +8,7 @@ class ChatbotExpenseAnalysisModel {
   final List<ChatbotAnomalyModel> anomalies;
   final ChatbotBudgetRiskModel? budgetRisk;
   final List<ChatbotRecommendationModel> recommendations;
+  final List<ChatbotHabitSuggestionModel> habitSuggestions;
   final ChatbotEmptyStateModel? emptyState;
 
   const ChatbotExpenseAnalysisModel({
@@ -20,6 +21,7 @@ class ChatbotExpenseAnalysisModel {
     required this.anomalies,
     required this.budgetRisk,
     required this.recommendations,
+    required this.habitSuggestions,
     required this.emptyState,
   });
 
@@ -45,6 +47,9 @@ class ChatbotExpenseAnalysisModel {
           : null,
       recommendations: _asList(json['recommendations'])
           .map((item) => ChatbotRecommendationModel.fromJson(_asMap(item)))
+          .toList(),
+      habitSuggestions: _asList(json['habitSuggestions'])
+          .map((item) => ChatbotHabitSuggestionModel.fromJson(_asMap(item)))
           .toList(),
       emptyState: json['emptyState'] is Map
           ? ChatbotEmptyStateModel.fromJson(_asMap(json['emptyState']))
@@ -308,6 +313,50 @@ Map<String, dynamic> _asMap(dynamic value) {
   if (value is Map<String, dynamic>) return value;
   if (value is Map) return Map<String, dynamic>.from(value);
   return <String, dynamic>{};
+}
+
+class ChatbotHabitSuggestionModel {
+  final String habitName;
+  final String categoryName;
+  final int currentMonthCount;
+  final double currentMonthTotal;
+  final double avgPerTransaction;
+  final int projectedMonthCount;
+  final double projectedMonthTotal;
+  final int suggestedCount;
+  final double potentialSavings;
+  final String suggestionText;
+  final bool isEarlyEstimate;
+
+  const ChatbotHabitSuggestionModel({
+    required this.habitName,
+    required this.categoryName,
+    required this.currentMonthCount,
+    required this.currentMonthTotal,
+    required this.avgPerTransaction,
+    required this.projectedMonthCount,
+    required this.projectedMonthTotal,
+    required this.suggestedCount,
+    required this.potentialSavings,
+    required this.suggestionText,
+    required this.isEarlyEstimate,
+  });
+
+  factory ChatbotHabitSuggestionModel.fromJson(Map<String, dynamic> json) {
+    return ChatbotHabitSuggestionModel(
+      habitName: json['habitName']?.toString() ?? '',
+      categoryName: json['categoryName']?.toString() ?? '',
+      currentMonthCount: _asInt(json['currentMonthCount']),
+      currentMonthTotal: _asDouble(json['currentMonthTotal']),
+      avgPerTransaction: _asDouble(json['avgPerTransaction']),
+      projectedMonthCount: _asInt(json['projectedMonthCount']),
+      projectedMonthTotal: _asDouble(json['projectedMonthTotal']),
+      suggestedCount: _asInt(json['suggestedCount']),
+      potentialSavings: _asDouble(json['potentialSavings']),
+      suggestionText: json['suggestionText']?.toString() ?? '',
+      isEarlyEstimate: json['isEarlyEstimate'] == true,
+    );
+  }
 }
 
 List<dynamic> _asList(dynamic value) {

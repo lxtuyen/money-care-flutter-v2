@@ -107,9 +107,6 @@ class WalletController extends GetxController {
     try {
       await repository.delete(id);
       await refreshWallets();
-      if (showSuccessMessage) {
-        AppHelperFunction.showSuccessSnackBar('Đã xóa ví thành công');
-      }
       return true;
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Xóa ví thất bại: $e');

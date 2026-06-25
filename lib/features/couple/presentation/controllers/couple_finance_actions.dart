@@ -232,7 +232,6 @@ extension CoupleFinanceActions on CoupleController {
       final transactionRepo = Get.find<TransactionRepository>();
       await transactionRepo.deleteTransaction(id);
       await fetchCoupleData();
-      AppHelperFunction.showSuccessSnackBar('Đã xóa giao dịch chung');
     } catch (e) {
       AppHelperFunction.showErrorSnackBar('Lỗi xóa giao dịch: $e');
     } finally {

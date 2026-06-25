@@ -87,7 +87,6 @@ class _OverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusColor = getExpenseAnalysisStatusColor(overview.cashFlowTrend);
     return ExpenseAnalysisCardShell(
-      icon: Iconsax.chart_2_copy,
       title: 'Tổng quan',
       accentColor: statusColor,
       child: Column(
@@ -136,7 +135,6 @@ class _AnomalyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpenseAnalysisCardShell(
-      icon: Iconsax.warning_2_copy,
       title: 'Bất thường',
       accentColor: items.isEmpty ? Colors.green : Colors.orange,
       child: items.isEmpty
@@ -165,7 +163,6 @@ class _BudgetRiskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpenseAnalysisCardShell(
-      icon: Iconsax.wallet_3_copy,
       title: 'Rủi ro ngân sách',
       accentColor: getExpenseAnalysisStatusColor(budgetRisk.riskLevel),
       child: Column(
@@ -293,7 +290,6 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpenseAnalysisCardShell(
-      icon: icon,
       title: title,
       accentColor: Colors.blueGrey,
       child: Text(body, style: const TextStyle(fontSize: 13, height: 1.35)),

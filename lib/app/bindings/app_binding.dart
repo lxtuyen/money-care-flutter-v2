@@ -54,6 +54,9 @@ import 'package:money_care/features/spending_plan/data/datasources/spending_plan
 import 'package:money_care/features/spending_plan/data/repositories/spending_plan_repository_impl.dart';
 import 'package:money_care/features/spending_plan/domain/usecases/usecases.dart';
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
+import 'package:money_care/features/habit_commitments/data/repositories/habit_commitment_repository_impl.dart';
+import 'package:money_care/features/habit_commitments/domain/repositories/habit_commitment_repository.dart';
+
 class AppBinding extends Bindings {
   final LocalStorage storage;
 
@@ -215,7 +218,11 @@ class AppBinding extends Bindings {
       permanent: true,
     );
 
-
+    // Habit commitments
+    Get.put<HabitCommitmentRepository>(
+      HabitCommitmentRepositoryImpl(api: apiService),
+      permanent: true,
+    );
 
     final userRemoteDs = UserRemoteDatasourceImpl(api: apiService);
     final userRepo = UserRepositoryImpl(remoteDatasource: userRemoteDs);

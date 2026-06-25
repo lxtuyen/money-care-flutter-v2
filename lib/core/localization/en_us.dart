@@ -196,7 +196,6 @@ const Map<String, String> enUS = {
   'transaction.noRecent': 'No recent transactions found.',
   'transaction.deleteConfirm':
       'Are you sure you want to delete this transaction?',
-  'transaction.deleteSuccess': 'Transaction deleted successfully',
   'transaction.searchHint': 'Search transactions',
   'transaction.dateLabel': 'Transaction Date',
   'transaction.dateHint': 'Select date',

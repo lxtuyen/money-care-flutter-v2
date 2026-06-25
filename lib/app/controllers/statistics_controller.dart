@@ -17,6 +17,8 @@ import 'package:money_care/features/statistics/domain/usecases/get_financial_ana
 import 'package:money_care/features/ai_feedback/data/models/ai_feedback_dto.dart';
 import 'package:money_care/features/ai_feedback/domain/usecases/send_ai_feedback_usecase.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/habit_commitments/domain/entities/habit_commitment_entity.dart';
+import 'package:money_care/features/habit_commitments/domain/repositories/habit_commitment_repository.dart';
 
 class StatisticsController extends GetxController {
   final GetTotalByTypeUseCase getTotalByTypeUseCase;
@@ -48,6 +50,7 @@ class StatisticsController extends GetxController {
   final analyticsError = ''.obs;
   final submittedFeedbackIds = <String>{}.obs;
   final sendingFeedbackIds = <String>{}.obs;
+  final habitCommitments = <HabitCommitmentEntity>[].obs;
 
   final firstTransactionDate = Rxn<DateTime>();
 
@@ -227,6 +230,14 @@ class StatisticsController extends GetxController {
         : plannedIncome - totalSpentExcludingSavings;
   }
 
+  double get totalHabitSavings {
+    if (habitCommitments.isEmpty) return 0.0;
+    return habitCommitments.fold<double>(
+      0.0,
+      (sum, c) => sum + c.potentialSavings,
+    );
+  }
+
   double _monthlyizedAmount(EstimatedExpenseEntity expense, int daysInMonth) {
     final v = expense.frequencyValue <= 0 ? 1 : expense.frequencyValue;
     switch (expense.frequencyType.toLowerCase()) {
@@ -363,6 +374,19 @@ class StatisticsController extends GetxController {
       analyticsError.value = e.toString();
     } finally {
       isLoadingAnalytics.value = false;
+    }
+  }
+
+  Future<void> _loadHabitCommitments() async {
+    try {
+      if (!Get.isRegistered<HabitCommitmentRepository>()) return;
+      final repo = Get.find<HabitCommitmentRepository>();
+      final month = currentStartDate.month;
+      final year = currentStartDate.year;
+      final data = await repo.getProgress(month: month, year: year);
+      habitCommitments.assignAll(data);
+    } catch (e) {
+      debugPrint('Error loading habit commitments: $e');
     }
   }
 
@@ -755,6 +779,7 @@ class StatisticsController extends GetxController {
 
         // Run AI forecasting in background asynchronously to prevent blocking the main UI loading state
         loadFinancialAnalytics();
+        _loadHabitCommitments();
 
         await Future.wait(futures);
         if (currentRefresh == _refreshCounter) {

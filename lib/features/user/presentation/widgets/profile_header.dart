@@ -120,6 +120,33 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 _buildGeneralStatsGrid(p),
+                const SizedBox(height: 16),
+                Obx(() {
+                  final isRebuilding = personalizationController.isRebuilding.value;
+                  return SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: isRebuilding ? null : () => personalizationController.rebuildProfile(),
+                      icon: isRebuilding
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                            )
+                          : const Icon(Icons.refresh_rounded, size: 18),
+                      label: Text(
+                        isRebuilding ? 'Đang cập nhật...' : 'Cập nhật hồ sơ tài chính',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        side: const BorderSide(color: AppColors.primary),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  );
+                }),
               ],
             );
           }),

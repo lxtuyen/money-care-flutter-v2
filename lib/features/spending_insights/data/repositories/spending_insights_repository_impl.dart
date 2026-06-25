@@ -37,6 +37,7 @@ class SpendingInsightsRepositoryImpl implements SpendingInsightsRepository {
       'averageAmount': item.averageAmount,
       'frequency': item.frequency,
       'monthlyEstimate': item.monthlyEstimate,
+      if (item.expectedDay != null) 'expectedDay': item.expectedDay,
     });
   }
 

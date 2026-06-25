@@ -98,7 +98,7 @@ class _BudgetTrackingSectionState extends State<BudgetTrackingSection> {
               ),
               const SizedBox(height: 12),
             ],
-            if (isCurrentMonth) ...[
+            if (isCurrentMonth && controller.totalForecast > 0) ...[
               _BudgetSummaryCard(
                 plannedIncome: stats.totalAmount,
                 totalLimit: controller.totalLimit,
@@ -158,8 +158,8 @@ class _BudgetTrackingSectionState extends State<BudgetTrackingSection> {
                         children: [
                           Text(
                             _isBudgetExpanded
-                                ? 'Thu g\u1ECDn'
-                                : 'Xem th\u00EAm ($hiddenCount)',
+                                ? 'Thu gọn'
+                                : 'Xem thêm ($hiddenCount)',
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -278,7 +278,7 @@ class _BudgetSummaryCardState extends State<_BudgetSummaryCard> {
             _row(
               context,
               themeColors,
-              '- D\u1EF1 b\u00E1o cu\u1ED1i th\u00E1ng',
+              '- Dự báo cuối tháng',
               widget.totalForecast!,
               const Color(0xFFF59E0B),
             ),
@@ -289,7 +289,7 @@ class _BudgetSummaryCardState extends State<_BudgetSummaryCard> {
                 child: _row(
                   context,
                   themeColors,
-                  '\u{1F4CC} C\u1ED1 \u0111\u1ECBnh',
+                  'Cố định',
                   widget.totalFixedForecast,
                   const Color(0xFF6366F1),
                   isSubRow: true,
@@ -301,7 +301,7 @@ class _BudgetSummaryCardState extends State<_BudgetSummaryCard> {
                 child: _row(
                   context,
                   themeColors,
-                  '\u{1F504} Linh ho\u1EA1t',
+                  'Linh hoạt',
                   widget.totalFlexibleForecast,
                   const Color(0xFF10B981),
                   isSubRow: true,

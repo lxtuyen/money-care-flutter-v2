@@ -99,20 +99,41 @@ class PhotoTransactionScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Obx(() => IconButton(
-                icon: Icon(
-                  controller.flashMode.value == FlashMode.off
-                      ? Icons.flash_off_rounded
-                      : controller.flashMode.value == FlashMode.always
-                          ? Icons.flash_on_rounded
-                          : controller.flashMode.value == FlashMode.auto
-                              ? Icons.flash_auto_rounded
-                              : Icons.flashlight_on_rounded,
-                  color: controller.flashMode.value == FlashMode.off ? Colors.white54 : const Color(0xFFFFB703),
-                  size: 22,
-                ),
-                onPressed: controller.toggleFlash,
-              )),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Obx(() => IconButton(
+                    icon: Icon(
+                      Icons.document_scanner_outlined,
+                      color: controller.isOcrEnabled.value
+                          ? const Color(0xFF4CAF50)
+                          : Colors.white54,
+                      size: 22,
+                    ),
+                    onPressed: () {
+                      controller.isOcrEnabled.toggle();
+                      if (controller.isOcrEnabled.value) {
+                        AppHelperFunction.showSuccessSnackBar('Quét hóa đơn đã bật');
+                      }
+                    },
+                    tooltip: 'Quét hóa đơn (OCR)',
+                  )),
+                  Obx(() => IconButton(
+                    icon: Icon(
+                      controller.flashMode.value == FlashMode.off
+                          ? Icons.flash_off_rounded
+                          : controller.flashMode.value == FlashMode.always
+                              ? Icons.flash_on_rounded
+                              : controller.flashMode.value == FlashMode.auto
+                                  ? Icons.flash_auto_rounded
+                                  : Icons.flashlight_on_rounded,
+                      color: controller.flashMode.value == FlashMode.off ? Colors.white54 : const Color(0xFFFFB703),
+                      size: 22,
+                    ),
+                    onPressed: controller.toggleFlash,
+                  )),
+                ],
+              ),
             ],
           ),
         ),
@@ -479,6 +500,33 @@ class PhotoTransactionScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // OCR Processing Overlay
+                  Obx(() {
+                    if (!controller.isOcrProcessing.value) {
+                      return const SizedBox.shrink();
+                    }
+                    return Container(
+                      color: Colors.black.withValues(alpha: 0.6),
+                      child: const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(color: Colors.white),
+                            SizedBox(height: 12),
+                            Text(
+                              'Đang quét hóa đơn...',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),

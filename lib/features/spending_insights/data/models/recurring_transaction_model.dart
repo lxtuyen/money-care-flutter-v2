@@ -56,6 +56,7 @@ class RecurringTransactionModel {
               ?.map((e) => Map<String, dynamic>.from(e as Map))
               .toList() ??
           <Map<String, dynamic>>[],
+      expectedDay: json['expectedDay'] as int?,
     );
   }
 

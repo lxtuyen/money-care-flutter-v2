@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_care/app/controllers/statistics_controller.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:money_care/features/spending_insights/domain/entities/recurring_transaction_entity.dart';
 import 'package:money_care/features/spending_insights/presentation/controllers/recurring_controller.dart';
 
 /// Summary card hiển thị trong Statistics screen.
-/// Hiển thị tổng chi phí cố định/tháng + top 3 khoản lớn nhất.
+/// Chia thành 2 phần: đã xác nhận (có trạng thái trả) + phát hiện mới.
 class RecurringSummaryCard extends StatelessWidget {
   const RecurringSummaryCard({super.key});
 
@@ -19,18 +21,34 @@ class RecurringSummaryCard extends StatelessWidget {
         return _buildShimmer();
       }
 
-      if (controller.hasError.value || controller.itemCount == 0) {
+      final hasConfirmed = controller.confirmedItems.isNotEmpty;
+      final hasDetected = controller.recurringItems.isNotEmpty;
+
+      if (!hasConfirmed && !hasDetected) {
         return const SizedBox.shrink();
       }
 
-      return _buildCard(context, controller);
+      return _buildCard(context, controller, hasConfirmed, hasDetected);
     });
   }
 
-  Widget _buildCard(BuildContext context, RecurringController controller) {
-    final topItems = controller.topItems;
-    final totalMonthly = controller.totalMonthlyRecurring;
-    final itemCount = controller.itemCount;
+  Widget _buildCard(
+    BuildContext context,
+    RecurringController controller,
+    bool hasConfirmed,
+    bool hasDetected,
+  ) {
+    final confirmedItems = controller.confirmedItems;
+    final confirmedTotal = controller.confirmedMonthlyTotal;
+    final detectedItems = controller.topItems;
+    final detectedTotal = controller.totalMonthlyRecurring;
+
+    // Get unpaid recurring from analytics
+    final statisticsController = Get.find<StatisticsController>();
+    final unpaidList =
+        statisticsController.analyticsData.value?.unpaidRecurring ?? [];
+    final unpaidDescriptions =
+        unpaidList.map((e) => e.description).toSet();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -49,11 +67,34 @@ class RecurringSummaryCard extends StatelessWidget {
             ],
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(totalMonthly, itemCount),
-              if (topItems.isNotEmpty) ...[
+              _buildMainHeader(
+                confirmedTotal + detectedTotal,
+                confirmedItems.length + controller.itemCount,
+              ),
+              if (hasConfirmed) ...[
                 const Divider(height: 1, indent: 16, endIndent: 16),
-                ...topItems.map((item) => _buildItemRow(item)),
+                _buildSectionLabel(
+                  'Đã xác nhận',
+                  '${confirmedItems.length} khoản',
+                  AppColors.income,
+                ),
+                ...confirmedItems.take(3).map(
+                      (item) => _buildConfirmedItemRow(
+                        item,
+                        isPaid: !unpaidDescriptions.contains(item.description),
+                      ),
+                    ),
+              ],
+              if (hasDetected) ...[
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                _buildSectionLabel(
+                  'Phát hiện mới',
+                  '${controller.itemCount} khoản',
+                  AppColors.warning,
+                ),
+                ...detectedItems.map(_buildDetectedItemRow),
               ],
               const SizedBox(height: 8),
             ],
@@ -63,25 +104,11 @@ class RecurringSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(double totalMonthly, int itemCount) {
+  Widget _buildMainHeader(double totalMonthly, int itemCount) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.repeat_rounded,
-              size: 20,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +142,122 @@ class RecurringSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildItemRow(dynamic item) {
+  Widget _buildSectionLabel(String title, String subtitle, Color color) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+      child: Row(
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.text5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Row cho confirmed item: hiện expectedDay + trạng thái đã trả/chưa trả.
+  Widget _buildConfirmedItemRow(
+    RecurringTransactionEntity item, {
+    required bool isPaid,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Text(
+            item.categoryIcon.isNotEmpty ? item.categoryIcon : '📦',
+            style: const TextStyle(fontSize: 20),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.description,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.text2,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    if (item.expectedDay != null) ...[
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        size: 11,
+                        color: AppColors.text5,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        'Ngày ${item.expectedDay}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.text5,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Icon(
+                      isPaid
+                          ? Icons.check_circle_rounded
+                          : Icons.schedule_rounded,
+                      size: 12,
+                      color: isPaid ? AppColors.income : AppColors.warning,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      isPaid ? 'Đã trả' : 'Chưa trả',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: isPaid ? AppColors.income : AppColors.warning,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Text(
+            AppHelperFunction.formatAmount(item.averageAmount),
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.text1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Row cho detected item: giữ đơn giản, hiện frequency label.
+  Widget _buildDetectedItemRow(RecurringTransactionEntity item) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(

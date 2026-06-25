@@ -39,7 +39,7 @@ class RecurringItemCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTopRow(),
-              if (isConfirmed && item.expectedDay != null) ...[
+              if (item.expectedDay != null) ...[
                 const SizedBox(height: 6),
                 Row(
                   children: [

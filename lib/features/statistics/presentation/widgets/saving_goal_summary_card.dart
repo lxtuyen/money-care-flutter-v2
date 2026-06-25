@@ -6,6 +6,7 @@ import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/app/controllers/saving_goal_controller.dart';
 import 'package:money_care/features/saving_goal/data/models/saving_goal_report_model.dart';
 import 'package:money_care/features/saving_goal/data/models/goal_achievement_prediction_model.dart';
@@ -178,7 +179,7 @@ class _SavingGoalSummaryCardState extends State<SavingGoalSummaryCard> {
         children: [
           const Divider(height: 1),
           const SizedBox(height: 16),
-          if (_matchingPrediction != null) ...[
+          if (_matchingPrediction != null && Get.find<AppController>().isPremium.value) ...[
             GoalAchievementPredictionBlock(
               prediction: _matchingPrediction!,
               goalId: widget.fund.id,
@@ -201,7 +202,7 @@ class _SavingGoalSummaryCardState extends State<SavingGoalSummaryCard> {
           const Divider(height: 1),
           const SizedBox(height: 16),
 
-          if (_matchingPrediction != null) ...[
+          if (_matchingPrediction != null && Get.find<AppController>().isPremium.value) ...[
             GoalAchievementPredictionBlock(
               prediction: _matchingPrediction!,
               goalId: widget.fund.id,

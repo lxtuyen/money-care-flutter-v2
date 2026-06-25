@@ -7,6 +7,7 @@ import 'package:money_care/features/spending_insights/presentation/controllers/r
 import 'package:money_care/features/spending_insights/presentation/widgets/recurring_item_card.dart';
 import 'package:money_care/app/widgets/layout/app_header.dart';
 import 'package:money_care/app/widgets/states/app_empty_state.dart';
+import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 
 class RecurringDetailScreen extends StatefulWidget {
   const RecurringDetailScreen({super.key});
@@ -302,37 +303,80 @@ class _RecurringDetailScreenState extends State<RecurringDetailScreen>
     final textController = TextEditingController(
       text: item.averageAmount.toStringAsFixed(0),
     );
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Sửa số tiền'),
-        content: TextField(
-          controller: textController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Số tiền',
-            suffixText: 'đ',
-          ),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          16, 12, 16,
+          MediaQuery.of(ctx).viewInsets.bottom + 16,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Hủy'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final newAmount = double.tryParse(textController.text);
-              if (newAmount != null && newAmount > 0) {
-                Navigator.pop(ctx);
-                controller.updateConfirmed(item, {
-                  'averageAmount': newAmount,
-                  'monthlyEstimate': newAmount,
-                });
-              }
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Sửa số tiền',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.description,
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 16),
+            AppCurrencyFormField(
+              controller: textController,
+              label: 'Số tiền',
+              icon: Icons.payments_rounded,
+              hintText: 'Nhập số tiền',
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  final raw = AppHelperFunction.unformatCurrency(
+                    textController.text,
+                  );
+                  final newAmount = double.tryParse(raw);
+                  if (newAmount != null && newAmount > 0) {
+                    Navigator.pop(ctx);
+                    controller.updateConfirmed(item, {
+                      'averageAmount': newAmount,
+                      'monthlyEstimate': newAmount,
+                    });
+                  }
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Xác nhận',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -342,36 +386,108 @@ class _RecurringDetailScreenState extends State<RecurringDetailScreen>
     RecurringController controller,
     RecurringTransactionEntity item,
   ) {
-    final textController = TextEditingController(
-      text: item.expectedDay?.toString() ?? '',
-    );
-    showDialog(
+    int selectedDay = item.expectedDay ?? 1;
+
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Sửa ngày nhắc'),
-        content: TextField(
-          controller: textController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Ngày trong tháng (1-31)',
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setSheetState) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Chọn ngày nhắc',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  item.description,
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 16),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 7,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                  ),
+                  itemCount: 31,
+                  itemBuilder: (_, index) {
+                    final day = index + 1;
+                    final isSelected = selectedDay == day;
+                    return GestureDetector(
+                      onTap: () => setSheetState(() => selectedDay = day),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.primary.withValues(alpha: 0.06),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$day',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color:
+                                isSelected ? Colors.white : AppColors.text1,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      controller.updateConfirmed(
+                        item,
+                        {'expectedDay': selectedDay},
+                      );
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Xác nhận',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Hủy'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final day = int.tryParse(textController.text);
-              if (day != null && day >= 1 && day <= 31) {
-                Navigator.pop(ctx);
-                controller.updateConfirmed(item, {'expectedDay': day});
-              }
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
       ),
     );
   }

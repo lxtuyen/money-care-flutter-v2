@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/network/api_client.dart';
+import 'package:money_care/core/services/ocr_service.dart';
 import 'package:money_care/core/theme/app_theme_colors.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/auth/presentation/controllers/auth_controller.dart';
@@ -20,6 +21,7 @@ import 'package:money_care/app/controllers/transaction_controller.dart';
 import 'package:money_care/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:money_care/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:money_care/features/transaction/domain/entities/category_entity.dart';
+import 'package:money_care/features/transaction/data/utils/receipt_parser.dart';
 
 class PhotoTransactionController extends GetxController {
   final CoupleController? coupleController;
@@ -42,6 +44,8 @@ class PhotoTransactionController extends GetxController {
   final Rxn<WalletEntity> selectedWallet = Rxn<WalletEntity>();
   final RxnInt selectedPayerId = RxnInt();
   final RxBool isLoading = false.obs;
+  final RxBool isOcrEnabled = false.obs;
+  final RxBool isOcrProcessing = false.obs;
 
   bool get isSelectedWalletPersonal {
     if (selectedWallet.value == null) return false;
@@ -81,6 +85,10 @@ class PhotoTransactionController extends GetxController {
         uploadError.value = null;
         isUploadingBackground.value = true;
         _preUploadFuture = _performBackgroundUpload(image);
+        // Run OCR scan if enabled
+        if (isOcrEnabled.value) {
+          _runOcrScan(image);
+        }
       }
     });
 
@@ -367,6 +375,42 @@ class PhotoTransactionController extends GetxController {
         isUploadingBackground.value = false;
       }
       return null;
+    }
+  }
+
+  Future<void> _runOcrScan(XFile image) async {
+    try {
+      isOcrProcessing.value = true;
+      final ocrService = OCRService();
+      final recognizedText = await ocrService.processImage(image.path);
+
+      if (!ocrService.checkIfReceipt(recognizedText) ||
+          recognizedText.text.length < 20) {
+        AppHelperFunction.showWarningSnackBar('Không nhận diện được hóa đơn từ ảnh');
+        return;
+      }
+
+      final result = ReceiptParser.parse(recognizedText);
+      final entity = result.entity;
+
+      // Auto-fill amount if found
+      if (entity.totalAmount > 0) {
+        amount.value = entity.totalAmount.toDouble();
+      }
+
+      // Auto-fill note with merchant name
+      if (entity.merchantName.isNotEmpty) {
+        note.value = entity.merchantName;
+      }
+
+      if (entity.totalAmount > 0 || entity.merchantName.isNotEmpty) {
+        AppHelperFunction.showSuccessSnackBar('Đã nhận diện hóa đơn thành công');
+      }
+    } catch (e) {
+      debugPrint('OCR scan failed: $e');
+      AppHelperFunction.showWarningSnackBar('Không thể quét hóa đơn');
+    } finally {
+      isOcrProcessing.value = false;
     }
   }
 

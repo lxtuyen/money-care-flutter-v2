@@ -9,6 +9,7 @@ import 'package:money_care/core/utils/validators/validation.dart';
 import 'package:money_care/features/saving_goal/presentation/controllers/create_saving_goal_controller.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/saving_goal/data/models/budget_suggestion_model.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 
 import 'package:money_care/app/widgets/layout/app_header.dart';
 
@@ -183,7 +184,9 @@ class _CreateSavingGoalScreenState extends State<CreateSavingGoalScreen> {
                               ),
                             ],
                           ),
-                          BudgetAnalysisSection(controller: _controller),
+                          Obx(() => Get.find<AppController>().isPremium.value
+                              ? BudgetAnalysisSection(controller: _controller)
+                              : const SizedBox.shrink()),
                           const SizedBox(height: 24),
                           Obx(() {
                             return PrimaryButton(

@@ -170,19 +170,24 @@ class PremiumScreen extends GetView<PaymentController> {
         description: 'Phân tích xu hướng và dự đoán chi tiêu thông minh',
       ),
       _FeatureItem(
-        icon: Iconsax.heart,
-        title: 'Không gian cặp đôi',
-        description: 'Quản lý tài chính chung, ví chung, báo cáo đôi',
+        icon: Iconsax.flash_1,
+        title: 'Phát hiện bất thường',
+        description: 'Tự động phát hiện giao dịch bất thường bằng AI',
       ),
       _FeatureItem(
-        icon: Iconsax.flash_1,
-        title: 'Analytics nâng cao',
-        description: 'Biểu đồ chi tiết, so sánh tháng, phát hiện bất thường',
+        icon: Iconsax.receipt_1,
+        title: 'Chi tiêu định kỳ',
+        description: 'Nhận diện subscriptions, hóa đơn lặp lại tự động',
+      ),
+      _FeatureItem(
+        icon: Iconsax.money_send,
+        title: 'Gợi ý ngân sách AI',
+        description: 'Đề xuất cắt giảm, phân bổ ngân sách thông minh',
       ),
       _FeatureItem(
         icon: Iconsax.star_1,
         title: 'Tính năng sắp ra mắt',
-        description: 'AI insights, và nhiều hơn nữa',
+        description: 'AI insights cá nhân hóa, và nhiều hơn nữa',
       ),
     ];
 

@@ -217,7 +217,7 @@ class ChatController extends GetxController {
       final ocrText = recognizedText.text;
       final ocrLinesJson = jsonEncode(lines.map((l) => l.toJson()).toList());
 
-      await send(userId, ocrText: ocrText, ocrLines: ocrLinesJson);
+      await send(userId, ocrText: ocrText, ocrLines: ocrLinesJson, imagePath: image.path);
     } catch (e) {
       errorMessage.value = e.toString();
       replaceLastBotMessage('Lỗi xử lý hóa đơn: $e');
@@ -226,7 +226,7 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<void> send(int userId, {String? ocrText, String? ocrLines}) async {
+  Future<void> send(int userId, {String? ocrText, String? ocrLines, String? imagePath}) async {
     final text = textController.text.trim();
     final isOcr = ocrText != null;
 
@@ -249,6 +249,7 @@ class ChatController extends GetxController {
         userId: userId,
         ocrText: ocrText,
         ocrLines: ocrLines,
+        imagePath: imagePath,
       );
       final result = await sendToChatbotUseCase(dto);
 

@@ -26,6 +26,7 @@ import 'package:money_care/features/transaction/presentation/controllers/filter_
 import 'package:money_care/features/transaction/presentation/controllers/user_category_controller.dart';
 import 'package:money_care/features/spending_insights/presentation/controllers/recurring_controller.dart';
 import 'package:money_care/features/spending_insights/presentation/widgets/recurring_summary_card.dart';
+import 'package:money_care/features/payment/presentation/widgets/premium_promo_banner.dart';
 
 import 'package:money_care/features/spending_plan/presentation/controllers/spending_plan_controller.dart';
 import 'package:money_care/features/spending_plan/domain/entities/spending_plan_entity.dart';
@@ -382,6 +383,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       );
                     }),
                     const SizedBox(height: 9),
+                  ],
+                );
+              }),
+              Obx(() {
+                if (appController.isPremium.value) {
+                  return const SizedBox.shrink();
+                }
+                return const Column(
+                  children: [
+                    PremiumPromoBanner(),
+                    SizedBox(height: 25),
                   ],
                 );
               }),

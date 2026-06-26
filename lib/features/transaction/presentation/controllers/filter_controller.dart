@@ -9,6 +9,7 @@ class FilterController extends GetxController {
   var endDate = Rxn<DateTime>();
   var keyword = ''.obs;
   var dateLabel = defaultDateLabel.obs;
+  var isManualDateFilter = false.obs;
 
   @override
   void onInit() {
@@ -20,12 +21,13 @@ class FilterController extends GetxController {
 
   void updateWallet(int? id) => walletId.value = id;
 
-  void updateDateRange(DateTime? start, DateTime? end, {String? label}) {
+  void updateDateRange(DateTime? start, DateTime? end, {String? label, bool isManual = false}) {
     startDate.value = start;
     endDate.value = end;
     if (label != null) {
       dateLabel.value = label;
     }
+    isManualDateFilter.value = isManual;
   }
 
   void updateKeyword(String value) => keyword.value = value;
@@ -33,9 +35,7 @@ class FilterController extends GetxController {
   bool get hasKeyword => keyword.value.trim().isNotEmpty;
   bool get hasCategory => categoryId.value != null;
   bool get hasWallet => walletId.value != null;
-  bool get hasDateFilter =>
-      dateLabel.value != defaultDateLabel ||
-      !_isCurrentMonthRange(startDate.value, endDate.value);
+  bool get hasDateFilter => isManualDateFilter.value;
   bool get hasActiveFilters =>
       hasKeyword || hasCategory || hasWallet || hasDateFilter;
   int get activeFilterCount =>
@@ -55,24 +55,9 @@ class FilterController extends GetxController {
     startDate.value = null;
     endDate.value = null;
     dateLabel.value = defaultDateLabel;
+    isManualDateFilter.value = false;
   }
 
-  bool _isCurrentMonthRange(DateTime? start, DateTime? end) {
-    if (start == null && end == null) return true;
-    if (start == null || end == null) return false;
-
-    final now = DateTime.now();
-    final monthStart = DateTime(now.year, now.month, 1);
-
-    final isStartMatch =
-        start.year == monthStart.year &&
-        start.month == monthStart.month &&
-        start.day == 1;
-
-    final isEndMatch = end.year == now.year && end.month == now.month;
-
-    return isStartMatch && isEndMatch;
-  }
 }
 
 final filterController = FilterController();

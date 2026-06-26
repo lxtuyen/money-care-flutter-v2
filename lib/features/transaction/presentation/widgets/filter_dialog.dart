@@ -444,6 +444,7 @@ class _FilterDialogState extends State<FilterDialog> {
           startDate,
           endDate,
           label: selectedDateLabel ?? selectedId,
+          isManual: true,
         );
       }
     }

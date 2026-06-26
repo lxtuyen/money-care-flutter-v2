@@ -650,6 +650,77 @@ String _fallbackBudgetRecommendationId(String categoryName) {
   return 'budget:${now.year}-$month:${safeCategory.isEmpty ? 'unknown' : safeCategory}';
 }
 
+class FixedCostItemModel {
+  final String description;
+  final double amount;
+  final String frequency;
+
+  const FixedCostItemModel({
+    required this.description,
+    required this.amount,
+    required this.frequency,
+  });
+
+  factory FixedCostItemModel.fromJson(Map<String, dynamic> json) {
+    return FixedCostItemModel(
+      description: json['description']?.toString() ?? '',
+      amount: (json['amount'] as num? ?? 0.0).toDouble(),
+      frequency: json['frequency']?.toString() ?? 'monthly',
+    );
+  }
+}
+
+class FixedCostCategoryModel {
+  final String categoryName;
+  final double totalAmount;
+  final List<FixedCostItemModel> items;
+
+  const FixedCostCategoryModel({
+    required this.categoryName,
+    required this.totalAmount,
+    required this.items,
+  });
+
+  factory FixedCostCategoryModel.fromJson(Map<String, dynamic> json) {
+    final list = json['items'] as List?;
+    final itemsList = list != null
+        ? list
+              .map((e) => FixedCostItemModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+        : <FixedCostItemModel>[];
+
+    return FixedCostCategoryModel(
+      categoryName: json['categoryName']?.toString() ?? '',
+      totalAmount: (json['totalAmount'] as num? ?? 0.0).toDouble(),
+      items: itemsList,
+    );
+  }
+}
+
+class FixedCostBudgetModel {
+  final double totalFixedCost;
+  final List<FixedCostCategoryModel> categories;
+
+  const FixedCostBudgetModel({
+    required this.totalFixedCost,
+    required this.categories,
+  });
+
+  factory FixedCostBudgetModel.fromJson(Map<String, dynamic> json) {
+    final list = json['categories'] as List?;
+    final categoriesList = list != null
+        ? list
+              .map((e) => FixedCostCategoryModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+        : <FixedCostCategoryModel>[];
+
+    return FixedCostBudgetModel(
+      totalFixedCost: (json['totalFixedCost'] as num? ?? 0.0).toDouble(),
+      categories: categoriesList,
+    );
+  }
+}
+
 class AiBudgetingModel {
   final String method;
   final String modelVersion;
@@ -660,6 +731,7 @@ class AiBudgetingModel {
   final String strategy;
   final List<AiBudgetRecommendationItemModel> items;
   final List<BudgetExceedPredictionModel> budgetExceedPredictions;
+  final FixedCostBudgetModel? fixedCostBudget;
   final String summary;
 
   const AiBudgetingModel({
@@ -672,6 +744,7 @@ class AiBudgetingModel {
     required this.strategy,
     required this.items,
     required this.budgetExceedPredictions,
+    this.fixedCostBudget,
     required this.summary,
   });
 
@@ -705,6 +778,11 @@ class AiBudgetingModel {
               )
               .toList() ??
           <BudgetExceedPredictionModel>[],
+      fixedCostBudget: json['fixedCostBudget'] != null
+          ? FixedCostBudgetModel.fromJson(
+              json['fixedCostBudget'] as Map<String, dynamic>,
+            )
+          : null,
       summary: json['summary']?.toString() ?? '',
     );
   }

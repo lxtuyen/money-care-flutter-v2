@@ -14,6 +14,8 @@ import 'package:money_care/app/widgets/text_field/app_currency_form_field.dart';
 import 'package:money_care/app/widgets/button/primary_button.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/recommendation_item_card.dart';
 import 'package:money_care/features/chatbot/presentation/widgets/budget_recommendation_metrics.dart';
+import 'package:money_care/features/chatbot/presentation/widgets/fixed_cost_budget_section.dart';
+import 'package:money_care/features/statistics/data/models/analytics_model.dart';
 
 enum StagedAction { applied, removed }
 
@@ -86,6 +88,8 @@ class _BudgetRecommendationBubbleState
     if (spendingPlanCtrl != null) {
       _ensureActivePlanLoaded(spendingPlanCtrl);
     }
+    final fixedCostBudgetRaw = widget.metadata['fixedCostBudget'] as Map<String, dynamic>?;
+    final fixedCostBudget = fixedCostBudgetRaw != null ? FixedCostBudgetModel.fromJson(fixedCostBudgetRaw) : null;
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -150,11 +154,39 @@ class _BudgetRecommendationBubbleState
                     spendingPlanCtrl,
                     expectedSavings,
                     items,
+                    fixedCostBudget,
                   ),
                   const SizedBox(height: 8),
                   const Divider(height: 24, thickness: 0.8),
 
-                  // Recommendation Items
+                  // Fixed Cost Section
+                  if (fixedCostBudget != null && fixedCostBudget.categories.isNotEmpty) ...[
+                    FixedCostBudgetSection(fixedCostBudget: fixedCostBudget),
+                    const SizedBox(height: 12),
+                    const Divider(height: 24, thickness: 0.8),
+                  ],
+
+                  // Recommendation Items Header
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Đề xuất tối ưu',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
                   if (items.isEmpty)
                     Text(
                       'Không có danh mục nào cần điều chỉnh ngân sách.',
@@ -215,6 +247,7 @@ class _BudgetRecommendationBubbleState
     SpendingPlanController? spendingPlanCtrl,
     double fallbackExpectedSavings,
     List<dynamic> items,
+    FixedCostBudgetModel? fixedCostBudget,
   ) {
     final double recommendedTotalBudget =
         (widget.metadata['recommended_total_budget'] as num?)?.toDouble() ?? 0;
@@ -249,6 +282,19 @@ class _BudgetRecommendationBubbleState
       }
     }
 
+    // Calculate non-overlap fixed total for forecast spend
+    double nonOverlapFixedTotal = 0.0;
+    if (fixedCostBudget != null) {
+      final mlCategories = items
+          .map((e) => e is Map ? (e['categoryName']?.toString().toLowerCase() ?? '') : '')
+          .toSet();
+      for (var cat in fixedCostBudget.categories) {
+        if (!mlCategories.contains(cat.categoryName.toLowerCase())) {
+          nonOverlapFixedTotal += cat.totalAmount;
+        }
+      }
+    }
+
     // 2. Forecasted Spend Fallback with staged changes
     final double fallbackForecastSpend = items.fold<double>(0.0, (sum, item) {
       if (item is! Map) return sum;
@@ -261,12 +307,14 @@ class _BudgetRecommendationBubbleState
       return sum + ((item['predictedSpendAmount'] as num?)?.toDouble() ?? 0.0);
     });
 
+    final double adjustedFallbackForecastSpend = fallbackForecastSpend + nonOverlapFixedTotal;
+
     if (spendingPlanCtrl == null) {
       return BudgetRecommendationMetrics(
         proposedSavings: fallbackExpectedSavings,
         proposedSpend: fallbackProposedTotal,
         forecastSavings: fallbackExpectedSavings,
-        forecastSpend: fallbackForecastSpend,
+        forecastSpend: adjustedFallbackForecastSpend,
       );
     }
 
@@ -279,11 +327,13 @@ class _BudgetRecommendationBubbleState
         estimatedExpenses: estimatedExpenses,
         items: items,
         stagedChanges: _stagedChanges,
+        fixedCostBudget: fixedCostBudget,
       );
       final forecastSpend = _forecastSpendAmount(
         estimatedExpenses: estimatedExpenses,
         items: items,
         stagedChanges: _stagedChanges,
+        fixedCostBudget: fixedCostBudget,
       );
 
       final proposedSavings = _proposedSavingsAmount(
@@ -310,6 +360,7 @@ class _BudgetRecommendationBubbleState
     required List<EstimatedExpenseEntity> estimatedExpenses,
     required List<dynamic> items,
     required Map<int, StagedChange> stagedChanges,
+    FixedCostBudgetModel? fixedCostBudget,
   }) {
     final Map<int, double> recommendedLimits = {};
     for (var item in items) {
@@ -322,13 +373,26 @@ class _BudgetRecommendationBubbleState
     double total = 0.0;
     final Set<int> existingCategories = {};
 
+    final Map<String, double> fixedCostMap = {};
+    if (fixedCostBudget != null) {
+      for (var cat in fixedCostBudget.categories) {
+        fixedCostMap[cat.categoryName.toLowerCase()] = cat.totalAmount;
+      }
+    }
+
     for (var expense in estimatedExpenses) {
       final categoryId = expense.categoryId;
       if (categoryId == null) continue;
       existingCategories.add(categoryId);
-      final currentLimit = expense.monthlyLimit > 0
+      final categoryName = expense.category?.toLowerCase() ?? '';
+
+      double currentLimit = expense.monthlyLimit > 0
           ? expense.monthlyLimit
           : expense.amount;
+
+      if (!recommendedLimits.containsKey(categoryId) && fixedCostMap.containsKey(categoryName)) {
+        currentLimit = fixedCostMap[categoryName]!;
+      }
 
       if (stagedChanges.containsKey(categoryId)) {
         final stage = stagedChanges[categoryId]!;
@@ -364,6 +428,22 @@ class _BudgetRecommendationBubbleState
       }
     }
 
+    if (fixedCostBudget != null) {
+      final mlCategoryNames = items
+          .map((e) => e is Map ? (e['categoryName']?.toString().toLowerCase() ?? '') : '')
+          .toSet();
+      final existingCategoryNames =
+          estimatedExpenses.map((e) => e.category?.toLowerCase() ?? '').toSet();
+
+      for (var cat in fixedCostBudget.categories) {
+        final catLower = cat.categoryName.toLowerCase();
+        if (!mlCategoryNames.contains(catLower) &&
+            !existingCategoryNames.contains(catLower)) {
+          total += cat.totalAmount;
+        }
+      }
+    }
+
     return total;
   }
 
@@ -371,6 +451,7 @@ class _BudgetRecommendationBubbleState
     required List<EstimatedExpenseEntity> estimatedExpenses,
     required List<dynamic> items,
     required Map<int, StagedChange> stagedChanges,
+    FixedCostBudgetModel? fixedCostBudget,
   }) {
     final Map<int, double> forecasts = {};
     for (var item in items) {
@@ -383,13 +464,26 @@ class _BudgetRecommendationBubbleState
     double total = 0.0;
     final Set<int> existingCategories = {};
 
+    final Map<String, double> fixedCostMap = {};
+    if (fixedCostBudget != null) {
+      for (var cat in fixedCostBudget.categories) {
+        fixedCostMap[cat.categoryName.toLowerCase()] = cat.totalAmount;
+      }
+    }
+
     for (var expense in estimatedExpenses) {
       final categoryId = expense.categoryId;
       if (categoryId == null) continue;
       existingCategories.add(categoryId);
-      final currentLimit = expense.monthlyLimit > 0
+      final categoryName = expense.category?.toLowerCase() ?? '';
+
+      double currentLimit = expense.monthlyLimit > 0
           ? expense.monthlyLimit
           : expense.amount;
+
+      if (!forecasts.containsKey(categoryId) && fixedCostMap.containsKey(categoryName)) {
+        currentLimit = fixedCostMap[categoryName]!;
+      }
 
       if (stagedChanges.containsKey(categoryId)) {
         final stage = stagedChanges[categoryId]!;
@@ -411,7 +505,6 @@ class _BudgetRecommendationBubbleState
       }
     }
 
-    // For new recommended items staged as applied
     for (var item in items) {
       if (item is Map && item['categoryId'] != null) {
         final categoryId = item['categoryId'] as int;
@@ -422,6 +515,22 @@ class _BudgetRecommendationBubbleState
               total += forecasts[categoryId] ?? 0.0;
             }
           }
+        }
+      }
+    }
+
+    if (fixedCostBudget != null) {
+      final mlCategoryNames = items
+          .map((e) => e is Map ? (e['categoryName']?.toString().toLowerCase() ?? '') : '')
+          .toSet();
+      final existingCategoryNames =
+          estimatedExpenses.map((e) => e.category?.toLowerCase() ?? '').toSet();
+
+      for (var cat in fixedCostBudget.categories) {
+        final catLower = cat.categoryName.toLowerCase();
+        if (!mlCategoryNames.contains(catLower) &&
+            !existingCategoryNames.contains(catLower)) {
+          total += cat.totalAmount;
         }
       }
     }

@@ -85,10 +85,14 @@ class _CoupleSavingGoalCardState extends State<CoupleSavingGoalCard> {
                     matchList.first.prediction == null) {
                   return const SizedBox.shrink();
                 }
+                // Temporarily hidden AI prediction card
+                return const SizedBox.shrink();
+                /*
                 return CoupleSavingGoalPredictionCard(
                   prediction: matchList.first.prediction!,
                   goalName: goal.name,
                 );
+                */
               }),
             ],
 

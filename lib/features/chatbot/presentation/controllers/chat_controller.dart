@@ -46,11 +46,11 @@ class ChatController extends GetxController {
   final ImagePicker _picker = ImagePicker();
 
   List<QuickOption> get options => [
-    QuickOption(
-      title: 'chatbot.savingGoalTitle'.tr,
-      subtitle: 'chatbot.savingGoalDesc'.tr,
-      template: 'chatbot.savingGoalTemplate'.tr,
-    ),
+    // QuickOption(
+    //   title: 'chatbot.savingGoalTitle'.tr,
+    //   subtitle: 'chatbot.savingGoalDesc'.tr,
+    //   template: 'chatbot.savingGoalTemplate'.tr,
+    // ),
     QuickOption(
       title: 'chatbot.quickRecordTitle'.tr,
       subtitle: 'chatbot.quickRecordDesc'.tr,

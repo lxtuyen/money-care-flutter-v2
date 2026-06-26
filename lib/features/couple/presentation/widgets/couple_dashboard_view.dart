@@ -261,7 +261,7 @@ class CoupleDashboardView extends StatelessWidget {
               }).toList(),
             );
           }),
-
+/*
           // AI Couple Profile Insights
           Obx(() {
             final profile = controller.coupleReport.value?.coupleProfile;
@@ -310,7 +310,7 @@ class CoupleDashboardView extends StatelessWidget {
                 ),
               ),
             );
-          }),
+          }),*/
 
           CoupleSpendingAlertsSection(controller: controller),
         ],

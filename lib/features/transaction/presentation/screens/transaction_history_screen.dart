@@ -91,6 +91,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       _selectedDay = statisticsController.getSelectedDayForMonth(month);
     });
 
+    // Clear data cũ để tránh mismatch giữa tháng mới và data tháng cũ
+    transactionController.transactionByfilter.value = null;
     _applyFilter();
   }
 
@@ -100,10 +102,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
     _syncFilterAndDay(_selectedMonth);
     statisticsController.refreshStatisticsData(userId);
-
-    if (transactionController.transactionByfilter.value == null) {
-      await transactionController.applyFilters(userId);
-    }
   }
 
   Widget _selectedDayHeader(
@@ -167,7 +165,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     List<TransactionEntity> transactions,
   ) {
     return transactions
-        .where((tx) => tx.transactionDate?.day == _selectedDay)
+        .where((tx) {
+          final local = tx.transactionDate?.toLocal();
+          return local != null &&
+              local.year == _selectedMonth.year &&
+              local.month == _selectedMonth.month &&
+              local.day == _selectedDay;
+        })
         .toList()
       ..sort((a, b) =>
           (b.transactionDate ?? DateTime(0))
@@ -272,7 +276,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       // Explicit subscribe selectedMonth để Obx rebuild khi tháng thay đổi
       final currentMonth = statisticsController.selectedMonth.value;
 
-      if (transactionController.isLoading.value) {
+      final data = transactionController.transactionByfilter.value;
+
+      if (transactionController.isLoading.value || data == null) {
         return const Center(
           child: Padding(
             padding: EdgeInsets.only(top: 50),
@@ -281,8 +287,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         );
       }
 
-      final data = transactionController.transactionByfilter.value;
-      if (data == null || data.expenseTransactions.isEmpty) {
+      if (data.expenseTransactions.isEmpty) {
         return _buildEmptyView();
       }
 
@@ -356,7 +361,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       // Explicit subscribe selectedMonth để Obx rebuild khi tháng thay đổi
       final currentMonth = statisticsController.selectedMonth.value;
 
-      if (transactionController.isLoading.value) {
+      final data = transactionController.transactionByfilter.value;
+
+      if (transactionController.isLoading.value || data == null) {
         return const Center(
           child: Padding(
             padding: EdgeInsets.only(top: 50),
@@ -365,8 +372,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         );
       }
 
-      final data = transactionController.transactionByfilter.value;
-      if (data == null || data.incomeTransactions.isEmpty) {
+      if (data.incomeTransactions.isEmpty) {
         return _buildEmptyView();
       }
 

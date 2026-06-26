@@ -37,7 +37,7 @@ class CoupleTransactionCalendar extends StatelessWidget {
     // Group transactions by day
     final Map<int, List<TransactionEntity>> txsByDay = {};
     for (final tx in transactions) {
-      final date = tx.transactionDate;
+      final date = tx.transactionDate?.toLocal();
       if (date != null && date.year == focusedMonth.year && date.month == focusedMonth.month) {
         txsByDay.putIfAbsent(date.day, () => []).add(tx);
       }

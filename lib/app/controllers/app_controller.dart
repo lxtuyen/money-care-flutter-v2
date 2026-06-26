@@ -32,6 +32,11 @@ class AppController extends GetxController {
     currentLocale.value = storage.getLocale();
     startDayOfMonth.value = storage.getStartDayOfMonth();
     isWidgetBalanceVisible.value = storage.getWidgetBalanceVisibility();
+    
+    // Load Premium state from LocalStorage
+    isPremium.value = storage.getIsPremium();
+    isGracePeriod.value = storage.getIsGracePeriod();
+    premiumExpiresAt.value = storage.getPremiumExpiresAt();
   }
 
   Future<void> initializeUser() async {
@@ -59,9 +64,27 @@ class AppController extends GetxController {
     }
   }
 
+  Future<void> updatePremiumStatus({
+    required bool isPremium,
+    required bool isGracePeriod,
+    DateTime? expiresAt,
+  }) async {
+    this.isPremium.value = isPremium;
+    this.isGracePeriod.value = isGracePeriod;
+    premiumExpiresAt.value = expiresAt;
+    await storage.savePremiumStatus(
+      isPremium: isPremium,
+      isGracePeriod: isGracePeriod,
+      expiresAt: expiresAt,
+    );
+  }
+
   void clearUser() {
     userId.value = null;
     isUserInitialized.value = false;
+    isPremium.value = false;
+    isGracePeriod.value = false;
+    premiumExpiresAt.value = null;
   }
 
   Future<int?> getCurrentUserId() async {

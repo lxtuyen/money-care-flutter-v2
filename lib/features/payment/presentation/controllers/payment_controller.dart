@@ -137,9 +137,11 @@ class PaymentController extends GetxController {
   void _syncAppController(SubscriptionEntity status) {
     try {
       final appController = Get.find<AppController>();
-      appController.isPremium.value = status.isPremium;
-      appController.isGracePeriod.value = status.isGracePeriod;
-      appController.premiumExpiresAt.value = status.expiresAt;
+      appController.updatePremiumStatus(
+        isPremium: status.isPremium,
+        isGracePeriod: status.isGracePeriod,
+        expiresAt: status.expiresAt,
+      );
     } catch (_) {
       // AppController chưa registered
     }

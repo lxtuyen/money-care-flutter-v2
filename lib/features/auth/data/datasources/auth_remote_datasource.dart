@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:get/get.dart';
+import 'package:money_care/app/controllers/app_controller.dart';
 import 'package:money_care/core/constants/api_routes.dart';
 import 'package:money_care/core/errors/exceptions.dart';
 import 'package:money_care/core/network/api_client.dart';
@@ -69,8 +71,26 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     final res = await api.post<UserModel>(
       ApiRoutes.googleLogin,
       body: {'idToken': idToken},
-      fromJsonT: (json) =>
-          UserModel.fromAuthJson(json['user'], json['accessToken']),
+      fromJsonT: (json) {
+        try {
+          if (json['subscription'] != null) {
+            final sub = json['subscription'];
+            final isPremium = sub['isPremium'] ?? false;
+            final isGrace = sub['isGracePeriod'] ?? false;
+            final expiresAtStr = sub['expiresAt'];
+            final expiresAt = expiresAtStr != null ? DateTime.tryParse(expiresAtStr) : null;
+            
+            Get.find<AppController>().updatePremiumStatus(
+              isPremium: isPremium,
+              isGracePeriod: isGrace,
+              expiresAt: expiresAt,
+            );
+          }
+        } catch (e) {
+          debugPrint('Error parsing subscription in googleLogin response: $e');
+        }
+        return UserModel.fromAuthJson(json['user'], json['accessToken']);
+      },
     );
 
     return res.unwrap();
@@ -81,8 +101,26 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     final res = await api.post<UserModel>(
       ApiRoutes.login,
       body: {'email': email, 'password': password},
-      fromJsonT: (json) =>
-          UserModel.fromAuthJson(json['user'], json['accessToken']),
+      fromJsonT: (json) {
+        try {
+          if (json['subscription'] != null) {
+            final sub = json['subscription'];
+            final isPremium = sub['isPremium'] ?? false;
+            final isGrace = sub['isGracePeriod'] ?? false;
+            final expiresAtStr = sub['expiresAt'];
+            final expiresAt = expiresAtStr != null ? DateTime.tryParse(expiresAtStr) : null;
+            
+            Get.find<AppController>().updatePremiumStatus(
+              isPremium: isPremium,
+              isGracePeriod: isGrace,
+              expiresAt: expiresAt,
+            );
+          }
+        } catch (e) {
+          debugPrint('Error parsing subscription in login response: $e');
+        }
+        return UserModel.fromAuthJson(json['user'], json['accessToken']);
+      },
     );
     return res.unwrap();
   }

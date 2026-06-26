@@ -13,6 +13,7 @@ class SavingsBarChart extends StatelessWidget {
   final List<String> xLabels;
   final double? limitLineY;
   final String? limitLineLabel;
+  final List<FlSpot>? forecastSpots;
 
   const SavingsBarChart({
     super.key,
@@ -20,6 +21,7 @@ class SavingsBarChart extends StatelessWidget {
     required this.xLabels,
     this.limitLineY,
     this.limitLineLabel,
+    this.forecastSpots,
   });
 
   @override
@@ -76,6 +78,7 @@ class SavingsBarChart extends StatelessWidget {
         minY: 0,
         limitLineY: limitLineY,
         limitLineLabel: limitLineLabel,
+        lineChartSpots: forecastSpots,
         alignment: BarChartAlignment.start,
         groupsSpace: (xLabels.length <= 1)
             ? 0
@@ -120,6 +123,34 @@ class SavingsBarChart extends StatelessWidget {
               dateStr = "${groupIndex.toString().padLeft(2, '0')}:00";
             }
 
+            final children = <TextSpan>[
+              TextSpan(
+                text: 'Thực tế: ${AppHelperFunction.formatAmount(rod.toY, currency: 'VND')}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ];
+
+            if (forecastSpots != null) {
+              final match = forecastSpots!.where((s) => s.x.toInt() == groupIndex).toList();
+              if (match.isNotEmpty) {
+                children.add(const TextSpan(text: '\n'));
+                children.add(
+                  TextSpan(
+                    text: 'Dự báo: ${AppHelperFunction.formatAmount(match.first.y, currency: 'VND')}',
+                    style: const TextStyle(
+                      color: AppColors.warning,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }
+            }
+
             return BarTooltipItem(
               "$dateStr\n",
               const TextStyle(
@@ -127,19 +158,7 @@ class SavingsBarChart extends StatelessWidget {
                 fontSize: 10,
                 fontWeight: FontWeight.w400,
               ),
-              children: [
-                TextSpan(
-                  text: AppHelperFunction.formatAmount(
-                    rod.toY,
-                    currency: 'VND',
-                  ),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+              children: children,
             );
           },
         ),

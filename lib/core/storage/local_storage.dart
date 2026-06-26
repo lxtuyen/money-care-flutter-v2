@@ -52,6 +52,9 @@ class LocalStorage {
   static const String keyLocale = 'app_locale';
   static const String keyStartDayOfMonth = 'start_day_of_month';
   static const String keyWidgetBalanceVisible = 'widget_balance_visible';
+  static const String keyIsPremium = 'is_premium';
+  static const String keyIsGracePeriod = 'is_grace_period';
+  static const String keyPremiumExpiresAt = 'premium_expires_at';
 
   Future<void> saveToken(String token) async {
     await writeString(keyAccessToken, token);
@@ -74,9 +77,46 @@ class LocalStorage {
     return null;
   }
 
+  Future<void> savePremiumStatus({
+    required bool isPremium,
+    required bool isGracePeriod,
+    DateTime? expiresAt,
+  }) async {
+    await writeBool(keyIsPremium, isPremium);
+    await writeBool(keyIsGracePeriod, isGracePeriod);
+    if (expiresAt != null) {
+      await writeString(keyPremiumExpiresAt, expiresAt.toIso8601String());
+    } else {
+      await remove(keyPremiumExpiresAt);
+    }
+  }
+
+  bool getIsPremium() {
+    return readBool(keyIsPremium) ?? false;
+  }
+
+  bool getIsGracePeriod() {
+    return readBool(keyIsGracePeriod) ?? false;
+  }
+
+  DateTime? getPremiumExpiresAt() {
+    final dateStr = readString(keyPremiumExpiresAt);
+    if (dateStr != null) {
+      return DateTime.tryParse(dateStr);
+    }
+    return null;
+  }
+
+  Future<void> clearPremiumStatus() async {
+    await remove(keyIsPremium);
+    await remove(keyIsGracePeriod);
+    await remove(keyPremiumExpiresAt);
+  }
+
   Future<void> logout() async {
     await remove(keyAccessToken);
     await remove(keyUserInfo);
+    await clearPremiumStatus();
   }
 
   Future<void> saveOnboardingSeen() async {

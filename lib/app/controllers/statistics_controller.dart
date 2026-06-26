@@ -954,15 +954,13 @@ class StatisticsController extends GetxController {
     });
   }
 
-  /// Trả về ngày phù hợp khi chuyển tháng:
-  /// - Nếu là tháng hiện tại → ngày hôm nay
-  /// - Nếu là tháng khác → ngày 1
   int getSelectedDayForMonth(DateTime month) {
     final today = DateTime.now();
     return (month.year == today.year && month.month == today.month)
         ? today.day
         : 1;
   }
+
 
   /// Trả về date range (start, end) cho 1 tháng + label.
   ({DateTime start, DateTime end, String label}) getMonthDateRange(

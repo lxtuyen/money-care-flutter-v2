@@ -7,8 +7,6 @@ import 'package:money_care/core/utils/helper/helper_functions.dart';
 import 'package:money_care/features/spending_insights/domain/entities/recurring_transaction_entity.dart';
 import 'package:money_care/features/spending_insights/presentation/controllers/recurring_controller.dart';
 
-/// Summary card hiển thị trong Statistics screen.
-/// Chia thành 2 phần: đã xác nhận (có trạng thái trả) + phát hiện mới.
 class RecurringSummaryCard extends StatelessWidget {
   const RecurringSummaryCard({super.key});
 

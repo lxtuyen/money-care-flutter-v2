@@ -12,6 +12,7 @@ import 'package:money_care/app/widgets/texts/section_heading.dart';
 import 'package:money_care/core/constants/colors.dart';
 import 'package:money_care/core/constants/route_path.dart';
 import 'package:money_care/core/utils/helper/helper_functions.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import 'package:money_care/features/statistics/presentation/widgets/savings_bar_chart.dart';
 import 'package:money_care/features/statistics/presentation/widgets/saving_goal_summary_card.dart';
@@ -69,9 +70,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       spendingPlanController.loadStatsSummary(loadActiveIfMissing: true),
       savingGoalController.loadMultiGoalData(),
     ]);
-    // Fetch recurring data (không block init)
     if (Get.isRegistered<RecurringController>()) {
-      Get.find<RecurringController>().fetchRecurring();
+      Get.find<RecurringController>().refreshData();
     }
   }
 
@@ -214,46 +214,31 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
                   double? limitLineY;
                   String? limitLineLabel;
+                  List<FlSpot>? forecastSpots;
                   if (statisticsController.selectedType.value == 'chi' &&
-                      spendingPlanController.activePlan.value != null) {
-                    final activePlan = spendingPlanController.activePlan.value!;
-                    final isDaily =
-                        statisticsController.periodType.value != 'hàng tháng';
-
-                    double dailyEstimatedTotal = 0;
-                    double weeklyEstimatedTotal = 0;
-                    double monthlyEstimatedTotal = 0;
-
-                    for (var expense in activePlan.estimatedExpenses) {
-                      final type = expense.frequencyType.toLowerCase();
-                      final val = expense.frequencyValue;
-                      final baseAmt = expense.amount;
-                      final totalAmt = baseAmt * val;
-
-                      if (type == 'daily') {
-                        dailyEstimatedTotal += totalAmt;
-                      } else if (type == 'weekly') {
-                        weeklyEstimatedTotal += totalAmt;
-                      } else if (type == 'monthly') {
-                        monthlyEstimatedTotal += totalAmt;
+                      statisticsController.periodType.value == 'hàng tháng') {
+                    final dailyPoints = statisticsController
+                        .analyticsData.value?.currentMonthProjection?.dailyPoints;
+                    if (dailyPoints != null && dailyPoints.isNotEmpty) {
+                      forecastSpots = [];
+                      for (int i = 0; i < dailyPoints.length; i++) {
+                        final dateStr = dailyPoints[i].date;
+                        try {
+                          final parsedDate = DateTime.parse(dateStr);
+                          forecastSpots.add(FlSpot(
+                            (parsedDate.day - 1).toDouble(),
+                            dailyPoints[i].predictedAmount,
+                          ));
+                        } catch (e) {
+                          forecastSpots.add(FlSpot(
+                            i.toDouble(),
+                            dailyPoints[i].predictedAmount,
+                          ));
+                        }
                       }
-                    }
-
-                    if (isDaily) {
-                      limitLineY = dailyEstimatedTotal;
-                      if (limitLineY > 0) {
-                        limitLineLabel =
-                            'Hạn mức ngày: ${AppHelperFunction.formatCompactNumber(limitLineY)}';
-                      }
-                    } else {
-                      limitLineY =
-                          dailyEstimatedTotal +
-                          (weeklyEstimatedTotal / 7.0) +
-                          (monthlyEstimatedTotal / 30.0);
-                      if (limitLineY > 0) {
-                        limitLineLabel =
-                            'Định mức ngày: ${AppHelperFunction.formatCompactNumber(limitLineY)}';
-                      }
+                      
+                      limitLineY = null;
+                      limitLineLabel = null;
                     }
                   }
 
@@ -265,6 +250,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     xLabels: labels,
                     limitLineY: limitLineY,
                     limitLineLabel: limitLineLabel,
+                    forecastSpots: forecastSpots,
                   );
                 }),
               ),

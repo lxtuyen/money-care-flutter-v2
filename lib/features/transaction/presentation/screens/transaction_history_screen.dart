@@ -287,10 +287,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         );
       }
 
-      if (data.expenseTransactions.isEmpty) {
-        return _buildEmptyView();
-      }
-
       final keyword = filterController.keyword.value.toLowerCase().trim();
       final filtered = data.expenseTransactions.where((t) {
         final note = t.note?.toLowerCase() ?? '';
@@ -372,9 +368,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         );
       }
 
-      if (data.incomeTransactions.isEmpty) {
-        return _buildEmptyView();
-      }
+
 
       final keyword = filterController.keyword.value.toLowerCase().trim();
       final filtered = data.incomeTransactions.where((t) {

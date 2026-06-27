@@ -66,11 +66,11 @@ class ChatController extends GetxController {
       subtitle: 'chatbot.budgetDesc'.tr,
       template: 'chatbot.budgetTemplate'.tr,
     ),
-    QuickOption(
-      title: 'chatbot.goalProgressTitle'.tr,
-      subtitle: 'chatbot.goalProgressDesc'.tr,
-      template: 'chatbot.goalProgressTemplate'.tr,
-    ),
+    // QuickOption(
+    //   title: 'chatbot.goalProgressTitle'.tr,
+    //   subtitle: 'chatbot.goalProgressDesc'.tr,
+    //   template: 'chatbot.goalProgressTemplate'.tr,
+    // ),
   ];
 
   final stt.SpeechToText _speech = stt.SpeechToText();

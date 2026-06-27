@@ -948,10 +948,7 @@ class StatisticsController extends GetxController {
   /// Chuyển tháng có debounce để tránh lag khi user bấm nhanh.
   /// Dùng bởi các màn hình cần chuyển tháng (Lịch sử GD, etc.).
   void changeMonth(DateTime newMonth) {
-    _changeMonthDebounce?.cancel();
-    _changeMonthDebounce = Timer(const Duration(milliseconds: 150), () {
-      selectedMonth.value = DateTime(newMonth.year, newMonth.month, 1);
-    });
+    selectedMonth.value = DateTime(newMonth.year, newMonth.month, 1);
   }
 
   int getSelectedDayForMonth(DateTime month) {
